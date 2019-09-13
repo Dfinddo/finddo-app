@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import subcategoriasResource from '../services/subcategorias-api';
+import backendRails from '../../services/backend-rails-api';
 
-export default class FlatListBasics extends Component {
+export default class Servicos extends Component {
+  static navigationOptions = {
+    title: 'Serviços'
+  };
+
   state = {
     productInfo: {},
     docs: [],
@@ -15,7 +19,7 @@ export default class FlatListBasics extends Component {
 
   obterSubcategorias = async (page = 1) => {
     try {
-      const response = await subcategoriasResource.get();
+      const response = await backendRails.get('/subcategories');
 
       const subcategories = response.data;
       subcategories.forEach(element => {
