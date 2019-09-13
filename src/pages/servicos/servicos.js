@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
+import TokenService from '../../services/token-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -23,14 +24,12 @@ export default class Servicos extends Component {
 
       const subcategories = response.data;
       subcategories.forEach(element => {
-        element.id = element.id+'';
+        element.id = element.id + '';
       });
 
       this.setState({
         docs: [...this.state.docs, ...subcategories],
       });
-
-      console.log(this.state);
     } catch (error) {
       console.log(error);
     }
@@ -38,8 +37,12 @@ export default class Servicos extends Component {
 
 
   render() {
+    const tokenService = TokenService.getInstance();
+    const reqdata = tokenService.getToken();
+
     return (
       <View style={styles.container}>
+        <Text>{reqdata}</Text>
         <FlatList
           data={this.state.docs}
           keyExtractor={item => item.id}

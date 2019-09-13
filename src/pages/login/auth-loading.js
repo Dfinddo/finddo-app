@@ -4,6 +4,7 @@ import {
   View,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import TokenService from '../../services/token-service';
 
 export default class AuthLoadingScreen extends Component {
   constructor(props) {
@@ -13,7 +14,11 @@ export default class AuthLoadingScreen extends Component {
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
+    // AsyncStorage.clear();
     const userToken = await AsyncStorage.getItem('userToken');
+    const tokenService = TokenService.getInstance();
+    tokenService.setToken(userToken);
+
 
     // This will switch to the App screen or Auth screen and this loading
     // screen will be unmounted and thrown away.

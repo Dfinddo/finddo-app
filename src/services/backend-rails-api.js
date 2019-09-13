@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const backendRails = axios.create({
-  baseURL: 'https://finddo-back-dev.herokuapp.com',
+  baseURL: 'http://192.168.1.7:3000',
 });
 
 export default backendRails;
