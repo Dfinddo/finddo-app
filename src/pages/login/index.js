@@ -20,15 +20,23 @@ export default class LoginScreen extends Component {
       const response = await backendRails.post('/auth/sign_in', { email: user, password: password });
 
       const userData = {};
-      userData['accessToken'] = response['headers']['access-token'];
+      userData['access-token'] = response['headers']['access-token'];
       userData['client'] = response['headers']['client'];
       userData['uid'] = response['headers']['uid'];
 
-      const token = AsyncStorage.setItem('userToken', JSON.stringify(userData));
-      const tokenService = TokenService.getInstance();
-      tokenService.setToken(token);
+      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
+        () => {
+          const tokenService = TokenService.getInstance();
+          tokenService.setToken(userData);
 
-      this.props.navigation.navigate('Servicos');
+          this.props.navigation.navigate('Servicos');
+        }
+      ).catch(
+        (error) => {
+          console.log(error);
+          throw new Error('Problema ao se persistir as credenciais.');
+        }
+      );
     }
     catch (error) {
       console.log(error);

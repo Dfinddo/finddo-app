@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
+import backendRails from '../../services/backend-rails-api';
 
 export default class AuthLoadingScreen extends Component {
   constructor(props) {
@@ -16,13 +17,40 @@ export default class AuthLoadingScreen extends Component {
   _bootstrapAsync = async () => {
     // AsyncStorage.clear();
     const userToken = await AsyncStorage.getItem('userToken');
-    const tokenService = TokenService.getInstance();
-    tokenService.setToken(userToken);
+    if (userToken) {
+      const tokenObj = JSON.parse(userToken);
 
+      let tokenValid = false;
 
-    // This will switch to the App screen or Auth screen and this loading
-    // screen will be unmounted and thrown away.
-    this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+      const authHeaders = {};
+      authHeaders['access-token'] = tokenObj['access-token'];
+      authHeaders['client'] = tokenObj['client'];
+      authHeaders['uid'] = tokenObj['uid'];
+
+      backendRails.get('/auth/validate_token', { headers: authHeaders })
+        .then(
+          () => {
+            const tokenService = TokenService.getInstance();
+            tokenService.setToken(tokenObj);
+            console.log(tokenObj);
+            tokenValid = true;
+          }
+        ).catch(
+          (error) => {
+            AsyncStorage.removeItem('userToken');
+            console.log('catch');
+          }
+        ).finally(
+          () => {
+            // This will switch to the App screen or Auth screen and this loading
+            // screen will be unmounted and thrown away.
+            this.props.navigation.navigate(tokenValid ? 'App' : 'Auth');
+          }
+        );
+    } else {
+      console.log('else');
+      this.props.navigation.navigate('Auth');
+    }
   };
 
   // Render any loading content that you like here

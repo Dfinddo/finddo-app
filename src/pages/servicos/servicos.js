@@ -38,7 +38,7 @@ export default class Servicos extends Component {
 
   render() {
     const tokenService = TokenService.getInstance();
-    const reqdata = tokenService.getToken();
+    const reqdata = JSON.stringify(tokenService.getToken());
 
     return (
       <View style={styles.container}>
