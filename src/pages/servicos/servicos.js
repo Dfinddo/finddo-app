@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Text, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
-    title: 'Serviços'
+    title: 'Onde quer atendimento?'
   };
 
   state = {
-    productInfo: {},
     docs: [],
     page: 1,
   };
@@ -20,15 +19,15 @@ export default class Servicos extends Component {
 
   obterSubcategorias = async (page = 1) => {
     try {
-      const response = await backendRails.get('/subcategories');
+      const response = await backendRails.get('/categories', { headers: TokenService.getInstance().getHeaders() });
 
-      const subcategories = response.data;
-      subcategories.forEach(element => {
+      const categories = response.data;
+      categories.forEach(element => {
         element.id = element.id + '';
       });
 
       this.setState({
-        docs: [...this.state.docs, ...subcategories],
+        docs: [...this.state.docs, ...categories],
       });
     } catch (error) {
       console.log(error);
@@ -37,16 +36,18 @@ export default class Servicos extends Component {
 
 
   render() {
-    const tokenService = TokenService.getInstance();
-    const reqdata = JSON.stringify(tokenService.getToken());
-
     return (
       <View style={styles.container}>
-        <Text>{reqdata}</Text>
         <FlatList
           data={this.state.docs}
           keyExtractor={item => item.id}
-          renderItem={({ item }) => <Text style={styles.item}>{item.name}</Text>}
+          renderItem={
+            ({ item }) =>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('NovoPedido')}
+                style={styles.item}>
+                <Text>{item.name}</Text>
+              </TouchableOpacity>}
         />
       </View>
     );
