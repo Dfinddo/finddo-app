@@ -3,10 +3,15 @@ import { createStackNavigator, createSwitchNavigator, createAppContainer } from 
 import Servicos from './pages/servicos/servicos';
 import LoginScreen from './pages/login';
 import AuthLoadingScreen from './pages/login/auth-loading';
+import NovoPedido from './pages/servicos/novo-pedido';
 
 const AppStack = createStackNavigator(
   {
     Servicos: Servicos,
+    NovoPedido: NovoPedido
+  },
+  {
+    initialRouteName: 'Servicos'
   }
 );
 const AuthStack = createStackNavigator(
