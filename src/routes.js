@@ -6,14 +6,18 @@ import AuthLoadingScreen from './pages/login/auth-loading';
 import NovoPedido from './pages/servicos/novo-pedido';
 import PrimeiraParte from './pages/cadastros/primeira-parte';
 import SegundaParte from './pages/cadastros/segunda-parte';
+import FotosPedido from './pages/servicos/fotos-pedido';
+import MeusPedidos from './pages/servicos/meus-pedidos';
 
 const AppStack = createStackNavigator(
   {
     Servicos: Servicos,
-    NovoPedido: NovoPedido
+    NovoPedido: NovoPedido,
+    FotosPedido: FotosPedido,
+    MeusPedidos: MeusPedidos
   },
   {
-    initialRouteName: 'Servicos'
+    initialRouteName: 'MeusPedidos'
   }
 );
 

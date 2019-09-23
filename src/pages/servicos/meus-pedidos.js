@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Text, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, Text, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 
-export default class Servicos extends Component {
+export default class MeusPedidos extends Component {
   static navigationOptions = {
-    title: 'Onde quer atendimento?'
+    title: 'Meus Pedidos'
   };
 
   state = {
@@ -19,7 +19,7 @@ export default class Servicos extends Component {
 
   obterSubcategorias = async (page = 1) => {
     try {
-      const response = await backendRails.get('/categories', { headers: TokenService.getInstance().getHeaders() });
+      const response = await backendRails.get('/orders', { headers: TokenService.getInstance().getHeaders() });
 
       const categories = response.data;
       categories.forEach(element => {
@@ -44,10 +44,16 @@ export default class Servicos extends Component {
           renderItem={
             ({ item }) =>
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('NovoPedido', { item })}
+                onPress={() => {}}
                 style={styles.item}>
-                <Text>{item.name}</Text>
+                <Text>{item.description}</Text>
               </TouchableOpacity>}
+        />
+        <Button
+          title="Novo Pedido"
+          onPress={() => {
+            this.props.navigation.navigate('Servicos');
+          }}
         />
       </View>
     );
