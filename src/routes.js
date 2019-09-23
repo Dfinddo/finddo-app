@@ -4,6 +4,8 @@ import Servicos from './pages/servicos/servicos';
 import LoginScreen from './pages/login';
 import AuthLoadingScreen from './pages/login/auth-loading';
 import NovoPedido from './pages/servicos/novo-pedido';
+import PrimeiraParte from './pages/cadastros/primeira-parte';
+import SegundaParte from './pages/cadastros/segunda-parte';
 
 const AppStack = createStackNavigator(
   {
@@ -14,6 +16,17 @@ const AppStack = createStackNavigator(
     initialRouteName: 'Servicos'
   }
 );
+
+const RegisterStack = createStackNavigator(
+  {
+    ParteUm: PrimeiraParte,
+    ParteDois: SegundaParte
+  },
+  {
+    initialRouteName: 'ParteUm'
+  }
+);
+
 const AuthStack = createStackNavigator(
   { Login: LoginScreen }
 );
@@ -23,6 +36,7 @@ const AppContainer = createAppContainer(createSwitchNavigator(
     AuthLoading: AuthLoadingScreen,
     App: AppStack,
     Auth: AuthStack,
+    Register: RegisterStack
   },
   {
     initialRouteName: 'AuthLoading',

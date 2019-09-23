@@ -64,6 +64,10 @@ export default class LoginScreen extends Component {
           title="Login"
           onPress={() => this.login(this.state.usuario, this.state.senha)}
         />
+        <Button
+          title="Cadastre-se"
+          onPress={() => this.props.navigation.navigate('Register')}
+        />
       </View>
     );
   }
