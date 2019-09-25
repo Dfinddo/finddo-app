@@ -8,7 +8,7 @@ import PrimeiraParte from './pages/cadastros/primeira-parte';
 import SegundaParte from './pages/cadastros/segunda-parte';
 import FotosPedido from './pages/servicos/fotos-pedido';
 import MeusPedidos from './pages/servicos/meus-pedidos';
-import PerfilScreen from './pages/login/perfil';
+import PerfilScreen from './pages/perfil/perfil';
 
 const AppStack = createStackNavigator(
   {
@@ -52,6 +52,7 @@ const AppContainer = createAppContainer(createSwitchNavigator(
     App: TabMenu,
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStack,
+    Register: RegisterStack
   },
   {
     initialRouteName: 'AuthLoading',
