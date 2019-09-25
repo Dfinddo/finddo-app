@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import Servicos from './pages/servicos/servicos';
 import LoginScreen from './pages/login';
 import AuthLoadingScreen from './pages/login/auth-loading';
@@ -8,6 +8,7 @@ import PrimeiraParte from './pages/cadastros/primeira-parte';
 import SegundaParte from './pages/cadastros/segunda-parte';
 import FotosPedido from './pages/servicos/fotos-pedido';
 import MeusPedidos from './pages/servicos/meus-pedidos';
+import PerfilScreen from './pages/login/perfil';
 
 const AppStack = createStackNavigator(
   {
@@ -31,16 +32,26 @@ const RegisterStack = createStackNavigator(
   }
 );
 
+const PerfilStack = createStackNavigator(
+  { Perfil: PerfilScreen }
+);
+
 const AuthStack = createStackNavigator(
   { Login: LoginScreen }
 );
 
+const TabMenu = createBottomTabNavigator(
+  {
+    Pedidos: AppStack,
+    Profile: PerfilStack
+  }
+);
+
 const AppContainer = createAppContainer(createSwitchNavigator(
   {
+    App: TabMenu,
     AuthLoading: AuthLoadingScreen,
-    App: AppStack,
     Auth: AuthStack,
-    Register: RegisterStack
   },
   {
     initialRouteName: 'AuthLoading',
