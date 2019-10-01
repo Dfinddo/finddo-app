@@ -42,7 +42,7 @@ const AuthStack = createStackNavigator(
 
 const TabMenu = createBottomTabNavigator(
   {
-    Pedidos: AppStack,
+    Servicos: AppStack,
     Profile: PerfilStack
   }
 );

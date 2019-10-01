@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, ImageBackground, Text, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 
@@ -34,34 +34,50 @@ export default class Servicos extends Component {
     }
   };
 
-
-  render() {
+  exibirItem = (item) => {
     return (
-      <View style={styles.container}>
-        <FlatList
-          data={this.state.docs}
-          keyExtractor={item => item.id}
-          renderItem={
-            ({ item }) =>
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('NovoPedido', { item })}
-                style={styles.item}>
-                <Text>{item.name}</Text>
-              </TouchableOpacity>}
-        />
+      <View>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>{item.name}</Text>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('NovoPedido', { item })}>
+          <Image
+            style={{marginTop: 4, borderRadius: 16}} 
+            source={require('../../img/jacek-dylag-unsplash.png')} />
+        </TouchableOpacity>
       </View>
     );
   }
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 22,
-  },
-  item: {
-    padding: 10,
-    fontSize: 18,
-    height: 44,
-  },
-});
+  render() {
+    return (
+      <ImageBackground
+        style={this.servicosStyles.backgroundImageContent}
+        source={require('../../img/Ellipse.png')}>
+        <View style={this.servicosStyles.container}>
+          <FlatList
+            data={this.state.docs}
+            keyExtractor={item => item.id}
+            renderItem={
+              ({ item }) => this.exibirItem(item)}
+          />
+        </View>
+      </ImageBackground>
+    );
+  }
+
+  servicosStyles = StyleSheet.create({
+    container: {
+      marginTop: 10,
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    item: {
+      padding: 10,
+      fontSize: 18,
+      height: 44,
+    },
+    backgroundImageContent: {
+      width: '100%', height: '100%'
+    }
+  });
+}
