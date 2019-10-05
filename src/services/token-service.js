@@ -1,7 +1,7 @@
 export default class TokenService {
   static myInstance = null;
 
-  _tokenData = '';
+  _tokenData = null;
 
   /**
    * @returns {TokenService}
