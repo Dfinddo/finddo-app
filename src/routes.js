@@ -9,6 +9,7 @@ import SegundaParte from './pages/cadastros/segunda-parte';
 import FotosPedido from './pages/servicos/fotos-pedido';
 import MeusPedidos from './pages/servicos/meus-pedidos';
 import PerfilScreen from './pages/perfil/perfil';
+import EscolhaClienteScreen from './pages/cadastros/escolha-tipo-cliente';
 
 const AppStack = createStackNavigator(
   {
@@ -22,6 +23,7 @@ const AppStack = createStackNavigator(
   }
 );
 
+// TODO: remover
 const RegisterStack = createStackNavigator(
   {
     ParteUm: PrimeiraParte,
@@ -37,7 +39,15 @@ const PerfilStack = createStackNavigator(
 );
 
 const AuthStack = createStackNavigator(
-  { Login: LoginScreen }
+  {
+    Login: LoginScreen,
+    ParteUm: PrimeiraParte,
+    ParteDois: SegundaParte,
+    EscolhaTipo: EscolhaClienteScreen
+  },
+  {
+    initialRouteName: 'Login'
+  }
 );
 
 const TabMenu = createBottomTabNavigator(

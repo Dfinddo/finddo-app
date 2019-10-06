@@ -90,7 +90,7 @@ export default class LoginScreen extends Component {
               Ainda não é cadastrado?
             <Text
                 style={this.loginScreenStyle.cadastreSe}
-                onPress={() => this.props.navigation.navigate('Register')}> Cadastre-se</Text>
+                onPress={() => this.props.navigation.navigate('EscolhaTipo')}> Cadastre-se</Text>
             </Text>
           </View>
         </ScrollView>
