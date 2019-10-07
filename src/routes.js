@@ -62,10 +62,13 @@ const AppContainer = createAppContainer(createSwitchNavigator(
     App: TabMenu,
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStack,
-    Register: RegisterStack
+    Register: RegisterStack,
+    // devmode only
+    TestDev: PrimeiraParte
   },
   {
     initialRouteName: 'AuthLoading',
+    // initialRouteName: 'TestDev',
   }
 ));
 
