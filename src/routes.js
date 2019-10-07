@@ -10,10 +10,12 @@ import FotosPedido from './pages/servicos/fotos-pedido';
 import MeusPedidos from './pages/servicos/meus-pedidos';
 import PerfilScreen from './pages/perfil/perfil';
 import EscolhaClienteScreen from './pages/cadastros/escolha-tipo-cliente';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { colors } from './colors';
 
 const AppStack = createStackNavigator(
   {
-    Servicos: Servicos,
+    Services: Servicos,
     NovoPedido: NovoPedido,
     FotosPedido: FotosPedido,
     MeusPedidos: MeusPedidos
@@ -35,7 +37,7 @@ const RegisterStack = createStackNavigator(
 );
 
 const PerfilStack = createStackNavigator(
-  { Perfil: PerfilScreen }
+  { Profile: PerfilScreen }
 );
 
 const AuthStack = createStackNavigator(
@@ -52,8 +54,32 @@ const AuthStack = createStackNavigator(
 
 const TabMenu = createBottomTabNavigator(
   {
-    Servicos: AppStack,
-    Profile: PerfilStack
+    Serviços: AppStack,
+    Perfil: PerfilStack
+  },
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+        const { routeName } = navigation.state;
+        let IconComponent = Ionicons;
+        let iconName;
+        if (routeName === 'Serviços') {
+          iconName = `ios-hammer`;
+          // Sometimes we want to add badges to some icons. 
+          // You can check the implementation below.
+          // IconComponent = HomeIconWithBadge;
+        } else if (routeName === 'Perfil') {
+          iconName = `ios-person`;
+        }
+
+        // You can return any component that you like here!
+        return <IconComponent name={iconName} size={25} color={tintColor} />;
+      },
+    }),
+    tabBarOptions: {
+      activeTintColor: colors.verdeFinddo,
+      inactiveTintColor: colors.cinzaIconeInativo,
+    },
   }
 );
 

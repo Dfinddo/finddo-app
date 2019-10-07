@@ -52,7 +52,7 @@ export default class MeusPedidos extends Component {
         <Button
           title="Novo Pedido"
           onPress={() => {
-            this.props.navigation.navigate('Servicos');
+            this.props.navigation.navigate('Services');
           }}
         />
       </View>
