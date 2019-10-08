@@ -30,6 +30,7 @@ export default class FotosPedido extends Component {
     const order = {};
     order.description = orderData.necessidade;
     order.category_id = +orderData.categoriaPedido.id;
+    order.user_id = TokenService.getInstance().getUser().id;
 
     const response = await backendRails.post('/orders', { order }, { headers: TokenService.getInstance().getHeaders() });
 
@@ -38,8 +39,6 @@ export default class FotosPedido extends Component {
       actions: [NavigationActions.navigate({ routeName: 'MeusPedidos' }, { id: response.data.id })],
     });
     this.props.navigation.dispatch(resetAction);
-
-    // this.props.navigation.navigate('Meus Pedidos', { id: response.data.id });
   }
 
   render() {

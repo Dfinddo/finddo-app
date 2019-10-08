@@ -43,8 +43,9 @@ export default class SegundaParte extends Component {
     const email = navigation.getParam('email', 'sem email');
     const cellphone = navigation.getParam('cellphone', 'sem telefone');
     const cpf = navigation.getParam('cpf', 'sem cpf');
+    const user_type = navigation.getParam('user_type', 'sem tipo');
 
-    this.setState({ name, email, cellphone, cpf });
+    this.setState({ name, email, cellphone, cpf, user_type });
   };
 
   signUp = async (userState) => {
@@ -57,12 +58,21 @@ export default class SegundaParte extends Component {
       userData['client'] = response['headers']['client'];
       userData['uid'] = response['headers']['uid'];
 
-      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
-        () => {
-          const tokenService = TokenService.getInstance();
-          tokenService.setToken(userData);
+      const userDto = new UserDTO(response.data.data);
 
-          this.props.navigation.navigate('App');
+      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
+        async () => {
+          try {
+            await AsyncStorage.setItem('user', JSON.stringify(userDto));
+
+            const tokenService = TokenService.getInstance();
+            tokenService.setToken(userData);
+            tokenService.setUser(userDto);
+
+            this.props.navigation.navigate('App');
+          } catch (error) {
+            throw new Error('Problema ao se persistir as credenciais.');
+          }
         }
       ).catch(
         (error) => {

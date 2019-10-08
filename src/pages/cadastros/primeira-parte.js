@@ -19,15 +19,15 @@ export default class PrimeiraParte extends Component {
     email: 'teste@email.com',
     cellphone: '21980808080',
     cpf: '12345678900',
-    tipoCliente: 'cliente'
+    user_type: 'user'
   };
 
   componentDidMount() {
     const { navigation } = this.props;
-    const tipoCliente = navigation.getParam('tipoCliente', 'não há tipo');
+    const user_type = navigation.getParam('tipoCliente', 'não há tipo');
 
-    if (tipoCliente !== 'não há tipo') {
-      this.setState({ tipoCliente });
+    if (user_type !== 'não há tipo') {
+      this.setState({ user_type });
     }
   }
 

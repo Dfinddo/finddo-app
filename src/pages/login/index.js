@@ -9,6 +9,7 @@ import backendRails from '../../services/backend-rails-api';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import { colors } from '../../colors';
+import UserDTO from '../../models/UserDTO';
 
 export default class LoginScreen extends Component {
   static navigationOptions = {
@@ -30,12 +31,22 @@ export default class LoginScreen extends Component {
       userData['client'] = response['headers']['client'];
       userData['uid'] = response['headers']['uid'];
 
-      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
-        () => {
-          const tokenService = TokenService.getInstance();
-          tokenService.setToken(userData);
+      const userDto = new UserDTO(response.data.data);
 
-          this.props.navigation.navigate('App');
+      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
+        async () => {
+          try {
+            const tokenService = TokenService.getInstance();
+            tokenService.setToken(userData);
+
+            await AsyncStorage.setItem('user', JSON.stringify(userDto));
+            tokenService.setUser(userDto);
+
+            this.props.navigation.navigate('App');
+          }
+          catch (error) {
+            throw new Error('Problema ao se persistir as credenciais.');
+          }
         }
       ).catch(
         () => {

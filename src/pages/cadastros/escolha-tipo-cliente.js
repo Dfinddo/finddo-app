@@ -25,12 +25,12 @@ export default class EscolhaClienteScreen extends Component {
             <Text style={this.escolhaTipoClienteStyle.fontTitle}>Quero ser:</Text>
             <TouchableOpacity
               style={this.escolhaTipoClienteStyle.escolhaButton}
-              onPress={() => this._redirectCadastro('cliente')}>
+              onPress={() => this._redirectCadastro('user')}>
               <Text style={this.escolhaTipoClienteStyle.escolhaButtonText}>Cliente Finddo</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={this.escolhaTipoClienteStyle.escolhaButton}
-              onPress={() => this._redirectCadastro('profissional')}>
+              onPress={() => this._redirectCadastro('professional')}>
               <Text style={this.escolhaTipoClienteStyle.escolhaButtonText}>Profissional Finddo</Text>
             </TouchableOpacity>
           </View>
