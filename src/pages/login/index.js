@@ -151,7 +151,9 @@ export default class LoginScreen extends Component {
                 value={this.state.senha}
                 secureTextEntry={true}
               />
-              <Text style={this.loginScreenStyle.loginEsqueciSenha}>Esqueci minha senha</Text>
+              <Text
+                style={this.loginScreenStyle.loginEsqueciSenha}
+                onPress={() => this.props.navigation.navigate('EsqueciSenhaEmail')}>Esqueci minha senha</Text>
             </View>
             <TouchableOpacity
               style={this.loginScreenStyle.loginButton}

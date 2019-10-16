@@ -12,6 +12,8 @@ import PerfilScreen from './pages/perfil/perfil';
 import EscolhaClienteScreen from './pages/cadastros/escolha-tipo-cliente';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from './colors';
+import EsqueciSenhaEmail from './pages/login/esqueci-senha-email';
+import EsqueciSenhaNovaSenha from './pages/login/esqueci-senha-nova-senha';
 
 const AppStack = createStackNavigator(
   {
@@ -45,7 +47,9 @@ const AuthStack = createStackNavigator(
     Login: LoginScreen,
     ParteUm: PrimeiraParte,
     ParteDois: SegundaParte,
-    EscolhaTipo: EscolhaClienteScreen
+    EscolhaTipo: EscolhaClienteScreen,
+    EsqueciSenhaEmail: EsqueciSenhaEmail,
+    EsqueciSenhaNovaSenha: EsqueciSenhaNovaSenha
   },
   {
     initialRouteName: 'Login'
