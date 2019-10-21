@@ -25,7 +25,8 @@ const AppStack = createStackNavigator(
     AcompanhamentoPedido: AcompanhamentoPedido
   },
   {
-    initialRouteName: 'MeusPedidos'
+    // initialRouteName: 'MeusPedidos'
+    initialRouteName: 'AcompanhamentoPedido'
   }
 );
 

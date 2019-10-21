@@ -10,16 +10,38 @@ import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { colors } from '../../colors';
+import StatusPedidoStep from '../../components/status-pedido-step';
+import StatusPedidoDescricao from '../../components/status-pedido-descricao';
 
 export default class AcompanhamentoPedido extends Component {
   static navigationOptions = {
     title: 'Acompanhe seu pedido'
   };
 
+  constructor(props) {
+    super(props);
+
+    /* marcadores */
+    this.pedidoEmAnalise = React.createRef();
+    this.agendandoVisita = React.createRef();
+    this.aCaminho = React.createRef();
+    this.emServico = React.createRef();
+    this.finalizado = React.createRef();
+
+    /* descricao */
+    this.pedidoEmAnaliseD = React.createRef();
+    this.agendandoVisitaD = React.createRef();
+    this.aCaminhoD = React.createRef();
+    this.emServicoD = React.createRef();
+    this.finalizadoD = React.createRef();
+  }
+
   state = {
     necessidade: '',
     categoriaPedido: null,
-    isLoading: false
+    isLoading: false,
+    estadoAtual: 'analise',
+    accordianClosed: true
   };
 
   componentDidMount() {
@@ -45,14 +67,70 @@ export default class AcompanhamentoPedido extends Component {
             }}>
               <View
                 style={{
-                  height: 1000,
-                  backgroundColor: 'red', width: '20%'
-                }}></View>
+                  height: 1000, width: '20%',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }}>
+                <StatusPedidoStep
+                  ref={this.pedidoEmAnalise}
+                  hasMarginTop={true}
+                  verticalBarVisibility='flex'>
+                </StatusPedidoStep>
+                <StatusPedidoStep
+                  ref={this.agendandoVisita}
+                  verticalBarVisibility='flex'>
+                </StatusPedidoStep>
+                <StatusPedidoStep
+                  ref={this.aCaminho}
+                  verticalBarVisibility='flex'>
+                </StatusPedidoStep>
+                <StatusPedidoStep
+                  ref={this.emServico}
+                  verticalBarVisibility='flex'>
+                </StatusPedidoStep>
+                <StatusPedidoStep
+                  ref={this.finalizado}
+                  verticalBarVisibility='none'>
+                </StatusPedidoStep>
+              </View>
               <View
                 style={{
                   height: 1000,
                   backgroundColor: 'blue', width: '80%'
-                }}></View>
+                }}>
+                <StatusPedidoDescricao
+                  ref={this.pedidoEmAnaliseD}
+                  hasMarginTop={true}
+                  conteudo='Pedido em análise'
+                  estadoInicial='analise' />
+                <View style={{ height: 90, width: 3 }} />
+                <StatusPedidoDescricao
+                  ref={this.agendandoVisitaD}
+                  conteudo='Agendando visita'
+                  estadoInicial='agendando' />
+                <View style={{ height: 90, width: 3 }} />
+                <View
+                  style={{
+                    height: 20, backgroundColor: 'green',
+                    marginLeft: 8
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: this.state.estadoAtual === 'a-caminho' ? 20 : 18,
+                      color: this.state.estadoAtual === 'a-caminho' ? 'black' : 'gray',
+                    }}>A caminho</Text>
+                </View>
+                <View style={{ height: 90, width: 3 }} />
+                <StatusPedidoDescricao
+                  ref={this.emServicoD}
+                  conteudo='Em serviço'
+                  estadoInicial='em-servico' />
+                <View style={{ height: 90, width: 3 }} />
+                <StatusPedidoDescricao
+                  ref={this.finalizadoD}
+                  conteudo='Finalizado'
+                  estadoInicial='finalizado' />
+              </View>
             </View>
           </ScrollView>
         </View>
@@ -64,7 +142,22 @@ export default class AcompanhamentoPedido extends Component {
             width: 340, height: 45,
             borderRadius: 20, backgroundColor: colors.verdeFinddo,
             marginBottom: 6
-          }} onPress={() => { }}>
+          }} onPress={() => {
+            if (this.state.estadoAtual === 'analise') {
+              this.setState({ estadoAtual: 'agendando' });
+              this.setStatusAtual('agendando', this.pedidoEmAnalise);
+            } else if (this.state.estadoAtual === 'agendando') {
+              this.setState({ estadoAtual: 'a-caminho' });
+              this.setStatusAtual('a-caminho', this.agendandoVisita);
+            } else if (this.state.estadoAtual === 'a-caminho') {
+              this.setState({ estadoAtual: 'em-servico' });
+              this.setStatusAtual('em-servico', this.aCaminho);
+            } else if (this.state.estadoAtual === 'em-servico') {
+              this.setState({ estadoAtual: 'finalizado' });
+              this.setStatusAtual('finalizado', this.emServico);
+              this.setStatusAtual('finalizado', this.finalizado);
+            }
+          }}>
             <Text style={{
               textAlignVertical: 'center', height: 45,
               fontSize: 18, color: colors.branco,
@@ -74,5 +167,15 @@ export default class AcompanhamentoPedido extends Component {
         </View>
       </ImageBackground>
     );
+  }
+
+  setStatusAtual = (status, statusComponentRef) => {
+    this.pedidoEmAnaliseD.current.setEstadoAtual(status);
+    this.agendandoVisitaD.current.setEstadoAtual(status);
+    this.emServicoD.current.setEstadoAtual(status);
+    this.finalizadoD.current.setEstadoAtual(status);
+
+    statusComponentRef.current.setEtapaAtiva();
+    statusComponentRef.current.setStepConcluido();
   }
 }
