@@ -14,13 +14,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from './colors';
 import EsqueciSenhaEmail from './pages/login/esqueci-senha-email';
 import EsqueciSenhaNovaSenha from './pages/login/esqueci-senha-nova-senha';
+import AcompanhamentoPedido from './pages/servicos/acompanhamento-pedido';
 
 const AppStack = createStackNavigator(
   {
     Services: Servicos,
     NovoPedido: NovoPedido,
     FotosPedido: FotosPedido,
-    MeusPedidos: MeusPedidos
+    MeusPedidos: MeusPedidos,
+    AcompanhamentoPedido: AcompanhamentoPedido
   },
   {
     initialRouteName: 'MeusPedidos'

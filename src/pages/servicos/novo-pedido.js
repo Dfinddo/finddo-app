@@ -1,7 +1,19 @@
 import React, { Component } from 'react';
-import { Text, TextInput, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  Text, TextInput,
+  View, StyleSheet,
+  Image, TouchableOpacity,
+  Picker
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { colors } from '../../colors';
+
+const urgenciaValues = [
+  { text: 'Para quando precisa do serviço?', value: '' },
+  { text: 'Urgente', value: 'urgente' },
+  { text: 'Durante a semana', value: 'semana' },
+  { text: 'Definir data', value: 'definir-data' }
+];
 
 export default class NovoPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -10,7 +22,8 @@ export default class NovoPedido extends Component {
 
   state = {
     necessidade: '',
-    categoriaPedido: null
+    categoriaPedido: null,
+    urgencia: urgenciaValues[0].value
   };
 
   componentDidMount() {
@@ -38,6 +51,26 @@ export default class NovoPedido extends Component {
             onChangeText={(necessidade) => this.setState({ necessidade: necessidade })}
             value={this.state.necessidade}
           />
+          <View
+            style={{
+              borderStyle: 'solid', width: '100%',
+              borderWidth: 2, borderColor: colors.verdeFinddo,
+              marginTop: 16
+            }}>
+            <Picker
+              selectedValue={this.state.urgencia}
+              style={{
+                height: 50, width: '100%'
+              }}
+              onValueChange={(itemValue, itemIndex) =>
+                this.setState({ urgencia: itemValue })
+              }>
+              <Picker.Item label={urgenciaValues[0].text} value={urgenciaValues[0].value} />
+              <Picker.Item label={urgenciaValues[1].text} value={urgenciaValues[1].value} />
+              <Picker.Item label={urgenciaValues[2].text} value={urgenciaValues[2].value} />
+              <Picker.Item label={urgenciaValues[3].text} value={urgenciaValues[3].value} />
+            </Picker>
+          </View>
           <TouchableOpacity
             style={this.novoPedidoStyle.continuarButton}
             onPress={() => {
@@ -51,7 +84,7 @@ export default class NovoPedido extends Component {
   }
 
   novoPedidoStyle = StyleSheet.create({
-    pedidoForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
+    pedidoForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingHorizontal: 10 },
     pedidoFormSizeAndFont:
     {
       fontSize: 25, height: 200,
