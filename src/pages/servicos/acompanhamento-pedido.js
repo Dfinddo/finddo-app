@@ -8,6 +8,7 @@ import { colors } from '../../colors';
 import StatusPedidoStep from '../../components/status-pedido-step';
 import StatusPedidoDescricao from '../../components/status-pedido-descricao';
 import Accordian from '../../components/accordion-pedido';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class AcompanhamentoPedido extends Component {
   static navigationOptions = {
@@ -37,6 +38,7 @@ export default class AcompanhamentoPedido extends Component {
     categoriaPedido: null,
     isLoading: false,
     estadoAtual: 'analise',
+    acaoBotao: 'PRÓXIMO'
   };
 
   componentDidMount() {
@@ -140,16 +142,22 @@ export default class AcompanhamentoPedido extends Component {
               this.setState({ estadoAtual: 'em-servico' });
               this.setStatusAtual('em-servico', this.aCaminho);
             } else if (this.state.estadoAtual === 'em-servico') {
-              this.setState({ estadoAtual: 'finalizado' });
+              this.setState({ estadoAtual: 'finalizado', acaoBotao: 'MEUS PEDIDOS' });
               this.setStatusAtual('finalizado', this.emServico);
               this.setStatusAtual('finalizado', this.finalizado);
+            } else {
+              const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({ routeName: 'MeusPedidos' })],
+              });
+              this.props.navigation.dispatch(resetAction);
             }
           }}>
             <Text style={{
               textAlignVertical: 'center', height: 45,
               fontSize: 18, color: colors.branco,
               textAlign: 'center'
-            }}>CANCELAR SERVIÇO</Text>
+            }}>{this.state.acaoBotao}</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>

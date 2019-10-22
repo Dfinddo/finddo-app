@@ -48,7 +48,7 @@ export default class MeusPedidos extends Component {
           renderItem={
             ({ item }) =>
               <TouchableOpacity
-                onPress={() => { }}
+                onPress={() => { this.props.navigation.navigate('AcompanhamentoPedido'); }}
                 style={styles.item}>
                 <Text>{item.description}</Text>
               </TouchableOpacity>}
