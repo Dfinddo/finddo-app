@@ -25,8 +25,8 @@ const AppStack = createStackNavigator(
     AcompanhamentoPedido: AcompanhamentoPedido
   },
   {
-    // initialRouteName: 'MeusPedidos'
-    initialRouteName: 'AcompanhamentoPedido'
+    initialRouteName: 'MeusPedidos',
+    // initialRouteName: 'AcompanhamentoPedido'
   }
 );
 
@@ -96,12 +96,9 @@ const AppContainer = createAppContainer(createSwitchNavigator(
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStack,
     Register: RegisterStack,
-    // devmode only
-    TestDev: PrimeiraParte
   },
   {
     initialRouteName: 'AuthLoading',
-    // initialRouteName: 'TestDev',
   }
 ));
 

@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import {
-  Modal, View,
-  Text, StyleSheet,
+  View, Text,
   ScrollView, ImageBackground,
-  TouchableOpacity, Image,
-  ActivityIndicator, Alert
+  TouchableOpacity
 } from 'react-native';
-import backendRails from '../../services/backend-rails-api';
-import TokenService from '../../services/token-service';
-import { StackActions, NavigationActions } from 'react-navigation';
 import { colors } from '../../colors';
 import StatusPedidoStep from '../../components/status-pedido-step';
 import StatusPedidoDescricao from '../../components/status-pedido-descricao';
+import Accordian from '../../components/accordion-pedido';
 
 export default class AcompanhamentoPedido extends Component {
   static navigationOptions = {
@@ -41,15 +37,10 @@ export default class AcompanhamentoPedido extends Component {
     categoriaPedido: null,
     isLoading: false,
     estadoAtual: 'analise',
-    accordianClosed: true
   };
 
   componentDidMount() {
-
   };
-
-  salvarPedido = async (orderData) => {
-  }
 
   render() {
     return (
@@ -63,11 +54,11 @@ export default class AcompanhamentoPedido extends Component {
             <View style={{
               flex: 1, alignItems: 'center',
               justifyContent: 'center', flexDirection: 'row',
-              height: 1000, backgroundColor: 'purple'
+              height: 1000
             }}>
               <View
                 style={{
-                  height: 1000, width: '20%',
+                  height: 1000, width: '15%',
                   alignItems: 'center',
                   justifyContent: 'flex-start'
                 }}>
@@ -95,8 +86,7 @@ export default class AcompanhamentoPedido extends Component {
               </View>
               <View
                 style={{
-                  height: 1000,
-                  backgroundColor: 'blue', width: '80%'
+                  height: 1000, width: '85%'
                 }}>
                 <StatusPedidoDescricao
                   ref={this.pedidoEmAnaliseD}
@@ -108,19 +98,16 @@ export default class AcompanhamentoPedido extends Component {
                   ref={this.agendandoVisitaD}
                   conteudo='Agendando visita'
                   estadoInicial='agendando' />
-                <View style={{ height: 90, width: 3 }} />
+                <View style={{ height: 80, width: 3 }} />
                 <View
                   style={{
-                    height: 20, backgroundColor: 'green',
-                    marginLeft: 8
+                    height: 120, zIndex: 10
                   }}>
-                  <Text
-                    style={{
-                      fontSize: this.state.estadoAtual === 'a-caminho' ? 20 : 18,
-                      color: this.state.estadoAtual === 'a-caminho' ? 'black' : 'gray',
-                    }}>A caminho</Text>
+                  <Accordian
+                    conteudo='A caminho'
+                    estadoInicial='a-caminho'
+                    ref={this.aCaminhoD} />
                 </View>
-                <View style={{ height: 90, width: 3 }} />
                 <StatusPedidoDescricao
                   ref={this.emServicoD}
                   conteudo='Em serviço'
@@ -172,6 +159,7 @@ export default class AcompanhamentoPedido extends Component {
   setStatusAtual = (status, statusComponentRef) => {
     this.pedidoEmAnaliseD.current.setEstadoAtual(status);
     this.agendandoVisitaD.current.setEstadoAtual(status);
+    this.aCaminhoD.current.setEstadoAtual(status);
     this.emServicoD.current.setEstadoAtual(status);
     this.finalizadoD.current.setEstadoAtual(status);
 

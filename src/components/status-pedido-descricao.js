@@ -23,7 +23,7 @@ export default class StatusPedidoDescricao extends Component {
       <View>
         <View
           style={{
-            marginTop: this.props.hasMarginTop ? 20 : 0, height: 20, backgroundColor: 'green',
+            marginTop: this.props.hasMarginTop ? 20 : 0, height: 20,
             marginLeft: 8
           }}>
           <Text
