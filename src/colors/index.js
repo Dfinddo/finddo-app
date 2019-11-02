@@ -3,5 +3,7 @@ export const colors = {
   branco: '#fff',
   preto: '#000',
   cinzaIconeInativo: '#C4C4C4',
-  verdeEscuroStatus: '#316B4B'
+  verdeEscuroStatus: '#316B4B',
+  cinza: 'gray',
+  bordaIconeStatus: '#595959'
 };

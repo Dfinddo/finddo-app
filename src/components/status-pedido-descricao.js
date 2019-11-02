@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
+import { colors } from '../colors';
 
 export default class StatusPedidoDescricao extends Component {
   state = {
-    verticalBarColor: 'gray',
-    circleColor: 'gray',
-    circleBorderColor: '#595959',
     estadoAtual: 'analise',
     estadoComponente: 'analise'
   };
@@ -29,7 +27,7 @@ export default class StatusPedidoDescricao extends Component {
           <Text
             style={{
               fontSize: this.state.estadoAtual === this.state.estadoComponente ? 20 : 18,
-              color: this.state.estadoAtual === this.state.estadoComponente ? 'black' : 'gray',
+              color: this.state.estadoAtual === this.state.estadoComponente ? colors.preto : colors.cinza,
             }}>{this.props.conteudo}</Text>
         </View>
       </View>
