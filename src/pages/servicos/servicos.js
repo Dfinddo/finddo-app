@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Image, ImageBackground, Text, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import backendRails from '../../services/backend-rails-api';
-import TokenService from '../../services/token-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -20,27 +18,6 @@ export default class Servicos extends Component {
       { id: '8', name: null }
     ],
     page: 1,
-  };
-
-  componentDidMount() {
-    // this.obterSubcategorias();
-  };
-
-  obterSubcategorias = async (page = 1) => {
-    try {
-      const response = await backendRails.get('/categories', { headers: TokenService.getInstance().getHeaders() });
-
-      const categories = response.data;
-      categories.forEach(element => {
-        element.id = element.id + '';
-      });
-
-      this.setState({
-        docs: [...this.state.docs, ...categories],
-      });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   exibirItem = (item) => {
