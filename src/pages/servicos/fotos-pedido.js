@@ -23,10 +23,10 @@ export default class FotosPedido extends Component {
   };
 
   componentDidMount() {
-    this.obterCategorias();
+    this.obterDadosPrimeiraPartePedido();
   };
 
-  obterCategorias = async (page = 1) => {
+  obterDadosPrimeiraPartePedido = () => {
     const { navigation } = this.props;
     const necessidade = navigation.getParam('necessidade', 'no necessidade');
     const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
@@ -91,41 +91,23 @@ export default class FotosPedido extends Component {
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
         <View style={{ height: '90%' }}>
-          <ScrollView style={{
-            flex: 1
-          }}>
+          <ScrollView style={{ flex: 1 }}>
             <Modal
               animationType="slide"
               transparent={true}
               visible={this.state.isLoading}
             >
-              <View style={{
-                flex: 1, alignItems: 'center',
-                justifyContent: 'center'
-              }}>
+              <View style={this.fotosPedidoStyles.loaderContainer}>
                 <View>
                   <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
                 </View>
               </View>
             </Modal>
-            <View style={{
-              height: 508,
-              flex: 1, alignItems: 'center',
-              justifyContent: 'flex-start', paddingHorizontal: 2
-            }}>
+            <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
               <Image source={require('../../img/jacek-dylag-unsplash.png')}
                 style={{ width: '100%', height: 200, borderRadius: 16 }} />
-              <View style={{
-                height: 300, paddingHorizontal: 20,
-                flex: 1, alignItems: 'center',
-                width: '100%',
-                justifyContent: 'flex-start'
-              }}>
-                <View style={{
-                  marginTop: 8, height: 300,
-                  backgroundColor: colors.branco,
-                  width: '100%'
-                }}>
+              <View style={this.fotosPedidoStyles.formPedidoContainer}>
+                <View style={this.fotosPedidoStyles.maisFotosContainer}>
                   <Text style={{ fontSize: 18, textAlign: 'center', marginTop: 10 }}>
                     Nos ajude com fotos do problema (opcional)
                   </Text>
@@ -134,10 +116,7 @@ export default class FotosPedido extends Component {
                       style={{ width: 120, height: 120 }}
                       source={require('../../img/add_foto_problema.png')} />
                   </TouchableOpacity>
-                  <View style={{
-                    flexDirection: 'row', justifyContent: 'space-evenly',
-                    alignItems: 'center', marginTop: 30
-                  }}>
+                  <View style={this.fotosPedidoStyles.fotosProblemaContainer}>
                     <TouchableOpacity>
                       <Image
                         style={{ width: 80, height: 80 }}
@@ -159,23 +138,54 @@ export default class FotosPedido extends Component {
             </View>
           </ScrollView>
         </View>
-        <View style={{
-          flex: 1, alignItems: 'center',
-          justifyContent: 'flex-end'
-        }}>
-          <TouchableOpacity style={{
-            width: 340, height: 45,
-            borderRadius: 20, backgroundColor: colors.verdeFinddo,
-            marginBottom: 6
-          }} onPress={() => this.salvarPedido(this.state)}>
-            <Text style={{
-              textAlignVertical: 'center', height: 45,
-              fontSize: 18, color: colors.branco,
-              textAlign: 'center'
-            }}>CONTINUAR</Text>
+        <View style={this.fotosPedidoStyles.botaoContainer}>
+          <TouchableOpacity
+            style={this.fotosPedidoStyles.botaoContinuar}
+            onPress={() => this.salvarPedido(this.state)}>
+            <Text style={this.botaoContinuarTexto}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
     );
   }
+
+  fotosPedidoStyles = StyleSheet.create({
+    loaderContainer: {
+      flex: 1, alignItems: 'center',
+      justifyContent: 'center'
+    },
+    imagemCategoriaContainer: {
+      height: 508,
+      flex: 1, alignItems: 'center',
+      justifyContent: 'flex-start', paddingHorizontal: 2
+    },
+    formPedidoContainer: {
+      height: 300, paddingHorizontal: 20,
+      flex: 1, alignItems: 'center',
+      width: '100%', justifyContent: 'flex-start'
+    },
+    maisFotosContainer: {
+      marginTop: 8, height: 300,
+      backgroundColor: colors.branco,
+      width: '100%'
+    },
+    fotosProblemaContainer: {
+      flexDirection: 'row', justifyContent: 'space-evenly',
+      alignItems: 'center', marginTop: 30
+    },
+    botaoContainer: {
+      flex: 1, alignItems: 'center',
+      justifyContent: 'flex-end'
+    },
+    botaoContinuar: {
+      width: 340, height: 45,
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      marginBottom: 6
+    },
+    botaoContinuarTexto: {
+      textAlignVertical: 'center', height: 45,
+      fontSize: 18, color: colors.branco,
+      textAlign: 'center'
+    }
+  });
 }
