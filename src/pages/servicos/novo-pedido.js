@@ -36,7 +36,6 @@ export default class NovoPedido extends Component {
     this.setState({ categoriaPedido });
   };
 
-
   render() {
     return (
       <ScrollView>
@@ -52,11 +51,7 @@ export default class NovoPedido extends Component {
             value={this.state.necessidade}
           />
           <View
-            style={{
-              borderStyle: 'solid', width: '100%',
-              borderWidth: 2, borderColor: colors.verdeFinddo,
-              marginTop: 16
-            }}>
+            style={this.novoPedidoStyle.selectStyle}>
             <Picker
               selectedValue={this.state.urgencia}
               style={{
@@ -74,7 +69,9 @@ export default class NovoPedido extends Component {
           <TouchableOpacity
             style={this.novoPedidoStyle.continuarButton}
             onPress={() => {
-              this.props.navigation.navigate('FotosPedido', { necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido });
+              this.props
+                .navigation.navigate('FotosPedido',
+                  { necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido });
             }}>
             <Text style={this.novoPedidoStyle.continuarButtonText}>Continuar</Text>
           </TouchableOpacity>
@@ -107,6 +104,11 @@ export default class NovoPedido extends Component {
     },
     fontTitle: {
       fontSize: 30
+    },
+    selectStyle: {
+      borderStyle: 'solid', width: '100%',
+      borderWidth: 2, borderColor: colors.verdeFinddo,
+      marginTop: 16
     }
   });
 }
