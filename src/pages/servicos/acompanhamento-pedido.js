@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   View, Text,
   ScrollView, ImageBackground,
-  TouchableOpacity
+  TouchableOpacity, StyleSheet
 } from 'react-native';
 import { colors } from '../../colors';
 import StatusPedidoStep from '../../components/status-pedido-step';
@@ -34,9 +34,6 @@ export default class AcompanhamentoPedido extends Component {
   }
 
   state = {
-    necessidade: '',
-    categoriaPedido: null,
-    isLoading: false,
     estadoAtual: 'analise',
     acaoBotao: 'PRÓXIMO'
   };
@@ -53,17 +50,9 @@ export default class AcompanhamentoPedido extends Component {
           <ScrollView style={{
             flex: 1
           }}>
-            <View style={{
-              flex: 1, alignItems: 'center',
-              justifyContent: 'center', flexDirection: 'row',
-              height: 1000
-            }}>
+            <View style={this.acompanhamentoStyles.acompanhamentoContainer}>
               <View
-                style={{
-                  height: 1000, width: '15%',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start'
-                }}>
+                style={this.acompanhamentoStyles.acompanhamentoPontosContainer}>
                 <StatusPedidoStep
                   ref={this.pedidoEmAnalise}
                   hasMarginTop={true}
@@ -87,9 +76,7 @@ export default class AcompanhamentoPedido extends Component {
                 </StatusPedidoStep>
               </View>
               <View
-                style={{
-                  height: 1000, width: '85%'
-                }}>
+                style={this.acompanhamentoStyles.acompanhamentoConteudoContainer}>
                 <StatusPedidoDescricao
                   ref={this.pedidoEmAnaliseD}
                   hasMarginTop={true}
@@ -102,9 +89,7 @@ export default class AcompanhamentoPedido extends Component {
                   estadoInicial='agendando' />
                 <View style={{ height: 80, width: 3 }} />
                 <View
-                  style={{
-                    height: 120, zIndex: 10
-                  }}>
+                  style={{ height: 120, zIndex: 10 }}>
                   <Accordian
                     conteudo='A caminho'
                     estadoInicial='a-caminho'
@@ -123,45 +108,36 @@ export default class AcompanhamentoPedido extends Component {
             </View>
           </ScrollView>
         </View>
-        <View style={{
-          flex: 1, alignItems: 'center',
-          justifyContent: 'flex-end'
-        }}>
-          <TouchableOpacity style={{
-            width: 340, height: 45,
-            borderRadius: 20, backgroundColor: colors.verdeFinddo,
-            marginBottom: 6
-          }} onPress={() => {
-            if (this.state.estadoAtual === 'analise') {
-              this.setState({ estadoAtual: 'agendando' });
-              this.setStatusAtual('agendando', this.pedidoEmAnalise);
-            } else if (this.state.estadoAtual === 'agendando') {
-              this.setState({ estadoAtual: 'a-caminho' });
-              this.setStatusAtual('a-caminho', this.agendandoVisita);
-            } else if (this.state.estadoAtual === 'a-caminho') {
-              this.setState({ estadoAtual: 'em-servico' });
-              this.setStatusAtual('em-servico', this.aCaminho);
-            } else if (this.state.estadoAtual === 'em-servico') {
-              this.setState({ estadoAtual: 'finalizado', acaoBotao: 'MEUS PEDIDOS' });
-              this.setStatusAtual('finalizado', this.emServico);
-              this.setStatusAtual('finalizado', this.finalizado);
-            } else {
-              const resetAction = StackActions.reset({
-                index: 0,
-                actions: [NavigationActions.navigate({ routeName: 'MeusPedidos' })],
-              });
-              this.props.navigation.dispatch(resetAction);
-            }
-          }}>
-            <Text style={{
-              textAlignVertical: 'center', height: 45,
-              fontSize: 18, color: colors.branco,
-              textAlign: 'center'
-            }}>{this.state.acaoBotao}</Text>
+        <View style={this.acompanhamentoStyles.acompanhamentoBotaoContainer}>
+          <TouchableOpacity style={this.acompanhamentoStyles.acompanhamentoBotao} onPress={() => this.atualizaStatus()}>
+            <Text style={this.acompanhamentoStyles.corBotao}>{this.state.acaoBotao}</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
     );
+  }
+
+  atualizaStatus = () => {
+    if (this.state.estadoAtual === 'analise') {
+      this.setState({ estadoAtual: 'agendando' });
+      this.setStatusAtual('agendando', this.pedidoEmAnalise);
+    } else if (this.state.estadoAtual === 'agendando') {
+      this.setState({ estadoAtual: 'a-caminho' });
+      this.setStatusAtual('a-caminho', this.agendandoVisita);
+    } else if (this.state.estadoAtual === 'a-caminho') {
+      this.setState({ estadoAtual: 'em-servico' });
+      this.setStatusAtual('em-servico', this.aCaminho);
+    } else if (this.state.estadoAtual === 'em-servico') {
+      this.setState({ estadoAtual: 'finalizado', acaoBotao: 'MEUS PEDIDOS' });
+      this.setStatusAtual('finalizado', this.emServico);
+      this.setStatusAtual('finalizado', this.finalizado);
+    } else {
+      const resetAction = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'MeusPedidos' })],
+      });
+      this.props.navigation.dispatch(resetAction);
+    }
   }
 
   setStatusAtual = (status, statusComponentRef) => {
@@ -174,4 +150,34 @@ export default class AcompanhamentoPedido extends Component {
     statusComponentRef.current.setEtapaAtiva();
     statusComponentRef.current.setStepConcluido();
   }
+
+  acompanhamentoStyles = StyleSheet.create({
+    acompanhamentoContainer: {
+      flex: 1, alignItems: 'center',
+      justifyContent: 'center', flexDirection: 'row',
+      height: 1000
+    },
+    acompanhamentoPontosContainer: {
+      height: 1000, width: '15%',
+      alignItems: 'center',
+      justifyContent: 'flex-start'
+    },
+    acompanhamentoConteudoContainer: {
+      height: 1000, width: '85%'
+    },
+    acompanhamentoBotaoContainer: {
+      flex: 1, alignItems: 'center',
+      justifyContent: 'flex-end'
+    },
+    acompanhamentoBotao: {
+      width: 340, height: 45,
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      marginBottom: 6
+    },
+    corBotao: {
+      textAlignVertical: 'center', height: 45,
+      fontSize: 18, color: colors.branco,
+      textAlign: 'center'
+    }
+  });
 }

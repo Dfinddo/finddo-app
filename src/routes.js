@@ -26,18 +26,6 @@ const AppStack = createStackNavigator(
   },
   {
     initialRouteName: 'MeusPedidos',
-    // initialRouteName: 'AcompanhamentoPedido'
-  }
-);
-
-// TODO: remover
-const RegisterStack = createStackNavigator(
-  {
-    ParteUm: PrimeiraParte,
-    ParteDois: SegundaParte
-  },
-  {
-    initialRouteName: 'ParteUm'
   }
 );
 
@@ -95,7 +83,6 @@ const AppContainer = createAppContainer(createSwitchNavigator(
     App: TabMenu,
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStack,
-    Register: RegisterStack,
   },
   {
     initialRouteName: 'AuthLoading',
