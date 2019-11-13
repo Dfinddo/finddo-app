@@ -16,7 +16,9 @@ export default class PerfilScreen extends Component {
       .delete('/auth/sign_out', { headers: TokenService.getInstance().getHeaders() })
       .then(() => {
         AsyncStorage.removeItem('userToken');
+        AsyncStorage.removeItem('user');
         TokenService.getInstance().setToken(null);
+        TokenService.getInstance().setUser(null);
         this.props.navigation.navigate('Auth');
       })
       .catch(() => {

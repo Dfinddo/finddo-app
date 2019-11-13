@@ -3,19 +3,22 @@ import {
   ImageBackground, View,
   Text, TextInput,
   StyleSheet, Image,
-  TouchableOpacity, ScrollView
+  TouchableOpacity, ScrollView,
+  Alert, ActivityIndicator,
+  Modal
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import { colors } from '../../colors';
+import UserDTO from '../../models/UserDTO';
 
 export default class LoginScreen extends Component {
   static navigationOptions = {
     header: null,
   };
 
-  state = { usuario: '', senha: '' };
+  state = { usuario: '', senha: '', isLoading: false };
 
   constructor(props) {
     super(props);
@@ -23,6 +26,7 @@ export default class LoginScreen extends Component {
 
   login = async (user, password) => {
     try {
+      this.setState({ isLoading: true });
       const response = await backendRails.post('/auth/sign_in', { email: user, password: password });
 
       const userData = {};
@@ -30,21 +34,78 @@ export default class LoginScreen extends Component {
       userData['client'] = response['headers']['client'];
       userData['uid'] = response['headers']['uid'];
 
-      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
-        () => {
-          const tokenService = TokenService.getInstance();
-          tokenService.setToken(userData);
+      const userDto = new UserDTO(response.data.data);
 
-          this.props.navigation.navigate('App');
+      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
+        async () => {
+          try {
+            const tokenService = TokenService.getInstance();
+            tokenService.setToken(userData);
+
+            await AsyncStorage.setItem('user', JSON.stringify(userDto));
+            tokenService.setUser(userDto);
+
+            this.setState({ isLoading: false });
+            this.props.navigation.navigate('App');
+          }
+          catch (error) {
+            this.setState({ isLoading: false });
+            Alert.alert(
+              'Falha ao se conectar',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          }
         }
       ).catch(
         () => {
-          throw new Error('Problema ao se persistir as credenciais.');
+          this.setState({ isLoading: false });
+          Alert.alert(
+            'Falha ao se conectar',
+            'Verifique sua conexão e tente novamente',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
         }
       );
     }
     catch (error) {
-      throw new Error('Falha ao se autenticar');
+      if (error.response) {
+        /*
+         * The request was made and the server responded with a
+         * status code that falls out of the range of 2xx
+         */
+        Alert.alert(
+          'Falha ao se conectar',
+          'Email ou senha incorretos',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else if (error.request) {
+        /*
+         * The request was made but no response was received, `error.request`
+         * is an instance of XMLHttpRequest in the browser and an instance
+         * of http.ClientRequest in Node.js
+         */
+        Alert.alert(
+          'Falha ao se conectar',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else {
+        /* Something happened in setting up the request and triggered an Error */
+      }
+      this.setState({ isLoading: false });
     }
   }
 
@@ -54,6 +115,17 @@ export default class LoginScreen extends Component {
         style={this.loginScreenStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoading}
+          >
+            <View style={this.loginScreenStyle.modalStyle}>
+              <View>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </View>
+          </Modal>
           <View style={this.loginScreenStyle.loginForm}>
             <Image
               source={require('../../img/finddo-logo.png')}
@@ -79,7 +151,9 @@ export default class LoginScreen extends Component {
                 value={this.state.senha}
                 secureTextEntry={true}
               />
-              <Text style={this.loginScreenStyle.loginEsqueciSenha}>Esqueci minha senha</Text>
+              <Text
+                style={this.loginScreenStyle.loginEsqueciSenha}
+                onPress={() => this.props.navigation.navigate('EsqueciSenhaEmail')}>Esqueci minha senha</Text>
             </View>
             <TouchableOpacity
               style={this.loginScreenStyle.loginButton}
@@ -90,7 +164,7 @@ export default class LoginScreen extends Component {
               Ainda não é cadastrado?
             <Text
                 style={this.loginScreenStyle.cadastreSe}
-                onPress={() => this.props.navigation.navigate('Register')}> Cadastre-se</Text>
+                onPress={() => this.props.navigation.navigate('EscolhaTipo')}> Cadastre-se</Text>
             </Text>
           </View>
         </ScrollView>
@@ -99,6 +173,7 @@ export default class LoginScreen extends Component {
   }
 
   loginScreenStyle = StyleSheet.create({
+    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     loginForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },

@@ -17,9 +17,11 @@ export default class AuthLoadingScreen extends Component {
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
+    const user = await AsyncStorage.getItem('user');
 
     if (userToken) {
       const tokenObj = JSON.parse(userToken);
+      const userObj = JSON.parse(user);
 
       let tokenValid = false;
 
@@ -33,11 +35,13 @@ export default class AuthLoadingScreen extends Component {
           () => {
             const tokenService = TokenService.getInstance();
             tokenService.setToken(tokenObj);
+            tokenService.setUser(userObj);
             tokenValid = true;
           }
         ).catch( // token invalido
           () => {
             AsyncStorage.removeItem('userToken');
+            AsyncStorage.removeItem('user');
           }
         ).finally(
           () => {
@@ -51,13 +55,13 @@ export default class AuthLoadingScreen extends Component {
 
   render() {
     return (
-      <View style={authLoadingScreenStyle.spinner}>
+      <View style={this.authLoadingScreenStyle.spinner}>
         <ActivityIndicator size="large" color={colors.verdeFinddo} />
       </View>
     );
   }
-}
 
-const authLoadingScreenStyle = StyleSheet.create(
-  { spinner: { flex: 1, alignItems: 'center', justifyContent: 'center' } }
-);
+  authLoadingScreenStyle = StyleSheet.create(
+    { spinner: { flex: 1, alignItems: 'center', justifyContent: 'center' } }
+  );
+}

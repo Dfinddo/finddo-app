@@ -2,6 +2,7 @@ export default class TokenService {
   static myInstance = null;
 
   _tokenData = null;
+  _user = null;
 
   /**
    * @returns {TokenService}
@@ -18,8 +19,16 @@ export default class TokenService {
     this._tokenData = token;
   }
 
+  setUser(userDto) {
+    this._user = userDto;
+  }
+
   getToken() {
     return this._tokenData;
+  }
+
+  getUser() {
+    return this._user;
   }
 
   getHeaders() {

@@ -14,12 +14,16 @@ export default class MeusPedidos extends Component {
   };
 
   componentDidMount() {
-    this.obterSubcategorias();
+    this.obterPedidos();
   };
 
-  obterSubcategorias = async (page = 1) => {
+  obterPedidos = async (page = 1) => {
     try {
-      const response = await backendRails.get('/orders', { headers: TokenService.getInstance().getHeaders() });
+      const tokenService = TokenService.getInstance();
+      const response = await
+        backendRails
+          .get('/orders/user/' + tokenService.getUser().id + '/active',
+            { headers: tokenService.getHeaders() });
 
       const categories = response.data;
       categories.forEach(element => {
@@ -44,7 +48,7 @@ export default class MeusPedidos extends Component {
           renderItem={
             ({ item }) =>
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={() => { this.props.navigation.navigate('AcompanhamentoPedido'); }}
                 style={styles.item}>
                 <Text>{item.description}</Text>
               </TouchableOpacity>}
@@ -52,7 +56,7 @@ export default class MeusPedidos extends Component {
         <Button
           title="Novo Pedido"
           onPress={() => {
-            this.props.navigation.navigate('Servicos');
+            this.props.navigation.navigate('Services');
           }}
         />
       </View>
