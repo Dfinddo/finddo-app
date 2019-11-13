@@ -134,7 +134,7 @@ export default class AcompanhamentoPedido extends Component {
     } else {
       const resetAction = StackActions.reset({
         index: 0,
-        actions: [NavigationActions.navigate({ routeName: 'MeusPedidos' })],
+        actions: [NavigationActions.navigate({ routeName: 'Acompanhamento' })],
       });
       this.props.navigation.dispatch(resetAction);
     }

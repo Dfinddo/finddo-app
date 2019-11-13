@@ -15,6 +15,7 @@ import { colors } from './colors';
 import EsqueciSenhaEmail from './pages/login/esqueci-senha-email';
 import EsqueciSenhaNovaSenha from './pages/login/esqueci-senha-nova-senha';
 import AcompanhamentoPedido from './pages/servicos/acompanhamento-pedido';
+import TelaFinalPedidoScreen from './pages/acompanhamento-finddo-pay/tela-final-pedido';
 
 const AppStack = createStackNavigator(
   {
@@ -22,7 +23,8 @@ const AppStack = createStackNavigator(
     NovoPedido: NovoPedido,
     FotosPedido: FotosPedido,
     MeusPedidos: MeusPedidos,
-    AcompanhamentoPedido: AcompanhamentoPedido
+    AcompanhamentoPedido: AcompanhamentoPedido,
+    Acompanhamento: TelaFinalPedidoScreen
   },
   {
     initialRouteName: 'MeusPedidos',
