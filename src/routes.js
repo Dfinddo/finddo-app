@@ -51,7 +51,7 @@ const AuthStack = createStackNavigator(
 
 const TabMenu = createBottomTabNavigator(
   {
-    Serviços: AppStack,
+    Histórico: AppStack,
     Perfil: PerfilStack
   },
   {
@@ -60,7 +60,7 @@ const TabMenu = createBottomTabNavigator(
         const { routeName } = navigation.state;
         let IconComponent = Ionicons;
         let iconName;
-        if (routeName === 'Serviços') {
+        if (routeName === 'Histórico') {
           iconName = `ios-hammer`;
           // Sometimes we want to add badges to some icons. 
           // You can check the implementation below.

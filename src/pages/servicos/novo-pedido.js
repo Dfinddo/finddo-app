@@ -23,10 +23,28 @@ export default class NovoPedido extends Component {
   state = {
     necessidade: '',
     categoriaPedido: null,
-    urgencia: urgenciaValues[0].value
+    urgencia: urgenciaValues[0].value,
+    categoriasImages: [
+      { id: '1', name: 'Hidráulica', image_url: require('../../img/jacek-dylag-unsplash.png') },
+      { id: '2', name: 'Elétrica', image_url: require('../../img/eletrica.png') },
+      { id: '3', name: 'Pintura', image_url: require('../../img/pintura.png') },
+      { id: '4', name: 'Ar condicionado', image_url: require('../../img/ar-condicionado.png') },
+      { id: '5', name: 'Instalações', image_url: require('../../img/instalacao.png') },
+      { id: '6', name: 'Pequenas reformas', image_url: require('../../img/peq-reforma.png') },
+      { id: '7', name: 'Consertos em geral', image_url: require('../../img/consertos.png') },
+    ],
+    imageServicoUrl: require('../../img/jacek-dylag-unsplash.png')
   };
 
   componentDidMount() {
+    const { navigation } = this.props;
+    const categoria = navigation.getParam('item', 'NO-ID');
+    const categoriaSelecionada = this.state.categoriasImages.find((cat) => {
+      return cat.id === categoria.id;
+    });
+
+    this.setState({ imageServicoUrl: categoriaSelecionada.image_url });
+
     this.obterCategoria();
   };
 
@@ -41,30 +59,32 @@ export default class NovoPedido extends Component {
       <ScrollView>
         <View style={this.novoPedidoStyle.pedidoForm}>
           <Image
-            style={{ borderRadius: 16, width: '100%' }}
-            source={require('../../img/jacek-dylag-unsplash.png')} />
-          <TextInput
-            style={this.novoPedidoStyle.pedidoFormSizeAndFont}
-            multiline={true}
-            placeholder="Nos conte o que precisa"
-            onChangeText={(necessidade) => this.setState({ necessidade: necessidade })}
-            value={this.state.necessidade}
-          />
-          <View
-            style={this.novoPedidoStyle.selectStyle}>
-            <Picker
-              selectedValue={this.state.urgencia}
-              style={{
-                height: 50, width: '100%'
-              }}
-              onValueChange={(itemValue, itemIndex) =>
-                this.setState({ urgencia: itemValue })
-              }>
-              <Picker.Item label={urgenciaValues[0].text} value={urgenciaValues[0].value} />
-              <Picker.Item label={urgenciaValues[1].text} value={urgenciaValues[1].value} />
-              <Picker.Item label={urgenciaValues[2].text} value={urgenciaValues[2].value} />
-              <Picker.Item label={urgenciaValues[3].text} value={urgenciaValues[3].value} />
-            </Picker>
+            style={{ width: '100%' }}
+            source={this.state.imageServicoUrl} />
+          <View style={[{ width: '100%' }, this.novoPedidoStyle.horizontalPadding]}>
+            <TextInput
+              style={this.novoPedidoStyle.pedidoFormSizeAndFont}
+              multiline={true}
+              placeholder="Nos conte o que precisa"
+              onChangeText={(necessidade) => this.setState({ necessidade: necessidade })}
+              value={this.state.necessidade}
+            />
+            <View
+              style={this.novoPedidoStyle.selectStyle}>
+              <Picker
+                selectedValue={this.state.urgencia}
+                style={{
+                  height: 50, width: '100%'
+                }}
+                onValueChange={(itemValue, itemIndex) =>
+                  this.setState({ urgencia: itemValue })
+                }>
+                <Picker.Item label={urgenciaValues[0].text} value={urgenciaValues[0].value} />
+                <Picker.Item label={urgenciaValues[1].text} value={urgenciaValues[1].value} />
+                <Picker.Item label={urgenciaValues[2].text} value={urgenciaValues[2].value} />
+                <Picker.Item label={urgenciaValues[3].text} value={urgenciaValues[3].value} />
+              </Picker>
+            </View>
           </View>
           <TouchableOpacity
             style={this.novoPedidoStyle.continuarButton}
@@ -73,7 +93,7 @@ export default class NovoPedido extends Component {
                 .navigation.navigate('FotosPedido',
                   { necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido });
             }}>
-            <Text style={this.novoPedidoStyle.continuarButtonText}>Continuar</Text>
+            <Text style={this.novoPedidoStyle.continuarButtonText}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -81,7 +101,8 @@ export default class NovoPedido extends Component {
   }
 
   novoPedidoStyle = StyleSheet.create({
-    pedidoForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingHorizontal: 10 },
+    pedidoForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
+    horizontalPadding: { paddingHorizontal: 10 },
     pedidoFormSizeAndFont:
     {
       fontSize: 25, height: 200,
@@ -93,7 +114,7 @@ export default class NovoPedido extends Component {
     continuarButton:
     {
       marginTop: 40,
-      width: 360, height: 45,
+      width: 340, height: 45,
       borderRadius: 20, backgroundColor: colors.verdeFinddo
     },
     continuarButtonText:

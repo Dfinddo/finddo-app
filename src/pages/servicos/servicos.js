@@ -9,12 +9,12 @@ export default class Servicos extends Component {
   state = {
     docs: [
       { id: '1', name: 'Hidráulica', image_url: require('../../img/jacek-dylag-unsplash.png') },
-      { id: '2', name: 'Elétrica', image_url: require('../../img/eletrica.jpg') },
-      { id: '3', name: 'Pintura', image_url: require('../../img/pintura.jpg') },
-      { id: '4', name: 'Ar condicionado', image_url: require('../../img/ar-condicionado.jpg') },
-      { id: '5', name: 'Instalações', image_url: require('../../img/instalacao.jpg') },
-      { id: '6', name: 'Pequenas reformas', image_url: require('../../img/peq-reforma.jpg') },
-      { id: '7', name: 'Consertos em geral', image_url: require('../../img/consertos.jpg') },
+      { id: '2', name: 'Elétrica', image_url: require('../../img/eletrica.png') },
+      { id: '3', name: 'Pintura', image_url: require('../../img/pintura.png') },
+      { id: '4', name: 'Ar condicionado', image_url: require('../../img/ar-condicionado.png') },
+      { id: '5', name: 'Instalações', image_url: require('../../img/instalacao.png') },
+      { id: '6', name: 'Pequenas reformas', image_url: require('../../img/peq-reforma.png') },
+      { id: '7', name: 'Consertos em geral', image_url: require('../../img/consertos.png') },
       { id: '8', name: null }
     ],
     page: 1,
