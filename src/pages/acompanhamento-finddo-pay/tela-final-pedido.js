@@ -22,26 +22,13 @@ export default class TelaFinalPedidoScreen extends Component {
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
         <View style={{ height: '100%' }}>
-          <ScrollView style={{
-            flex: 1
-          }}>
+          <ScrollView style={{ flex: 1 }}>
             <View style={this.telaFinalStyles.containerBase}>
-              <View style={{
-                backgroundColor: 'white', width: 300,
-                height: 120, marginTop: 20,
-                borderRadius: 20, flex: 1,
-                alignItems: 'center', justifyContent: 'space-evenly'
-              }}>
+              <View style={this.telaFinalStyles.linha}>
                 <Text style={{ fontSize: 25, fontWeight: 'bold' }}>Nome do Serviço</Text>
                 <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'green' }}>R$ 000,00</Text>
               </View>
-              <View style={{
-                backgroundColor: 'white', width: 300,
-                height: 120, marginTop: 20,
-                borderRadius: 20, flex: 1,
-                alignItems: 'center', justifyContent: 'space-evenly',
-                flexDirection: 'row'
-              }}>
+              <View style={[this.telaFinalStyles.linha, this.telaFinalStyles.avaliacaoFuncionario]}>
                 <View>
                   <Image
                     style={{ width: 80, height: 80 }}
@@ -54,19 +41,19 @@ export default class TelaFinalPedidoScreen extends Component {
                     marginTop: 10
                   }}>
                     <Image
-                      style={{ width: 25, height: 25 }}
+                      style={this.telaFinalStyles.estrela}
                       source={require('../../img/estrela.png')}></Image>
                     <Image
-                      style={{ width: 25, height: 25 }}
+                      style={this.telaFinalStyles.estrela}
                       source={require('../../img/estrela.png')}></Image>
                     <Image
-                      style={{ width: 25, height: 25 }}
+                      style={this.telaFinalStyles.estrela}
                       source={require('../../img/estrela.png')}></Image>
                     <Image
-                      style={{ width: 25, height: 25 }}
+                      style={this.telaFinalStyles.estrela}
                       source={require('../../img/estrela.png')}></Image>
                     <Image
-                      style={{ width: 25, height: 25 }}
+                      style={this.telaFinalStyles.estrela}
                       source={require('../../img/estrela.png')}></Image>
                   </View>
                 </View>
@@ -77,11 +64,7 @@ export default class TelaFinalPedidoScreen extends Component {
                 alignItems: 'flex-start', justifyContent: 'space-around',
                 flexDirection: 'row'
               }}>
-                <View style={{
-                  backgroundColor: 'white', borderRadius: 20,
-                  width: 130, height: 100,
-                  justifyContent: 'center', alignItems: 'center'
-                }}>
+                <View style={this.telaFinalStyles.horaAgendamento}>
                   <Text style={{ fontSize: 18 }}>Hora agendada</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Image
@@ -91,31 +74,18 @@ export default class TelaFinalPedidoScreen extends Component {
                   </View>
                 </View>
                 <View style={{ width: 40 }}></View>
-                <View style={{
-                  backgroundColor: 'white', borderRadius: 20,
-                  width: 130, height: 100,
-                  alignItems: 'center', justifyContent: 'center'
-                }}>
+                <View style={this.telaFinalStyles.profissionalACaminho}>
                   <Text style={{ fontSize: 18, textAlign: 'center' }}>Profissional à caminho</Text>
                 </View>
               </View>
-              <View style={{
-                height: 50, width: 300,
-                flex: 1, marginTop: 20,
-                alignItems: 'flex-start', justifyContent: 'space-around',
-                flexDirection: 'row'
-              }}>
+              <View style={this.telaFinalStyles.pagamentoRow}>
                 <View style={{
                   width: 150, height: 50,
                   justifyContent: 'center', alignItems: 'center'
                 }}>
                   <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Valor à ser pago:</Text>
                 </View>
-                <View style={{
-                  backgroundColor: 'white', borderRadius: 20,
-                  width: 150, height: 50,
-                  justifyContent: 'center', alignItems: 'center'
-                }}>
+                <View style={this.telaFinalStyles.pagamentoValor}>
                   <Text style={{ fontWeight: 'bold', fontSize: 18, color: 'green' }}>R$ 000,00</Text>
                 </View>
               </View>
@@ -149,6 +119,37 @@ export default class TelaFinalPedidoScreen extends Component {
     containerBase: {
       flex: 1, alignItems: 'center',
       justifyContent: 'center',
+    },
+    linha: {
+      backgroundColor: 'white', width: 300,
+      height: 120, marginTop: 20,
+      borderRadius: 20, flex: 1,
+      alignItems: 'center', justifyContent: 'space-evenly'
+    },
+    avaliacaoFuncionario: {
+      flexDirection: 'row'
+    },
+    estrela: { width: 25, height: 25 },
+    horaAgendamento: {
+      backgroundColor: 'white', borderRadius: 20,
+      width: 130, height: 100,
+      justifyContent: 'center', alignItems: 'center'
+    },
+    profissionalACaminho: {
+      backgroundColor: 'white', borderRadius: 20,
+      width: 130, height: 100,
+      alignItems: 'center', justifyContent: 'center'
+    },
+    pagamentoRow: {
+      height: 50, width: 300,
+      flex: 1, marginTop: 20,
+      alignItems: 'flex-start', justifyContent: 'space-around',
+      flexDirection: 'row'
+    },
+    pagamentoValor: {
+      backgroundColor: 'white', borderRadius: 20,
+      width: 150, height: 50,
+      justifyContent: 'center', alignItems: 'center'
     }
   });
 }

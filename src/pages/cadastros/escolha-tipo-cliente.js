@@ -21,17 +21,20 @@ export default class EscolhaClienteScreen extends Component {
         style={this.escolhaTipoClienteStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <View style={this.escolhaTipoClienteStyle.escolhaForm}>
-          <View style={{ backgroundColor: colors.branco }}>
+          <View style={{
+            width: 340,
+            backgroundColor: colors.branco, alignItems: 'center'
+          }}>
             <Text style={this.escolhaTipoClienteStyle.fontTitle}>Quero ser:</Text>
             <TouchableOpacity
               style={this.escolhaTipoClienteStyle.escolhaButton}
               onPress={() => this._redirectCadastro('user')}>
-              <Text style={this.escolhaTipoClienteStyle.escolhaButtonText}>Cliente Finddo</Text>
+              <Text style={this.escolhaTipoClienteStyle.escolhaButtonText}>CLIENTE FINDDO</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={this.escolhaTipoClienteStyle.escolhaButton}
               onPress={() => this._redirectCadastro('professional')}>
-              <Text style={this.escolhaTipoClienteStyle.escolhaButtonText}>Profissional Finddo</Text>
+              <Text style={this.escolhaTipoClienteStyle.escolhaButtonText}>PROFISSIONAL FINDDO</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -42,7 +45,7 @@ export default class EscolhaClienteScreen extends Component {
   escolhaTipoClienteStyle = StyleSheet.create({
     backgroundImageContent: { width: '100%', height: '100%' },
     escolhaForm: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    escolhaButton: { marginTop: 40, marginBottom: 10, width: 360, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    escolhaButton: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     escolhaButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
     fontTitle: {
       fontSize: 30,

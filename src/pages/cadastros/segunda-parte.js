@@ -35,6 +35,7 @@ export default class SegundaParte extends Component {
     cep: '20123456',
     estado: 'RJ',
     cidade: 'Rio de Janeiro',
+    bairro: 'São Cristóvão',
     rua: 'Rua Teste',
     numero: '34',
     complemento: 'ap 320',
@@ -70,6 +71,7 @@ export default class SegundaParte extends Component {
     const cepErrors = [];
     const estadoErrors = [];
     const cidadeErrors = [];
+    const bairroErrors = [];
     const ruaErrors = [];
     const numeroErrors = [];
     const complementoErrors = [];
@@ -94,6 +96,12 @@ export default class SegundaParte extends Component {
       cidadeErrors.push('É obrigatório.');
     } else if (this.state.cidade.length > 128) {
       cidadeErrors.push('Tamanho máximo 128.');
+    }
+
+    if (this.state.bairro.length === 0) {
+      bairroErrors.push('É obrigatório.');
+    } else if (this.state.cidade.length > 128) {
+      bairroErrors.push('Tamanho máximo 128.');
     }
 
     if (this.state.rua.length === 0) {
@@ -135,6 +143,9 @@ export default class SegundaParte extends Component {
     if (cidadeErrors.length > 0) {
       errosArr.push({ title: 'Cidade', data: cidadeErrors });
     }
+    if (bairroErrors.length > 0) {
+      errosArr.push({ title: 'Bairro', data: bairroErrors });
+    }
     if (ruaErrors.length > 0) {
       errosArr.push({ title: 'Rua', data: ruaErrors });
     }
@@ -166,16 +177,18 @@ export default class SegundaParte extends Component {
 
   signUp = async (userState) => {
     const user = new UserDTO(userState);
+    const userWithAddress = UserDTO.gerarUsuarioComEnderecoDefault(user);
+
     try {
       this.setState({ isLoading: true });
-      const response = await backendRails.post('/auth', user);
+      const response = await backendRails.post('/users', userWithAddress);
 
       const userData = {};
       userData['access-token'] = response['headers']['access-token'];
       userData['client'] = response['headers']['client'];
       userData['uid'] = response['headers']['uid'];
 
-      const userDto = new UserDTO(response.data.data);
+      const userDto = new UserDTO(response.data);
 
       AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
         async () => {
@@ -287,7 +300,7 @@ export default class SegundaParte extends Component {
                   <TouchableOpacity
                     style={this.parteDoisScreenStyle.modalErrosBotaoContinuar}
                     onPress={() => this.setState({ formInvalid: false })}>
-                    <Text style={this.parteDoisScreenStyle.continuarButtonText}>Voltar</Text>
+                    <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -309,13 +322,21 @@ export default class SegundaParte extends Component {
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ estado: text }) }}
                 placeholder="Estado"
+                editable={false}
                 value={this.state.estado}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cidade: text }) }}
                 placeholder="Cidade"
+                editable={false}
                 value={this.state.cidade}
+              />
+              <TextInput
+                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                onChangeText={text => { this.setState({ bairro: text }) }}
+                placeholder="Bairro"
+                value={this.state.bairro}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -353,7 +374,7 @@ export default class SegundaParte extends Component {
             <TouchableOpacity
               style={this.parteDoisScreenStyle.continuarButton}
               onPress={() => this.validateFields()}>
-              <Text style={this.parteDoisScreenStyle.continuarButtonText}>Criar</Text>
+              <Text style={this.parteDoisScreenStyle.continuarButtonText}>CRIAR</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -365,8 +386,8 @@ export default class SegundaParte extends Component {
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 60 },
     cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 360, height: 420, backgroundColor: colors.branco },
-    continuarButton: { marginTop: 40, marginBottom: 10, width: 360, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 460, backgroundColor: colors.branco },
+    continuarButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     continuarButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
     cadastroFormSizeAndFont:
     {
@@ -389,11 +410,11 @@ export default class SegundaParte extends Component {
       height: '80%', flex: 1,
       alignItems: 'center', justifyContent: 'center'
     },
-    modalDialogContent: { backgroundColor: 'white', width: '100%', borderRadius: 18, opacity: 1 },
+    modalDialogContent: { backgroundColor: colors.branco, width: 340, borderRadius: 18, opacity: 1, alignItems: 'center' },
     modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
     modalErrosSectionList: { maxHeight: '60%', width: '100%' },
     modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: '100%', height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   });
 }

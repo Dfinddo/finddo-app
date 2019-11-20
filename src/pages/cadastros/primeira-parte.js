@@ -177,7 +177,7 @@ export default class PrimeiraParte extends Component {
             <TouchableOpacity
               style={this.parteUmScreenStyle.continuarButton}
               onPress={() => this.validateFields()}>
-              <Text style={this.parteUmScreenStyle.continuarButtonText}>Continuar</Text>
+              <Text style={this.parteUmScreenStyle.continuarButtonText}>CONTINUAR</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -189,8 +189,8 @@ export default class PrimeiraParte extends Component {
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 360, height: 260, backgroundColor: colors.branco },
-    continuarButton: { marginTop: 40, marginBottom: 10, width: 360, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 260, backgroundColor: colors.branco },
+    continuarButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     continuarButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
     cadastroFormSizeAndFont:
     {
