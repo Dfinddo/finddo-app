@@ -16,6 +16,7 @@ import EsqueciSenhaEmail from './pages/login/esqueci-senha-email';
 import EsqueciSenhaNovaSenha from './pages/login/esqueci-senha-nova-senha';
 import AcompanhamentoPedido from './pages/servicos/acompanhamento-pedido';
 import TelaFinalPedidoScreen from './pages/acompanhamento-finddo-pay/tela-final-pedido';
+import DataServico from './pages/servicos/data-servico';
 
 const AppStack = createStackNavigator(
   {
@@ -24,7 +25,8 @@ const AppStack = createStackNavigator(
     FotosPedido: FotosPedido,
     MeusPedidos: MeusPedidos,
     AcompanhamentoPedido: AcompanhamentoPedido,
-    Acompanhamento: TelaFinalPedidoScreen
+    Acompanhamento: TelaFinalPedidoScreen,
+    DefinirData: DataServico
   },
   {
     initialRouteName: 'MeusPedidos',
