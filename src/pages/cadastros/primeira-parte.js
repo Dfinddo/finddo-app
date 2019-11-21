@@ -130,7 +130,7 @@ export default class PrimeiraParte extends Component {
                   <TouchableOpacity
                     style={this.parteUmScreenStyle.modalErrosBotaoContinuar}
                     onPress={() => this.setState({ formInvalid: false })}>
-                    <Text style={this.parteUmScreenStyle.continuarButtonText}>Voltar</Text>
+                    <Text style={this.parteUmScreenStyle.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -213,10 +213,10 @@ export default class PrimeiraParte extends Component {
       height: '80%', flex: 1,
       alignItems: 'center', justifyContent: 'center'
     },
-    modalDialogContent: { backgroundColor: 'white', width: '100%', borderRadius: 18, opacity: 1 },
+    modalDialogContent: { backgroundColor: colors.branco, width: 340, borderRadius: 18, opacity: 1, alignItems: 'center' },
     modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
     modalErrosSectionList: { maxHeight: '60%', width: '100%' },
     modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: '100%', height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo }
+    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo }
   });
 }

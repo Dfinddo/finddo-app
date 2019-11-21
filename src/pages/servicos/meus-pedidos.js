@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Button, Text,
+  Text,
   FlatList, StyleSheet,
   TouchableOpacity, View,
   ImageBackground
@@ -8,6 +8,7 @@ import {
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { colors } from '../../colors';
 
 const enumEstadoPedidoMap = {
   analise: 'Pedido em Análise',
@@ -60,7 +61,7 @@ export default class MeusPedidos extends Component {
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
-        <View style={styles.container}>
+        <View style={this.meusPedidosStyles.container}>
           <View style={{
             width: '100%', marginLeft: 10,
             alignContent: 'flex-start', marginBottom: 10
@@ -74,63 +75,66 @@ export default class MeusPedidos extends Component {
               ({ item }) =>
                 <TouchableOpacity
                   onPress={() => { this.props.navigation.navigate('AcompanhamentoPedido'); }}
-                  style={[styles.item, {
-                    borderRadius: 12, backgroundColor: 'white',
-                    marginBottom: 10, width: 340,
-                    alignItems: 'center', justifyContent: 'flex-start',
-                    flexDirection: 'row'
-                  }]}>
+                  style={[this.meusPedidosStyles.item, this.meusPedidosStyles.pedidoLabel]}>
                   <View style={{ width: 260 }}>
                     <Text style={{ fontSize: 20, marginBottom: 5 }}>{item.category.name}</Text>
                     <View style={{ flexDirection: 'row' }}>
-                      <View style={{
-                        width: 20, height: 20,
-                        borderRadius: 40, borderColor: 'black',
-                        backgroundColor: 'green', borderWidth: 1
-                      }}></View>
-                      <Text style={{ fontSize: 18, color: 'gray' }}>    {enumEstadoPedidoMap[item.order_status]}</Text>
+                      <View style={this.meusPedidosStyles.pedidoIndicador}></View>
+                      <Text style={{ fontSize: 18, color: colors.cinza }}>    {enumEstadoPedidoMap[item.order_status]}</Text>
                     </View>
                   </View>
-                  <View style={{
-                    width: 40, height: 40,
-                    flex: 1, alignItems: 'flex-end',
-                    justifyContent: 'center'
-                  }}>
+                  <View style={this.meusPedidosStyles.pedidoSetaDireita}>
                     <Icon
                       style={{ width: 40 }}
                       name={'keyboard-arrow-right'}
-                      size={20} color='gray' />
+                      size={20} color={colors.cinza} />
                   </View>
                 </TouchableOpacity>}
           />
           <TouchableOpacity
-            style={{
-              backgroundColor: 'green', height: 45,
-              width: 340, borderRadius: 20,
-              color: 'white',
-              alignItems: 'center', justifyContent: 'center'
-            }}
+            style={this.meusPedidosStyles.novoPedidoButton}
             onPress={() => {
               this.props.navigation.navigate('Services');
-            }}
-          >
-            <Text style={{ fontSize: 20, color: 'white' }}>NOVO PEDIDO</Text>
+            }}>
+            <Text style={{ fontSize: 20, color: colors.branco }}>NOVO PEDIDO</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
     );
   }
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 22,
-    alignItems: 'center'
-  },
-  item: {
-    padding: 10,
-    fontSize: 35,
-    height: 70,
-  },
-});
+  meusPedidosStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingTop: 22,
+      alignItems: 'center'
+    },
+    item: {
+      padding: 10,
+      fontSize: 35,
+      height: 70,
+    },
+    pedidoLabel: {
+      borderRadius: 12, backgroundColor: colors.branco,
+      marginBottom: 10, width: 340,
+      alignItems: 'center', justifyContent: 'flex-start',
+      flexDirection: 'row'
+    },
+    pedidoIndicador: {
+      width: 20, height: 20,
+      borderRadius: 40, borderColor: colors.bordaIconeStatus,
+      backgroundColor: colors.verdeEscuroStatus, borderWidth: 1
+    },
+    pedidoSetaDireita: {
+      width: 40, height: 40,
+      flex: 1, alignItems: 'flex-end',
+      justifyContent: 'center'
+    },
+    novoPedidoButton: {
+      backgroundColor: colors.verdeFinddo, height: 45,
+      width: 340, borderRadius: 20,
+      color: colors.branco,
+      alignItems: 'center', justifyContent: 'center'
+    }
+  });
+}
