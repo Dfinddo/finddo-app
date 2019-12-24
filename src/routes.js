@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Image } from 'react-native';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import Servicos from './pages/servicos/servicos';
 import LoginScreen from './pages/login';
@@ -23,15 +24,21 @@ const AppStack = createStackNavigator(
     Services: Servicos,
     NovoPedido: NovoPedido,
     FotosPedido: FotosPedido,
-    MeusPedidos: MeusPedidos,
+    // MeusPedidos: MeusPedidos,
     AcompanhamentoPedido: AcompanhamentoPedido,
     Acompanhamento: TelaFinalPedidoScreen,
     DefinirData: DataServico
   },
   {
-    initialRouteName: 'MeusPedidos',
+    initialRouteName: 'Services',
   }
 );
+
+const MeusPedidosStack = createStackNavigator({
+  MeusPedidos: MeusPedidos, AcompanhamentoPedido: AcompanhamentoPedido,
+  Acompanhamento: TelaFinalPedidoScreen,
+},
+  { initialRouteName: 'MeusPedidos' });
 
 const PerfilStack = createStackNavigator(
   { Profile: PerfilScreen }
@@ -53,8 +60,11 @@ const AuthStack = createStackNavigator(
 
 const TabMenu = createBottomTabNavigator(
   {
-    Histórico: AppStack,
-    Perfil: PerfilStack
+    Serviços: PerfilStack,
+    Pedidos: MeusPedidosStack,
+    Finddo: AppStack,
+    Perfil: PerfilStack,
+    Ajuda: PerfilStack
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -62,16 +72,21 @@ const TabMenu = createBottomTabNavigator(
         const { routeName } = navigation.state;
         let IconComponent = Ionicons;
         let iconName;
-        if (routeName === 'Histórico') {
-          iconName = `ios-hammer`;
-          // Sometimes we want to add badges to some icons. 
-          // You can check the implementation below.
-          // IconComponent = HomeIconWithBadge;
+        if (routeName === 'Pedidos') {
+          iconName = `ios-paper`;
+        } else if (routeName === 'Finddo') {
+          return <Image
+            style={{ width: 25, height: 25 }}
+            source={require('../src/img/icon_principal.png')}
+          />
         } else if (routeName === 'Perfil') {
           iconName = `ios-person`;
+        } else if (routeName === 'Serviços') {
+          iconName = `ios-hammer`;
+        } else if (routeName === 'Ajuda') {
+          iconName = `ios-help-circle`;
         }
 
-        // You can return any component that you like here!
         return <IconComponent name={iconName} size={25} color={tintColor} />;
       },
     }),
@@ -79,6 +94,7 @@ const TabMenu = createBottomTabNavigator(
       activeTintColor: colors.verdeFinddo,
       inactiveTintColor: colors.cinzaIconeInativo,
     },
+    initialRouteName: 'Finddo'
   }
 );
 

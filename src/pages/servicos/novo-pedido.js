@@ -97,6 +97,13 @@ export default class NovoPedido extends Component {
       this.props
         .navigation.navigate('DefinirData',
           { necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido });
+    } else if (this.state.urgencia === 'semana') {
+      this.props
+        .navigation.navigate('FotosPedido',
+          {
+            necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
+            dataPedido: new Date()
+          });
     } else {
       this.props
         .navigation.navigate('FotosPedido',

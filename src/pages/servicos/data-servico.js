@@ -17,9 +17,19 @@ export default class DataServico extends Component {
     super(props);
     this.state = {
       selectedStartDate: '',
-      hora: null
+      hora: null,
+      necessidade: null,
+      categoriaPedido: null
     };
     this.onDateChange = this.onDateChange.bind(this);
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    const necessidade = navigation.getParam('necessidade', 'no necessidade');
+    const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
+
+    this.setState({ necessidade, categoriaPedido });
   }
 
   onDateChange(date) {
@@ -100,7 +110,13 @@ export default class DataServico extends Component {
             <TouchableOpacity
               style={this.dataStyles.continuarButton}
               onPress={() => {
-
+                const dateSplit = this.state.selectedStartDate.split('/');
+                this.props
+                  .navigation.navigate('FotosPedido',
+                    {
+                      necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
+                      dataPedido: new Date(`${dateSplit[1]}/${dateSplit[0]}/${dateSplit[2]}`)
+                    });
               }}>
               <Text style={this.dataStyles.continuarButtonText}>CONTINUAR</Text>
             </TouchableOpacity>

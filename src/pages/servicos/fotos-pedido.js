@@ -18,8 +18,10 @@ export default class FotosPedido extends Component {
 
   state = {
     necessidade: '',
+    imageServicoUrl: require('../../img/jacek-dylag-unsplash.png'),
     categoriaPedido: null,
-    isLoading: false
+    isLoading: false,
+    dataPedido: null
   };
 
   componentDidMount() {
@@ -30,8 +32,14 @@ export default class FotosPedido extends Component {
     const { navigation } = this.props;
     const necessidade = navigation.getParam('necessidade', 'no necessidade');
     const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
+    const dataPedido = navigation.getParam('dataPedido', 'sem_data');
+
+    if (dataPedido !== 'sem_data') {
+      this.setState({ dataPedido });
+    }
 
     this.setState({ necessidade, categoriaPedido });
+    this.setState({ imageServicoUrl: categoriaPedido.image_url });
   };
 
   salvarPedido = async (orderData) => {
@@ -41,6 +49,11 @@ export default class FotosPedido extends Component {
     order.description = orderData.necessidade;
     order.category_id = +orderData.categoriaPedido.id;
     order.user_id = TokenService.getInstance().getUser().id;
+    if (this.state.dataPedido) {
+      console.log(this.state.dataPedido.toDateString());
+
+      order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.dataPedido.getHours()}:${this.state.dataPedido.getMinutes()}:${this.state.dataPedido.getSeconds()}`;
+    }
 
     backendRails.post('/orders', { order }, { headers: TokenService.getInstance().getHeaders() })
       .then((response) => {
@@ -104,8 +117,8 @@ export default class FotosPedido extends Component {
               </View>
             </Modal>
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
-              <Image source={require('../../img/jacek-dylag-unsplash.png')}
-                style={{ width: '100%', height: 200, borderRadius: 16 }} />
+              <Image source={this.state.imageServicoUrl}
+                style={{ width: '100%' }} />
               <View style={this.fotosPedidoStyles.formPedidoContainer}>
                 <View style={this.fotosPedidoStyles.maisFotosContainer}>
                   <Text style={{ fontSize: 18, textAlign: 'center', marginTop: 10 }}>
@@ -142,7 +155,7 @@ export default class FotosPedido extends Component {
           <TouchableOpacity
             style={this.fotosPedidoStyles.botaoContinuar}
             onPress={() => this.salvarPedido(this.state)}>
-            <Text style={this.botaoContinuarTexto}>CONTINUAR</Text>
+            <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -157,7 +170,7 @@ export default class FotosPedido extends Component {
     imagemCategoriaContainer: {
       height: 508,
       flex: 1, alignItems: 'center',
-      justifyContent: 'flex-start', paddingHorizontal: 2
+      justifyContent: 'flex-start'
     },
     formPedidoContainer: {
       height: 300, paddingHorizontal: 20,
