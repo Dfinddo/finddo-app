@@ -102,7 +102,7 @@ export default class TelaFinalPedidoScreen extends Component {
                 }} onPress={() => {
                   const resetAction = StackActions.reset({
                     index: 0,
-                    actions: [NavigationActions.navigate({ routeName: 'MeusPedidos' })],
+                    actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
                   });
                   this.props.navigation.dispatch(resetAction);
                 }}>

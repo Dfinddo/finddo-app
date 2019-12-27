@@ -59,9 +59,11 @@ export default class FotosPedido extends Component {
       .then((response) => {
         const resetAction = StackActions.reset({
           index: 0,
-          actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' }, { id: response.data.id })],
+          actions: [NavigationActions.navigate({ routeName: 'Services' })],
+          key: 'Finddo'
         });
         this.props.navigation.dispatch(resetAction);
+        this.props.navigation.navigate('AcompanhamentoPedido', { id: response.data.id });
       })
       .catch((error) => {
         if (error.response) {

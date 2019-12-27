@@ -9,6 +9,7 @@ import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../colors';
+import { NavigationEvents } from 'react-navigation';
 
 const enumEstadoPedidoMap = {
   analise: 'Pedido em Análise',
@@ -29,17 +30,24 @@ export default class MeusPedidos extends Component {
     page: 1,
   };
 
-  componentDidMount() {
-    this.obterPedidos();
-  };
-
   obterPedidos = async (page = 1) => {
+    let user = TokenService.getInstance().getUser();
+    const typeUser = 'user';
+
     try {
       const tokenService = TokenService.getInstance();
-      const response = await
-        backendRails
-          .get('/orders/user/' + tokenService.getUser().id + '/active',
-            { headers: tokenService.getHeaders() });
+      let response = {};
+      if (user.user_type === typeUser) {
+        response = await
+          backendRails
+            .get('/orders/user/' + tokenService.getUser().id + '/active',
+              { headers: tokenService.getHeaders() });
+      } else {
+        response = await
+          backendRails
+            .get('/orders/available',
+              { headers: tokenService.getHeaders() });
+      }
 
       const orders = response.data;
 
@@ -48,33 +56,54 @@ export default class MeusPedidos extends Component {
       });
 
       this.setState({
-        pedidos: [...this.state.pedidos, ...orders],
+        pedidos: [...orders],
       });
     } catch (error) {
       console.log(error);
     }
   };
 
+  associarPedido = async (pedido) => {
+    const tokenService = TokenService.getInstance();
+    if (tokenService.getUser().user_type === 'user') {
+      this.props.navigation.navigate('AcompanhamentoPedido');
+    } else {
+      try {
+        pedido.professional_order = tokenService.getUser().id;
+        let response = await
+          backendRails
+            .put('/orders/associate/' + tokenService.getUser().id,
+              { order: pedido },
+              { headers: tokenService.getHeaders() });
+
+        this.props.navigation.navigate('AcompanhamentoPedido', { data: response.data });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   render() {
+    let user = TokenService.getInstance().getUser();
     return (
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
         <View style={this.meusPedidosStyles.container}>
-          <View style={{
-            width: '100%', marginLeft: 10,
-            alignContent: 'flex-start', marginBottom: 10
-          }}>
-            <Text style={{ fontSize: 20 }}>Pedidos em andamento:</Text>
-          </View>
+          <NavigationEvents
+            onWillFocus={_ => this.obterPedidos()}
+          //onDidFocus={payload => console.log('did focus', payload)}
+          //onWillBlur={payload => console.log('will blur', payload)}
+          //onDidBlur={payload => console.log('did blur', payload)}
+          />
+          <TitutloNovos user={user}></TitutloNovos>
           <FlatList
             data={this.state.pedidos}
             keyExtractor={item => item.id}
             renderItem={
               ({ item }) =>
                 <TouchableOpacity
-                  onPress={() => { this.props.navigation.navigate('AcompanhamentoPedido'); }}
+                  onPress={() => this.associarPedido(item)}
                   style={[this.meusPedidosStyles.item, this.meusPedidosStyles.pedidoLabel]}>
                   <View style={{ width: 260 }}>
                     <Text style={{ fontSize: 20, marginBottom: 5 }}>{item.category.name}</Text>
@@ -91,13 +120,11 @@ export default class MeusPedidos extends Component {
                   </View>
                 </TouchableOpacity>}
           />
-          <TouchableOpacity
-            style={this.meusPedidosStyles.novoPedidoButton}
+          <NovoPedido botaoStyle={this.meusPedidosStyles.novoPedidoButton}
             onPress={() => {
               this.props.navigation.navigate('Services');
-            }}>
-            <Text style={{ fontSize: 20, color: colors.branco }}>NOVO PEDIDO</Text>
-          </TouchableOpacity>
+            }} user={user}
+          ></NovoPedido>
         </View>
       </ImageBackground>
     );
@@ -137,4 +164,33 @@ export default class MeusPedidos extends Component {
       alignItems: 'center', justifyContent: 'center'
     }
   });
+}
+
+function NovoPedido(props) {
+  user = props.user;
+  if (user.user_type === 'user') {
+    return (
+      <TouchableOpacity
+        style={props.botaoStyle}
+        onPress={props.onPress}>
+        <Text style={{ fontSize: 20, color: colors.branco }}>NOVO PEDIDO</Text>
+      </TouchableOpacity>
+    );
+  } else {
+    return (null);
+  }
+}
+
+function TitutloNovos(props) {
+  user = props.user;
+  titulo = user.user_type === 'user' ? 'Pedidos em andamento' : 'Pedidos a serem atendidos';
+
+  return (
+    <View style={{
+      width: '100%', marginLeft: 10,
+      alignContent: 'flex-start', marginBottom: 10
+    }}>
+      <Text style={{ fontSize: 20 }}>{titulo}</Text>
+    </View>
+  );
 }

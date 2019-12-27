@@ -25,8 +25,8 @@ const AppStack = createStackNavigator(
     NovoPedido: NovoPedido,
     FotosPedido: FotosPedido,
     // MeusPedidos: MeusPedidos,
-    AcompanhamentoPedido: AcompanhamentoPedido,
-    Acompanhamento: TelaFinalPedidoScreen,
+    // AcompanhamentoPedido: AcompanhamentoPedido,
+    // Acompanhamento: TelaFinalPedidoScreen,
     DefinirData: DataServico
   },
   {
@@ -34,11 +34,22 @@ const AppStack = createStackNavigator(
   }
 );
 
-const MeusPedidosStack = createStackNavigator({
-  MeusPedidos: MeusPedidos, AcompanhamentoPedido: AcompanhamentoPedido,
-  Acompanhamento: TelaFinalPedidoScreen,
-},
-  { initialRouteName: 'MeusPedidos' });
+const ServicosStack = createStackNavigator(
+  {
+    AcompanhamentoPedido: AcompanhamentoPedido,
+    Acompanhamento: TelaFinalPedidoScreen,
+  },
+  { initialRouteName: 'AcompanhamentoPedido' }
+);
+
+const MeusPedidosStack = createStackNavigator(
+  {
+    MeusPedidos: MeusPedidos,
+    // AcompanhamentoPedido: AcompanhamentoPedido,
+    // Acompanhamento: TelaFinalPedidoScreen,
+  },
+  { initialRouteName: 'MeusPedidos' }
+);
 
 const PerfilStack = createStackNavigator(
   { Profile: PerfilScreen }
@@ -60,8 +71,8 @@ const AuthStack = createStackNavigator(
 
 const TabMenu = createBottomTabNavigator(
   {
-    Serviços: PerfilStack,
-    Pedidos: MeusPedidosStack,
+    Serviços: ServicosStack,
+    Histórico: MeusPedidosStack,
     Finddo: AppStack,
     Perfil: PerfilStack,
     Ajuda: PerfilStack
@@ -72,7 +83,7 @@ const TabMenu = createBottomTabNavigator(
         const { routeName } = navigation.state;
         let IconComponent = Ionicons;
         let iconName;
-        if (routeName === 'Pedidos') {
+        if (routeName === 'Histórico') {
           iconName = `ios-paper`;
         } else if (routeName === 'Finddo') {
           return <Image
