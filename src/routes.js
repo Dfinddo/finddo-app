@@ -18,6 +18,7 @@ import EsqueciSenhaNovaSenha from './pages/login/esqueci-senha-nova-senha';
 import AcompanhamentoPedido from './pages/servicos/acompanhamento-pedido';
 import TelaFinalPedidoScreen from './pages/acompanhamento-finddo-pay/tela-final-pedido';
 import DataServico from './pages/servicos/data-servico';
+import './config/StatusBarConfig';
 
 const AppStack = createStackNavigator(
   {

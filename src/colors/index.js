@@ -5,5 +5,6 @@ export const colors = {
   cinzaIconeInativo: '#C4C4C4',
   verdeEscuroStatus: '#316B4B',
   cinza: 'gray',
-  bordaIconeStatus: '#595959'
+  bordaIconeStatus: '#595959',
+  amareloIconeEditar: '#F2C94C'
 };
