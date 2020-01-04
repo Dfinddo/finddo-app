@@ -4,7 +4,8 @@ import {
   Text, TextInput,
   StyleSheet, Modal,
   TouchableOpacity, ScrollView,
-  SectionList, Alert, ActivityIndicator
+  SectionList, Alert, ActivityIndicator,
+  Keyboard
 } from 'react-native';
 import { colors } from '../../colors';
 import UserDTO from '../../models/UserDTO';
@@ -12,6 +13,7 @@ import backendRails from '../../services/backend-rails-api';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
+import { termos } from './termos';
 
 function Item({ title }) {
   return (
@@ -44,12 +46,35 @@ export default class SegundaParte extends Component {
     user_type: '',
     formInvalid: false,
     formErrors: [],
-    isLoading: false
+    isLoading: false,
+    isShowingKeyboard: false,
+    showTermos: false,
   };
 
   componentDidMount() {
     this.obterParametrosParteUm();
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._keyboardDidHide,
+    );
   };
+
+  _keyboardDidShow = () => {
+    this.setState({ isShowingKeyboard: true });
+  }
+
+  _keyboardDidHide = () => {
+    this.setState({ isShowingKeyboard: false });
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
 
   obterParametrosParteUm = () => {
     const { navigation } = this.props;
@@ -267,6 +292,7 @@ export default class SegundaParte extends Component {
       <ImageBackground
         style={this.parteDoisScreenStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')} >
+        <View style={{ height: 60 }}></View>
         <ScrollView>
           <Modal
             animationType="slide"
@@ -306,9 +332,28 @@ export default class SegundaParte extends Component {
               </View>
             </View>
           </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.showTermos}
+          >
+            <View style={this.parteDoisScreenStyle.modalBase}>
+              <View style={this.parteDoisScreenStyle.modalDialog}>
+                <View style={[this.parteDoisScreenStyle.modalDialogContent, { height: 500 }]}>
+                  <Text style={this.parteDoisScreenStyle.modalErrosTitulo}>Termos:</Text>
+                  <ScrollView>
+                    <Text style={{ fontSize: 18 }}>{termos}</Text>
+                  </ScrollView>
+                  <TouchableOpacity
+                    style={[this.parteDoisScreenStyle.modalErrosBotaoContinuar, { marginTop: 8 }]}
+                    onPress={() => this.setState({ showTermos: false })}>
+                    <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
           <View style={this.parteDoisScreenStyle.cadastroForm}>
-            <View
-              style={this.parteDoisScreenStyle.finddoLogoStyle}></View>
             <View style={this.parteDoisScreenStyle.cadastroMainForm}>
               <Text style={this.parteDoisScreenStyle.fontTitle}>Crie sua conta</Text>
 
@@ -316,6 +361,7 @@ export default class SegundaParte extends Component {
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cep: text }) }}
                 placeholder="CEP"
+                keyboardType={'number-pad'}
                 value={this.state.cep}
               />
               <TextInput
@@ -370,25 +416,33 @@ export default class SegundaParte extends Component {
                 value={this.state.password_confirmation}
                 secureTextEntry={true}
               />
+              <View style={{ height: 8 }}></View>
+              <Text style={{ fontSize: 18 }}>Ao criar sua conta, você está concordando</Text>
+              <Text style={{ fontSize: 18 }}>com os nossos<Text onPress={() => this.setState({ showTermos: true })} style={{ color: colors.verdeFinddo }}> Termos e Condições de Uso</Text></Text>
             </View>
-            <TouchableOpacity
-              style={this.parteDoisScreenStyle.continuarButton}
-              onPress={() => this.validateFields()}>
-              <Text style={this.parteDoisScreenStyle.continuarButtonText}>CRIAR</Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
+        <BotaoCriar isShowingKeyboard={this.state.isShowingKeyboard} onPress={() => this.validateFields()}></BotaoCriar>
       </ImageBackground>
     );
   }
 
   parteDoisScreenStyle = StyleSheet.create({
     backgroundImageContent: { width: '100%', height: '100%' },
-    finddoLogoStyle: { marginTop: 60, marginBottom: 60 },
-    cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 460, backgroundColor: colors.branco },
-    continuarButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    continuarButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    cadastroForm: {
+      flex: 1, alignItems: 'center',
+      justifyContent: 'center', height: 550
+    },
+    cadastroMainForm: {
+      alignItems: 'center', justifyContent: 'center',
+      width: 340, height: 510,
+      backgroundColor: colors.branco
+    },
+    continuarButtonText: {
+      textAlignVertical: 'center', height: 45,
+      fontSize: 18, color: colors.branco,
+      textAlign: 'center'
+    },
     cadastroFormSizeAndFont:
     {
       fontSize: 18,
@@ -410,11 +464,42 @@ export default class SegundaParte extends Component {
       height: '80%', flex: 1,
       alignItems: 'center', justifyContent: 'center'
     },
-    modalDialogContent: { backgroundColor: colors.branco, width: 340, borderRadius: 18, opacity: 1, alignItems: 'center' },
+    modalDialogContent: {
+      backgroundColor: colors.branco, width: 340,
+      borderRadius: 18, opacity: 1,
+      alignItems: 'center'
+    },
     modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
     modalErrosSectionList: { maxHeight: '60%', width: '100%' },
     modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    modalErrosBotaoContinuar: {
+      marginTop: 40, marginBottom: 10,
+      width: 320, height: 45,
+      borderRadius: 20, backgroundColor: colors.verdeFinddo
+    },
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   });
+}
+
+function BotaoCriar(props) {
+  if (props.isShowingKeyboard === false) {
+    return (
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <TouchableOpacity
+          style={{
+            marginBottom: 10, width: 340,
+            height: 45, borderRadius: 20,
+            backgroundColor: colors.verdeFinddo
+          }}
+          onPress={props.onPress}>
+          <Text style={{
+            textAlignVertical: 'center', height: 45,
+            fontSize: 18, color: colors.branco,
+            textAlign: 'center'
+          }}>CRIAR</Text>
+        </TouchableOpacity>
+      </View>);
+  } else {
+    return (null);
+  }
 }
