@@ -19,6 +19,7 @@ import AcompanhamentoPedido from './pages/servicos/acompanhamento-pedido';
 import TelaFinalPedidoScreen from './pages/acompanhamento-finddo-pay/tela-final-pedido';
 import DataServico from './pages/servicos/data-servico';
 import './config/StatusBarConfig';
+import AjudaScreen from './pages/ajuda/ajuda';
 
 const AppStack = createStackNavigator(
   {
@@ -56,6 +57,10 @@ const PerfilStack = createStackNavigator(
   { Profile: PerfilScreen }
 );
 
+const AjudaStack = createStackNavigator(
+  { Ajuda: AjudaScreen }
+);
+
 const AuthStack = createStackNavigator(
   {
     Login: LoginScreen,
@@ -76,7 +81,7 @@ const TabMenu = createBottomTabNavigator(
     Histórico: MeusPedidosStack,
     Finddo: AppStack,
     Perfil: PerfilStack,
-    Ajuda: PerfilStack
+    Ajuda: AjudaStack
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
