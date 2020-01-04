@@ -3,7 +3,8 @@ import {
   TouchableOpacity, View,
   ImageBackground, ScrollView,
   TextInput, Text,
-  StyleSheet, Image
+  StyleSheet, Image,
+  Alert
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
@@ -22,18 +23,31 @@ export default class PerfilScreen extends Component {
     super(props);
   }
 
+  limparDadosLogin = () => {
+    AsyncStorage.removeItem('userToken');
+    AsyncStorage.removeItem('user');
+    TokenService.getInstance().setToken(null);
+    TokenService.getInstance().setUser(null);
+    this.props.navigation.navigate('Auth');
+  }
+
+  logoutConfirm = () => {
+    Alert.alert(
+      'Finddo',
+      'Deseja sair?',
+      [
+        { text: 'Não', onPress: () => { } },
+        { text: 'Sim', onPress: () => { this.logout() } },
+      ],
+      { cancelable: false },
+    );
+  }
+
   logout = () => {
     backendRails
       .delete('/auth/sign_out', { headers: TokenService.getInstance().getHeaders() })
-      .then(() => {
-        AsyncStorage.removeItem('userToken');
-        AsyncStorage.removeItem('user');
-        TokenService.getInstance().setToken(null);
-        TokenService.getInstance().setUser(null);
-        this.props.navigation.navigate('Auth');
-      })
-      .catch(() => {
-        throw new Error('Falha ao realizar logout');
+      .finally(() => {
+        this.limparDadosLogin();
       });
   }
 
@@ -129,7 +143,7 @@ export default class PerfilScreen extends Component {
           <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>
             <TouchableOpacity
               style={this.perfilScreenStyle.sairButton}
-              onPress={() => { this.logout() }/*this.login(this.state.usuario, this.state.senha)*/}>
+              onPress={() => { this.logoutConfirm() }/*this.login(this.state.usuario, this.state.senha)*/}>
               <Text style={this.perfilScreenStyle.sairButtonText}>SAIR</Text>
             </TouchableOpacity>
           </View>
