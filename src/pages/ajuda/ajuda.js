@@ -26,7 +26,7 @@ export default class AjudaScreen extends Component {
   };
 
   openChat = () => {
-    let url = 'whatsapp://send?text=' + '' + '&phone=55' + '21979944853';
+    let url = 'whatsapp://send?text=' + '' + '&phone=55' + '21980503130';
     Linking.openURL(url).catch((_) => {
       Alert.alert(
         'Erro',

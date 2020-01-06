@@ -69,10 +69,9 @@ export default class MeusPedidos extends Component {
       this.props.navigation.navigate('AcompanhamentoPedido');
     } else {
       try {
-        pedido.professional_order = tokenService.getUser().id;
         let response = await
           backendRails
-            .put('/orders/associate/' + tokenService.getUser().id,
+            .put('/orders/associate/' + pedido.id + '/' + tokenService.getUser().id,
               { order: pedido },
               { headers: tokenService.getHeaders() });
 
