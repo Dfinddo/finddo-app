@@ -30,7 +30,16 @@ export default class NovoPedido extends Component {
   });
 
   state = {
-    necessidade: '012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789',
+    necessidade: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque condimentum maximus scelerisque. Nullam odio ante, tincidunt non nulla ut, suscipit posuere odio. Integer rutrum lacus sit amet vehicula faucibus. Praesent sit amet urna fringilla, rutrum justo id, pharetra turpis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus ut varius velit.
+
+Sed gravida fermentum consectetur. Proin iaculis dapibus ultricies. Ut quis dolor eget sem commodo molestie sed eget purus. Quisque mattis tellus eget gravida fermentum. Duis suscipit nec ligula at aliquet. Vestibulum id lectus feugiat, rutrum lorem sit amet, eleifend ante. Pellentesque a tristique velit. Proin dignissim suscipit nulla ut finibus. Etiam ut arcu ullamcorper, feugiat metus ac, facilisis sapien. Aenean nec fringilla leo. Nullam varius dui sit amet urna laoreet molestie. Duis quis ante vitae ex varius viverra et quis ligula. Duis leo quam, feugiat in interdum at, aliquam a elit. Suspendisse mattis laoreet mauris in faucibus. Vestibulum velit erat, ullamcorper nec accumsan in, iaculis eget erat. Praesent orci mi, vestibulum eu purus vitae, accumsan aliquam magna.
+
+In hac habitasse platea dictumst. In hac habitasse platea dictumst. Mauris rhoncus aliquet porttitor. Suspendisse nulla nulla, mollis sed eros gravida, vestibulum tempus tellus. Cras vulputate justo mauris, consequat porttitor est pulvinar non. Nulla dapibus neque quis lectus accumsan pellentesque. Nunc lobortis mi nisi, ut commodo erat malesuada vel. Aliquam id nisi quis risus sagittis blandit. Maecenas lectus diam, consequat a turpis eu, efficitur sagittis enim.
+
+Curabitur sagittis auctor nibh et mollis. Donec ac posuere ipsum. Quisque lacinia in magna non aliquet. In quam turpis, hendrerit nec urna quis, lacinia rhoncus dolor. Duis nec orci ante. Nulla ex orci, feugiat tristique aliquam in, pellentesque id magna. Curabitur fermentum vestibulum eleifend. Quisque sodales fringilla ante eget iaculis. Pellentesque eget mauris sollicitudin, sollicitudin mi in, varius odio. Maecenas vulputate congue est, ac pretium odio vulputate quis. Morbi tempor felis dolor, et mollis nisi eleifend nec.
+
+Suspendisse dignissim a turpis vitae laoreet. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed consectetur turpis non egestas semper. Aenean sed pretium sem, eget tincidunt nunc. Ut fermentum sed nibh sed tempor. Nam aliquam justo nec convallis porttitor. Suspendisse felis neque, interdum non purus non, gravida finibus nunc. Morbi eu mi faucibus, ultrices dui nec, consectetur orci. Cras enim ligula, commodo id varius eu, varius et magna. Duis sit amet nulla eget sem placerat vulputate vitae in arcu. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi in libero id eros blandit aliquet. In sed nisl in velit condimentum vestibulum. Praesent vel sollicitudin turpis. Etiam vestibulum consequat turpis vel sagittis. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    `,
     categoriaPedido: null,
     urgencia: urgenciaValues[0].value,
     categoriasImages: [
@@ -96,18 +105,24 @@ export default class NovoPedido extends Component {
     } else if (this.state.urgencia === 'definir-data') {
       this.props
         .navigation.navigate('DefinirData',
-          { necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido });
+          {
+            necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
+            urgencia: this.state.urgencia
+          });
     } else if (this.state.urgencia === 'semana') {
       this.props
         .navigation.navigate('FotosPedido',
           {
             necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
-            dataPedido: new Date()
+            dataPedido: new Date(), urgencia: this.state.urgencia
           });
     } else {
       this.props
         .navigation.navigate('FotosPedido',
-          { necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido });
+          {
+            necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
+            urgencia: this.state.urgencia
+          });
     }
   }
 
@@ -200,7 +215,7 @@ export default class NovoPedido extends Component {
     },
     continuarButton:
     {
-      marginTop: 40,
+      marginTop: 20,
       width: 340, height: 45,
       borderRadius: 20, backgroundColor: colors.verdeFinddo
     },

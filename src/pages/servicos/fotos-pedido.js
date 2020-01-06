@@ -10,6 +10,7 @@ import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { colors } from '../../colors';
+import VisualizarPedido from '../../components/modal-visualizar-pedido';
 
 export default class FotosPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -21,7 +22,9 @@ export default class FotosPedido extends Component {
     imageServicoUrl: require('../../img/jacek-dylag-unsplash.png'),
     categoriaPedido: null,
     isLoading: false,
-    dataPedido: null
+    dataPedido: null,
+    urgencia: '',
+    isConfirming: false
   };
 
   componentDidMount() {
@@ -33,13 +36,27 @@ export default class FotosPedido extends Component {
     const necessidade = navigation.getParam('necessidade', 'no necessidade');
     const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
     const dataPedido = navigation.getParam('dataPedido', 'sem_data');
+    const urgencia = navigation.getParam('urgencia', 'sem_urgencia');
 
     if (dataPedido !== 'sem_data') {
       this.setState({ dataPedido });
     }
 
+    if (urgencia !== 'sem_urgencia') {
+      this.setState({ urgencia });
+    }
+
     this.setState({ necessidade, categoriaPedido });
     this.setState({ imageServicoUrl: categoriaPedido.image_url });
+  };
+
+  confirmarPedido = () => {
+    this.setState({ isConfirming: true });
+  };
+
+  salvarAposPedidoConfirmado = () => {
+    this.setState({ isConfirming: false });
+    this.salvarPedido(this.state);
   };
 
   salvarPedido = async (orderData) => {
@@ -50,13 +67,12 @@ export default class FotosPedido extends Component {
     order.category_id = +orderData.categoriaPedido.id;
     order.user_id = TokenService.getInstance().getUser().id;
     if (this.state.dataPedido) {
-      console.log(this.state.dataPedido.toDateString());
-
       order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.dataPedido.getHours()}:${this.state.dataPedido.getMinutes()}:${this.state.dataPedido.getSeconds()}`;
     }
 
     backendRails.post('/orders', { order }, { headers: TokenService.getInstance().getHeaders() })
       .then((response) => {
+        this.setState({ isLoading: false });
         const resetAction = StackActions.reset({
           index: 0,
           actions: [NavigationActions.navigate({ routeName: 'Services' })],
@@ -105,8 +121,8 @@ export default class FotosPedido extends Component {
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
-        <View style={{ height: '90%' }}>
-          <ScrollView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <ScrollView>
             <Modal
               animationType="slide"
               transparent={true}
@@ -117,6 +133,12 @@ export default class FotosPedido extends Component {
                   <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
                 </View>
               </View>
+            </Modal>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={this.state.isConfirming}>
+              <VisualizarPedido pedido={this.state} onConfirm={() => this.salvarAposPedidoConfirmado()}></VisualizarPedido>
             </Modal>
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
               <Image source={this.state.imageServicoUrl}
@@ -156,7 +178,7 @@ export default class FotosPedido extends Component {
         <View style={this.fotosPedidoStyles.botaoContainer}>
           <TouchableOpacity
             style={this.fotosPedidoStyles.botaoContinuar}
-            onPress={() => this.salvarPedido(this.state)}>
+            onPress={() => this.confirmarPedido()}>
             <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>
@@ -166,17 +188,17 @@ export default class FotosPedido extends Component {
 
   fotosPedidoStyles = StyleSheet.create({
     loaderContainer: {
-      flex: 1, alignItems: 'center',
+      alignItems: 'center',
       justifyContent: 'center'
     },
     imagemCategoriaContainer: {
-      height: 508,
-      flex: 1, alignItems: 'center',
+      height: 540,
+      alignItems: 'center',
       justifyContent: 'flex-start'
     },
     formPedidoContainer: {
       height: 300, paddingHorizontal: 20,
-      flex: 1, alignItems: 'center',
+      alignItems: 'center',
       width: '100%', justifyContent: 'flex-start'
     },
     maisFotosContainer: {
@@ -189,7 +211,7 @@ export default class FotosPedido extends Component {
       alignItems: 'center', marginTop: 30
     },
     botaoContainer: {
-      flex: 1, alignItems: 'center',
+      alignItems: 'center',
       justifyContent: 'flex-end'
     },
     botaoContinuar: {

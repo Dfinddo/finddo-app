@@ -19,7 +19,8 @@ export default class DataServico extends Component {
       selectedStartDate: '',
       hora: null,
       necessidade: null,
-      categoriaPedido: null
+      categoriaPedido: null,
+      urgencia: ''
     };
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -28,15 +29,14 @@ export default class DataServico extends Component {
     const { navigation } = this.props;
     const necessidade = navigation.getParam('necessidade', 'no necessidade');
     const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
+    const urgencia = navigation.getParam('urgencia', 'no urgencia');
 
-    this.setState({ necessidade, categoriaPedido });
+    this.setState({ necessidade, categoriaPedido, urgencia });
   }
 
   onDateChange(date) {
-    console.log(date, date._i);
-
     this.setState({
-      selectedStartDate: `${date._i.day}/${date._i.month}/${date._i.year}`,
+      selectedStartDate: `${date._i.day}/${+date._i.month + 1}/${date._i.year}`,
     });
   }
   render() {
@@ -115,7 +115,8 @@ export default class DataServico extends Component {
                   .navigation.navigate('FotosPedido',
                     {
                       necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
-                      dataPedido: new Date(`${dateSplit[1]}/${dateSplit[0]}/${dateSplit[2]}`)
+                      dataPedido: new Date(`${dateSplit[1]}/${dateSplit[0]}/${dateSplit[2]}`),
+                      urgencia: this.state.urgencia
                     });
               }}>
               <Text style={this.dataStyles.continuarButtonText}>CONTINUAR</Text>
