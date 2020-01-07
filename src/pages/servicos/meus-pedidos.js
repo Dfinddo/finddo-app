@@ -64,7 +64,8 @@ export default class MeusPedidos extends Component {
   };
 
   associarPedido = async (pedido) => {
-    const tokenService = TokenService.getInstance();
+    // TODO: remover implementação
+    /* const tokenService = TokenService.getInstance();
     if (tokenService.getUser().user_type === 'user') {
       this.props.navigation.navigate('AcompanhamentoPedido');
     } else {
@@ -79,7 +80,7 @@ export default class MeusPedidos extends Component {
       } catch (error) {
         console.log(error);
       }
-    }
+    } */
   };
 
   render() {

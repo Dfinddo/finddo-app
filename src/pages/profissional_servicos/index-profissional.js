@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import {
-  Text,
+  Text, Modal,
   FlatList, StyleSheet,
   TouchableOpacity, View,
-  ImageBackground
+  ImageBackground, Alert, ActivityIndicator
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../colors';
 import { NavigationEvents } from 'react-navigation';
+import VisualizarPedidoProfissional from '../../components/modal-visualizar-pedido-profissional';
 
 const enumEstadoPedidoMap = {
   analise: 'Pedido em Análise',
@@ -28,6 +29,9 @@ export default class IndexProfissional extends Component {
   state = {
     pedidos: [],
     page: 1,
+    isShowingPedido: false,
+    pedidoCorrente: null,
+    isLoadingRequest: false,
   };
 
   obterPedidos = async (page = 1) => {
@@ -54,22 +58,39 @@ export default class IndexProfissional extends Component {
     }
   };
 
-  associarPedido = async (pedido) => {
-    const tokenService = TokenService.getInstance();
-    if (tokenService.getUser().user_type === 'user') {
-      this.props.navigation.navigate('AcompanhamentoPedido');
-    } else {
-      try {
-        let response = await
-          backendRails
-            .put('/orders/associate/' + pedido.id + '/' + tokenService.getUser().id,
-              { order: pedido },
-              { headers: tokenService.getHeaders() });
+  exibirPedido = (item) => {
+    this.setState({ isShowingPedido: true, pedidoCorrente: item });
+  }
 
-        this.props.navigation.navigate('AcompanhamentoPedido', { data: response.data });
-      } catch (error) {
-        console.log(error);
-      }
+  confirmarPedido = (pedido) => {
+    Alert.alert(
+      'Atendimento',
+      'Deseja atender ao pedido?',
+      [
+        { text: 'Não', onPress: () => { } },
+        { text: 'Sim', onPress: () => { this.associarPedido(pedido) } },
+      ],
+      { cancelable: false },
+    );
+  }
+
+  associarPedido = async (pedido) => {
+    this.setState({ isShowingPedido: false, isLoadingRequest: true });
+
+    const tokenService = TokenService.getInstance();
+
+    try {
+      let response = await
+        backendRails
+          .put('/orders/associate/' + pedido.id + '/' + tokenService.getUser().id,
+            { order: pedido },
+            { headers: tokenService.getHeaders() });
+
+      this.setState({ isLoadingRequest: false });
+      this.props.navigation.navigate('AcompanhamentoPedido', { data: response.data });
+    } catch (error) {
+      console.log(error);
+      this.setState({ isLoadingRequest: false });
     }
   };
 
@@ -86,6 +107,38 @@ export default class IndexProfissional extends Component {
           //onWillBlur={payload => console.log('will blur', payload)}
           //onDidBlur={payload => console.log('did blur', payload)}
           />
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoadingRequest}
+          >
+            <View style={{
+              flex: 1, alignItems: 'center',
+              justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
+            }}>
+              <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+            </View>
+          </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isShowingPedido}
+          >
+            <View style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(255,255,255,0.5)'
+            }}>
+              <VisualizarPedidoProfissional
+                pedido={this.state.pedidoCorrente}
+                onConfirm={() => this.confirmarPedido(this.state.pedidoCorrente)}
+                onCancel={() => this.setState({ isShowingPedido: false })}
+              >
+
+              </VisualizarPedidoProfissional>
+            </View>
+          </Modal>
           <TitutloNovos user={user}></TitutloNovos>
           <FlatList
             data={this.state.pedidos}
@@ -93,7 +146,7 @@ export default class IndexProfissional extends Component {
             renderItem={
               ({ item }) =>
                 <TouchableOpacity
-                  onPress={() => this.associarPedido(item)}
+                  onPress={() => {/*this.associarPedido(item)*/this.exibirPedido(item) }}
                   style={[this.meusPedidosStyles.item, this.meusPedidosStyles.pedidoLabel]}>
                   <View style={{ width: 260 }}>
                     <Text style={{ fontSize: 20, marginBottom: 5 }}>{item.category.name}</Text>
