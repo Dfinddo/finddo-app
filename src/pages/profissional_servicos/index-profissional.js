@@ -20,9 +20,9 @@ const enumEstadoPedidoMap = {
   cancelado: 'Cancelado'
 }
 
-export default class MeusPedidos extends Component {
+export default class IndexProfissional extends Component {
   static navigationOptions = {
-    title: 'Pedidos'
+    title: 'Pedidos Disponíveis'
   };
 
   state = {
@@ -31,23 +31,14 @@ export default class MeusPedidos extends Component {
   };
 
   obterPedidos = async (page = 1) => {
-    let user = TokenService.getInstance().getUser();
-    const typeUser = 'user';
-
     try {
       const tokenService = TokenService.getInstance();
       let response = {};
-      if (user.user_type === typeUser) {
-        response = await
-          backendRails
-            .get('/orders/user/' + tokenService.getUser().id + '/active',
-              { headers: tokenService.getHeaders() });
-      } else {
-        response = await
-          backendRails
-            .get('/orders/available',
-              { headers: tokenService.getHeaders() });
-      }
+
+      response = await
+        backendRails
+          .get('/orders/available',
+            { headers: tokenService.getHeaders() });
 
       const orders = response.data;
 
@@ -119,11 +110,6 @@ export default class MeusPedidos extends Component {
                   </View>
                 </TouchableOpacity>}
           />
-          <NovoPedido botaoStyle={this.meusPedidosStyles.novoPedidoButton}
-            onPress={() => {
-              this.props.navigation.navigate('Services');
-            }} user={user}
-          ></NovoPedido>
         </View>
       </ImageBackground>
     );
@@ -165,24 +151,8 @@ export default class MeusPedidos extends Component {
   });
 }
 
-function NovoPedido(props) {
-  user = props.user;
-  if (user.user_type === 'user') {
-    return (
-      <TouchableOpacity
-        style={props.botaoStyle}
-        onPress={props.onPress}>
-        <Text style={{ fontSize: 20, color: colors.branco }}>NOVO PEDIDO</Text>
-      </TouchableOpacity>
-    );
-  } else {
-    return (null);
-  }
-}
-
 function TitutloNovos(props) {
-  user = props.user;
-  titulo = user.user_type === 'user' ? 'Pedidos em andamento' : 'Pedidos a serem atendidos';
+  titulo = 'Pedidos a serem atendidos';
 
   return (
     <View style={{

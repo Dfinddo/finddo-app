@@ -27,9 +27,9 @@ export default class VisualizarPedido extends Component {
   render() {
     let diaInicio = '';
     let diaFim = '';
-    
+
     if (this.state.order) {
-      
+
       if (this.state.order.start_order && this.state.order.urgencia === 'semana') {
         diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
 
@@ -82,6 +82,15 @@ export default class VisualizarPedido extends Component {
                   borderRadius: 20, height: 45, marginBottom: 10
                 }}>
                 <Text style={{ color: colors.branco, fontSize: 18 }}>CONFIRMAR</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.props.onCancel}
+                style={{
+                  width: 300, backgroundColor: colors.verdeFinddo,
+                  justifyContent: 'center', alignItems: 'center',
+                  borderRadius: 20, height: 45, marginBottom: 10
+                }}>
+                <Text style={{ color: colors.branco, fontSize: 18 }}>VOLTAR</Text>
               </TouchableOpacity>
             </View>
           </View>

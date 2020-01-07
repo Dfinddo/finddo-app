@@ -54,6 +54,10 @@ export default class FotosPedido extends Component {
     this.setState({ isConfirming: true });
   };
 
+  fecharDialogConfirmacaoSemConfirmarPedido = () => {
+    this.setState({ isConfirming: false });
+  };
+
   salvarAposPedidoConfirmado = () => {
     this.setState({ isConfirming: false });
     this.salvarPedido(this.state);
@@ -138,7 +142,10 @@ export default class FotosPedido extends Component {
               animationType="slide"
               transparent={true}
               visible={this.state.isConfirming}>
-              <VisualizarPedido pedido={this.state} onConfirm={() => this.salvarAposPedidoConfirmado()}></VisualizarPedido>
+              <VisualizarPedido
+                pedido={this.state}
+                onConfirm={() => this.salvarAposPedidoConfirmado()}
+                onCancel={() => this.fecharDialogConfirmacaoSemConfirmarPedido()}></VisualizarPedido>
             </Modal>
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
               <Image source={this.state.imageServicoUrl}
@@ -188,8 +195,10 @@ export default class FotosPedido extends Component {
 
   fotosPedidoStyles = StyleSheet.create({
     loaderContainer: {
+      flex: 1,
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      backgroundColor: 'rgba(255,255,255,0.5)'
     },
     imagemCategoriaContainer: {
       height: 540,

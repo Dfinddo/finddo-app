@@ -20,6 +20,8 @@ import TelaFinalPedidoScreen from './pages/acompanhamento-finddo-pay/tela-final-
 import DataServico from './pages/servicos/data-servico';
 import './config/StatusBarConfig';
 import AjudaScreen from './pages/ajuda/ajuda';
+import IndexProfissional from './pages/profissional_servicos/index-profissional';
+import RedirecionadorIndex from './pages/redirecionador/redirecionador';
 
 const AppStack = createStackNavigator(
   {
@@ -29,10 +31,15 @@ const AppStack = createStackNavigator(
     // MeusPedidos: MeusPedidos,
     // AcompanhamentoPedido: AcompanhamentoPedido,
     // Acompanhamento: TelaFinalPedidoScreen,
-    DefinirData: DataServico
+    DefinirData: DataServico,
+
+    Redirecionador: RedirecionadorIndex,
+    /* rotas do profissional */
+
+    IndexProfissional: IndexProfissional
   },
   {
-    initialRouteName: 'Services',
+    initialRouteName: 'Redirecionador',
   }
 );
 
