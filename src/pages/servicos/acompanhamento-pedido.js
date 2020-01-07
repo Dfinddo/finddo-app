@@ -22,15 +22,11 @@ export default class AcompanhamentoPedido extends Component {
     this.pedidoEmAnalise = React.createRef();
     this.agendandoVisita = React.createRef();
     this.aCaminho = React.createRef();
-    this.emServico = React.createRef();
-    this.finalizado = React.createRef();
 
     /* descricao */
     this.pedidoEmAnaliseD = React.createRef();
     this.agendandoVisitaD = React.createRef();
     this.aCaminhoD = React.createRef();
-    this.emServicoD = React.createRef();
-    this.finalizadoD = React.createRef();
   }
 
   state = {
@@ -64,14 +60,6 @@ export default class AcompanhamentoPedido extends Component {
                 </StatusPedidoStep>
                 <StatusPedidoStep
                   ref={this.aCaminho}
-                  verticalBarVisibility='flex'>
-                </StatusPedidoStep>
-                <StatusPedidoStep
-                  ref={this.emServico}
-                  verticalBarVisibility='flex'>
-                </StatusPedidoStep>
-                <StatusPedidoStep
-                  ref={this.finalizado}
                   verticalBarVisibility='none'>
                 </StatusPedidoStep>
               </View>
@@ -95,15 +83,6 @@ export default class AcompanhamentoPedido extends Component {
                     estadoInicial='a-caminho'
                     ref={this.aCaminhoD} />
                 </View>
-                <StatusPedidoDescricao
-                  ref={this.emServicoD}
-                  conteudo='Em serviço'
-                  estadoInicial='em-servico' />
-                <View style={{ height: 90, width: 3 }} />
-                <StatusPedidoDescricao
-                  ref={this.finalizadoD}
-                  conteudo='Finalizado'
-                  estadoInicial='finalizado' />
               </View>
             </View>
           </ScrollView>
@@ -124,13 +103,6 @@ export default class AcompanhamentoPedido extends Component {
     } else if (this.state.estadoAtual === 'agendando') {
       this.setState({ estadoAtual: 'a-caminho' });
       this.setStatusAtual('a-caminho', this.agendandoVisita);
-    } else if (this.state.estadoAtual === 'a-caminho') {
-      this.setState({ estadoAtual: 'em-servico' });
-      this.setStatusAtual('em-servico', this.aCaminho);
-    } else if (this.state.estadoAtual === 'em-servico') {
-      this.setState({ estadoAtual: 'finalizado', acaoBotao: 'MEUS PEDIDOS' });
-      this.setStatusAtual('finalizado', this.emServico);
-      this.setStatusAtual('finalizado', this.finalizado);
     } else {
       const resetAction = StackActions.reset({
         index: 0,
@@ -144,8 +116,6 @@ export default class AcompanhamentoPedido extends Component {
     this.pedidoEmAnaliseD.current.setEstadoAtual(status);
     this.agendandoVisitaD.current.setEstadoAtual(status);
     this.aCaminhoD.current.setEstadoAtual(status);
-    this.emServicoD.current.setEstadoAtual(status);
-    this.finalizadoD.current.setEstadoAtual(status);
 
     statusComponentRef.current.setEtapaAtiva();
     statusComponentRef.current.setStepConcluido();
@@ -155,15 +125,15 @@ export default class AcompanhamentoPedido extends Component {
     acompanhamentoContainer: {
       flex: 1, alignItems: 'center',
       justifyContent: 'center', flexDirection: 'row',
-      height: 1000
+      height: 500
     },
     acompanhamentoPontosContainer: {
-      height: 1000, width: '15%',
+      height: 500, width: '15%',
       alignItems: 'center',
       justifyContent: 'flex-start'
     },
     acompanhamentoConteudoContainer: {
-      height: 1000, width: '85%'
+      height: 500, width: '85%'
     },
     acompanhamentoBotaoContainer: {
       flex: 1, alignItems: 'center',

@@ -135,6 +135,7 @@ export default class LoginScreen extends Component {
               <TextInput
                 style={this.loginScreenStyle.loginFormSizeAndFont}
                 placeholder="E-mail"
+                keyboardType="email-address"
                 onChangeText={
                   (usuario) => {
                     this.setState({ usuario: usuario });
@@ -158,13 +159,14 @@ export default class LoginScreen extends Component {
             <TouchableOpacity
               style={this.loginScreenStyle.loginButton}
               onPress={() => this.login(this.state.usuario, this.state.senha)}>
-              <Text style={this.loginScreenStyle.loginButtonText}>Entrar</Text>
+              <Text style={this.loginScreenStyle.loginButtonText}>ENTRAR</Text>
             </TouchableOpacity>
             <Text>
               Ainda não é cadastrado?
+            <Text> </Text>
             <Text
                 style={this.loginScreenStyle.cadastreSe}
-                onPress={() => this.props.navigation.navigate('EscolhaTipo')}> Cadastre-se</Text>
+                onPress={() => this.props.navigation.navigate('EscolhaTipo')}>Cadastre-se</Text>
             </Text>
           </View>
         </ScrollView>
@@ -177,8 +179,8 @@ export default class LoginScreen extends Component {
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     loginForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    loginMainForm: { alignItems: 'center', justifyContent: 'center', width: 360, height: 250, backgroundColor: colors.branco },
-    loginButton: { marginTop: 40, marginBottom: 10, width: 360, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    loginMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 250, backgroundColor: colors.branco },
+    loginButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     loginButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
     loginFormSizeAndFont:
     {
