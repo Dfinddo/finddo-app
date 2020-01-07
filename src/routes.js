@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Image } from 'react-native';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import Servicos from './pages/servicos/servicos';
 import LoginScreen from './pages/login';
@@ -16,23 +17,48 @@ import EsqueciSenhaEmail from './pages/login/esqueci-senha-email';
 import EsqueciSenhaNovaSenha from './pages/login/esqueci-senha-nova-senha';
 import AcompanhamentoPedido from './pages/servicos/acompanhamento-pedido';
 import TelaFinalPedidoScreen from './pages/acompanhamento-finddo-pay/tela-final-pedido';
+import DataServico from './pages/servicos/data-servico';
+import './config/StatusBarConfig';
+import AjudaScreen from './pages/ajuda/ajuda';
 
 const AppStack = createStackNavigator(
   {
     Services: Servicos,
     NovoPedido: NovoPedido,
     FotosPedido: FotosPedido,
-    MeusPedidos: MeusPedidos,
-    AcompanhamentoPedido: AcompanhamentoPedido,
-    Acompanhamento: TelaFinalPedidoScreen
+    // MeusPedidos: MeusPedidos,
+    // AcompanhamentoPedido: AcompanhamentoPedido,
+    // Acompanhamento: TelaFinalPedidoScreen,
+    DefinirData: DataServico
   },
   {
-    initialRouteName: 'MeusPedidos',
+    initialRouteName: 'Services',
   }
+);
+
+const ServicosStack = createStackNavigator(
+  {
+    AcompanhamentoPedido: AcompanhamentoPedido,
+    Acompanhamento: TelaFinalPedidoScreen,
+  },
+  { initialRouteName: 'AcompanhamentoPedido' }
+);
+
+const MeusPedidosStack = createStackNavigator(
+  {
+    MeusPedidos: MeusPedidos,
+    // AcompanhamentoPedido: AcompanhamentoPedido,
+    // Acompanhamento: TelaFinalPedidoScreen,
+  },
+  { initialRouteName: 'MeusPedidos' }
 );
 
 const PerfilStack = createStackNavigator(
   { Profile: PerfilScreen }
+);
+
+const AjudaStack = createStackNavigator(
+  { Ajuda: AjudaScreen }
 );
 
 const AuthStack = createStackNavigator(
@@ -51,8 +77,11 @@ const AuthStack = createStackNavigator(
 
 const TabMenu = createBottomTabNavigator(
   {
-    Serviços: AppStack,
-    Perfil: PerfilStack
+    Serviços: ServicosStack,
+    Histórico: MeusPedidosStack,
+    Finddo: AppStack,
+    Perfil: PerfilStack,
+    Ajuda: AjudaStack
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -60,16 +89,21 @@ const TabMenu = createBottomTabNavigator(
         const { routeName } = navigation.state;
         let IconComponent = Ionicons;
         let iconName;
-        if (routeName === 'Serviços') {
-          iconName = `ios-hammer`;
-          // Sometimes we want to add badges to some icons. 
-          // You can check the implementation below.
-          // IconComponent = HomeIconWithBadge;
+        if (routeName === 'Histórico') {
+          iconName = `ios-paper`;
+        } else if (routeName === 'Finddo') {
+          return <Image
+            style={{ width: 25, height: 25 }}
+            source={require('../src/img/icon_principal.png')}
+          />
         } else if (routeName === 'Perfil') {
           iconName = `ios-person`;
+        } else if (routeName === 'Serviços') {
+          iconName = `ios-hammer`;
+        } else if (routeName === 'Ajuda') {
+          iconName = `ios-help-circle`;
         }
 
-        // You can return any component that you like here!
         return <IconComponent name={iconName} size={25} color={tintColor} />;
       },
     }),
@@ -77,6 +111,7 @@ const TabMenu = createBottomTabNavigator(
       activeTintColor: colors.verdeFinddo,
       inactiveTintColor: colors.cinzaIconeInativo,
     },
+    initialRouteName: 'Finddo'
   }
 );
 
