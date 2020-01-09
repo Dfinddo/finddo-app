@@ -3,7 +3,10 @@ import {
   Text,
   FlatList, StyleSheet,
   TouchableOpacity, View,
-  ImageBackground
+  ImageBackground,
+  Picker,
+  ActivityIndicator,
+  Modal
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
@@ -17,7 +20,8 @@ const enumEstadoPedidoMap = {
   a_caminho: 'Profissional à Caminho',
   em_servico: 'Serviço em Execução',
   finalizado: 'Concluído',
-  cancelado: 'Cancelado'
+  cancelado: 'Cancelado',
+  none: 'Selecione um status'
 }
 
 export default class MeusPedidos extends Component {
@@ -28,9 +32,17 @@ export default class MeusPedidos extends Component {
   state = {
     pedidos: [],
     page: 1,
+    pedidosAnalise: [],
+    pedidosCaminho: [],
+    pedidosServico: [],
+    pedidosFinalizado: [],
+    pedidosCancelado: [],
+    tipoPedidoSelecionado: Object.keys(enumEstadoPedidoMap)[6],
+    loadingData: false,
   };
 
   obterPedidos = async (page = 1) => {
+    this.setState({ loadingData: true });
     let user = TokenService.getInstance().getUser();
     const typeUser = 'user';
 
@@ -55,11 +67,38 @@ export default class MeusPedidos extends Component {
         element.id = element.id + '';
       });
 
+      const pedidosAnalise = orders.filter((order) => {
+        return order.order_status === 'analise';
+      });
+
+      const pedidosCaminho = orders.filter((order) => {
+        return order.order_status === 'a_caminho';
+      });
+
+      const pedidosServico = orders.filter((order) => {
+        return order.order_status === 'em_servico';
+      });
+
+      const pedidosFinalizado = orders.filter((order) => {
+        return order.order_status === 'finalizado';
+      });
+
+      const pedidosCancelado = orders.filter((order) => {
+        return order.order_status === 'cancelado';
+      });
+
       this.setState({
         pedidos: [...orders],
+        pedidosAnalise: [...pedidosAnalise],
+        pedidosCaminho: [...pedidosCaminho],
+        pedidosServico: [...pedidosServico],
+        pedidosFinalizado: [...pedidosFinalizado],
+        pedidosCancelado: [...pedidosCancelado],
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      this.setState({ loadingData: false });
     }
   };
 
@@ -89,38 +128,86 @@ export default class MeusPedidos extends Component {
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
-        <View style={this.meusPedidosStyles.container}>
+        <View style={meusPedidosStyles.container}>
           <NavigationEvents
             onWillFocus={_ => this.obterPedidos()}
           //onDidFocus={payload => console.log('did focus', payload)}
           //onWillBlur={payload => console.log('will blur', payload)}
           //onDidBlur={payload => console.log('did blur', payload)}
           />
-          <TitutloNovos user={user}></TitutloNovos>
-          <FlatList
-            data={this.state.pedidos}
-            keyExtractor={item => item.id}
-            renderItem={
-              ({ item }) =>
-                <TouchableOpacity
-                  onPress={() => this.associarPedido(item)}
-                  style={[this.meusPedidosStyles.item, this.meusPedidosStyles.pedidoLabel]}>
-                  <View style={{ width: 260 }}>
-                    <Text style={{ fontSize: 20, marginBottom: 5 }}>{item.category.name}</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                      <View style={this.meusPedidosStyles.pedidoIndicador}></View>
-                      <Text style={{ fontSize: 18, color: colors.cinza }}>    {enumEstadoPedidoMap[item.order_status]}</Text>
-                    </View>
-                  </View>
-                  <View style={this.meusPedidosStyles.pedidoSetaDireita}>
-                    <Icon
-                      style={{ width: 40 }}
-                      name={'keyboard-arrow-right'}
-                      size={20} color={colors.cinza} />
-                  </View>
-                </TouchableOpacity>}
-          />
-          <NovoPedido botaoStyle={this.meusPedidosStyles.novoPedidoButton}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.loadingData}
+          >
+            <View style={{
+              flex: 1, alignItems: 'center',
+              justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
+            }}>
+              <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+            </View>
+          </Modal>
+          <View style={{
+            height: 60, backgroundColor: colors.branco,
+            width: 340, borderRadius: 12,
+            alignItems: 'center', justifyContent: 'center',
+            marginBottom: 10
+          }}>
+            <Picker
+              selectedValue={this.state.tipoPedidoSelecionado}
+              style={{
+                height: 50, width: 320,
+              }}
+              onValueChange={(itemValue, itemIndex) =>
+                this.setState({ tipoPedidoSelecionado: itemValue })
+              }>
+              <Picker.Item label={Object.values(enumEstadoPedidoMap)[0]} value={Object.keys(enumEstadoPedidoMap)[0]} />
+              <Picker.Item label={Object.values(enumEstadoPedidoMap)[2]} value={Object.keys(enumEstadoPedidoMap)[2]} />
+              <Picker.Item label={Object.values(enumEstadoPedidoMap)[3]} value={Object.keys(enumEstadoPedidoMap)[3]} />
+              <Picker.Item label={Object.values(enumEstadoPedidoMap)[4]} value={Object.keys(enumEstadoPedidoMap)[4]} />
+              <Picker.Item label={Object.values(enumEstadoPedidoMap)[5]} value={Object.keys(enumEstadoPedidoMap)[5]} />
+              <Picker.Item label={Object.values(enumEstadoPedidoMap)[6]} value={Object.keys(enumEstadoPedidoMap)[6]} />
+            </Picker>
+          </View>
+          <View style={{ height: 425 }}>
+            {(() => {
+              switch (this.state.tipoPedidoSelecionado) {
+                case ('analise'):
+                  return (
+                    <ListaPedidos
+                      pedidos={this.state.pedidosAnalise}
+                      onPressItem={() => this.associarPedido()} />
+                  );
+                case ('a_caminho'):
+                  return (
+                    <ListaPedidos
+                      pedidos={this.state.pedidosCaminho}
+                      onPressItem={() => this.associarPedido()} />
+                  );
+                case ('em_servico'):
+                  return (
+                    <ListaPedidos
+                      pedidos={this.state.pedidosServico}
+                      onPressItem={() => this.associarPedido()} />
+                  );
+                case ('finalizado'):
+                  return (
+                    <ListaPedidos
+                      pedidos={this.state.pedidosFinalizado}
+                      onPressItem={() => this.associarPedido()} />
+                  );
+                case ('cancelado'):
+                  return (
+                    <ListaPedidos
+                      pedidos={this.state.pedidosCancelado}
+                      onPressItem={() => this.associarPedido()} />
+                  );
+                default: return (null);
+              }
+            })()
+            }
+          </View>
+          <NovoPedido botaoStyle={meusPedidosStyles.novoPedidoButton}
             onPress={() => {
               this.props.navigation.navigate('Services');
             }} user={user}
@@ -129,42 +216,42 @@ export default class MeusPedidos extends Component {
       </ImageBackground>
     );
   }
-
-  meusPedidosStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingTop: 22,
-      alignItems: 'center'
-    },
-    item: {
-      padding: 10,
-      fontSize: 35,
-      height: 70,
-    },
-    pedidoLabel: {
-      borderRadius: 12, backgroundColor: colors.branco,
-      marginBottom: 10, width: 340,
-      alignItems: 'center', justifyContent: 'flex-start',
-      flexDirection: 'row'
-    },
-    pedidoIndicador: {
-      width: 20, height: 20,
-      borderRadius: 40, borderColor: colors.bordaIconeStatus,
-      backgroundColor: colors.verdeEscuroStatus, borderWidth: 1
-    },
-    pedidoSetaDireita: {
-      width: 40, height: 40,
-      flex: 1, alignItems: 'flex-end',
-      justifyContent: 'center'
-    },
-    novoPedidoButton: {
-      backgroundColor: colors.verdeFinddo, height: 45,
-      width: 340, borderRadius: 20,
-      color: colors.branco,
-      alignItems: 'center', justifyContent: 'center'
-    }
-  });
 }
+
+const meusPedidosStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 10,
+    alignItems: 'center'
+  },
+  item: {
+    padding: 10,
+    fontSize: 35,
+    height: 70,
+  },
+  pedidoLabel: {
+    borderRadius: 12, backgroundColor: colors.branco,
+    marginBottom: 10, width: 340,
+    alignItems: 'center', justifyContent: 'flex-start',
+    flexDirection: 'row'
+  },
+  pedidoIndicador: {
+    width: 20, height: 20,
+    borderRadius: 40, borderColor: colors.bordaIconeStatus,
+    backgroundColor: colors.verdeEscuroStatus, borderWidth: 1
+  },
+  pedidoSetaDireita: {
+    width: 40, height: 40,
+    flex: 1, alignItems: 'flex-end',
+    justifyContent: 'center'
+  },
+  novoPedidoButton: {
+    backgroundColor: colors.verdeFinddo, height: 45,
+    width: 340, borderRadius: 20,
+    color: colors.branco, marginTop: 10,
+    alignItems: 'center', justifyContent: 'center'
+  }
+});
 
 function NovoPedido(props) {
   user = props.user;
@@ -181,16 +268,36 @@ function NovoPedido(props) {
   }
 }
 
-function TitutloNovos(props) {
-  user = props.user;
-  titulo = user.user_type === 'user' ? 'Pedidos em andamento' : 'Pedidos a serem atendidos';
-
-  return (
-    <View style={{
-      width: '100%', marginLeft: 10,
-      alignContent: 'flex-start', marginBottom: 10
-    }}>
-      <Text style={{ fontSize: 20 }}>{titulo}</Text>
-    </View>
-  );
+function ListaPedidos(props) {
+  if (props.pedidos.length > 0) {
+    return (
+      <View>
+        <FlatList
+          data={props.pedidos}
+          keyExtractor={item => item.id}
+          renderItem={
+            ({ item }) =>
+              <TouchableOpacity
+                onPress={() => props.onPressItem}
+                style={[meusPedidosStyles.item, meusPedidosStyles.pedidoLabel]}>
+                <View style={{ width: 260 }}>
+                  <Text style={{ fontSize: 20, marginBottom: 5 }}>{item.category.name}</Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <View style={meusPedidosStyles.pedidoIndicador}></View>
+                    <Text style={{ fontSize: 18, color: colors.cinza }}>    {enumEstadoPedidoMap[item.order_status]}</Text>
+                  </View>
+                </View>
+                <View style={meusPedidosStyles.pedidoSetaDireita}>
+                  <Icon
+                    style={{ width: 40 }}
+                    name={'keyboard-arrow-right'}
+                    size={20} color={colors.cinza} />
+                </View>
+              </TouchableOpacity>}
+        />
+      </View>
+    );
+  } else {
+    return (null);
+  }
 }
