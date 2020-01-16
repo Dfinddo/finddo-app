@@ -6,14 +6,13 @@ import {
   ImageBackground,
   Picker,
   ActivityIndicator,
-  Modal,
-  RefreshControl
+  Modal
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../colors';
-import { NavigationEvents, ScrollView } from 'react-navigation';
+import { NavigationEvents } from 'react-navigation';
 
 const enumEstadoPedidoMap = {
   analise: 'Pedido em Análise',
@@ -25,9 +24,9 @@ const enumEstadoPedidoMap = {
   none: 'Selecione um status'
 }
 
-export default class MeusPedidos extends Component {
+export default class MeusPedidosProfissional extends Component {
   static navigationOptions = {
-    title: 'Pedidos'
+    title: 'Pedidos Profissional'
   };
 
   state = {
@@ -40,28 +39,19 @@ export default class MeusPedidos extends Component {
     pedidosCancelado: [],
     tipoPedidoSelecionado: Object.keys(enumEstadoPedidoMap)[6],
     loadingData: false,
-    loadingOrders: false
   };
 
   obterPedidos = async (page = 1) => {
     this.setState({ loadingData: true });
-    let user = TokenService.getInstance().getUser();
-    const typeUser = 'user';
 
     try {
       const tokenService = TokenService.getInstance();
       let response = {};
-      if (user.user_type === typeUser) {
-        response = await
-          backendRails
-            .get('/orders/user/' + tokenService.getUser().id + '/active',
-              { headers: tokenService.getHeaders() });
-      } else {
-        response = await
-          backendRails
-            .get('/orders/available',
-              { headers: tokenService.getHeaders() });
-      }
+
+      response = await
+        backendRails
+          .get('/orders/active_orders_professional/' + tokenService.getUser().id,
+            { headers: tokenService.getHeaders() });
 
       const orders = response.data;
 
@@ -101,67 +91,6 @@ export default class MeusPedidos extends Component {
       console.log(error);
     } finally {
       this.setState({ loadingData: false });
-    }
-  };
-
-  obterPedidosRefresh = async (page = 1) => {
-    this.setState({ loadingOrders: true });
-    let user = TokenService.getInstance().getUser();
-    const typeUser = 'user';
-
-    try {
-      const tokenService = TokenService.getInstance();
-      let response = {};
-      if (user.user_type === typeUser) {
-        response = await
-          backendRails
-            .get('/orders/user/' + tokenService.getUser().id + '/active',
-              { headers: tokenService.getHeaders() });
-      } else {
-        response = await
-          backendRails
-            .get('/orders/available',
-              { headers: tokenService.getHeaders() });
-      }
-
-      const orders = response.data;
-
-      orders.forEach(element => {
-        element.id = element.id + '';
-      });
-
-      const pedidosAnalise = orders.filter((order) => {
-        return order.order_status === 'analise';
-      });
-
-      const pedidosCaminho = orders.filter((order) => {
-        return order.order_status === 'a_caminho';
-      });
-
-      const pedidosServico = orders.filter((order) => {
-        return order.order_status === 'em_servico';
-      });
-
-      const pedidosFinalizado = orders.filter((order) => {
-        return order.order_status === 'finalizado';
-      });
-
-      const pedidosCancelado = orders.filter((order) => {
-        return order.order_status === 'cancelado';
-      });
-
-      this.setState({
-        pedidos: [...orders],
-        pedidosAnalise: [...pedidosAnalise],
-        pedidosCaminho: [...pedidosCaminho],
-        pedidosServico: [...pedidosServico],
-        pedidosFinalizado: [...pedidosFinalizado],
-        pedidosCancelado: [...pedidosCancelado],
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      this.setState({ loadingOrders: false });
     }
   };
 
@@ -240,65 +169,33 @@ export default class MeusPedidos extends Component {
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosAnalise}
-                      refreshing={this.state.loadingOrders}
-                      onRefresh={() => {
-                        this.setState({ loadingOrders: true }, () => this.obterPedidosRefresh())
-                      }}
                       onPressItem={(item) => this.associarPedido(item)} />
                   );
                 case ('a_caminho'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosCaminho}
-                      refreshing={this.state.loadingOrders}
-                      onRefresh={() => {
-                        this.setState({ loadingOrders: true }, () => this.obterPedidosRefresh())
-                      }}
                       onPressItem={(item) => this.associarPedido(item)} />
                   );
                 case ('em_servico'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosServico}
-                      refreshing={this.state.loadingOrders}
-                      onRefresh={() => {
-                        this.setState({ loadingOrders: true }, () => this.obterPedidosRefresh())
-                      }}
                       onPressItem={(item) => this.associarPedido(item)} />
                   );
                 case ('finalizado'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosFinalizado}
-                      refreshing={this.state.loadingOrders}
-                      onRefresh={() => {
-                        this.setState({ loadingOrders: true }, () => this.obterPedidosRefresh())
-                      }}
                       onPressItem={(item) => this.associarPedido(item)} />
                   );
                 case ('cancelado'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosCancelado}
-                      refreshing={this.state.loadingOrders}
-                      onRefresh={() => {
-                        this.setState({ loadingOrders: true }, () => this.obterPedidosRefresh())
-                      }}
                       onPressItem={(item) => this.associarPedido(item)} />
                   );
-                default: return (
-                  <View style={{ flex: 1 }}>
-                    <ScrollView
-                      refreshControl={<RefreshControl
-                        colors={[colors.verdeFinddo]}
-                        refreshing={this.state.loadingOrders}
-                        onRefresh={() => this.obterPedidosRefresh()}
-                      />}
-                    >
-                      <View style={{ height: 1000, width: 380 }}>
-                      </View>
-                    </ScrollView>
-                  </View>);
+                default: return (null);
               }
             })()
             }
@@ -371,13 +268,6 @@ function ListaPedidos(props) {
         <FlatList
           data={props.pedidos}
           keyExtractor={item => item.id}
-          refreshControl={
-            <RefreshControl
-              colors={[colors.verdeFinddo]}
-              refreshing={props.refreshing}
-              onRefresh={props.onRefresh}
-            />
-          }
           renderItem={
             ({ item }) =>
               <TouchableOpacity

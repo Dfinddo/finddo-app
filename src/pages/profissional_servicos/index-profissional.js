@@ -87,7 +87,7 @@ export default class IndexProfissional extends Component {
             { headers: tokenService.getHeaders() });
 
       this.setState({ isLoadingRequest: false });
-      this.props.navigation.navigate('AcompanhamentoPedido', { data: response.data });
+      this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
     } catch (error) {
       console.log(error);
       this.setState({ isLoadingRequest: false });

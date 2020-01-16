@@ -12,8 +12,6 @@ export default class VisualizarPedidoProfissional extends Component {
   };
 
   componentDidMount() {
-    console.log(this.props);
-
     const order = {};
     order.description = this.props.pedido.description;
     order.category = this.props.pedido.category.name;

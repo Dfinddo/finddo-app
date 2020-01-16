@@ -83,7 +83,7 @@ export default class FotosPedido extends Component {
           key: 'Finddo'
         });
         this.props.navigation.dispatch(resetAction);
-        this.props.navigation.navigate('AcompanhamentoPedido', { id: response.data.id });
+        this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
       })
       .catch((error) => {
         if (error.response) {

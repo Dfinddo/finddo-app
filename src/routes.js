@@ -22,6 +22,8 @@ import './config/StatusBarConfig';
 import AjudaScreen from './pages/ajuda/ajuda';
 import IndexProfissional from './pages/profissional_servicos/index-profissional';
 import RedirecionadorIndex from './pages/redirecionador/redirecionador';
+import RedirecionadorPedidos from './pages/redirecionador/redirecionador-pedidos';
+import MeusPedidosProfissional from './pages/profissional_servicos/meus-pedidos-profissional';
 
 const AppStack = createStackNavigator(
   {
@@ -54,10 +56,12 @@ const ServicosStack = createStackNavigator(
 const MeusPedidosStack = createStackNavigator(
   {
     MeusPedidos: MeusPedidos,
+    RedirecionadorPedidos: RedirecionadorPedidos,
+    MeusPedidosProfissional: MeusPedidosProfissional
     // AcompanhamentoPedido: AcompanhamentoPedido,
     // Acompanhamento: TelaFinalPedidoScreen,
   },
-  { initialRouteName: 'MeusPedidos' }
+  { initialRouteName: 'RedirecionadorPedidos' }
 );
 
 const PerfilStack = createStackNavigator(
