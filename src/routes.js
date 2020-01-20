@@ -24,6 +24,7 @@ import IndexProfissional from './pages/profissional_servicos/index-profissional'
 import RedirecionadorIndex from './pages/redirecionador/redirecionador';
 import RedirecionadorPedidos from './pages/redirecionador/redirecionador-pedidos';
 import MeusPedidosProfissional from './pages/profissional_servicos/meus-pedidos-profissional';
+import EditarCampoPerfil from './pages/perfil/editar-campo-perfil';
 
 const AppStack = createStackNavigator(
   {
@@ -65,7 +66,11 @@ const MeusPedidosStack = createStackNavigator(
 );
 
 const PerfilStack = createStackNavigator(
-  { Profile: PerfilScreen }
+  {
+    Profile: PerfilScreen,
+    EditField: EditarCampoPerfil
+  },
+  { initialRouteName: 'Profile' }
 );
 
 const AjudaStack = createStackNavigator(
