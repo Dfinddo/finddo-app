@@ -8,9 +8,10 @@ import {
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
-import { StackActions, NavigationActions } from 'react-navigation';
+import { StackActions, NavigationActions, NavigationEvents } from 'react-navigation';
 import { colors } from '../../colors';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
+import FotoService from '../../services/foto-service';
 
 export default class FotosPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -24,12 +25,22 @@ export default class FotosPedido extends Component {
     isLoading: false,
     dataPedido: null,
     urgencia: '',
-    isConfirming: false
+    isConfirming: false,
+    foto1: require('../../img/add_foto_problema.png')
   };
 
   componentDidMount() {
     this.obterDadosPrimeiraPartePedido();
   };
+
+  obterFoto1 = () => {
+    const fotoService = FotoService.getInstance();
+    const photo = fotoService.getFotoData();
+
+    if (photo) {
+      this.setState({ foto1: photo });
+    }
+  }
 
   obterDadosPrimeiraPartePedido = () => {
     const { navigation } = this.props;
@@ -148,6 +159,12 @@ export default class FotosPedido extends Component {
                 onCancel={() => this.fecharDialogConfirmacaoSemConfirmarPedido()}></VisualizarPedido>
             </Modal>
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
+              <NavigationEvents
+                onWillFocus={_ => this.obterFoto1()}
+              //onDidFocus={payload => console.log('did focus', payload)}
+              //onWillBlur={payload => console.log('will blur', payload)}
+              //onDidBlur={payload => console.log('did blur', payload)}
+              />
               <Image source={this.state.imageServicoUrl}
                 style={{ width: '100%' }} />
               <View style={this.fotosPedidoStyles.formPedidoContainer}>
@@ -155,10 +172,12 @@ export default class FotosPedido extends Component {
                   <Text style={{ fontSize: 18, textAlign: 'center', marginTop: 10 }}>
                     Nos ajude com fotos do problema (opcional)
                   </Text>
-                  <TouchableOpacity style={{ alignItems: 'center', marginTop: 30 }}>
+                  <TouchableOpacity onPress={() => {
+                    this.props.navigation.navigate('CameraPedido');
+                  }} style={{ alignItems: 'center', marginTop: 30 }}>
                     <Image
                       style={{ width: 120, height: 120 }}
-                      source={require('../../img/add_foto_problema.png')} />
+                      source={this.state.foto1} />
                   </TouchableOpacity>
                   <View style={this.fotosPedidoStyles.fotosProblemaContainer}>
                     <TouchableOpacity>

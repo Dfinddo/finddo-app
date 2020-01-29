@@ -25,6 +25,8 @@ import RedirecionadorIndex from './pages/redirecionador/redirecionador';
 import RedirecionadorPedidos from './pages/redirecionador/redirecionador-pedidos';
 import MeusPedidosProfissional from './pages/profissional_servicos/meus-pedidos-profissional';
 import EditarCampoPerfil from './pages/perfil/editar-campo-perfil';
+import EnderecosScreen from './pages/perfil/enderecos';
+import { CameraPedidoComponent } from './pages/servicos/camera-component';
 
 const AppStack = createStackNavigator(
   {
@@ -35,6 +37,7 @@ const AppStack = createStackNavigator(
     // AcompanhamentoPedido: AcompanhamentoPedido,
     // Acompanhamento: TelaFinalPedidoScreen,
     DefinirData: DataServico,
+    CameraPedido: CameraPedidoComponent,
 
     Redirecionador: RedirecionadorIndex,
     /* rotas do profissional */
@@ -43,6 +46,20 @@ const AppStack = createStackNavigator(
   },
   {
     initialRouteName: 'Redirecionador',
+    navigationOptions: ({ navigation }) => {
+
+      let tabBarVisible = true;
+
+      let routeName = navigation.state.routes[navigation.state.index].routeName
+
+      if (routeName == 'CameraPedido') {
+        tabBarVisible = false
+      }
+
+      return {
+        tabBarVisible,
+      }
+    }
   }
 );
 
@@ -68,7 +85,8 @@ const MeusPedidosStack = createStackNavigator(
 const PerfilStack = createStackNavigator(
   {
     Profile: PerfilScreen,
-    EditField: EditarCampoPerfil
+    EditField: EditarCampoPerfil,
+    Addresses: EnderecosScreen,
   },
   { initialRouteName: 'Profile' }
 );
