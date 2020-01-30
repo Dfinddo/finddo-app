@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import {
   TouchableOpacity, View,
   ImageBackground, ScrollView,
-  Text, StyleSheet, FlatList
+  Text, StyleSheet, FlatList, Modal,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import { colors } from '../../colors';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
@@ -22,23 +24,26 @@ export default class EnderecosScreen extends Component {
   }
 
   state = {
-    enderecos: []
+    enderecos: [],
+    isLoading: false,
   };
 
   obterEnderecos = () => {
-    const tokenService = TokenService.getInstance();
+    this.setState({ isLoading: true }, () => {
+      const tokenService = TokenService.getInstance();
 
-    backendRails.get('/addresses/user/' + tokenService.getUser().id, { headers: tokenService.getHeaders() })
-      .then((data) => {
-        console.log(data.data);
+      backendRails.get('/addresses/user/' + tokenService.getUser().id, { headers: tokenService.getHeaders() })
+        .then((data) => {
+          const addresses = data.data;
+          addresses.forEach(element => {
+            element.id = '' + element.id;
+          });
 
-        const addresses = data.data;
-        addresses.forEach(element => {
-          element.id = '' + element.id;
+          this.setState({ enderecos: [...addresses] });
+        }).finally(_ => {
+          this.setState({ isLoading: false });
         });
-
-        this.setState({ enderecos: [...addresses] });
-      });
+    });
   };
 
   render() {
@@ -48,6 +53,17 @@ export default class EnderecosScreen extends Component {
         source={require('../../img/Ellipse.png')}>
         <View style={{ height: 50 }}></View>
         <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoading}
+          >
+            <View style={this.enderecosScreenStyle.modalStyle}>
+              <View>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </View>
+          </Modal>
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
             <View style={{
               backgroundColor: colors.branco, flexDirection: 'column',
@@ -61,13 +77,16 @@ export default class EnderecosScreen extends Component {
               //onDidBlur={payload => console.log('did blur', payload)}
               />
               <View style={{ height: 20 }}></View>
-              <ListaDeEnderecos enderecos={this.state.enderecos}></ListaDeEnderecos>
+              <ListaDeEnderecos
+                navigation={this.props.navigation}
+                enderecos={this.state.enderecos}
+                comp={this}></ListaDeEnderecos>
             </View>
           </View>
           <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>
             <TouchableOpacity
               style={this.enderecosScreenStyle.sairButton}
-              onPress={() => { }}>
+              onPress={() => { this.props.navigation.navigate('CreateEditAddress') }}>
               <Text style={this.enderecosScreenStyle.sairButtonText}>ADICIONAR ENDEREÇO</Text>
             </TouchableOpacity>
           </View>
@@ -98,6 +117,7 @@ export default class EnderecosScreen extends Component {
       textDecorationLine: 'underline',
       textAlignVertical: 'bottom'
     },
+    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   });
 }
 
@@ -135,10 +155,10 @@ function Item(props) {
         alignItems: 'center', justifyContent: 'space-evenly',
         flexDirection: 'column'
       }}>
-        <TouchableOpacity onPress={() => { }}>
+        <TouchableOpacity onPress={() => { props.navigation.navigate('CreateEditAddress', { endereco: props.dados.item, editar: true }) }}>
           <IconComponent name={"ios-create"} size={25} color={colors.amareloIconeEditar} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => { }}>
+        <TouchableOpacity onPress={() => { excluirItemConfirm(props.dados.item, props.comp, props.size) }}>
           <IconComponent name={"ios-trash"} size={25} color={colors.vermelhoExcluir} />
         </TouchableOpacity>
       </View>
@@ -150,8 +170,46 @@ function ListaDeEnderecos(props) {
   return (
     <FlatList
       data={props.enderecos}
-      renderItem={(item) => <Item dados={item} />}
+      renderItem={(item) => <Item dados={item} size={props.enderecos.length} navigation={props.navigation} comp={props.comp} />}
       keyExtractor={item => item.id}
     />
+  );
+}
+
+const excluirItemConfirm = (item, comp, size) => {
+  console.log(item);
+  if (size > 1) {
+    Alert.alert(
+      item.name,
+      'Deseja excluir?',
+      [
+        { text: 'Não', onPress: () => { } },
+        { text: 'Sim', onPress: () => { excluirItem(item, comp) } },
+      ],
+      { cancelable: false },
+    );
+  } else {
+    Alert.alert(
+      'Não é possível excluir',
+      'É necessário ao menos um endereço',
+      [
+        { text: 'OK', onPress: () => { } },
+      ],
+      { cancelable: false },
+    );
+  }
+}
+
+const excluirItem = (item, comp) => {
+  // TODO: mensagem ao excluir endereços que tem pedidos ativos associados
+  comp.setState({ isLoading: true })
+
+  const tokenService = TokenService.getInstance();
+
+  backendRails.delete(`/addresses/${item.id}`, { headers: tokenService.getHeaders() }).then(
+    _ => {
+      comp.obterEnderecos();
+      comp.setState({ isLoading: false });
+    }
   );
 }

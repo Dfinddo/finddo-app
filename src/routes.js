@@ -27,6 +27,7 @@ import MeusPedidosProfissional from './pages/profissional_servicos/meus-pedidos-
 import EditarCampoPerfil from './pages/perfil/editar-campo-perfil';
 import EnderecosScreen from './pages/perfil/enderecos';
 import { CameraPedidoComponent } from './pages/servicos/camera-component';
+import FormEnderecoScreen from './pages/perfil/form-endereco';
 
 const AppStack = createStackNavigator(
   {
@@ -87,6 +88,7 @@ const PerfilStack = createStackNavigator(
     Profile: PerfilScreen,
     EditField: EditarCampoPerfil,
     Addresses: EnderecosScreen,
+    CreateEditAddress: FormEnderecoScreen
   },
   { initialRouteName: 'Profile' }
 );
