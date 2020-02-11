@@ -36,6 +36,7 @@ export default class TokenService {
     headers['access-token'] = this._tokenData['access-token'];
     headers['client'] = this._tokenData['client'];
     headers['uid'] = this._tokenData['uid'];
+    headers['Content-Type'] = 'application/json';
 
     return headers;
   }

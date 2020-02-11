@@ -7,7 +7,9 @@
 // ############################## ATENÇÃO ##############################
 // ############################## ATENÇÃO ##############################
 
-export const moipCredsData = {
+const moipCredsData = {
   publicKey: ``,
   Authorization: ''
 };
+
+export default moipCredsData;
