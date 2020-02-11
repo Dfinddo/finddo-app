@@ -9,6 +9,5 @@
 
 export const moipCredsData = {
   publicKey: ``,
-  token: '',
-  privateKey: ''
+  Authorization: ''
 };
