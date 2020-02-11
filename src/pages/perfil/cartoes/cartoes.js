@@ -9,9 +9,9 @@ import {
 import { colors } from '../../../colors';
 import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
 import { NavigationEvents } from 'react-navigation';
-import backendRails from '../../../services/backend-rails-api';
 import TokenService from '../../../services/token-service';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import moipAPI, { headers } from '../../../services/moip-api';
 
 export default class CartoesScreen extends Component {
   static navigationOptions = {
@@ -24,32 +24,39 @@ export default class CartoesScreen extends Component {
   }
 
   state = {
-    enderecos: [],
+    cartoes: [],
     isLoading: false,
   };
 
-  obterEnderecos = () => {
+  obterCartoes = () => {
     this.setState({ isLoading: true }, () => {
       const tokenService = TokenService.getInstance();
 
-      backendRails.get('/addresses/user/' + tokenService.getUser().id, { headers: tokenService.getHeaders() })
+      moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headers })
         .then((data) => {
-          const addresses = data.data;
-          addresses.forEach(element => {
-            element.id = '' + element.id;
-          });
+          const clientData = data.data;
+          const cardData = clientData.fundingInstruments.filter(data => this.creditCardFilter(data));
 
-          this.setState({ enderecos: [...addresses] });
-        }).finally(_ => {
+          if (cardData.length > 0) {
+            const cardWithId = cardData.map(data => { return data.creditCard });
+
+            this.setState({ cartoes: [...cardWithId] });
+          }
+        })
+        .finally(_ => {
           this.setState({ isLoading: false });
         });
     });
   };
 
+  creditCardFilter = (data) => {
+    return data.method === "CREDIT_CARD";
+  };
+
   render() {
     return (
       <ImageBackground
-        style={this.enderecosScreenStyle.backgroundImageContent}
+        style={this.cartoesScreenStyle.backgroundImageContent}
         source={require('../../../img/Ellipse.png')}>
         <View style={{ height: 50 }}></View>
         <ScrollView>
@@ -58,7 +65,7 @@ export default class CartoesScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.enderecosScreenStyle.modalStyle}>
+            <View style={this.cartoesScreenStyle.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
@@ -71,7 +78,7 @@ export default class CartoesScreen extends Component {
               justifyContent: 'space-around', width: '90%'
             }}>
               <NavigationEvents
-                onWillFocus={_ => this.obterEnderecos()}
+                onWillFocus={_ => this.obterCartoes()}
               //onDidFocus={payload => console.log('did focus', payload)}
               //onWillBlur={payload => console.log('will blur', payload)}
               //onDidBlur={payload => console.log('did blur', payload)}
@@ -79,15 +86,15 @@ export default class CartoesScreen extends Component {
               <View style={{ height: 20 }}></View>
               <ListaDeEnderecos
                 navigation={this.props.navigation}
-                enderecos={this.state.enderecos}
+                enderecos={this.state.cartoes}
                 comp={this}></ListaDeEnderecos>
             </View>
           </View>
           <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>
             <TouchableOpacity
-              style={this.enderecosScreenStyle.sairButton}
-              onPress={() => { this.props.navigation.navigate('CreateEditAddress') }}>
-              <Text style={this.enderecosScreenStyle.sairButtonText}>ADICIONAR ENDEREÇO</Text>
+              style={this.cartoesScreenStyle.sairButton}
+              onPress={() => { this.props.navigation.navigate('CreateEditCard') }}>
+              <Text style={this.cartoesScreenStyle.addButtonText}>ADICIONAR CARTÃO</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -95,12 +102,12 @@ export default class CartoesScreen extends Component {
     );
   }
 
-  enderecosScreenStyle = StyleSheet.create({
+  cartoesScreenStyle = StyleSheet.create({
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     backgroundImageContent: { width: '100%', height: '100%' },
     sairButton: { marginTop: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    sairButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
-    enderecosFormSizeAndFont:
+    addButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    cartoesFormSizeAndFont:
     {
       fontSize: 18,
       height: 45,
@@ -108,7 +115,7 @@ export default class CartoesScreen extends Component {
       width: '80%',
       paddingLeft: 20
     },
-    enderecosEnderecoSelect:
+    cartoesEnderecoSelect:
     {
       fontSize: 18,
       height: 45,
@@ -123,11 +130,11 @@ export default class CartoesScreen extends Component {
 
 function Item(props) {
   const itemStyle = StyleSheet.create({
-    itemEnderecoText: {
+    itemCartaoText: {
       color: 'black', fontSize: 16,
       textAlign: 'left', width: 240
     },
-    enderecoNome: {
+    cartaoNome: {
       fontWeight: 'bold'
     }
   });
@@ -136,7 +143,7 @@ function Item(props) {
 
   return (
     <View style={{
-      width: 300, height: 110,
+      width: 300, height: 90,
       flexDirection: 'row', borderRadius: 20,
       borderColor: colors.amareloIconeEditar,
       borderWidth: 1, marginBottom: 10
@@ -145,19 +152,14 @@ function Item(props) {
         width: 240, paddingLeft: 20,
         alignItems: 'center', justifyContent: 'center'
       }}>
-        <Text style={[itemStyle.itemEnderecoText, itemStyle.enderecoNome]}>{props.dados.item.name}</Text>
-        <Text style={itemStyle.itemEnderecoText}>{props.dados.item.street}, {props.dados.item.number}</Text>
-        <Text style={itemStyle.itemEnderecoText}>{props.dados.item.district}, Rio de Janeiro - RJ</Text>
-        <Text style={itemStyle.itemEnderecoText}>{props.dados.item.complement}</Text>
+        <Text style={[itemStyle.itemCartaoText, itemStyle.cartaoNome]}>{props.dados.item.brand}</Text>
+        <Text style={itemStyle.itemCartaoText}>{props.dados.item.first6}XXXXXX{props.dados.item.last4}</Text>
       </View>
       <View style={{
         width: 60, backgroundColor: 'transparent',
         alignItems: 'center', justifyContent: 'space-evenly',
         flexDirection: 'column'
       }}>
-        <TouchableOpacity onPress={() => { props.navigation.navigate('CreateEditAddress', { endereco: props.dados.item, editar: true }) }}>
-          <IconComponent name={"ios-create"} size={25} color={colors.amareloIconeEditar} />
-        </TouchableOpacity>
         <TouchableOpacity onPress={() => { excluirItemConfirm(props.dados.item, props.comp, props.size) }}>
           <IconComponent name={"ios-trash"} size={25} color={colors.vermelhoExcluir} />
         </TouchableOpacity>
@@ -191,7 +193,7 @@ const excluirItemConfirm = (item, comp, size) => {
   } else {
     Alert.alert(
       'Não é possível excluir',
-      'É necessário ao menos um endereço',
+      'É necessário ao menos um cartão para pagamento',
       [
         { text: 'OK', onPress: () => { } },
       ],
@@ -204,11 +206,9 @@ const excluirItem = (item, comp) => {
   // TODO: mensagem ao excluir endereços que tem pedidos ativos associados
   comp.setState({ isLoading: true })
 
-  const tokenService = TokenService.getInstance();
-
-  backendRails.delete(`/addresses/${item.id}`, { headers: tokenService.getHeaders() }).then(
+  moipAPI.delete(`/fundinginstruments/${item.id}`, { headers: headers }).then(
     _ => {
-      comp.obterEnderecos();
+      comp.obterCartoes();
       comp.setState({ isLoading: false });
     }
   );

@@ -152,7 +152,7 @@ export default class PerfilScreen extends Component {
                 onPress={() => { this.props.navigation.navigate('Addresses'); }}>Endereço padrão</Text>
               <Text
                 style={this.perfilScreenStyle.perfilEnderecoSelect}
-                onPress={() => { }}>Forma de pagamento padrão</Text>
+                onPress={() => { this.props.navigation.navigate('Cards'); }}>Forma de pagamento padrão</Text>
             </View>
           </View>
           <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>
