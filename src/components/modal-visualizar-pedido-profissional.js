@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { colors } from '../colors';
-import TokenService from '../services/token-service';
 
-export default class VisualizarPedido extends Component {
+export default class VisualizarPedidoProfissional extends Component {
   constructor(props) {
     super(props);
   }
@@ -14,32 +13,21 @@ export default class VisualizarPedido extends Component {
 
   componentDidMount() {
     const order = {};
-    order.description = this.props.pedido.necessidade;
-    order.category = this.props.pedido.categoriaPedido.name;
-    order.urgencia = this.props.pedido.urgencia;
-    order.user_id = TokenService.getInstance().getUser().id;
-    if (this.props.pedido.dataPedido) {
-      order.start_order = this.props.pedido.dataPedido;
-    }
+    order.description = this.props.pedido.description;
+    order.category = this.props.pedido.category.name;
+    // TODO: inserir urgência no backend
+    // order.urgencia = this.props.pedido.urgencia;
+    order.user = this.props.pedido.user.name;
+    order.start_order = new Date(this.props.pedido.start_order);
+    order.address = this.props.pedido.address;
     this.setState({ order });
   }
 
   render() {
     let diaInicio = '';
-    let diaFim = '';
 
     if (this.state.order) {
-
-      if (this.state.order.start_order && this.state.order.urgencia === 'semana') {
-        diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
-
-        const dataFim = new Date(this.props.pedido.dataPedido.toDateString());
-        dataFim.setDate(dataFim.getDate() + 7);
-
-        diaFim = `${dataFim.getDate()}/${+dataFim.getMonth() + 1}/${dataFim.getFullYear()}`;
-      } else if (this.state.order.start_order && this.state.order.urgencia === 'definir-data') {
-        diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
-      }
+      diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
 
       return (
         <View style={{
@@ -58,19 +46,14 @@ export default class VisualizarPedido extends Component {
                 <Text style={this.visualizarPedidoStyle.titulos}>Descrição:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.description}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Fotos:</Text>
-                <Text style={this.visualizarPedidoStyle.titulos}>Data:</Text>{
-                  (() => {
-                    switch (this.state.order.urgencia) {
-                      case 'semana':
-                        return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim} (semanal)</Text>;
-                      case 'urgente':
-                        return <Text style={this.visualizarPedidoStyle.textos}>Urgente</Text>;
-                      case 'definir-data':
-                        return <Text style={this.visualizarPedidoStyle.textos}>{diaInicio} (data definida)</Text>;
-                      default:
-                        return null;
-                    }
-                  })()}
+                <Text style={this.visualizarPedidoStyle.titulos}>Nome cliente:</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.user}</Text>
+                <Text style={this.visualizarPedidoStyle.titulos}>Endereço:</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.street}, ${this.state.order.address.number}`}</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.complement}, ${this.state.order.address.cep}`}</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.district}`}</Text>
+                <Text style={this.visualizarPedidoStyle.titulos}>Data:</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{diaInicio} (data definida)</Text>
               </View>
             </ScrollView>
             <View style={{ alignItems: 'center' }}>

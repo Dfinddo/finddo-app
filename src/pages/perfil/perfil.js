@@ -23,6 +23,18 @@ export default class PerfilScreen extends Component {
     super(props);
   }
 
+  state = {
+    nomeCompleto: '',
+    email: '',
+    telefone: '',
+    cpf: '',
+  };
+
+  componentDidMount() {
+    const userData = TokenService.getInstance().getUser();
+    this.setState({ email: userData.email, nomeCompleto: userData.name, cpf: userData.cpf, telefone: userData.cellphone });
+  }
+
   limparDadosLogin = () => {
     AsyncStorage.removeItem('userToken');
     AsyncStorage.removeItem('user');
@@ -82,7 +94,7 @@ export default class PerfilScreen extends Component {
                     style={this.perfilScreenStyle.perfilFormSizeAndFont}
                     placeholder="Nome Completo"
                     keyboardType="default"
-                    value={""}
+                    value={this.state.nomeCompleto}
                     editable={false}
                   />
                   <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }} />
@@ -95,11 +107,11 @@ export default class PerfilScreen extends Component {
                     style={this.perfilScreenStyle.perfilFormSizeAndFont}
                     placeholder="E-mail"
                     keyboardType="email-address"
-                    value={"teste@email.com"}
+                    value={this.state.email}
                     editable={false}
                   />
                   <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-                    <TouchableOpacity onPress={() => console.log('email')}>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('EditField', { tipo: 'email', titulo: 'Email', valor: this.state.email })}>
                       <IconComponent name={iconName} size={25} color={tintColor} />
                     </TouchableOpacity>
                   </View>
@@ -113,10 +125,10 @@ export default class PerfilScreen extends Component {
                     placeholder="Telefone"
                     keyboardType="phone-pad"
                     editable={false}
-                    value={"0000000000"}
+                    value={this.state.telefone}
                   />
                   <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-                    <TouchableOpacity onPress={() => console.log('telefone')}>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('EditField', { tipo: 'telefone', titulo: 'Telefone', valor: this.state.telefone })}>
                       <IconComponent name={iconName} size={25} color={tintColor} />
                     </TouchableOpacity>
                   </View>
@@ -129,7 +141,7 @@ export default class PerfilScreen extends Component {
                     style={this.perfilScreenStyle.perfilFormSizeAndFont}
                     placeholder="CPF"
                     keyboardType="number-pad"
-                    value={"111.111.111-11"}
+                    value={this.state.cpf}
                     editable={false}
                   />
                   <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }} />
@@ -137,7 +149,10 @@ export default class PerfilScreen extends Component {
               </View>
               <Text
                 style={this.perfilScreenStyle.perfilEnderecoSelect}
-                onPress={() => { }/*this.props.navigation.navigate('EsqueciSenhaEmail')*/}>Endereço Padrão:</Text>
+                onPress={() => { this.props.navigation.navigate('Addresses'); }}>Endereço padrão</Text>
+              <Text
+                style={this.perfilScreenStyle.perfilEnderecoSelect}
+                onPress={() => { this.props.navigation.navigate('Cards'); }}>Forma de pagamento padrão</Text>
             </View>
           </View>
           <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>

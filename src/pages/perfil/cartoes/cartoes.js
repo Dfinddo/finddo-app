@@ -1,0 +1,215 @@
+import React, { Component } from 'react';
+import {
+  TouchableOpacity, View,
+  ImageBackground, ScrollView,
+  Text, StyleSheet, FlatList, Modal,
+  ActivityIndicator,
+  Alert
+} from 'react-native';
+import { colors } from '../../../colors';
+import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
+import { NavigationEvents } from 'react-navigation';
+import TokenService from '../../../services/token-service';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import moipAPI, { headers } from '../../../services/moip-api';
+
+export default class CartoesScreen extends Component {
+  static navigationOptions = {
+    headerTransparent: true,
+    headerTitle: <HeaderFundoTransparente />
+  };
+
+  constructor(props) {
+    super(props);
+  }
+
+  state = {
+    cartoes: [],
+    isLoading: false,
+  };
+
+  obterCartoes = () => {
+    this.setState({ isLoading: true }, () => {
+      const tokenService = TokenService.getInstance();
+
+      moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headers })
+        .then((data) => {
+          const clientData = data.data;
+          const cardData = clientData.fundingInstruments.filter(data => this.creditCardFilter(data));
+
+          if (cardData.length > 0) {
+            const cardWithId = cardData.map(data => { return data.creditCard });
+
+            this.setState({ cartoes: [...cardWithId] });
+          }
+        })
+        .finally(_ => {
+          this.setState({ isLoading: false });
+        });
+    });
+  };
+
+  creditCardFilter = (data) => {
+    return data.method === "CREDIT_CARD";
+  };
+
+  render() {
+    return (
+      <ImageBackground
+        style={this.cartoesScreenStyle.backgroundImageContent}
+        source={require('../../../img/Ellipse.png')}>
+        <View style={{ height: 50 }}></View>
+        <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoading}
+          >
+            <View style={this.cartoesScreenStyle.modalStyle}>
+              <View>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </View>
+          </Modal>
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{
+              backgroundColor: colors.branco, flexDirection: 'column',
+              height: 500, alignItems: 'center',
+              justifyContent: 'space-around', width: '90%'
+            }}>
+              <NavigationEvents
+                onWillFocus={_ => this.obterCartoes()}
+              //onDidFocus={payload => console.log('did focus', payload)}
+              //onWillBlur={payload => console.log('will blur', payload)}
+              //onDidBlur={payload => console.log('did blur', payload)}
+              />
+              <View style={{ height: 20 }}></View>
+              <ListaDeEnderecos
+                navigation={this.props.navigation}
+                enderecos={this.state.cartoes}
+                comp={this}></ListaDeEnderecos>
+            </View>
+          </View>
+          <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>
+            <TouchableOpacity
+              style={this.cartoesScreenStyle.sairButton}
+              onPress={() => { this.props.navigation.navigate('CreateEditCard') }}>
+              <Text style={this.cartoesScreenStyle.addButtonText}>ADICIONAR CARTÃO</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </ImageBackground>
+    );
+  }
+
+  cartoesScreenStyle = StyleSheet.create({
+    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    backgroundImageContent: { width: '100%', height: '100%' },
+    sairButton: { marginTop: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    addButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    cartoesFormSizeAndFont:
+    {
+      fontSize: 18,
+      height: 45,
+      textAlign: 'left',
+      width: '80%',
+      paddingLeft: 20
+    },
+    cartoesEnderecoSelect:
+    {
+      fontSize: 18,
+      height: 45,
+      textAlign: 'center',
+      width: 300,
+      textDecorationLine: 'underline',
+      textAlignVertical: 'bottom'
+    },
+    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  });
+}
+
+function Item(props) {
+  const itemStyle = StyleSheet.create({
+    itemCartaoText: {
+      color: 'black', fontSize: 16,
+      textAlign: 'left', width: 240
+    },
+    cartaoNome: {
+      fontWeight: 'bold'
+    }
+  });
+
+  let IconComponent = Ionicons;
+
+  return (
+    <View style={{
+      width: 300, height: 90,
+      flexDirection: 'row', borderRadius: 20,
+      borderColor: colors.amareloIconeEditar,
+      borderWidth: 1, marginBottom: 10
+    }}>
+      <View style={{
+        width: 240, paddingLeft: 20,
+        alignItems: 'center', justifyContent: 'center'
+      }}>
+        <Text style={[itemStyle.itemCartaoText, itemStyle.cartaoNome]}>{props.dados.item.brand}</Text>
+        <Text style={itemStyle.itemCartaoText}>{props.dados.item.first6}XXXXXX{props.dados.item.last4}</Text>
+      </View>
+      <View style={{
+        width: 60, backgroundColor: 'transparent',
+        alignItems: 'center', justifyContent: 'space-evenly',
+        flexDirection: 'column'
+      }}>
+        <TouchableOpacity onPress={() => { excluirItemConfirm(props.dados.item, props.comp, props.size) }}>
+          <IconComponent name={"ios-trash"} size={25} color={colors.vermelhoExcluir} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+function ListaDeEnderecos(props) {
+  return (
+    <FlatList
+      data={props.enderecos}
+      renderItem={(item) => <Item dados={item} size={props.enderecos.length} navigation={props.navigation} comp={props.comp} />}
+      keyExtractor={item => item.id}
+    />
+  );
+}
+
+const excluirItemConfirm = (item, comp, size) => {
+  console.log(item);
+  if (size > 1) {
+    Alert.alert(
+      item.name,
+      'Deseja excluir?',
+      [
+        { text: 'Não', onPress: () => { } },
+        { text: 'Sim', onPress: () => { excluirItem(item, comp) } },
+      ],
+      { cancelable: false },
+    );
+  } else {
+    Alert.alert(
+      'Não é possível excluir',
+      'É necessário ao menos um cartão para pagamento',
+      [
+        { text: 'OK', onPress: () => { } },
+      ],
+      { cancelable: false },
+    );
+  }
+}
+
+const excluirItem = (item, comp) => {
+  // TODO: mensagem ao excluir endereços que tem pedidos ativos associados
+  comp.setState({ isLoading: true })
+
+  moipAPI.delete(`/fundinginstruments/${item.id}`, { headers: headers }).then(
+    _ => {
+      comp.obterCartoes();
+      comp.setState({ isLoading: false });
+    }
+  );
+}

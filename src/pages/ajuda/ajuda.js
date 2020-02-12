@@ -9,6 +9,7 @@ import HeaderTransparenteSemHistorico from '../../components/header-transparente
 import { colors } from '../../colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { termos } from '../cadastros/termos';
+import { sobre } from './sobre-o-app';
 
 export default class AjudaScreen extends Component {
   static navigationOptions = {
@@ -22,6 +23,7 @@ export default class AjudaScreen extends Component {
 
   state = {
     faleConoscoIsOpened: false,
+    termosIsOpened: false,
     sobreIsOpened: false,
   };
 
@@ -53,8 +55,15 @@ export default class AjudaScreen extends Component {
               height: 500
             }}>
               <AccordianInfoApp
+                titulo={'Sobre o App'}
                 opened={this.state.sobreIsOpened}
                 onPress={() => this.changeSobreIsOpenedState()}
+                content={sobre}></AccordianInfoApp>
+              <View style={{ height: 5 }} />
+              <AccordianInfoApp
+                titulo={'Termos de uso'}
+                opened={this.state.termosIsOpened}
+                onPress={() => this.changeTermosIsOpenedState()}
                 content={termos}></AccordianInfoApp>
               <View style={{ height: 5 }} />
               <AccordianInfoContato
@@ -68,6 +77,11 @@ export default class AjudaScreen extends Component {
       </ImageBackground>
     );
   }
+
+  changeTermosIsOpenedState = () => {
+    const value = this.state.termosIsOpened;
+    this.setState({ termosIsOpened: !value });
+  };
 
   changeSobreIsOpenedState = () => {
     const value = this.state.sobreIsOpened;
@@ -98,7 +112,7 @@ function AccordianInfoApp(props) {
           <Text style={{
             color: colors.preto, fontSize: 22,
             fontWeight: 'bold'
-          }}>Sobre o App</Text>
+          }}>{props.titulo}</Text>
         </View>
         <View style={{
           width: 40, alignItems: 'center',
@@ -126,7 +140,7 @@ function AccordianInfoApp(props) {
             <Text style={{
               color: colors.preto, fontSize: 22,
               fontWeight: 'bold'
-            }}>Sobre o App</Text>
+            }}>{props.titulo}</Text>
           </View>
           <View style={{
             width: 40, alignItems: 'center',
