@@ -16,6 +16,7 @@ export default class UserDTO {
     const district = dto.bairro;
     const state = dto.estado;
     const city = dto.cidade;
+    const selected = true;
 
     delete dto.rua;
     delete dto.numero;
@@ -25,7 +26,7 @@ export default class UserDTO {
     delete dto.estado;
     delete dto.cidade;
 
-    const address = { name, street, number, complement, cep, district, state, city };
+    const address = { name, street, number, complement, cep, district, state, city, selected };
 
     return { user: dto, address };
   }

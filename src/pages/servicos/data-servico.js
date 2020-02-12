@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   StyleSheet, TouchableOpacity,
   Text, Picker,
-  View, ImageBackground
+  View, ImageBackground, Modal
 } from 'react-native';
 import CalendarPicker from 'react-native-calendar-picker';
 import { colors } from '../../colors';
@@ -20,7 +20,8 @@ export default class DataServico extends Component {
       hora: null,
       necessidade: null,
       categoriaPedido: null,
-      urgencia: ''
+      urgencia: '',
+      formInvalid: false
     };
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -39,8 +40,23 @@ export default class DataServico extends Component {
       selectedStartDate: `${date._i.day}/${+date._i.month + 1}/${date._i.year}`,
     });
   }
+
+  validarDataPedido = () => {
+    if (!!this.state.selectedStartDate === false) {
+      this.setState({ formInvalid: true });
+    } else {
+      const dateSplit = this.state.selectedStartDate.split('/');
+      this.props
+        .navigation.navigate('FotosPedido',
+          {
+            necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
+            dataPedido: new Date(`${dateSplit[1]}/${dateSplit[0]}/${dateSplit[2]}`),
+            urgencia: this.state.urgencia
+          });
+    }
+  }
+
   render() {
-    const { selectedStartDate } = this.state;
     const initialDate = new Date();
     const finalDate = new Date();
     finalDate.setDate(initialDate.getDate() + 6);
@@ -49,6 +65,29 @@ export default class DataServico extends Component {
         style={this.dataStyles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.formInvalid}
+          ><View
+            style={{
+              flex: 1, alignItems: 'center',
+              justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
+            }}>
+              <View style={this.dataStyles.modalDialogContent}>
+                <Text style={this.dataStyles.modalErrosTitulo}>Erros:</Text>
+                <Text style={{ fontSize: 18, marginVertical: 10 }}>{'Por favor defina uma data'}</Text>
+                <TouchableOpacity style={{
+                  width: 320, height: 45,
+                  backgroundColor: colors.verdeFinddo, alignItems: 'center',
+                  justifyContent: 'center', borderRadius: 20,
+                  marginBottom: 10
+                }} onPress={() => this.setState({ formInvalid: false })}>
+                  <Text style={{ fontSize: 18, color: colors.branco }}>VOLTAR</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
           <View style={{
             flex: 1, alignItems: 'center',
             justifyContent: 'flex-start', height: 500,
@@ -109,16 +148,7 @@ export default class DataServico extends Component {
           <View style={{ alignItems: 'center' }}>
             <TouchableOpacity
               style={this.dataStyles.continuarButton}
-              onPress={() => {
-                const dateSplit = this.state.selectedStartDate.split('/');
-                this.props
-                  .navigation.navigate('FotosPedido',
-                    {
-                      necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
-                      dataPedido: new Date(`${dateSplit[1]}/${dateSplit[0]}/${dateSplit[2]}`),
-                      urgencia: this.state.urgencia
-                    });
-              }}>
+              onPress={() => this.validarDataPedido()}>
               <Text style={this.dataStyles.continuarButtonText}>CONTINUAR</Text>
             </TouchableOpacity>
           </View>
@@ -148,5 +178,11 @@ export default class DataServico extends Component {
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
     },
+    modalDialogContent: {
+      backgroundColor: colors.branco, width: 340,
+      borderRadius: 18, opacity: 1,
+      alignItems: 'center'
+    },
+    modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
   });
 }

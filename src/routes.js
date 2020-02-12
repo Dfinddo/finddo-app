@@ -20,6 +20,16 @@ import TelaFinalPedidoScreen from './pages/acompanhamento-finddo-pay/tela-final-
 import DataServico from './pages/servicos/data-servico';
 import './config/StatusBarConfig';
 import AjudaScreen from './pages/ajuda/ajuda';
+import IndexProfissional from './pages/profissional_servicos/index-profissional';
+import RedirecionadorIndex from './pages/redirecionador/redirecionador';
+import RedirecionadorPedidos from './pages/redirecionador/redirecionador-pedidos';
+import MeusPedidosProfissional from './pages/profissional_servicos/meus-pedidos-profissional';
+import EditarCampoPerfil from './pages/perfil/editar-campo-perfil';
+import EnderecosScreen from './pages/perfil/enderecos';
+import { CameraPedidoComponent } from './pages/servicos/camera-component';
+import FormEnderecoScreen from './pages/perfil/form-endereco';
+import CartoesScreen from './pages/perfil/cartoes/cartoes';
+import FormCartaoScreen from './pages/perfil/cartoes/form-cartao';
 
 const AppStack = createStackNavigator(
   {
@@ -29,10 +39,30 @@ const AppStack = createStackNavigator(
     // MeusPedidos: MeusPedidos,
     // AcompanhamentoPedido: AcompanhamentoPedido,
     // Acompanhamento: TelaFinalPedidoScreen,
-    DefinirData: DataServico
+    DefinirData: DataServico,
+    CameraPedido: CameraPedidoComponent,
+
+    Redirecionador: RedirecionadorIndex,
+    /* rotas do profissional */
+
+    IndexProfissional: IndexProfissional
   },
   {
-    initialRouteName: 'Services',
+    initialRouteName: 'Redirecionador',
+    navigationOptions: ({ navigation }) => {
+
+      let tabBarVisible = true;
+
+      let routeName = navigation.state.routes[navigation.state.index].routeName
+
+      if (routeName == 'CameraPedido') {
+        tabBarVisible = false
+      }
+
+      return {
+        tabBarVisible,
+      }
+    }
   }
 );
 
@@ -47,14 +77,24 @@ const ServicosStack = createStackNavigator(
 const MeusPedidosStack = createStackNavigator(
   {
     MeusPedidos: MeusPedidos,
+    RedirecionadorPedidos: RedirecionadorPedidos,
+    MeusPedidosProfissional: MeusPedidosProfissional
     // AcompanhamentoPedido: AcompanhamentoPedido,
     // Acompanhamento: TelaFinalPedidoScreen,
   },
-  { initialRouteName: 'MeusPedidos' }
+  { initialRouteName: 'RedirecionadorPedidos' }
 );
 
 const PerfilStack = createStackNavigator(
-  { Profile: PerfilScreen }
+  {
+    Profile: PerfilScreen,
+    EditField: EditarCampoPerfil,
+    Addresses: EnderecosScreen,
+    CreateEditAddress: FormEnderecoScreen,
+    Cards: CartoesScreen,
+    CreateEditCard: FormCartaoScreen
+  },
+  { initialRouteName: 'Profile' }
 );
 
 const AjudaStack = createStackNavigator(

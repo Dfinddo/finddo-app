@@ -8,9 +8,10 @@ import {
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
-import { StackActions, NavigationActions } from 'react-navigation';
+import { StackActions, NavigationActions, NavigationEvents } from 'react-navigation';
 import { colors } from '../../colors';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
+import FotoService from '../../services/foto-service';
 
 export default class FotosPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -24,12 +25,22 @@ export default class FotosPedido extends Component {
     isLoading: false,
     dataPedido: null,
     urgencia: '',
-    isConfirming: false
+    isConfirming: false,
+    foto1: require('../../img/add_foto_problema.png')
   };
 
   componentDidMount() {
     this.obterDadosPrimeiraPartePedido();
   };
+
+  obterFoto1 = () => {
+    const fotoService = FotoService.getInstance();
+    const photo = fotoService.getFotoData();
+
+    if (photo) {
+      this.setState({ foto1: photo });
+    }
+  }
 
   obterDadosPrimeiraPartePedido = () => {
     const { navigation } = this.props;
@@ -52,6 +63,10 @@ export default class FotosPedido extends Component {
 
   confirmarPedido = () => {
     this.setState({ isConfirming: true });
+  };
+
+  fecharDialogConfirmacaoSemConfirmarPedido = () => {
+    this.setState({ isConfirming: false });
   };
 
   salvarAposPedidoConfirmado = () => {
@@ -79,7 +94,7 @@ export default class FotosPedido extends Component {
           key: 'Finddo'
         });
         this.props.navigation.dispatch(resetAction);
-        this.props.navigation.navigate('AcompanhamentoPedido', { id: response.data.id });
+        this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
       })
       .catch((error) => {
         if (error.response) {
@@ -138,9 +153,18 @@ export default class FotosPedido extends Component {
               animationType="slide"
               transparent={true}
               visible={this.state.isConfirming}>
-              <VisualizarPedido pedido={this.state} onConfirm={() => this.salvarAposPedidoConfirmado()}></VisualizarPedido>
+              <VisualizarPedido
+                pedido={this.state}
+                onConfirm={() => this.salvarAposPedidoConfirmado()}
+                onCancel={() => this.fecharDialogConfirmacaoSemConfirmarPedido()}></VisualizarPedido>
             </Modal>
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
+              <NavigationEvents
+                onWillFocus={_ => this.obterFoto1()}
+              //onDidFocus={payload => console.log('did focus', payload)}
+              //onWillBlur={payload => console.log('will blur', payload)}
+              //onDidBlur={payload => console.log('did blur', payload)}
+              />
               <Image source={this.state.imageServicoUrl}
                 style={{ width: '100%' }} />
               <View style={this.fotosPedidoStyles.formPedidoContainer}>
@@ -148,10 +172,12 @@ export default class FotosPedido extends Component {
                   <Text style={{ fontSize: 18, textAlign: 'center', marginTop: 10 }}>
                     Nos ajude com fotos do problema (opcional)
                   </Text>
-                  <TouchableOpacity style={{ alignItems: 'center', marginTop: 30 }}>
+                  <TouchableOpacity onPress={() => {
+                    this.props.navigation.navigate('CameraPedido');
+                  }} style={{ alignItems: 'center', marginTop: 30 }}>
                     <Image
                       style={{ width: 120, height: 120 }}
-                      source={require('../../img/add_foto_problema.png')} />
+                      source={this.state.foto1} />
                   </TouchableOpacity>
                   <View style={this.fotosPedidoStyles.fotosProblemaContainer}>
                     <TouchableOpacity>
@@ -188,8 +214,10 @@ export default class FotosPedido extends Component {
 
   fotosPedidoStyles = StyleSheet.create({
     loaderContainer: {
+      flex: 1,
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      backgroundColor: 'rgba(255,255,255,0.5)'
     },
     imagemCategoriaContainer: {
       height: 540,
