@@ -35,12 +35,14 @@ export default class CartoesScreen extends Component {
       moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headers })
         .then((data) => {
           const clientData = data.data;
-          const cardData = clientData.fundingInstruments.filter(data => this.creditCardFilter(data));
+          if (clientData.fundingInstruments) {
+            const cardData = clientData.fundingInstruments.filter(data => this.creditCardFilter(data));
 
-          if (cardData.length > 0) {
-            const cardWithId = cardData.map(data => { return data.creditCard });
+            if (cardData.length > 0) {
+              const cardWithId = cardData.map(data => { return data.creditCard });
 
-            this.setState({ cartoes: [...cardWithId] });
+              this.setState({ cartoes: [...cardWithId] });
+            }
           }
         })
         .finally(_ => {
@@ -179,11 +181,10 @@ function ListaDeEnderecos(props) {
 }
 
 const excluirItemConfirm = (item, comp, size) => {
-  console.log(item);
   if (size > 1) {
     Alert.alert(
-      item.name,
-      'Deseja excluir?',
+      `Deseja excluir ${item.brand}?`,
+      `O cartão não poderá ser cadastrado novamente.`,
       [
         { text: 'Não', onPress: () => { } },
         { text: 'Sim', onPress: () => { excluirItem(item, comp) } },

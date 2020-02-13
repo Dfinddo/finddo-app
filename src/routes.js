@@ -30,6 +30,7 @@ import { CameraPedidoComponent } from './pages/servicos/camera-component';
 import FormEnderecoScreen from './pages/perfil/form-endereco';
 import CartoesScreen from './pages/perfil/cartoes/cartoes';
 import FormCartaoScreen from './pages/perfil/cartoes/form-cartao';
+import ValorServicoScreen from './pages/acompanhamento-finddo-pay/tela-valor';
 
 const AppStack = createStackNavigator(
   {
@@ -70,6 +71,7 @@ const ServicosStack = createStackNavigator(
   {
     AcompanhamentoPedido: AcompanhamentoPedido,
     Acompanhamento: TelaFinalPedidoScreen,
+    Cobranca: ValorServicoScreen
   },
   { initialRouteName: 'AcompanhamentoPedido' }
 );

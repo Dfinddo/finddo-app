@@ -5,7 +5,6 @@ import {
   Text, Image
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class TelaFinalPedidoScreen extends Component {
   static navigationOptions = {
@@ -100,11 +99,7 @@ export default class TelaFinalPedidoScreen extends Component {
                   height: 45, alignItems: 'center',
                   justifyContent: 'center', borderRadius: 20
                 }} onPress={() => {
-                  const resetAction = StackActions.reset({
-                    index: 0,
-                    actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
-                  });
-                  this.props.navigation.dispatch(resetAction);
+                  this.props.navigation.navigate('Cobranca');
                 }}>
                 <Text style={{ fontSize: 18, color: 'white' }}>CONFIRMAR PAGAMENTO</Text>
               </TouchableOpacity>

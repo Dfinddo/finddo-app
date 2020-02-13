@@ -190,6 +190,9 @@ export default class AcompanhamentoPedido extends Component {
       case 'a_caminho':
         novoStatus = 'em_servico';
         break;
+      case 'em_servico':
+        novoStatus = 'finalizado';
+        break;
       default:
         break;
     }
