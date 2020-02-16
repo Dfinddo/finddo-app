@@ -135,6 +135,7 @@ export default class LoginScreen extends Component {
               <TextInput
                 style={this.loginScreenStyle.loginFormSizeAndFont}
                 placeholder="E-mail"
+                autoCapitalize="none"
                 keyboardType="email-address"
                 onChangeText={
                   (usuario) => {
@@ -164,7 +165,7 @@ export default class LoginScreen extends Component {
             <Text>
               Ainda não é cadastrado?
             <Text> </Text>
-            <Text
+              <Text
                 style={this.loginScreenStyle.cadastreSe}
                 onPress={() => this.props.navigation.navigate('EscolhaTipo')}>Cadastre-se</Text>
             </Text>
