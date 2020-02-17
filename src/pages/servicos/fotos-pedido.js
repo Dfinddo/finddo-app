@@ -85,7 +85,14 @@ export default class FotosPedido extends Component {
       order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.dataPedido.getHours()}:${this.state.dataPedido.getMinutes()}:${this.state.dataPedido.getSeconds()}`;
     }
 
-    backendRails.post('/orders', { order }, { headers: TokenService.getInstance().getHeaders() })
+    const images = [];
+    const image = {};
+    image.base64 = this.state.foto1.base64;
+    image.file_name = 'foto1';
+    
+    images.push(image);
+
+    backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
       .then((response) => {
         this.setState({ isLoading: false });
         const resetAction = StackActions.reset({
@@ -160,8 +167,8 @@ export default class FotosPedido extends Component {
             </Modal>
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
               <NavigationEvents
-                onWillFocus={_ => this.obterFoto1()}
-              //onDidFocus={payload => console.log('did focus', payload)}
+                //onWillFocus={}
+                onDidFocus={_ => this.obterFoto1()}
               //onWillBlur={payload => console.log('will blur', payload)}
               //onDidBlur={payload => console.log('did blur', payload)}
               />
