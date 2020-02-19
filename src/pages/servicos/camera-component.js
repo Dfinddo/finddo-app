@@ -52,8 +52,6 @@ export class CameraPedidoComponent extends Component {
     if (this.camera) {
       const options = { quality: 0.5, base64: true };
       this.camera.takePictureAsync(options).then(data => {
-        console.log(data);
-
         const fotoService = FotoService.getInstance();
         fotoService.setFotoData(data);
         const popAction = StackActions.pop({

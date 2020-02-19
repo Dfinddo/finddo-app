@@ -177,7 +177,6 @@ function ListaDeEnderecos(props) {
 }
 
 const excluirItemConfirm = (item, comp, size) => {
-  console.log(item);
   if (size > 1) {
     Alert.alert(
       item.name,

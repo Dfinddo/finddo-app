@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, FlatList, Image } from 'react-native';
 import { colors } from '../colors';
 import TokenService from '../services/token-service';
 
@@ -58,6 +58,16 @@ export default class VisualizarPedido extends Component {
                 <Text style={this.visualizarPedidoStyle.titulos}>Descrição:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.description}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Fotos:</Text>
+                {
+                  (() => {
+                    const fotos = this.props.pedido.fotosPedido.map((foto, index) => { return { id: "" + index, foto }; });
+                    return (
+                      <FlatList data={fotos} renderItem={({ item }) => {
+                        return (<Image source={item.foto.image} style={{ width: 120, height: 120 }} />);
+                      }} />
+                    );
+                  })()
+                }
                 <Text style={this.visualizarPedidoStyle.titulos}>Data:</Text>{
                   (() => {
                     switch (this.state.order.urgencia) {

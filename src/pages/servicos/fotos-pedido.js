@@ -13,6 +13,8 @@ import { colors } from '../../colors';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
 import FotoService from '../../services/foto-service';
 
+const fotoDefault = require('../../img/add_foto_problema.png');
+
 export default class FotosPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: `${navigation.state.params.categoriaPedido.name}`,
@@ -28,8 +30,9 @@ export default class FotosPedido extends Component {
     horaFim: null,
     urgencia: '',
     isConfirming: false,
-    foto1: require('../../img/add_foto_problema.png'),
-    foto1Setada: false
+    foto1: fotoDefault,
+    foto1Setada: false,
+    fotosPedido: []
   };
 
   componentDidMount() {
@@ -41,7 +44,13 @@ export default class FotosPedido extends Component {
     const photo = fotoService.getFotoData();
 
     if (photo) {
-      this.setState({ foto1: photo });
+      const images = this.state.fotosPedido;
+
+      images.push({ image: photo, file_name: 'foto1' });
+
+      this.setState({ foto1: photo, foto1Setada: true, isLoading: false, fotosPedido: [...images] });
+    } else {
+      this.setState({ isLoading: false });
     }
   }
 
@@ -92,61 +101,52 @@ export default class FotosPedido extends Component {
       order.urgency = 'urgent';
     }
 
-    const images = [];
-    const image = {};
-    image.base64 = this.state.foto1.base64;
-    image.file_name = 'foto1';
+    const images = this.state.fotosPedido.map((foto) => { return { base64: foto.image.base64, file_name: foto.file_name } });
 
-    images.push(image);
-
-    this.setState({ isLoading: false });
-
-    console.log(JSON.stringify({ order, images }));
-
-    // backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
-    //   .then((response) => {
-    //     this.setState({ isLoading: false });
-    //     const resetAction = StackActions.reset({
-    //       index: 0,
-    //       actions: [NavigationActions.navigate({ routeName: 'Services' })],
-    //       key: 'Finddo'
-    //     });
-    //     this.props.navigation.dispatch(resetAction);
-    //     this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
-    //   })
-    //   .catch((error) => {
-    //     if (error.response) {
-    //       /*
-    //        * The request was made and the server responded with a
-    //        * status code that falls out of the range of 2xx
-    //        */
-    //       Alert.alert(
-    //         'Falha ao realizar operação',
-    //         'Revise seus dados e tente novamente',
-    //         [
-    //           { text: 'OK', onPress: () => { } },
-    //         ],
-    //         { cancelable: false },
-    //       );
-    //     } else if (error.request) {
-    //       /*
-    //        * The request was made but no response was received, `error.request`
-    //        * is an instance of XMLHttpRequest in the browser and an instance
-    //        * of http.ClientRequest in Node.js
-    //        */
-    //       Alert.alert(
-    //         'Falha ao se conectar',
-    //         'Verifique sua conexão e tente novamente',
-    //         [
-    //           { text: 'OK', onPress: () => { } },
-    //         ],
-    //         { cancelable: false },
-    //       );
-    //     } else {
-    //       /* Something happened in setting up the request and triggered an Error */
-    //     }
-    //     this.setState({ isLoading: false });
-    //   });
+    backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
+      .then((response) => {
+        this.setState({ isLoading: false });
+        const resetAction = StackActions.reset({
+          index: 0,
+          actions: [NavigationActions.navigate({ routeName: 'Services' })],
+          key: 'Finddo'
+        });
+        this.props.navigation.dispatch(resetAction);
+        this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
+      })
+      .catch((error) => {
+        if (error.response) {
+          /*
+           * The request was made and the server responded with a
+           * status code that falls out of the range of 2xx
+           */
+          Alert.alert(
+            'Falha ao realizar operação',
+            'Revise seus dados e tente novamente',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+        } else if (error.request) {
+          /*
+           * The request was made but no response was received, `error.request`
+           * is an instance of XMLHttpRequest in the browser and an instance
+           * of http.ClientRequest in Node.js
+           */
+          Alert.alert(
+            'Falha ao se conectar',
+            'Verifique sua conexão e tente novamente',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+        } else {
+          /* Something happened in setting up the request and triggered an Error */
+        }
+        this.setState({ isLoading: false });
+      });
   }
 
   render() {
@@ -178,8 +178,13 @@ export default class FotosPedido extends Component {
             </Modal>
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
               <NavigationEvents
-                //onWillFocus={}
-                onDidFocus={_ => this.obterFoto1()}
+                onWillFocus={_ => {
+                  this.setState({ isLoading: true }, () => {
+                    setTimeout(() => { this.obterFoto1() }, 1000);
+                  })
+                  // this.setState({ isLoading: true }, () => { this.obterFoto1() });
+                }}
+              //onDidFocus={_ => this.obterFoto1()}
               //onWillBlur={payload => console.log('will blur', payload)}
               //onDidBlur={payload => console.log('did blur', payload)}
               />
