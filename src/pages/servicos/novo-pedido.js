@@ -18,10 +18,9 @@ function Item({ title }) {
 }
 
 const urgenciaValues = [
-  { text: 'Para quando precisa do serviço?', value: '' },
-  { text: 'Urgente', value: 'urgente' },
-  { text: 'Durante a semana', value: 'semana' },
-  { text: 'Definir data', value: 'definir-data' }
+  { text: 'Grau de necessidade do servico', value: '' },
+  { text: 'Com urgência', value: 'definir-data' },
+  { text: 'Sem urgência', value: 'semana' },
 ];
 
 export default class NovoPedido extends Component {
@@ -53,7 +52,8 @@ Suspendisse dignissim a turpis vitae laoreet. Interdum et malesuada fames ac ant
     ],
     imageServicoUrl: require('../../img/jacek-dylag-unsplash.png'),
     formInvalid: false,
-    formErrors: []
+    formErrors: [],
+    confirmarEmergencia: false
   };
 
   componentDidMount() {
@@ -89,7 +89,7 @@ Suspendisse dignissim a turpis vitae laoreet. Interdum et malesuada fames ac ant
     }
 
     if (this.state.urgencia === '') {
-      urgenciaErrors.push('Por favor informe o prazo para a realização do serviço.');
+      urgenciaErrors.push('Por favor informe o grau de urgência para a realização do serviço.');
     }
 
     if (necessidadeErrors.length > 0) {
@@ -103,25 +103,13 @@ Suspendisse dignissim a turpis vitae laoreet. Interdum et malesuada fames ac ant
       this.setState({ formErrors: [...errosArr] });
       this.setState({ formInvalid: true });
     } else if (this.state.urgencia === 'definir-data') {
-      this.props
-        .navigation.navigate('DefinirData',
-          {
-            necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
-            urgencia: this.state.urgencia
-          });
+      this.setState({ confirmarEmergencia: true });
     } else if (this.state.urgencia === 'semana') {
       this.props
         .navigation.navigate('FotosPedido',
           {
             necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
             dataPedido: new Date(), urgencia: this.state.urgencia
-          });
-    } else {
-      this.props
-        .navigation.navigate('FotosPedido',
-          {
-            necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
-            urgencia: this.state.urgencia
           });
     }
   }
@@ -159,6 +147,33 @@ Suspendisse dignissim a turpis vitae laoreet. Interdum et malesuada fames ac ant
               </View>
             </View>
           </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.confirmarEmergencia}
+          >
+            <View style={this.novoPedidoStyle.modalBase}>
+              <View style={this.novoPedidoStyle.modalDialog}>
+                <View style={this.novoPedidoStyle.modalDialogContent}>
+                  <Text> </Text>
+                  <Text style={{ fontSize: 18 }}>Faremos o máximo possível para lhe atender o quanto antes.</Text>
+                  <Text style={{ fontSize: 18 }}>Por favor nos informe uma data e uma faixa de horário ideais para o atendimento.</Text>
+                  <TouchableOpacity
+                    style={this.novoPedidoStyle.modalErrosBotaoContinuar}
+                    onPress={() => this.setState({ confirmarEmergencia: false }, () => {
+                      this.props
+                        .navigation.navigate('DefinirData',
+                          {
+                            necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
+                            urgencia: this.state.urgencia
+                          });
+                    })}>
+                    <Text style={this.novoPedidoStyle.continuarButtonText}>CONTINUAR</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
           <View style={this.novoPedidoStyle.pedidoForm}>
             <Image
               style={{ width: '100%' }}
@@ -184,7 +199,6 @@ Suspendisse dignissim a turpis vitae laoreet. Interdum et malesuada fames ac ant
                   <Picker.Item label={urgenciaValues[0].text} value={urgenciaValues[0].value} />
                   <Picker.Item label={urgenciaValues[1].text} value={urgenciaValues[1].value} />
                   <Picker.Item label={urgenciaValues[2].text} value={urgenciaValues[2].value} />
-                  <Picker.Item label={urgenciaValues[3].text} value={urgenciaValues[3].value} />
                 </Picker>
               </View>
             </View>

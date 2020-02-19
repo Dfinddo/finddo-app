@@ -24,9 +24,12 @@ export default class FotosPedido extends Component {
     categoriaPedido: null,
     isLoading: false,
     dataPedido: null,
+    hora: null,
+    horaFim: null,
     urgencia: '',
     isConfirming: false,
-    foto1: require('../../img/add_foto_problema.png')
+    foto1: require('../../img/add_foto_problema.png'),
+    foto1Setada: false
   };
 
   componentDidMount() {
@@ -47,10 +50,12 @@ export default class FotosPedido extends Component {
     const necessidade = navigation.getParam('necessidade', 'no necessidade');
     const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
     const dataPedido = navigation.getParam('dataPedido', 'sem_data');
+    const hora = navigation.getParam('hora', 'sem_hora');
+    const horaFim = navigation.getParam('horaFim', 'sem_hora_fim');
     const urgencia = navigation.getParam('urgencia', 'sem_urgencia');
 
     if (dataPedido !== 'sem_data') {
-      this.setState({ dataPedido });
+      this.setState({ dataPedido, hora, horaFim });
     }
 
     if (urgencia !== 'sem_urgencia') {
@@ -81,61 +86,67 @@ export default class FotosPedido extends Component {
     order.description = orderData.necessidade;
     order.category_id = +orderData.categoriaPedido.id;
     order.user_id = TokenService.getInstance().getUser().id;
-    if (this.state.dataPedido) {
-      order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.dataPedido.getHours()}:${this.state.dataPedido.getMinutes()}:${this.state.dataPedido.getSeconds()}`;
+    if (this.state.urgencia === 'definir-data') {
+      order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
+      order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
+      order.urgency = 'urgent';
     }
 
     const images = [];
     const image = {};
     image.base64 = this.state.foto1.base64;
     image.file_name = 'foto1';
-    
+
     images.push(image);
 
-    backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
-      .then((response) => {
-        this.setState({ isLoading: false });
-        const resetAction = StackActions.reset({
-          index: 0,
-          actions: [NavigationActions.navigate({ routeName: 'Services' })],
-          key: 'Finddo'
-        });
-        this.props.navigation.dispatch(resetAction);
-        this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
-      })
-      .catch((error) => {
-        if (error.response) {
-          /*
-           * The request was made and the server responded with a
-           * status code that falls out of the range of 2xx
-           */
-          Alert.alert(
-            'Falha ao realizar operação',
-            'Revise seus dados e tente novamente',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        } else if (error.request) {
-          /*
-           * The request was made but no response was received, `error.request`
-           * is an instance of XMLHttpRequest in the browser and an instance
-           * of http.ClientRequest in Node.js
-           */
-          Alert.alert(
-            'Falha ao se conectar',
-            'Verifique sua conexão e tente novamente',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        } else {
-          /* Something happened in setting up the request and triggered an Error */
-        }
-        this.setState({ isLoading: false });
-      });
+    this.setState({ isLoading: false });
+
+    console.log(JSON.stringify({ order, images }));
+
+    // backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
+    //   .then((response) => {
+    //     this.setState({ isLoading: false });
+    //     const resetAction = StackActions.reset({
+    //       index: 0,
+    //       actions: [NavigationActions.navigate({ routeName: 'Services' })],
+    //       key: 'Finddo'
+    //     });
+    //     this.props.navigation.dispatch(resetAction);
+    //     this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
+    //   })
+    //   .catch((error) => {
+    //     if (error.response) {
+    //       /*
+    //        * The request was made and the server responded with a
+    //        * status code that falls out of the range of 2xx
+    //        */
+    //       Alert.alert(
+    //         'Falha ao realizar operação',
+    //         'Revise seus dados e tente novamente',
+    //         [
+    //           { text: 'OK', onPress: () => { } },
+    //         ],
+    //         { cancelable: false },
+    //       );
+    //     } else if (error.request) {
+    //       /*
+    //        * The request was made but no response was received, `error.request`
+    //        * is an instance of XMLHttpRequest in the browser and an instance
+    //        * of http.ClientRequest in Node.js
+    //        */
+    //       Alert.alert(
+    //         'Falha ao se conectar',
+    //         'Verifique sua conexão e tente novamente',
+    //         [
+    //           { text: 'OK', onPress: () => { } },
+    //         ],
+    //         { cancelable: false },
+    //       );
+    //     } else {
+    //       /* Something happened in setting up the request and triggered an Error */
+    //     }
+    //     this.setState({ isLoading: false });
+    //   });
   }
 
   render() {
