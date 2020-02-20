@@ -44,7 +44,8 @@ export default class MeusPedidos extends Component {
     loadingData: false,
     loadingOrders: false,
     isShowingPedido: false,
-    pedidoCorrente: null
+    pedidoCorrente: null,
+    enderecoSelecionado: null
   };
 
   obterPedidos = async (page = 1) => {
@@ -177,7 +178,7 @@ export default class MeusPedidos extends Component {
         {
           text: 'Visualizar pedido',
           onPress: () => {
-            this.setState({ pedidoCorrente: pedido, isShowingPedido: true });
+            this.setState({ pedidoCorrente: pedido, enderecoSelecionado: pedido.address, isShowingPedido: true });
           }
         },
         {

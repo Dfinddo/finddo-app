@@ -121,7 +121,7 @@ export default class EnderecosScreen extends Component {
   });
 }
 
-function Item(props) {
+export function Item(props) {
   const itemStyle = StyleSheet.create({
     itemEnderecoText: {
       color: 'black', fontSize: 16,
@@ -150,33 +150,51 @@ function Item(props) {
         <Text style={itemStyle.itemEnderecoText}>{props.dados.item.district}, Rio de Janeiro - RJ</Text>
         <Text style={itemStyle.itemEnderecoText}>{props.dados.item.complement}</Text>
       </View>
-      <View style={{
-        width: 60, backgroundColor: 'transparent',
-        alignItems: 'center', justifyContent: 'space-evenly',
-        flexDirection: 'column'
-      }}>
-        <TouchableOpacity onPress={() => { props.navigation.navigate('CreateEditAddress', { endereco: props.dados.item, editar: true }) }}>
-          <IconComponent name={"ios-create"} size={25} color={colors.amareloIconeEditar} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => { excluirItemConfirm(props.dados.item, props.comp, props.size) }}>
-          <IconComponent name={"ios-trash"} size={25} color={colors.vermelhoExcluir} />
-        </TouchableOpacity>
-      </View>
+      {
+        (() => {
+          if (!props.readOnly) {
+            return (
+              <View style={{
+                width: 60, backgroundColor: 'transparent',
+                alignItems: 'center', justifyContent: 'space-evenly',
+                flexDirection: 'column'
+              }}>
+                <TouchableOpacity onPress={() => { props.navigation.navigate('CreateEditAddress', { endereco: props.dados.item, editar: true }) }}>
+                  <IconComponent name={"ios-create"} size={25} color={colors.amareloIconeEditar} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { excluirItemConfirm(props.dados.item, props.comp, props.size) }}>
+                  <IconComponent name={"ios-trash"} size={25} color={colors.vermelhoExcluir} />
+                </TouchableOpacity>
+              </View>);
+          } else {
+            return (null);
+          }
+        })()
+      }
     </View>
   );
 }
 
-function ListaDeEnderecos(props) {
+export function ListaDeEnderecos(props) {
   return (
     <FlatList
       data={props.enderecos}
-      renderItem={(item) => <Item dados={item} size={props.enderecos.length} navigation={props.navigation} comp={props.comp} />}
+      renderItem={(item) => {
+        if (!props.readOnly) {
+          return (<Item readOnly={props.readOnly} dados={item} size={props.enderecos.length} navigation={props.navigation} comp={props.comp} />)
+        } else {
+          return (
+            <TouchableOpacity onPress={() => props.selecionarItem(item)}>
+              <Item readOnly={props.readOnly} dados={item} size={props.enderecos.length} navigation={props.navigation} comp={props.comp} />
+            </TouchableOpacity>)
+        }
+      }}
       keyExtractor={item => item.id}
     />
   );
 }
 
-const excluirItemConfirm = (item, comp, size) => {
+export const excluirItemConfirm = (item, comp, size) => {
   if (size > 1) {
     Alert.alert(
       item.name,
@@ -199,7 +217,7 @@ const excluirItemConfirm = (item, comp, size) => {
   }
 }
 
-const excluirItem = (item, comp) => {
+export const excluirItem = (item, comp) => {
   // TODO: mensagem ao excluir endereços que tem pedidos ativos associados
   comp.setState({ isLoading: true })
 

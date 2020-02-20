@@ -96,6 +96,10 @@ export default class VisualizarPedido extends Component {
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.category}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Descrição:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.description}</Text>
+                <Text style={this.visualizarPedidoStyle.titulos}>Endereço:</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.props.pedido.enderecoSelecionado.street}, ${this.props.pedido.enderecoSelecionado.number}`}</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.props.pedido.enderecoSelecionado.complement}, ${this.props.pedido.enderecoSelecionado.cep}`}</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.props.pedido.enderecoSelecionado.district}`}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Fotos:</Text>
                 {
                   (() => {

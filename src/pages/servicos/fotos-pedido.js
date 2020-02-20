@@ -12,6 +12,7 @@ import { StackActions, NavigationActions, NavigationEvents } from 'react-navigat
 import { colors } from '../../colors';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
 import FotoService from '../../services/foto-service';
+import { ListaDeEnderecos } from '../../pages/perfil/enderecos';
 
 const fotoDefault = require('../../img/add_foto_problema.png');
 
@@ -38,7 +39,10 @@ export default class FotosPedido extends Component {
     foto3Setada: false,
     foto4: fotoDefault,
     foto4Setada: false,
-    fotosPedido: []
+    fotosPedido: [],
+    isSelectEndereco: false,
+    enderecos: [],
+    enderecoSelecionado: null
   };
 
   componentDidMount() {
@@ -100,6 +104,24 @@ export default class FotosPedido extends Component {
     this.setState({ imageServicoUrl: categoriaPedido.image_url });
   };
 
+  selecionarEndereco = () => {
+    this.setState({ isLoading: true }, () => {
+      const tokenService = TokenService.getInstance();
+
+      backendRails.get('/addresses/user/' + tokenService.getUser().id, { headers: tokenService.getHeaders() })
+        .then((data) => {
+          const addresses = data.data;
+          addresses.forEach(element => {
+            element.id = '' + element.id;
+          });
+
+          this.setState({ enderecos: [...addresses] });
+        }).finally(_ => {
+          this.setState({ isLoading: false, isSelectEndereco: true });
+        });
+    });
+  };
+
   confirmarPedido = () => {
     this.setState({ isConfirming: true });
   };
@@ -120,6 +142,7 @@ export default class FotosPedido extends Component {
     order.description = orderData.necessidade;
     order.category_id = +orderData.categoriaPedido.id;
     order.user_id = TokenService.getInstance().getUser().id;
+    order.address_id = this.state.enderecoSelecionado.id;
     if (this.state.urgencia === 'definir-data') {
       order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
       order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
@@ -176,6 +199,12 @@ export default class FotosPedido extends Component {
       });
   }
 
+  selecionarItem = (item) => {
+    this.setState({ isSelectEndereco: false, enderecoSelecionado: item.item }, () => {
+      this.confirmarPedido();
+    });
+  }
+
   render() {
     return (
       <ImageBackground
@@ -192,6 +221,31 @@ export default class FotosPedido extends Component {
                 <View>
                   <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
                 </View>
+              </View>
+            </Modal>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={this.state.isSelectEndereco}>
+              <View style={{
+                alignItems: 'center', justifyContent: 'center',
+                flex: 1, backgroundColor: colors.branco
+              }}>
+                <Text style={{
+                  fontSize: 24, fontWeight: 'bold',
+                  marginVertical: 18, paddingHorizontal: 20
+                }}>Escolha o endereço onde o serviço será realizado:</Text>
+                <ListaDeEnderecos
+                  readOnly={true}
+                  navigation={this.props.navigation}
+                  enderecos={this.state.enderecos}
+                  selecionarItem={this.selecionarItem}
+                  comp={this}></ListaDeEnderecos>
+                <TouchableOpacity
+                  style={this.fotosPedidoStyles.botaoContinuar}
+                  onPress={() => this.setState({ isSelectEndereco: false })}>
+                  <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>VOLTAR</Text>
+                </TouchableOpacity>
               </View>
             </Modal>
             <Modal
@@ -264,7 +318,7 @@ export default class FotosPedido extends Component {
         <View style={this.fotosPedidoStyles.botaoContainer}>
           <TouchableOpacity
             style={this.fotosPedidoStyles.botaoContinuar}
-            onPress={() => this.confirmarPedido()}>
+            onPress={() => /*this.confirmarPedido()*/ this.selecionarEndereco()}>
             <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>
