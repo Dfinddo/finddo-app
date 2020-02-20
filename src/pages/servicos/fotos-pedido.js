@@ -32,6 +32,12 @@ export default class FotosPedido extends Component {
     isConfirming: false,
     foto1: fotoDefault,
     foto1Setada: false,
+    foto2: fotoDefault,
+    foto2Setada: false,
+    foto3: fotoDefault,
+    foto3Setada: false,
+    foto4: fotoDefault,
+    foto4Setada: false,
     fotosPedido: []
   };
 
@@ -39,16 +45,35 @@ export default class FotosPedido extends Component {
     this.obterDadosPrimeiraPartePedido();
   };
 
-  obterFoto1 = () => {
+  obterFoto = () => {
     const fotoService = FotoService.getInstance();
     const photo = fotoService.getFotoData();
+    const numeroFoto = fotoService.getFotoId();
+
+    const images = this.state.fotosPedido;
 
     if (photo) {
-      const images = this.state.fotosPedido;
-
-      images.push({ image: photo, file_name: 'foto1' });
-
-      this.setState({ foto1: photo, foto1Setada: true, isLoading: false, fotosPedido: [...images] });
+      switch (numeroFoto) {
+        case 1:
+          images.push({ image: photo, file_name: 'foto1' });
+          this.setState({ foto1: photo, foto1Setada: true, isLoading: false, fotosPedido: [...images] });
+          break;
+        case 2:
+          images.push({ image: photo, file_name: 'foto2' });
+          this.setState({ foto2: photo, foto2Setada: true, isLoading: false, fotosPedido: [...images] });
+          break;
+        case 3:
+          images.push({ image: photo, file_name: 'foto3' });
+          this.setState({ foto3: photo, foto3Setada: true, isLoading: false, fotosPedido: [...images] });
+          break;
+        case 4:
+          images.push({ image: photo, file_name: 'foto4' });
+          this.setState({ foto4: photo, foto4Setada: true, isLoading: false, fotosPedido: [...images] });
+          break;
+        default:
+          this.setState({ isLoading: false });
+          break;
+      }
     } else {
       this.setState({ isLoading: false });
     }
@@ -105,6 +130,8 @@ export default class FotosPedido extends Component {
 
     backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
       .then((response) => {
+        FotoService.getInstance().setFotoId(0);
+        FotoService.getInstance().setFotoData(null);
         this.setState({ isLoading: false });
         const resetAction = StackActions.reset({
           index: 0,
@@ -180,7 +207,7 @@ export default class FotosPedido extends Component {
               <NavigationEvents
                 onWillFocus={_ => {
                   this.setState({ isLoading: true }, () => {
-                    setTimeout(() => { this.obterFoto1() }, 1000);
+                    setTimeout(() => { this.obterFoto() }, 1000);
                   })
                   // this.setState({ isLoading: true }, () => { this.obterFoto1() });
                 }}
@@ -196,6 +223,7 @@ export default class FotosPedido extends Component {
                     Nos ajude com fotos do problema (opcional)
                   </Text>
                   <TouchableOpacity onPress={() => {
+                    FotoService.getInstance().setFotoId(1);
                     this.props.navigation.navigate('CameraPedido');
                   }} style={{ alignItems: 'center', marginTop: 30 }}>
                     <Image
@@ -203,20 +231,29 @@ export default class FotosPedido extends Component {
                       source={this.state.foto1} />
                   </TouchableOpacity>
                   <View style={this.fotosPedidoStyles.fotosProblemaContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                      FotoService.getInstance().setFotoId(2);
+                      this.props.navigation.navigate('CameraPedido');
+                    }}>
                       <Image
                         style={{ width: 80, height: 80 }}
-                        source={require('../../img/add_foto_problema.png')} />
+                        source={this.state.foto2} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                      FotoService.getInstance().setFotoId(3);
+                      this.props.navigation.navigate('CameraPedido');
+                    }}>
                       <Image
                         style={{ width: 80, height: 80 }}
-                        source={require('../../img/add_foto_problema.png')} />
+                        source={this.state.foto3} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                      FotoService.getInstance().setFotoId(4);
+                      this.props.navigation.navigate('CameraPedido');
+                    }}>
                       <Image
                         style={{ width: 80, height: 80 }}
-                        source={require('../../img/add_foto_problema.png')} />
+                        source={this.state.foto4} />
                     </TouchableOpacity>
                   </View>
                 </View>

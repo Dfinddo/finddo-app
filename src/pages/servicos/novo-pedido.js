@@ -156,8 +156,8 @@ Suspendisse dignissim a turpis vitae laoreet. Interdum et malesuada fames ac ant
               <View style={this.novoPedidoStyle.modalDialog}>
                 <View style={this.novoPedidoStyle.modalDialogContent}>
                   <Text> </Text>
-                  <Text style={{ fontSize: 18 }}>Faremos o máximo possível para lhe atender o quanto antes.</Text>
-                  <Text style={{ fontSize: 18 }}>Por favor nos informe uma data e uma faixa de horário ideais para o atendimento.</Text>
+                  <Text style={{ paddingHorizontal: 10, fontSize: 18 }}>Faremos o máximo possível para lhe atender o quanto antes.</Text>
+                  <Text style={{ paddingHorizontal: 10, fontSize: 18 }}>Por favor nos informe uma data e uma faixa de horário ideais para o atendimento.</Text>
                   <TouchableOpacity
                     style={this.novoPedidoStyle.modalErrosBotaoContinuar}
                     onPress={() => this.setState({ confirmarEmergencia: false }, () => {

@@ -7,13 +7,15 @@ import {
   Picker,
   ActivityIndicator,
   Modal,
-  RefreshControl
+  RefreshControl,
+  Alert
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../colors';
-import { NavigationEvents, ScrollView } from 'react-navigation';
+import { NavigationEvents } from 'react-navigation';
+import VisualizarPedido from '../../components/modal-visualizar-pedido';
 
 const enumEstadoPedidoMap = {
   analise: 'Pedido em Análise',
@@ -40,7 +42,9 @@ export default class MeusPedidos extends Component {
     pedidosCancelado: [],
     tipoPedidoSelecionado: Object.keys(enumEstadoPedidoMap)[6],
     loadingData: false,
-    loadingOrders: false
+    loadingOrders: false,
+    isShowingPedido: false,
+    pedidoCorrente: null
   };
 
   obterPedidos = async (page = 1) => {
@@ -166,24 +170,23 @@ export default class MeusPedidos extends Component {
   };
 
   associarPedido = async (pedido) => {
-    this.props.navigation.navigate('AcompanhamentoPedido', { pedido });
-    // TODO: remover implementação
-    /* const tokenService = TokenService.getInstance();
-    if (tokenService.getUser().user_type === 'user') {
-      this.props.navigation.navigate('AcompanhamentoPedido');
-    } else {
-      try {
-        let response = await
-          backendRails
-            .put('/orders/associate/' + pedido.id + '/' + tokenService.getUser().id,
-              { order: pedido },
-              { headers: tokenService.getHeaders() });
-
-        this.props.navigation.navigate('AcompanhamentoPedido', { data: response.data });
-      } catch (error) {
-        console.log(error);
-      }
-    } */
+    Alert.alert(
+      'Finddo',
+      'O que deseja fazer?',
+      [
+        {
+          text: 'Visualizar pedido',
+          onPress: () => {
+            this.setState({ pedidoCorrente: pedido, isShowingPedido: true });
+          }
+        },
+        {
+          text: 'Verificar status',
+          onPress: () => this.props.navigation.navigate('AcompanhamentoPedido', { pedido })
+        }
+      ],
+      { cancelable: false },
+    );
   };
 
   render() {
@@ -199,6 +202,16 @@ export default class MeusPedidos extends Component {
           //onWillBlur={payload => console.log('will blur', payload)}
           //onDidBlur={payload => console.log('did blur', payload)}
           />
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isShowingPedido}
+          >
+            <VisualizarPedido
+              pedido={this.state}
+              onConfirm={() => this.setState({ isShowingPedido: false })}
+              onCancel={() => this.setState({ isShowingPedido: false })}></VisualizarPedido>
+          </Modal>
           <Modal
             animationType="slide"
             transparent={true}
@@ -287,18 +300,13 @@ export default class MeusPedidos extends Component {
                       onPressItem={(item) => this.associarPedido(item)} />
                   );
                 default: return (
-                  <View style={{ flex: 1 }}>
-                    <ScrollView
-                      refreshControl={<RefreshControl
-                        colors={[colors.verdeFinddo]}
-                        refreshing={this.state.loadingOrders}
-                        onRefresh={() => this.obterPedidosRefresh()}
-                      />}
-                    >
-                      <View style={{ height: 1000, width: 380 }}>
-                      </View>
-                    </ScrollView>
-                  </View>);
+                  <ListaPedidos
+                    pedidos={this.state.pedidos}
+                    refreshing={this.state.loadingOrders}
+                    onRefresh={() => {
+                      this.setState({ loadingOrders: true }, () => this.obterPedidosRefresh())
+                    }}
+                    onPressItem={(item) => this.associarPedido(item)} />);
               }
             })()
             }

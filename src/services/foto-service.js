@@ -2,6 +2,7 @@ export default class FotoService {
   static myInstance = null;
 
   _fotoData = null;
+  _fotoId = 0;
 
   /**
    * @returns {FotoService}
@@ -20,5 +21,13 @@ export default class FotoService {
 
   getFotoData() {
     return this._fotoData;
+  }
+
+  setFotoId(newId) {
+    this._fotoId = newId;
+  }
+
+  getFotoId() {
+    return this._fotoId;
   }
 }
