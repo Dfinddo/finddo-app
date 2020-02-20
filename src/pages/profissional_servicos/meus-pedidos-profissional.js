@@ -6,13 +6,15 @@ import {
   ImageBackground,
   Picker,
   ActivityIndicator,
-  Modal
+  Modal,
+  Alert
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../colors';
 import { NavigationEvents } from 'react-navigation';
+import VisualizarPedidoProfissional from '../../components/modal-visualizar-pedido-profissional';
 
 const enumEstadoPedidoMap = {
   analise: 'Pedido em Análise',
@@ -39,6 +41,9 @@ export default class MeusPedidosProfissional extends Component {
     pedidosCancelado: [],
     tipoPedidoSelecionado: Object.keys(enumEstadoPedidoMap)[6],
     loadingData: false,
+    pedidoCorrente: null,
+    enderecoSelecionado: null,
+    isShowingPedido: false
   };
 
   obterPedidos = async (page = 1) => {
@@ -94,25 +99,24 @@ export default class MeusPedidosProfissional extends Component {
     }
   };
 
-  associarPedido = async (pedido) => {
-    this.props.navigation.navigate('AcompanhamentoPedido', { pedido });
-    // TODO: remover implementação
-    /* const tokenService = TokenService.getInstance();
-    if (tokenService.getUser().user_type === 'user') {
-      this.props.navigation.navigate('AcompanhamentoPedido');
-    } else {
-      try {
-        let response = await
-          backendRails
-            .put('/orders/associate/' + pedido.id + '/' + tokenService.getUser().id,
-              { order: pedido },
-              { headers: tokenService.getHeaders() });
-
-        this.props.navigation.navigate('AcompanhamentoPedido', { data: response.data });
-      } catch (error) {
-        console.log(error);
-      }
-    } */
+  acaoPedido = async (pedido) => {
+    Alert.alert(
+      'Finddo',
+      'O que deseja fazer?',
+      [
+        {
+          text: 'Visualizar pedido',
+          onPress: () => {
+            this.setState({ pedidoCorrente: pedido, enderecoSelecionado: pedido.address, isShowingPedido: true });
+          }
+        },
+        {
+          text: 'Verificar status',
+          onPress: () => this.props.navigation.navigate('AcompanhamentoPedido', { pedido })
+        }
+      ],
+      { cancelable: false },
+    );
   };
 
   render() {
@@ -139,6 +143,16 @@ export default class MeusPedidosProfissional extends Component {
             }}>
               <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
             </View>
+          </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isShowingPedido}
+          >
+            <VisualizarPedidoProfissional
+              pedido={this.state}
+              onConfirm={() => this.setState({ isShowingPedido: false })}
+              onCancel={() => this.setState({ isShowingPedido: false })}></VisualizarPedidoProfissional>
           </Modal>
           <View style={{
             height: 60, backgroundColor: colors.branco,
@@ -169,33 +183,37 @@ export default class MeusPedidosProfissional extends Component {
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosAnalise}
-                      onPressItem={(item) => this.associarPedido(item)} />
+                      onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 case ('a_caminho'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosCaminho}
-                      onPressItem={(item) => this.associarPedido(item)} />
+                      onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 case ('em_servico'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosServico}
-                      onPressItem={(item) => this.associarPedido(item)} />
+                      onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 case ('finalizado'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosFinalizado}
-                      onPressItem={(item) => this.associarPedido(item)} />
+                      onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 case ('cancelado'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosCancelado}
-                      onPressItem={(item) => this.associarPedido(item)} />
+                      onPressItem={(item) => this.acaoPedido(item)} />
                   );
-                default: return (null);
+                default: return (
+                  <ListaPedidos
+                    pedidos={this.state.pedidos}
+                    onPressItem={(item) => this.acaoPedido(item)} />
+                );
               }
             })()
             }
