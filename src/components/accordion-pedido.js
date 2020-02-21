@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { backendUrl } from '../services/backend-rails-api';
 
 export default class Accordian extends Component {
 
@@ -15,6 +16,8 @@ export default class Accordian extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props);
+
     this.setState({ estadoComponente: this.props.estadoInicial });
   }
 
@@ -73,15 +76,15 @@ export default class Accordian extends Component {
           <TouchableOpacity style={{ height: 110 }}
             onPress={() => this.setState({ accordianClosed: !this.state.accordianClosed })}>
             <View style={{ flex: 1, alignItems: 'center' }}>
-              <Text>Previsão de chegada: 00/00 às 00:00</Text>
+              <Text> </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={this.accordionStyle.accordionAbertoProfissionalFoto}>
                   <Image
                     style={{ width: 85, height: 85, borderRadius: 50 }}
-                    source={require('../img/func-status.png')} />
+                    source={{ uri: backendUrl + `/${this.props.pedido.professional_photo}` }} />
                 </View>
                 <View style={this.accordionStyle.accordionAbertoProfissionalInfo}>
-                  <Text style={{ fontSize: 20, marginBottom: 8 }}>Nome do profissional</Text>
+                  <Text style={{ fontSize: 20, marginBottom: 8 }}>{this.props.pedido.professional_order.name}</Text>
                   <View style={this.accordionStyle.accordionAbertoEstrelas}>
                     <Image
                       style={this.accordionStyle.accordionAbertoEstrela}
@@ -156,9 +159,9 @@ export default class Accordian extends Component {
       alignItems: 'center', justifyContent: 'center',
       flexDirection: 'row'
     },
-    accordionAbertoEstrela: { 
-      width: 20, height: 20, 
-      marginRight: 5 
+    accordionAbertoEstrela: {
+      width: 20, height: 20,
+      marginRight: 5
     }
   });
 }
