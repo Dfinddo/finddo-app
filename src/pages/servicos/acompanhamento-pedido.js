@@ -97,6 +97,7 @@ export default class AcompanhamentoPedido extends Component {
                   <View
                     style={{ height: 120, zIndex: 10 }}>
                     <Accordian
+                      pedido={this.state.pedido}
                       conteudo='A caminho'
                       estadoInicial='a_caminho'
                       ref={this.aCaminhoD} />
