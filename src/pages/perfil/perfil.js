@@ -44,6 +44,7 @@ export default class PerfilScreen extends Component {
 
   alterarFotoDialog = () => {
     // () => this.props.navigation.navigate('CameraPerfil');
+    FotoService.getInstance().setFotoId('perfil');
     Alert.alert(
       'Finddo',
       'Alterar foto de perfil?',
@@ -58,19 +59,14 @@ export default class PerfilScreen extends Component {
 
   obterFoto = () => {
     const id = TokenService.getInstance().getUser().id;
+    const idFoto = FotoService.getInstance().getFotoId();
 
-    if (this.state.profilePhoto === semPerfil) {
-      backendRails.get(`/users/profile_photo/${id}`, { headers: TokenService.getInstance().getHeaders() })
-        .then(data => {
-          if (data.data.photo) {
-            this.setState({ profilePhoto: { uri: `${backendUrl}/${data.data.photo}` } });
-          }
-        }).finally(_ => this.setState({ isLoading: false }))
-    } else {
+    if (idFoto && idFoto === 'perfil' && FotoService.getInstance().getFotoData()) {
       const foto = FotoService.getInstance().getFotoData();
       if (foto) {
         this.setState({ profilePhoto: foto }, () => {
           FotoService.getInstance().setFotoData(null);
+          FotoService.getInstance().setFotoId(null);
 
           backendRails.put(`/users/profile_photo/${id}`,
             { profile_photo: { base64: this.state.profilePhoto.base64, file_name: `profile-${id}` } },
@@ -83,6 +79,15 @@ export default class PerfilScreen extends Component {
       } else {
         this.setState({ isLoading: false });
       }
+    } else if (this.state.profilePhoto === semPerfil) {
+      backendRails.get(`/users/profile_photo/${id}`, { headers: TokenService.getInstance().getHeaders() })
+        .then(data => {
+          if (data.data.photo) {
+            this.setState({ profilePhoto: { uri: `${backendUrl}/${data.data.photo}` } });
+          }
+        }).finally(_ => this.setState({ isLoading: false }))
+    } else {
+      this.setState({ isLoading: false });
     }
   }
 
@@ -139,7 +144,10 @@ export default class PerfilScreen extends Component {
           <NavigationEvents
             onWillFocus={_ => {
               this.setState({ isLoading: true }, () => {
-                setTimeout(() => { this.obterFoto() }, 1000);
+                setTimeout(() => {
+                  FotoService.getInstance().setFotoId('perfil');
+                  this.obterFoto();
+                }, 1000);
               })
               // this.setState({ isLoading: true }, () => { this.obterFoto1() });
             }}

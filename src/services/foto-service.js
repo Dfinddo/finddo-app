@@ -2,7 +2,7 @@ export default class FotoService {
   static myInstance = null;
 
   _fotoData = null;
-  _fotoId = 0;
+  _fotoId = null;
 
   /**
    * @returns {FotoService}
