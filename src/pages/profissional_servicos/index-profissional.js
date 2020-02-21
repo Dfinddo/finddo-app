@@ -63,15 +63,33 @@ export default class IndexProfissional extends Component {
   }
 
   confirmarPedido = (pedido) => {
-    Alert.alert(
-      'Atendimento',
-      'Deseja atender ao pedido?',
-      [
-        { text: 'Não', onPress: () => { } },
-        { text: 'Sim', onPress: () => { this.associarPedido(pedido) } },
-      ],
-      { cancelable: false },
-    );
+    const id = TokenService.getInstance().getUser().id;
+    this.setState({ isLoadingRequest: true }, () => {
+      backendRails.get(`/users/profile_photo/${id}`, { headers: TokenService.getInstance().getHeaders() })
+        .then(data => {
+          if (data.data.photo) {
+            Alert.alert(
+              'Atendimento',
+              'Deseja atender ao pedido?',
+              [
+                { text: 'Não', onPress: () => { this.setState({ isShowingPedido: false, isLoadingRequest: false }) } },
+                { text: 'Sim', onPress: () => { this.associarPedido(pedido) } },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            Alert.alert(
+              'Atendimento',
+              'Para começar a atender você precisa adicionar uma foto de perfil (aba Perfil)',
+              [
+                { text: 'Ok', onPress: () => { this.setState({ isShowingPedido: false, isLoadingRequest: false }) } },
+              ],
+              { cancelable: false },
+            );
+          }
+        })
+        .catch(_ => this.setState({ isShowingPedido: false, isLoadingRequest: false }));
+    });
   }
 
   associarPedido = async (pedido) => {
