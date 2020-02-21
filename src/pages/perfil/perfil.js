@@ -4,14 +4,19 @@ import {
   ImageBackground, ScrollView,
   TextInput, Text,
   StyleSheet, Image,
-  Alert
+  Alert, Modal,
+  ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
-import backendRails from '../../services/backend-rails-api';
+import backendRails, { backendUrl } from '../../services/backend-rails-api';
 import { colors } from '../../colors';
 import HeaderTransparenteSemHistorico from '../../components/header-transparente-sem-historico';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { NavigationEvents } from 'react-navigation';
+import FotoService from '../../services/foto-service';
+
+const semPerfil = require('../../img/func-status.png');
 
 export default class PerfilScreen extends Component {
   static navigationOptions = {
@@ -28,11 +33,57 @@ export default class PerfilScreen extends Component {
     email: '',
     telefone: '',
     cpf: '',
+    isLoading: false,
+    profilePhoto: semPerfil
   };
 
   componentDidMount() {
     const userData = TokenService.getInstance().getUser();
     this.setState({ email: userData.email, nomeCompleto: userData.name, cpf: userData.cpf, telefone: userData.cellphone });
+  }
+
+  alterarFotoDialog = () => {
+    // () => this.props.navigation.navigate('CameraPerfil');
+    Alert.alert(
+      'Finddo',
+      'Alterar foto de perfil?',
+      [
+        { text: 'Cancelar', onPress: () => { } },
+        { text: 'Câmera', onPress: () => { this.props.navigation.navigate('CameraPerfil'); } },
+        { text: 'Galeria', onPress: () => { } },
+      ],
+      { cancelable: false },
+    );
+  }
+
+  obterFoto = () => {
+    const id = TokenService.getInstance().getUser().id;
+
+    if (this.state.profilePhoto === semPerfil) {
+      backendRails.get(`/users/profile_photo/${id}`, { headers: TokenService.getInstance().getHeaders() })
+        .then(data => {
+          if (data.data.photo) {
+            this.setState({ profilePhoto: { uri: `${backendUrl}/${data.data.photo}` } });
+          }
+        }).finally(_ => this.setState({ isLoading: false }))
+    } else {
+      const foto = FotoService.getInstance().getFotoData();
+      if (foto) {
+        this.setState({ profilePhoto: foto }, () => {
+          FotoService.getInstance().setFotoData(null);
+
+          backendRails.put(`/users/profile_photo/${id}`,
+            { profile_photo: { base64: this.state.profilePhoto.base64, file_name: `profile-${id}` } },
+            { headers: TokenService.getInstance().getHeaders() })
+            .catch(error => console.log(error))
+            .finally(
+              _ => this.setState({ isLoading: false })
+            );
+        });
+      } else {
+        this.setState({ isLoading: false });
+      }
+    }
   }
 
   limparDadosLogin = () => {
@@ -74,14 +125,38 @@ export default class PerfilScreen extends Component {
         source={require('../../img/Ellipse.png')}>
         <View style={{ height: 50 }}></View>
         <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoading}
+          >
+            <View style={this.perfilScreenStyle.loaderContainer}>
+              <View>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </View>
+          </Modal>
+          <NavigationEvents
+            onWillFocus={_ => {
+              this.setState({ isLoading: true }, () => {
+                setTimeout(() => { this.obterFoto() }, 1000);
+              })
+              // this.setState({ isLoading: true }, () => { this.obterFoto1() });
+            }}
+          //onDidFocus={_ => this.obterFoto1()}
+          //onWillBlur={payload => console.log('will blur', payload)}
+          //onDidBlur={payload => console.log('did blur', payload)}
+          />
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
             <View style={{
               backgroundColor: colors.branco, flexDirection: 'column',
               height: 500, alignItems: 'center',
               justifyContent: 'space-around', width: '90%'
             }}>
-              <Image style={{ width: 150, height: 150, borderRadius: 50 }}
-                source={require('../../img/func-status.png')} />
+              <TouchableOpacity onPress={() => this.alterarFotoDialog()}>
+                <Image style={{ width: 150, height: 150, borderRadius: 100 }}
+                  source={this.state.profilePhoto} />
+              </TouchableOpacity>
               <View style={{
                 width: '80%',
                 alignItems: 'flex-start'
@@ -189,5 +264,11 @@ export default class PerfilScreen extends Component {
       textDecorationLine: 'underline',
       textAlignVertical: 'bottom'
     },
+    loaderContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(255,255,255,0.5)'
+    }
   });
 }

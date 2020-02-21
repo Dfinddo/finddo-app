@@ -55,7 +55,7 @@ const AppStack = createStackNavigator(
 
       let tabBarVisible = true;
 
-      let routeName = navigation.state.routes[navigation.state.index].routeName
+      let routeName = navigation.state.routes[navigation.state.index].routeName;
 
       if (routeName == 'CameraPedido') {
         tabBarVisible = false
@@ -95,9 +95,26 @@ const PerfilStack = createStackNavigator(
     Addresses: EnderecosScreen,
     CreateEditAddress: FormEnderecoScreen,
     Cards: CartoesScreen,
-    CreateEditCard: FormCartaoScreen
+    CreateEditCard: FormCartaoScreen,
+    CameraPerfil: CameraPedidoComponent
   },
-  { initialRouteName: 'Profile' }
+  {
+    initialRouteName: 'Profile',
+    navigationOptions: ({ navigation }) => {
+
+      let tabBarVisible = true;
+
+      let routeName = navigation.state.routes[navigation.state.index].routeName;
+
+      if (routeName == 'CameraPerfil') {
+        tabBarVisible = false;
+      }
+
+      return {
+        tabBarVisible,
+      }
+    }
+  }
 );
 
 const AjudaStack = createStackNavigator(

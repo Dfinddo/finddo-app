@@ -24,16 +24,16 @@ export class CameraPedidoComponent extends Component {
           type={RNCamera.Constants.Type.back}
           flashMode={RNCamera.Constants.FlashMode.off}
           androidCameraPermissionOptions={{
-            title: 'Permission to use camera',
-            message: 'We need your permission to use your camera',
+            title: 'Permissão para usar a câmera',
+            message: 'Nós precisamos de sua permissão para usar a câmera',
             buttonPositive: 'Ok',
-            buttonNegative: 'Cancel',
+            buttonNegative: 'Cancelar',
           }}
           androidRecordAudioPermissionOptions={{
-            title: 'Permission to use audio recording',
-            message: 'We need your permission to use your audio',
+            title: 'Permissão para gravação de áudio',
+            message: 'Nós precisamos de sua permissão para gravar áudio',
             buttonPositive: 'Ok',
-            buttonNegative: 'Cancel',
+            buttonNegative: 'Cancelar',
           }}
           onGoogleVisionBarcodesDetected={({ barcodes }) => {
             console.log(barcodes);
@@ -41,7 +41,7 @@ export class CameraPedidoComponent extends Component {
         />
         <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>
           <TouchableOpacity onPress={this.takePicture.bind(this)} style={styles.capture}>
-            <Text style={{ fontSize: 14 }}> SNAP </Text>
+            <Text style={{ fontSize: 14 }}> Capturar </Text>
           </TouchableOpacity>
         </View>
       </View>
