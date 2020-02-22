@@ -1,4 +1,4 @@
-import React, { Component, useReducer } from 'react';
+import React, { Component } from 'react';
 import {
   ImageBackground, View,
   ScrollView, StyleSheet,
@@ -14,6 +14,7 @@ import { NavigationActions, StackActions, NavigationEvents } from 'react-navigat
 import { star } from '../../img/svg/star';
 import { SvgXml } from 'react-native-svg';
 import { starSolid } from '../../img/svg/star-solid';
+import { ListaDeEnderecos } from '../perfil/cartoes/cartoes';
 
 export default class TelaFinalPedidoScreen extends Component {
   static navigationOptions = {
@@ -23,7 +24,9 @@ export default class TelaFinalPedidoScreen extends Component {
   state = {
     pedido: null,
     isLoading: false,
-    classificacaoProfissional: 0
+    classificacaoProfissional: 0,
+    isSelectingCard: false,
+    cartoes: []
   };
 
   constructor(props) {
@@ -56,287 +59,306 @@ export default class TelaFinalPedidoScreen extends Component {
         <ImageBackground
           style={{ width: '100%', height: '100%' }}
           source={require('../../img/Ellipse.png')}>
-          <View style={{ height: '100%' }}>
-            <ScrollView style={{ flex: 1 }}>
-              <NavigationEvents
-                onWillFocus={_ => this.obterPedido()}
-              //onDidFocus={payload => console.log('did focus', payload)}
-              //onWillBlur={payload => console.log('will blur', payload)}
-              //onDidBlur={payload => console.log('did blur', payload)}
-              />
-            </ScrollView>
-          </View>
+          <ScrollView>
+            <NavigationEvents
+              onWillFocus={_ => this.obterPedido()}
+            //onDidFocus={payload => console.log('did focus', payload)}
+            //onWillBlur={payload => console.log('will blur', payload)}
+            //onDidBlur={payload => console.log('did blur', payload)}
+            />
+          </ScrollView>
         </ImageBackground>
       );
     } else return (
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
-        <View style={{ height: '100%' }}>
-          <ScrollView style={{ flex: 1 }}>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={this.state.isLoading}
-            >
-              <View style={this.telaFinalStyles.modalStyle}>
-                <View>
-                  <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
-                </View>
+        <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isSelectingCard}
+          >
+            <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'red' }}>
+
+              <TouchableOpacity
+                style={{ backgroundColor: 'blue', width: 200, height: 200 }}
+                onPress={() => this.setState({ isSelectingCard: false })}>
+                <Text>fechar</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoading}
+          >
+            <View style={this.telaFinalStyles.modalStyle}>
+              <View>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
-            </Modal>
-            <View style={this.telaFinalStyles.containerBase}>
-              <View style={this.telaFinalStyles.linha}>
-                <Text style={{ fontSize: 25, fontWeight: 'bold' }}>{this.state.pedido.category.name}</Text>
-                <Text style={{ fontSize: 25, fontWeight: 'bold', color: colors.verdeFinddo }}>{(this.state.pedido.price / 100).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}</Text>
+            </View>
+          </Modal>
+          <View style={this.telaFinalStyles.containerBase}>
+            <View style={this.telaFinalStyles.linha}>
+              <Text style={{ fontSize: 25, fontWeight: 'bold' }}>{this.state.pedido.category.name}</Text>
+              <Text style={{ fontSize: 25, fontWeight: 'bold', color: colors.verdeFinddo }}>{(this.state.pedido.price / 100).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}</Text>
+            </View>
+            <View style={[this.telaFinalStyles.linha, this.telaFinalStyles.avaliacaoFuncionario]}>
+              <View>
+                <Image
+                  style={{ width: 80, height: 80, borderRadius: 100 }}
+                  source={{ uri: `${backendUrl}/${this.state.pedido.professional_photo}` }}></Image>
               </View>
-              <View style={[this.telaFinalStyles.linha, this.telaFinalStyles.avaliacaoFuncionario]}>
-                <View>
-                  <Image
-                    style={{ width: 80, height: 80, borderRadius: 100 }}
-                    source={{ uri: `${backendUrl}/${this.state.pedido.professional_photo}` }}></Image>
-                </View>
-                <View>
-                  <Text style={{ fontSize: 18 }}>Avalie o Profissional</Text>
-                  <View style={{
-                    flexDirection: 'row', justifyContent: 'space-between',
-                    marginTop: 10
-                  }}>
-                    {
-                      (() => {
-                        if (this.state.classificacaoProfissional === 0) {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(1)}>
-                              <SvgXml xml={star} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        } else {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(0)}>
-                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        }
-                      })()
-                    }
-                    {
-                      (() => {
-                        if (this.state.classificacaoProfissional <= 1) {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(2)}>
-                              <SvgXml xml={star} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        } else {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(1)}>
-                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        }
-                      })()
-                    }
-                    {
-                      (() => {
-                        if (this.state.classificacaoProfissional <= 2) {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(3)}>
-                              <SvgXml xml={star} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        } else {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(2)}>
-                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        }
-                      })()
-                    }
-                    {
-                      (() => {
-                        if (this.state.classificacaoProfissional <= 3) {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(4)}>
-                              <SvgXml xml={star} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        } else {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(3)}>
-                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        }
-                      })()
-                    }
-                    {
-                      (() => {
-                        if (this.state.classificacaoProfissional <= 4) {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(5)}>
-                              <SvgXml xml={star} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        } else {
-                          return (
-                            <TouchableOpacity onPress={() => this.setClassificacao(4)}>
-                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-                            </TouchableOpacity>
-                          );
-                        }
-                      })()
-                    }
-                  </View>
-                </View>
-              </View>
-              <View style={{
-                height: 100, width: 300,
-                flex: 1, marginTop: 20,
-                alignItems: 'flex-start', justifyContent: 'space-around',
-                flexDirection: 'row'
-              }}>
-                <View style={this.telaFinalStyles.horaAgendamento}>
-                  <Text style={{ fontSize: 18, textAlign: 'center' }}>Data agendada:</Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-                    <Text style={{ fontSize: 18, textAlign: 'center' }}>
-                      {
-                        (() => {
-                          if (this.state.pedido.urgency === 'not_urgent') {
-                            const dataInicio = new Date(this.state.pedido.start_order.split('.')[0]);
-                            const dataFim = new Date(this.state.pedido.end_order.split('.')[0]);
-
-                            const dataFormatadaInicio = `${dataInicio.getDate()}/${dataInicio.getMonth() + 1}/${dataInicio.getFullYear()}`;
-                            const dataFormatadaFim = `${dataFim.getDate()}/${dataFim.getMonth() + 1}/${dataFim.getFullYear()}`;
-
-                            return `Entre\n${dataFormatadaInicio}\ne\n${dataFormatadaFim}`;
-                          } else {
-                            const dataInicio = new Date(this.state.pedido.start_order.split('.')[0]);
-
-                            const dataFormatadaInicio = `${dataInicio.getDate()}/${dataInicio.getMonth() + 1}/${dataInicio.getFullYear()}`;
-
-                            return `${dataFormatadaInicio}\n(Pedido urgente)`;
-                          }
-                        })()
+              <View>
+                <Text style={{ fontSize: 18 }}>Avalie o Profissional</Text>
+                <View style={{
+                  flexDirection: 'row', justifyContent: 'space-between',
+                  marginTop: 10
+                }}>
+                  {
+                    (() => {
+                      if (this.state.classificacaoProfissional === 0) {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(1)}>
+                            <SvgXml xml={star} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      } else {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(0)}>
+                            <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
                       }
-                    </Text>
-                  </View>
-                </View>
-                <View style={{ width: 40 }}></View>
-                <View style={this.telaFinalStyles.profissionalACaminho}>
-                  <Text style={{ fontSize: 18, textAlign: 'center' }}>{enumEstadoPedidoMap[this.state.pedido.order_status]}</Text>
+                    })()
+                  }
+                  {
+                    (() => {
+                      if (this.state.classificacaoProfissional <= 1) {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(2)}>
+                            <SvgXml xml={star} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      } else {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(1)}>
+                            <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      }
+                    })()
+                  }
+                  {
+                    (() => {
+                      if (this.state.classificacaoProfissional <= 2) {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(3)}>
+                            <SvgXml xml={star} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      } else {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(2)}>
+                            <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      }
+                    })()
+                  }
+                  {
+                    (() => {
+                      if (this.state.classificacaoProfissional <= 3) {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(4)}>
+                            <SvgXml xml={star} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      } else {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(3)}>
+                            <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      }
+                    })()
+                  }
+                  {
+                    (() => {
+                      if (this.state.classificacaoProfissional <= 4) {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(5)}>
+                            <SvgXml xml={star} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      } else {
+                        return (
+                          <TouchableOpacity onPress={() => this.setClassificacao(4)}>
+                            <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+                          </TouchableOpacity>
+                        );
+                      }
+                    })()
+                  }
                 </View>
               </View>
-              <View style={this.telaFinalStyles.pagamentoRow}></View>
             </View>
             <View style={{
-              alignItems: 'center', justifyContent: 'center',
-              marginTop: 20
+              height: 100, width: 300,
+              flex: 1, marginTop: 20,
+              alignItems: 'flex-start', justifyContent: 'space-around',
+              flexDirection: 'row'
             }}>
-              {
-                (() => {
-                  const tokenService = TokenService.getInstance();
-                  if (tokenService.getUser().user_type === 'professional') {
-                    return (
-                      <TouchableOpacity
-                        style={{
-                          backgroundColor: colors.verdeFinddo, width: 340,
-                          height: 45, alignItems: 'center',
-                          justifyContent: 'center', borderRadius: 20
-                        }} onPress={() => {
-                          this.setState({ isLoading: true }, () => {
-                            backendRails.get(`/orders/${this.state.pedido.id}`, { headers: tokenService.getHeaders() })
-                              .then((response) => {
-                                const pedido = response.data;
-                                if (pedido.paid === true) {
-                                  Alert.alert(
-                                    'Sucesso',
-                                    'Obrigado por usar o Finddo',
-                                    [{
-                                      text: 'Ok', onPress: () => {
-                                        const resetAction = StackActions.reset({
-                                          index: 0,
-                                          actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
-                                        });
-                                        this.props.navigation.dispatch(resetAction);
-                                      }
-                                    }]
-                                  );
-                                }
-                                this.setState({ pedido: response.data });
-                              }).catch((error) => {
-                                console.log(error);
-                              }).finally((_) => {
-                                this.setState({ isLoading: false });
-                              });
-                          });
-                        }}>
-                        <Text style={{ fontSize: 18, color: colors.branco }}>ATUALIZAR STATUS</Text>
-                      </TouchableOpacity>
-                    );
-                  } else {
-                    return (
-                      <TouchableOpacity
-                        style={{
-                          backgroundColor: colors.verdeFinddo, width: 340,
-                          height: 45, alignItems: 'center',
-                          justifyContent: 'center', borderRadius: 20
-                        }} onPress={() => {
-                          Alert.alert(
-                            'Confirma valor e classificação?',
-                            'Valor: ' + (this.state.pedido.price / 100).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
-                            + '\nClassificação: ' + this.state.classificacaoProfissional + ' estrelas',
-                            [
-                              { text: 'Cancelar', onPress: () => { } },
-                              {
-                                text: 'OK', onPress: () => {
-                                  const tokenService = TokenService.getInstance();
+              <View style={this.telaFinalStyles.horaAgendamento}>
+                <Text style={{ fontSize: 18, textAlign: 'center' }}>Data agendada:</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
-                                  this.setState({ isLoading: true }, () => {
-                                    const pedido = this.state.pedido;
-                                    pedido.paid = true;
-                                    pedido.order_status = 'finalizado';
-                                    pedido.rate = this.state.classificacaoProfissional;
+                  <Text style={{ fontSize: 18, textAlign: 'center' }}>
+                    {
+                      (() => {
+                        if (this.state.pedido.urgency === 'not_urgent') {
+                          const dataInicio = new Date(this.state.pedido.start_order.split('.')[0]);
+                          const dataFim = new Date(this.state.pedido.end_order.split('.')[0]);
 
-                                    backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
-                                      .then((response) => {
-                                        Alert.alert(
-                                          'Sucesso',
-                                          'Obrigado por usar o Finddo',
-                                          [{
-                                            text: 'Ok', onPress: () => {
-                                              const resetAction = StackActions.reset({
-                                                index: 0,
-                                                actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
-                                              });
-                                              this.props.navigation.dispatch(resetAction);
-                                            }
-                                          }]
-                                        );
-                                      }).catch((error) => {
-                                        console.log(error);
-                                      }).finally(_ => {
-                                        this.setState({ isLoading: false });
-                                      });
-                                  });
-                                }
-                              },
-                            ],
-                            { cancelable: false },
-                          );
-                        }}>
-                        <Text style={{ fontSize: 18, color: colors.branco }}>CONFIRMAR PAGAMENTO</Text>
-                      </TouchableOpacity>
-                    );
-                  }
-                })()
-              }
+                          const dataFormatadaInicio = `${dataInicio.getDate()}/${dataInicio.getMonth() + 1}/${dataInicio.getFullYear()}`;
+                          const dataFormatadaFim = `${dataFim.getDate()}/${dataFim.getMonth() + 1}/${dataFim.getFullYear()}`;
+
+                          return `Entre\n${dataFormatadaInicio}\ne\n${dataFormatadaFim}`;
+                        } else {
+                          const dataInicio = new Date(this.state.pedido.start_order.split('.')[0]);
+
+                          const dataFormatadaInicio = `${dataInicio.getDate()}/${dataInicio.getMonth() + 1}/${dataInicio.getFullYear()}`;
+
+                          return `${dataFormatadaInicio}\n(Pedido urgente)`;
+                        }
+                      })()
+                    }
+                  </Text>
+                </View>
+              </View>
+              <View style={{ width: 40 }}></View>
+              <View style={this.telaFinalStyles.profissionalACaminho}>
+                <Text style={{ fontSize: 18, textAlign: 'center' }}>{enumEstadoPedidoMap[this.state.pedido.order_status]}</Text>
+              </View>
             </View>
-          </ScrollView>
-        </View>
+            <View style={this.telaFinalStyles.pagamentoRow}></View>
+          </View>
+          <View style={{
+            alignItems: 'center', justifyContent: 'center',
+            marginTop: 20
+          }}>
+            {
+              (() => {
+                const tokenService = TokenService.getInstance();
+                if (tokenService.getUser().user_type === 'professional') {
+                  return (
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: colors.verdeFinddo, width: 340,
+                        height: 45, alignItems: 'center',
+                        justifyContent: 'center', borderRadius: 20
+                      }} onPress={() => {
+                        this.setState({ isLoading: true }, () => {
+                          backendRails.get(`/orders/${this.state.pedido.id}`, { headers: tokenService.getHeaders() })
+                            .then((response) => {
+                              const pedido = response.data;
+                              if (pedido.paid === true) {
+                                Alert.alert(
+                                  'Sucesso',
+                                  'Obrigado por usar o Finddo',
+                                  [{
+                                    text: 'Ok', onPress: () => {
+                                      const resetAction = StackActions.reset({
+                                        index: 0,
+                                        actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
+                                      });
+                                      this.props.navigation.dispatch(resetAction);
+                                    }
+                                  }]
+                                );
+                              }
+                              this.setState({ pedido: response.data });
+                            }).catch((error) => {
+                              console.log(error);
+                            }).finally((_) => {
+                              this.setState({ isLoading: false });
+                            });
+                        });
+                      }}>
+                      <Text style={{ fontSize: 18, color: colors.branco }}>ATUALIZAR STATUS</Text>
+                    </TouchableOpacity>
+                  );
+                } else {
+                  return (
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: colors.verdeFinddo, width: 340,
+                        height: 45, alignItems: 'center',
+                        justifyContent: 'center', borderRadius: 20
+                      }} onPress={() => {
+                        Alert.alert(
+                          'Confirma valor e classificação?',
+                          'Valor: ' + (this.state.pedido.price / 100).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
+                          + '\nClassificação: ' + this.state.classificacaoProfissional + ' estrelas',
+                          [
+                            { text: 'Cancelar', onPress: () => { } },
+                            {
+                              text: 'OK', onPress: () => this.selecionarCartao()
+                            },
+                          ],
+                          { cancelable: false },
+                        );
+                      }}>
+                      <Text style={{ fontSize: 18, color: colors.branco }}>CONFIRMAR PAGAMENTO</Text>
+                    </TouchableOpacity>
+                  );
+                }
+              })()
+            }
+          </View>
+        </ScrollView>
       </ImageBackground>
     );
+  }
+
+  selecionarCartao = () => {
+    console.log('asdasd')
+    this.setState({ isSelectingCard: true }, () => {
+
+    })
+  }
+
+  efetuarPagamento = () => {
+    const tokenService = TokenService.getInstance();
+
+    this.setState({ isLoading: true }, () => {
+      const pedido = this.state.pedido;
+      pedido.paid = true;
+      pedido.order_status = 'finalizado';
+      pedido.rate = this.state.classificacaoProfissional;
+
+      backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
+        .then((response) => {
+          Alert.alert(
+            'Sucesso',
+            'Obrigado por usar o Finddo',
+            [{
+              text: 'Ok', onPress: () => {
+                const resetAction = StackActions.reset({
+                  index: 0,
+                  actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
+                });
+                this.props.navigation.dispatch(resetAction);
+              }
+            }]
+          );
+        }).catch((error) => {
+          console.log(error);
+        }).finally(_ => {
+          this.setState({ isLoading: false });
+        });
+    });
   }
 
   telaFinalStyles = StyleSheet.create({
