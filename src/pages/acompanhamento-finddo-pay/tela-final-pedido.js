@@ -11,6 +11,9 @@ import backendRails, { backendUrl } from '../../services/backend-rails-api';
 import { enumEstadoPedidoMap } from '../profissional_servicos/index-profissional';
 import TokenService from '../../services/token-service';
 import { NavigationActions, StackActions, NavigationEvents } from 'react-navigation';
+import { star } from '../../img/svg/star';
+import { SvgXml } from 'react-native-svg';
+import { starSolid } from '../../img/svg/star-solid';
 
 export default class TelaFinalPedidoScreen extends Component {
   static navigationOptions = {
@@ -104,17 +107,13 @@ export default class TelaFinalPedidoScreen extends Component {
                         if (this.state.classificacaoProfissional === 0) {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(1)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela.png')}></Image>
+                              <SvgXml xml={star} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         } else {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(0)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela-fill.png')}></Image>
+                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         }
@@ -125,17 +124,13 @@ export default class TelaFinalPedidoScreen extends Component {
                         if (this.state.classificacaoProfissional <= 1) {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(2)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela.png')}></Image>
+                              <SvgXml xml={star} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         } else {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(1)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela-fill.png')}></Image>
+                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         }
@@ -146,17 +141,13 @@ export default class TelaFinalPedidoScreen extends Component {
                         if (this.state.classificacaoProfissional <= 2) {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(3)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela.png')}></Image>
+                              <SvgXml xml={star} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         } else {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(2)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela-fill.png')}></Image>
+                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         }
@@ -167,17 +158,13 @@ export default class TelaFinalPedidoScreen extends Component {
                         if (this.state.classificacaoProfissional <= 3) {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(4)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela.png')}></Image>
+                              <SvgXml xml={star} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         } else {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(3)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela-fill.png')}></Image>
+                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         }
@@ -188,17 +175,13 @@ export default class TelaFinalPedidoScreen extends Component {
                         if (this.state.classificacaoProfissional <= 4) {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(5)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela.png')}></Image>
+                              <SvgXml xml={star} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         } else {
                           return (
                             <TouchableOpacity onPress={() => this.setClassificacao(4)}>
-                              <Image
-                                style={this.telaFinalStyles.estrela}
-                                source={require('../../img/estrela-fill.png')}></Image>
+                              <SvgXml xml={starSolid} width={18} height={18}></SvgXml>
                             </TouchableOpacity>
                           );
                         }

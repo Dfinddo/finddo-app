@@ -16,7 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationEvents } from 'react-navigation';
 import FotoService from '../../services/foto-service';
 
-const semPerfil = require('../../img/func-status.png');
+const semPerfil = require('../../img/sem-foto.png');
 
 export default class PerfilScreen extends Component {
   static navigationOptions = {

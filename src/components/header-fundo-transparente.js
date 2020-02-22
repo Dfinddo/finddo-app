@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { View, Image } from 'react-native';
+import { View } from 'react-native';
+import { SvgXml } from 'react-native-svg';
+import { finddoLogo } from '../img/svg/finddo-logo';
 
 export default class HeaderFundoTransparente extends Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'center' }}>
-        <Image
-          source={require('../img/finddo-logo.png')}
-          style={{ width: 130, height: 30, marginLeft: 62 }}
-        />
+        <SvgXml xml={finddoLogo} width={130} height={30} style={{ marginLeft: 62 }}></SvgXml>
       </View>
     );
   }

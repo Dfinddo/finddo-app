@@ -84,21 +84,9 @@ export default class Accordian extends Component {
                 <View style={this.accordionStyle.accordionAbertoProfissionalInfo}>
                   <Text style={{ fontSize: 20, marginBottom: 8 }}>{this.props.pedido.professional_order.name}</Text>
                   <View style={this.accordionStyle.accordionAbertoEstrelas}>
-                    <Image
-                      style={this.accordionStyle.accordionAbertoEstrela}
-                      source={require('../img/estrela.png')} />
-                    <Image
-                      style={this.accordionStyle.accordionAbertoEstrela}
-                      source={require('../img/estrela.png')} />
-                    <Image
-                      style={this.accordionStyle.accordionAbertoEstrela}
-                      source={require('../img/estrela.png')} />
-                    <Image
-                      style={this.accordionStyle.accordionAbertoEstrela}
-                      source={require('../img/estrela.png')} />
-                    <Image
-                      style={this.accordionStyle.accordionAbertoEstrela}
-                      source={require('../img/estrela.png')} />
+                    {
+                      // TODO adicionar classificação
+                    }
                   </View>
                 </View>
               </View>

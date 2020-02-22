@@ -11,6 +11,8 @@ import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import { colors } from '../../colors';
 import { StackActions, NavigationActions } from 'react-navigation';
+import { SvgXml } from 'react-native-svg';
+import { finddoLogo } from '../../img/svg/finddo-logo';
 
 export default class ValorServicoScreen extends Component {
   static navigationOptions = {
@@ -55,7 +57,7 @@ export default class ValorServicoScreen extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.loginScreenStyle.backgroundImageContent}
+        style={this.telaValorStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
           <Modal
@@ -63,20 +65,18 @@ export default class ValorServicoScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.loginScreenStyle.modalStyle}>
+            <View style={this.telaValorStyle.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
             </View>
           </Modal>
-          <View style={this.loginScreenStyle.loginForm}>
-            <Image
-              source={require('../../img/finddo-logo.png')}
-              style={this.loginScreenStyle.finddoLogoStyle} />
-            <View style={this.loginScreenStyle.loginMainForm}>
-              <Text style={this.loginScreenStyle.fontTitle}>Cobrança</Text>
+          <View style={this.telaValorStyle.loginForm}>
+            <SvgXml xml={finddoLogo} width={126} height={30} style={this.telaValorStyle.finddoLogoStyle}></SvgXml>
+            <View style={this.telaValorStyle.loginMainForm}>
+              <Text style={this.telaValorStyle.fontTitle}>Cobrança</Text>
               <TextInput
-                style={this.loginScreenStyle.loginFormSizeAndFont}
+                style={this.telaValorStyle.loginFormSizeAndFont}
                 placeholder="Valor do serviço"
                 keyboardType="number-pad"
                 onChangeText={
@@ -91,14 +91,14 @@ export default class ValorServicoScreen extends Component {
                 value={this.state.valorServico}
               />
               <TextInput
-                style={this.loginScreenStyle.loginFormSizeAndFont}
+                style={this.telaValorStyle.loginFormSizeAndFont}
                 placeholder="Total a ser cobrado"
                 value={this.formatarValorServico(this.state.valorComTaxa)}
                 editable={false}
               />
             </View>
             <TouchableOpacity
-              style={this.loginScreenStyle.loginButton}
+              style={this.telaValorStyle.loginButton}
               onPress={() => {
                 if (!this.state.valorServico || this.state.valorComTaxa < 0) {
                   Alert.alert(
@@ -146,7 +146,7 @@ export default class ValorServicoScreen extends Component {
                   );
                 }
               }}>
-              <Text style={this.loginScreenStyle.loginButtonText}>COBRAR</Text>
+              <Text style={this.telaValorStyle.loginButtonText}>COBRAR</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -154,7 +154,7 @@ export default class ValorServicoScreen extends Component {
     );
   }
 
-  loginScreenStyle = StyleSheet.create({
+  telaValorStyle = StyleSheet.create({
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },

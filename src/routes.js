@@ -32,6 +32,8 @@ import CartoesScreen from './pages/perfil/cartoes/cartoes';
 import FormCartaoScreen from './pages/perfil/cartoes/form-cartao';
 import ValorServicoScreen from './pages/acompanhamento-finddo-pay/tela-valor';
 import OneSignal from 'react-native-onesignal';
+import { SvgXml } from 'react-native-svg';
+import { finddoLogoNavegacao } from './img/svg/finddo-logo-navegacao';
 
 const AppStack = createStackNavigator(
   {
@@ -152,10 +154,7 @@ const TabMenu = createBottomTabNavigator(
         if (routeName === 'Histórico') {
           iconName = `ios-paper`;
         } else if (routeName === 'Finddo') {
-          return <Image
-            style={{ width: 25, height: 25 }}
-            source={require('../src/img/icon_principal.png')}
-          />
+          return <SvgXml xml={finddoLogoNavegacao} width={25} height={25}></SvgXml>
         } else if (routeName === 'Perfil') {
           iconName = `ios-person`;
         } else if (routeName === 'Serviços') {
