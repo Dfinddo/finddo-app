@@ -49,9 +49,8 @@ export default class PerfilScreen extends Component {
       'Finddo',
       'Alterar foto de perfil?',
       [
-        { text: 'Cancelar', onPress: () => { } },
-        { text: 'Câmera', onPress: () => { this.props.navigation.navigate('CameraPerfil'); } },
-        { text: 'Galeria', onPress: () => { } },
+        { text: 'Não', onPress: () => { } },
+        { text: 'Sim', onPress: () => { this.props.navigation.navigate('CameraPerfil'); } },
       ],
       { cancelable: false },
     );

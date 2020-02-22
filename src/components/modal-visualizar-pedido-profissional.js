@@ -19,19 +19,23 @@ export default class VisualizarPedidoProfissional extends Component {
       order.category = this.props.pedido.pedidoCorrente.category.name;
       order.urgency = this.props.pedido.pedidoCorrente.urgency;
       order.user = this.props.pedido.pedidoCorrente.user.name;
+      order.professional_order = this.props.pedido.pedidoCorrente.professional_order;
       order.start_order = new Date(this.props.pedido.pedidoCorrente.start_order.split(".")[0]);
       order.end_order = new Date(this.props.pedido.pedidoCorrente.end_order.split(".")[0]);
       order.address = this.props.pedido.pedidoCorrente.address;
       order.images = this.props.pedido.pedidoCorrente.images;
+      order.cellphone = this.props.pedido.pedidoCorrente.user.cellphone;
     } else {
       order.description = this.props.pedido.description;
       order.category = this.props.pedido.category.name;
       order.urgency = this.props.pedido.urgency;
       order.user = this.props.pedido.user.name;
+      order.professional_order = this.props.pedido.professional_order;
       order.start_order = new Date(this.props.pedido.start_order.split(".")[0]);
       order.end_order = new Date(this.props.pedido.end_order.split(".")[0]);
       order.address = this.props.pedido.address;
       order.images = this.props.pedido.images;
+      order.cellphone = this.props.pedido.user.cellphone;
     }
     this.setState({ order });
   }
@@ -86,6 +90,20 @@ export default class VisualizarPedidoProfissional extends Component {
                 }
                 <Text style={this.visualizarPedidoStyle.titulos}>Nome cliente:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.user}</Text>
+                {
+                  (() => {
+                    if (this.state.order.professional_order) {
+                      return (
+                        <View style={{ width: '100%' }}>
+                          <Text style={this.visualizarPedidoStyle.titulos}>Contato:</Text>
+                          <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.cellphone}</Text>
+                        </View>
+                      );
+                    } else {
+                      return (null);
+                    }
+                  })()
+                }
                 <Text style={this.visualizarPedidoStyle.titulos}>Endereço:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.street}, ${this.state.order.address.number}`}</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.complement}, ${this.state.order.address.cep}`}</Text>

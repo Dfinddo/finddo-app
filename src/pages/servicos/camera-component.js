@@ -13,6 +13,10 @@ export class CameraPedidoComponent extends Component {
     super(props);
   }
 
+  state = {
+    cameraDefault: RNCamera.Constants.Type.back
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -21,7 +25,7 @@ export class CameraPedidoComponent extends Component {
             this.camera = ref;
           }}
           style={styles.preview}
-          type={RNCamera.Constants.Type.back}
+          type={this.state.cameraDefault}
           flashMode={RNCamera.Constants.FlashMode.off}
           androidCameraPermissionOptions={{
             title: 'Permissão para usar a câmera',
@@ -39,12 +43,23 @@ export class CameraPedidoComponent extends Component {
           }}
         />
         <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>
+          <TouchableOpacity onPress={() => { this.trocarCamera() }} style={styles.capture}>
+            <Text style={{ fontSize: 14 }}> Trocar Camera </Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={this.takePicture.bind(this)} style={styles.capture}>
             <Text style={{ fontSize: 14 }}> Capturar </Text>
           </TouchableOpacity>
         </View>
       </View>
     );
+  }
+
+  trocarCamera = () => {
+    if (this.state.cameraDefault === RNCamera.Constants.Type.back) {
+      this.setState({ cameraDefault: RNCamera.Constants.Type.front });
+    } else {
+      this.setState({ cameraDefault: RNCamera.Constants.Type.back });
+    }
   }
 
   takePicture = async () => {
