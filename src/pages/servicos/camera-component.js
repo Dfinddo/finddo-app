@@ -36,7 +36,6 @@ export class CameraPedidoComponent extends Component {
             buttonNegative: 'Cancelar',
           }}
           onGoogleVisionBarcodesDetected={({ barcodes }) => {
-            console.log(barcodes);
           }}
         />
         <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>

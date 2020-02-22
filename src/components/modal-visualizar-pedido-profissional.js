@@ -75,8 +75,6 @@ export default class VisualizarPedidoProfissional extends Component {
                 <Text style={this.visualizarPedidoStyle.titulos}>Fotos:</Text>
                 {
                   (() => {
-                    console.log(this.state);
-
                     const fotos = this.state.order.images.map((foto, index) => { return { id: "" + index, foto: { image: { uri: backendUrl + foto } } } })
 
                     return (

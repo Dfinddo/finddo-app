@@ -16,8 +16,6 @@ export default class Accordian extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
-
     this.setState({ estadoComponente: this.props.estadoInicial });
   }
 

@@ -85,12 +85,21 @@ export default class MeusPedidosProfissional extends Component {
       });
 
       this.setState({
-        pedidos: [...orders],
-        pedidosAnalise: [...pedidosAnalise],
-        pedidosCaminho: [...pedidosCaminho],
-        pedidosServico: [...pedidosServico],
-        pedidosFinalizado: [...pedidosFinalizado],
-        pedidosCancelado: [...pedidosCancelado],
+        pedidos: null,
+        pedidosAnalise: null,
+        pedidosCaminho: null,
+        pedidosServico: null,
+        pedidosFinalizado: null,
+        pedidosCancelado: null,
+      }, () => {
+        this.setState({
+          pedidos: [...orders],
+          pedidosAnalise: [...pedidosAnalise],
+          pedidosCaminho: [...pedidosCaminho],
+          pedidosServico: [...pedidosServico],
+          pedidosFinalizado: [...pedidosFinalizado],
+          pedidosCancelado: [...pedidosCancelado],
+        });
       });
     } catch (error) {
       console.log(error);
@@ -112,7 +121,9 @@ export default class MeusPedidosProfissional extends Component {
         },
         {
           text: 'Verificar status',
-          onPress: () => this.props.navigation.navigate('AcompanhamentoPedido', { pedido })
+          onPress: () => {
+            this.setState({ pedidoCorrente: pedido, enderecoSelecionado: pedido.address }, () => this.props.navigation.navigate('AcompanhamentoPedido', { pedido }));
+          }
         }
       ],
       { cancelable: false },
@@ -280,7 +291,7 @@ function NovoPedido(props) {
 }
 
 function ListaPedidos(props) {
-  if (props.pedidos.length > 0) {
+  if (props.pedidos && props.pedidos.length > 0) {
     return (
       <View>
         <FlatList
