@@ -130,7 +130,7 @@ export default class CartoesScreen extends Component {
   });
 }
 
-function Item(props) {
+export function Item(props) {
   const itemStyle = StyleSheet.create({
     itemCartaoText: {
       color: 'black', fontSize: 16,
@@ -170,7 +170,7 @@ function Item(props) {
   );
 }
 
-function ListaDeEnderecos(props) {
+export function ListaDeEnderecos(props) {
   return (
     <FlatList
       data={props.enderecos}
@@ -180,7 +180,7 @@ function ListaDeEnderecos(props) {
   );
 }
 
-const excluirItemConfirm = (item, comp, size) => {
+export const excluirItemConfirm = (item, comp, size) => {
   if (size > 1) {
     Alert.alert(
       `Deseja excluir ${item.brand}?`,
@@ -203,7 +203,7 @@ const excluirItemConfirm = (item, comp, size) => {
   }
 }
 
-const excluirItem = (item, comp) => {
+export const excluirItem = (item, comp) => {
   // TODO: mensagem ao excluir endereços que tem pedidos ativos associados
   comp.setState({ isLoading: true })
 

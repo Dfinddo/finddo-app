@@ -229,12 +229,24 @@ export default class PerfilScreen extends Component {
                   <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }} />
                 </View>
               </View>
-              <Text
-                style={this.perfilScreenStyle.perfilEnderecoSelect}
-                onPress={() => { this.props.navigation.navigate('Addresses'); }}>Endereço padrão</Text>
-              <Text
-                style={this.perfilScreenStyle.perfilEnderecoSelect}
-                onPress={() => { this.props.navigation.navigate('Cards'); }}>Forma de pagamento padrão</Text>
+              {
+                (() => {
+                  const user = TokenService.getInstance().getUser();
+                  if (user.user_type === 'professional') {
+                    return (null);
+                  } else {
+                    return (
+                      <View>
+                        <Text
+                          style={this.perfilScreenStyle.perfilEnderecoSelect}
+                          onPress={() => { this.props.navigation.navigate('Addresses'); }}>Endereço padrão</Text>
+                        <Text
+                          style={this.perfilScreenStyle.perfilEnderecoSelect}
+                          onPress={() => { this.props.navigation.navigate('Cards'); }}>Forma de pagamento padrão</Text>
+                      </View>);
+                  }
+                })()
+              }
             </View>
           </View>
           <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>

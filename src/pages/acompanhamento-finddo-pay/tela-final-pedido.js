@@ -14,7 +14,6 @@ import { NavigationActions, StackActions, NavigationEvents } from 'react-navigat
 import { star } from '../../img/svg/star';
 import { SvgXml } from 'react-native-svg';
 import { starSolid } from '../../img/svg/star-solid';
-import { ListaDeEnderecos } from '../perfil/cartoes/cartoes';
 
 export default class TelaFinalPedidoScreen extends Component {
   static navigationOptions = {
@@ -24,9 +23,7 @@ export default class TelaFinalPedidoScreen extends Component {
   state = {
     pedido: null,
     isLoading: false,
-    classificacaoProfissional: 0,
-    isSelectingCard: false,
-    cartoes: []
+    classificacaoProfissional: 0
   };
 
   constructor(props) {
@@ -74,20 +71,6 @@ export default class TelaFinalPedidoScreen extends Component {
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={this.state.isSelectingCard}
-          >
-            <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'red' }}>
-
-              <TouchableOpacity
-                style={{ backgroundColor: 'blue', width: 200, height: 200 }}
-                onPress={() => this.setState({ isSelectingCard: false })}>
-                <Text>fechar</Text>
-              </TouchableOpacity>
-            </View>
-          </Modal>
           <Modal
             animationType="slide"
             transparent={true}
@@ -206,7 +189,7 @@ export default class TelaFinalPedidoScreen extends Component {
             </View>
             <View style={{
               height: 100, width: 300,
-              flex: 1, marginTop: 20,
+              marginTop: 20,
               alignItems: 'flex-start', justifyContent: 'space-around',
               flexDirection: 'row'
             }}>
@@ -304,7 +287,7 @@ export default class TelaFinalPedidoScreen extends Component {
                           [
                             { text: 'Cancelar', onPress: () => { } },
                             {
-                              text: 'OK', onPress: () => this.selecionarCartao()
+                              text: 'OK', onPress: () => this.efetuarPagamento()
                             },
                           ],
                           { cancelable: false },
@@ -320,13 +303,6 @@ export default class TelaFinalPedidoScreen extends Component {
         </ScrollView>
       </ImageBackground>
     );
-  }
-
-  selecionarCartao = () => {
-    console.log('asdasd')
-    this.setState({ isSelectingCard: true }, () => {
-
-    })
   }
 
   efetuarPagamento = () => {
@@ -363,13 +339,13 @@ export default class TelaFinalPedidoScreen extends Component {
 
   telaFinalStyles = StyleSheet.create({
     containerBase: {
-      flex: 1, alignItems: 'center',
+      alignItems: 'center',
       justifyContent: 'center',
     },
     linha: {
       backgroundColor: 'white', width: 300,
       height: 120, marginTop: 20,
-      borderRadius: 20, flex: 1,
+      borderRadius: 20,
       alignItems: 'center', justifyContent: 'space-evenly'
     },
     avaliacaoFuncionario: {
@@ -388,7 +364,7 @@ export default class TelaFinalPedidoScreen extends Component {
     },
     pagamentoRow: {
       height: 50, width: 300,
-      flex: 1, marginTop: 20,
+      marginTop: 20,
       alignItems: 'flex-start', justifyContent: 'space-around',
       flexDirection: 'row'
     },
