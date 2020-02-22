@@ -46,7 +46,15 @@ export default class AcompanhamentoPedido extends Component {
       const pedido = navigation.getParam('pedido', null);
 
       if (pedido) {
-        this.setState({ pedido, estadoAtual: pedido.order_status }, () => this.atualizaStatus());
+        if (pedido.price > 0) {
+          const resetAction = StackActions.reset({
+            index: 0,
+            actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido } })],
+          });
+          this.props.navigation.dispatch(resetAction);
+        } else {
+          this.setState({ pedido, estadoAtual: pedido.order_status }, () => this.atualizaStatus());
+        }
       }
     } catch {
       // TODO: implementação de erro
@@ -151,14 +159,11 @@ export default class AcompanhamentoPedido extends Component {
     if (this.state.estadoAtual === 'analise') {
       this.setState({ estadoAtual: 'analise' }, () => {
         this.setStatusAtual('analise', this.pedidoEmAnalise);
-        this.setStatusAtual('analise', this.aCaminho);
-        this.setStatusAtual('analise', this.emServico);
       });
     } else if (this.state.estadoAtual === 'a_caminho') {
       this.setState({ estadoAtual: 'a_caminho' }, () => {
         this.setStatusAtual('a_caminho', this.pedidoEmAnalise);
         this.setStatusAtual('a_caminho', this.aCaminho);
-        this.setStatusAtual('a_caminho', this.emServico);
       });
     } else if (this.state.estadoAtual === 'em_servico') {
       this.setState({ estadoAtual: 'em_servico' }, () => {

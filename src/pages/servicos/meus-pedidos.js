@@ -171,21 +171,22 @@ export default class MeusPedidos extends Component {
   };
 
   associarPedido = async (pedido) => {
+    const buttons = [
+      {
+        text: 'Visualizar pedido',
+        onPress: () => {
+          this.setState({ pedidoCorrente: pedido, enderecoSelecionado: pedido.address, isShowingPedido: true });
+        }
+      },
+      {
+        text: 'Verificar status',
+        onPress: () => this.props.navigation.navigate('AcompanhamentoPedido', { pedido })
+      }
+    ];
     Alert.alert(
       'Finddo',
       'O que deseja fazer?',
-      [
-        {
-          text: 'Visualizar pedido',
-          onPress: () => {
-            this.setState({ pedidoCorrente: pedido, enderecoSelecionado: pedido.address, isShowingPedido: true });
-          }
-        },
-        {
-          text: 'Verificar status',
-          onPress: () => this.props.navigation.navigate('AcompanhamentoPedido', { pedido })
-        }
-      ],
+      pedido.order_status === 'finalizado' ? [buttons[0]] : buttons,
       { cancelable: false },
     );
   };

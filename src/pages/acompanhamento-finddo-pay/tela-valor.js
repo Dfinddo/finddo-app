@@ -8,10 +8,8 @@ import {
   Modal
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
-import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import { colors } from '../../colors';
-import UserDTO from '../../models/UserDTO';
 import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class ValorServicoScreen extends Component {
@@ -19,94 +17,38 @@ export default class ValorServicoScreen extends Component {
     header: null,
   };
 
-  state = { usuario: '', senha: '', isLoading: false };
+  state = { valorServico: '', valorComTaxa: 0, isLoading: false, pedido: null };
 
   constructor(props) {
     super(props);
   }
 
-  login = async (user, password) => {
-    try {
-      this.setState({ isLoading: true });
-      const response = await backendRails.post('/auth/sign_in', { email: user, password: password });
+  calcularValorServico = (valor) => {
+    const valorServico = Number(valor);
 
-      const userData = {};
-      userData['access-token'] = response['headers']['access-token'];
-      userData['client'] = response['headers']['client'];
-      userData['uid'] = response['headers']['uid'];
-
-      const userDto = new UserDTO(response.data.data);
-
-      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
-        async () => {
-          try {
-            const tokenService = TokenService.getInstance();
-            tokenService.setToken(userData);
-
-            await AsyncStorage.setItem('user', JSON.stringify(userDto));
-            tokenService.setUser(userDto);
-
-            this.setState({ isLoading: false });
-            this.props.navigation.navigate('App');
-          }
-          catch (error) {
-            this.setState({ isLoading: false });
-            Alert.alert(
-              'Falha ao se conectar',
-              'Verifique sua conexão e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          }
-        }
-      ).catch(
-        () => {
-          this.setState({ isLoading: false });
-          Alert.alert(
-            'Falha ao se conectar',
-            'Verifique sua conexão e tente novamente',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        }
-      );
+    if (valorServico < 80) {
+      return valorServico * 1.25;
+    } else if (valorServico < 500) {
+      return valorServico * 1.2;
+    } else if (valorServico >= 500) {
+      return valorServico * 1.15;
     }
-    catch (error) {
-      if (error.response) {
-        /*
-         * The request was made and the server responded with a
-         * status code that falls out of the range of 2xx
-         */
-        Alert.alert(
-          'Falha ao se conectar',
-          'Email ou senha incorretos',
-          [
-            { text: 'OK', onPress: () => { } },
-          ],
-          { cancelable: false },
-        );
-      } else if (error.request) {
-        /*
-         * The request was made but no response was received, `error.request`
-         * is an instance of XMLHttpRequest in the browser and an instance
-         * of http.ClientRequest in Node.js
-         */
-        Alert.alert(
-          'Falha ao se conectar',
-          'Verifique sua conexão e tente novamente',
-          [
-            { text: 'OK', onPress: () => { } },
-          ],
-          { cancelable: false },
-        );
-      } else {
-        /* Something happened in setting up the request and triggered an Error */
-      }
-      this.setState({ isLoading: false });
+  };
+
+  formatarValorServico = (valor) => {
+    try {
+      return valor.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+    } catch {
+      return '0'.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+    }
+  };
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    const pedido = navigation.getParam('pedido', null);
+
+    if (pedido) {
+      this.setState({ pedido });
     }
   }
 
@@ -136,32 +78,73 @@ export default class ValorServicoScreen extends Component {
               <TextInput
                 style={this.loginScreenStyle.loginFormSizeAndFont}
                 placeholder="Valor do serviço"
-                keyboardType="numeric"
+                keyboardType="number-pad"
                 onChangeText={
-                  (usuario) => {
-                    this.setState({ usuario: usuario });
+                  (valor) => {
+                    try {
+                      this.setState({ valorServico: valor }, () => {
+                        this.setState({ valorComTaxa: this.calcularValorServico(this.state.valorServico) })
+                      });
+                    }
+                    catch { }
                   }}
-                value={this.state.usuario}
+                value={this.state.valorServico}
               />
               <TextInput
                 style={this.loginScreenStyle.loginFormSizeAndFont}
                 placeholder="Total a ser cobrado"
-                onChangeText={
-                  (senha) => {
-                    this.setState({ senha: senha });
-                  }}
-                value={this.state.senha}
+                value={this.formatarValorServico(this.state.valorComTaxa)}
                 editable={false}
               />
             </View>
             <TouchableOpacity
               style={this.loginScreenStyle.loginButton}
               onPress={() => {
-                const resetAction = StackActions.reset({
-                  index: 0,
-                  actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
-                });
-                this.props.navigation.dispatch(resetAction);
+                if (!this.state.valorServico || this.state.valorComTaxa < 0) {
+                  Alert.alert(
+                    'Finddo',
+                    'Por favor defina um valor para o pedido',
+                    [
+                      { text: 'OK', onPress: () => { } },
+                    ],
+                    { cancelable: false },
+                  );
+                } else {
+                  const order = this.state.pedido;
+
+                  Alert.alert(
+                    'Finddo',
+                    `Confirma o valor ${this.formatarValorServico(this.state.valorComTaxa)}?`,
+                    [
+                      {
+                        text: 'OK', onPress: () => {
+                          order.price = this.state.valorComTaxa * 100;
+
+                          backendRails.patch(`/orders/${this.state.pedido.id}`,
+                            { order },
+                            { headers: TokenService.getInstance().getHeaders() })
+                            .then(response => {
+                              this.setState(
+                                { pedido: response.data, isLoading: false },
+                                () => {
+                                  const resetAction = StackActions.reset({
+                                    index: 0,
+                                    actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido: this.state.pedido } })],
+                                  });
+                                  this.props.navigation.dispatch(resetAction);
+                                }
+                              );
+                            })
+                            .catch(error => {
+                              console.log(error);
+                              this.setState({ isLoading: false });
+                            });
+                        }
+                      },
+                    ],
+                    { cancelable: false },
+                  );
+                }
               }}>
               <Text style={this.loginScreenStyle.loginButtonText}>COBRAR</Text>
             </TouchableOpacity>

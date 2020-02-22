@@ -12,7 +12,7 @@ import { colors } from '../../colors';
 import { NavigationEvents } from 'react-navigation';
 import VisualizarPedidoProfissional from '../../components/modal-visualizar-pedido-profissional';
 
-const enumEstadoPedidoMap = {
+export const enumEstadoPedidoMap = {
   analise: 'Pedido em Análise',
   agendando_visita: 'Agendando Visita',
   a_caminho: 'Profissional à Caminho',
