@@ -32,6 +32,7 @@ local.properties
 
 # bundle por questões de segurança
 android/app/src/main/assets/index.android.bundle
+android/app/release/
 
 # node.js
 #
