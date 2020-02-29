@@ -17,7 +17,8 @@ export default class DataServico extends Component {
     super(props);
     this.state = {
       selectedStartDate: '',
-      hora: null,
+      hora: "09:00",
+      horaFim: "10:00",
       necessidade: null,
       categoriaPedido: null,
       urgencia: '',
@@ -51,7 +52,8 @@ export default class DataServico extends Component {
           {
             necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
             dataPedido: new Date(`${dateSplit[1]}/${dateSplit[0]}/${dateSplit[2]}`),
-            urgencia: this.state.urgencia
+            urgencia: this.state.urgencia, hora: this.state.hora,
+            horaFim: this.state.horaFim
           });
     }
   }
@@ -111,7 +113,7 @@ export default class DataServico extends Component {
               alignContent: 'center', justifyContent: 'space-around'
             }}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 18 }}>Hora desejada:</Text>
+                <Text style={{ fontSize: 18 }}>Início:</Text>
               </View>
               <View
                 style={this.dataStyles.selectStyle}>
@@ -122,6 +124,39 @@ export default class DataServico extends Component {
                   }}
                   onValueChange={(itemValue, itemIndex) =>
                     this.setState({ hora: itemValue })
+                  }>
+                  <Picker.Item label="09:00" value="09:00" />
+                  <Picker.Item label="09:30" value="09:30" />
+                  <Picker.Item label="10:00" value="10:00" />
+                  <Picker.Item label="10:30" value="10:30" />
+                  <Picker.Item label="11:00" value="11:00" />
+                  <Picker.Item label="11:30" value="11:30" />
+                  <Picker.Item label="12:00" value="12:00" />
+                  <Picker.Item label="12:30" value="12:30" />
+                  <Picker.Item label="13:00" value="13:00" />
+                  <Picker.Item label="13:30" value="13:30" />
+                  <Picker.Item label="14:00" value="14:00" />
+                  <Picker.Item label="14:30" value="14:30" />
+                  <Picker.Item label="15:00" value="15:00" />
+                  <Picker.Item label="15:30" value="15:30" />
+                  <Picker.Item label="16:00" value="16:00" />
+                  <Picker.Item label="16:30" value="16:30" />
+                  <Picker.Item label="17:00" value="17:00" />
+                  <Picker.Item label="17:30" value="17:30" />
+                </Picker>
+              </View>
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 18 }}>Fim:</Text>
+              </View>
+              <View
+                style={this.dataStyles.selectStyle}>
+                <Picker
+                  selectedValue={this.state.horaFim}
+                  style={{
+                    height: 50, width: '100%'
+                  }}
+                  onValueChange={(itemValue, itemIndex) =>
+                    this.setState({ horaFim: itemValue })
                   }>
                   <Picker.Item label="09:00" value="09:00" />
                   <Picker.Item label="09:30" value="09:30" />

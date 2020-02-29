@@ -8,11 +8,10 @@ import {
   Keyboard
 } from 'react-native';
 import { colors } from '../../../colors';
-import backendRails from '../../../services/backend-rails-api';
 import TokenService from '../../../services/token-service';
 import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
 import { StackActions } from 'react-navigation';
-import { headers } from '../../../services/moip-api';
+import moipAPI, { headers } from '../../../services/moip-api';
 
 function Card() {
   return {
@@ -60,6 +59,7 @@ export default class FormCartaoScreen extends Component {
     formErrors: [],
     isLoading: false,
     isShowingKeyboard: false,
+    id: null
   };
 
   componentDidMount() {
@@ -115,20 +115,23 @@ export default class FormCartaoScreen extends Component {
   };
 
   validateCard = () => {
-    setTimeout(() => console.log(JSON.stringify(this.state.cardData)), 2000);
+    this.salvarCartao();
   };
 
   salvarCartao = async () => {
     try {
       this.setState({ isLoading: true });
-      const response = await backendRails.post('/addresses', { address }, { headers: headers });
+      const user = TokenService.getInstance().getUser();
+      const response = await moipAPI
+        .post(`/customers/${user.customer_wirecard_id}/fundinginstruments`,
+          this.state.cardData, { headers: headers });
 
       this.setState({ isLoading: false, id: response.data.id });
 
       const popAction = StackActions.pop({
         n: 1,
       });
-      // this.props.navigation.dispatch(popAction);
+      this.props.navigation.dispatch(popAction);
     }
     catch (error) {
       if (error.response) {

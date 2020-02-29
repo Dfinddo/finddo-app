@@ -42,11 +42,19 @@ export default class AcompanhamentoPedido extends Component {
 
   obterPedido = () => {
     try {
-      if (!this.state.pedido) {
-        const { navigation } = this.props;
-        const pedido = navigation.getParam('pedido', null);
+      const { navigation } = this.props;
+      const pedido = navigation.getParam('pedido', null);
 
-        this.setState({ pedido, estadoAtual: pedido.order_status }, () => this.atualizaStatus());
+      if (pedido) {
+        if (pedido.price > 0) {
+          const resetAction = StackActions.reset({
+            index: 0,
+            actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido } })],
+          });
+          this.props.navigation.dispatch(resetAction);
+        } else {
+          this.setState({ pedido, estadoAtual: pedido.order_status }, () => this.atualizaStatus());
+        }
       }
     } catch {
       // TODO: implementação de erro
@@ -97,6 +105,7 @@ export default class AcompanhamentoPedido extends Component {
                   <View
                     style={{ height: 120, zIndex: 10 }}>
                     <Accordian
+                      pedido={this.state.pedido}
                       conteudo='A caminho'
                       estadoInicial='a_caminho'
                       ref={this.aCaminhoD} />
@@ -154,18 +163,18 @@ export default class AcompanhamentoPedido extends Component {
     } else if (this.state.estadoAtual === 'a_caminho') {
       this.setState({ estadoAtual: 'a_caminho' }, () => {
         this.setStatusAtual('a_caminho', this.pedidoEmAnalise);
-        this.setStatusAtual('a_caminho', this.aCaminho)
+        this.setStatusAtual('a_caminho', this.aCaminho);
       });
     } else if (this.state.estadoAtual === 'em_servico') {
       this.setState({ estadoAtual: 'em_servico' }, () => {
         this.setStatusAtual('em_servico', this.pedidoEmAnalise);
-        this.setStatusAtual('em_servico', this.aCaminho)
-        this.setStatusAtual('em_servico', this.emServico)
+        this.setStatusAtual('em_servico', this.aCaminho);
+        this.setStatusAtual('em_servico', this.emServico);
       });
     } else {
       const resetAction = StackActions.reset({
         index: 0,
-        actions: [NavigationActions.navigate({ routeName: 'Acompanhamento' })],
+        actions: [NavigationActions.navigate({ routeName: 'Cobranca', params: { pedido: this.state.pedido } })],
       });
       this.props.navigation.dispatch(resetAction);
     }
@@ -190,6 +199,9 @@ export default class AcompanhamentoPedido extends Component {
       case 'a_caminho':
         novoStatus = 'em_servico';
         break;
+      case 'em_servico':
+        this.props.navigation.navigate('Cobranca', { pedido: this.state.pedido });
+        return;
       default:
         break;
     }
@@ -199,14 +211,19 @@ export default class AcompanhamentoPedido extends Component {
       let response = {};
 
       const novoPedido = this.state.pedido;
-      novoPedido.order_status = novoStatus;
 
-      response = await
-        backendRails
-          .put('/orders/' + novoPedido.id, { order: novoPedido },
-            { headers: tokenService.getHeaders() });
+      if (novoStatus) {
+        novoPedido.order_status = novoStatus;
 
-      this.setState({ pedido: response.data, estadoAtual: response.data.order_status }, () => { this.atualizaStatus() });
+        response = await
+          backendRails
+            .put('/orders/' + novoPedido.id, { order: novoPedido },
+              { headers: tokenService.getHeaders() });
+
+        this.setState({ pedido: response.data, estadoAtual: response.data.order_status }, () => { this.atualizaStatus() });
+      } else {
+        this.atualizaStatus();
+      }
     }
     catch (error) {
       console.log(error);

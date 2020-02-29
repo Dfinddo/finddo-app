@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, FlatList, Image } from 'react-native';
 import { colors } from '../colors';
 import TokenService from '../services/token-service';
+import { backendUrl } from '../services/backend-rails-api';
 
 export default class VisualizarPedido extends Component {
   constructor(props) {
@@ -14,31 +15,69 @@ export default class VisualizarPedido extends Component {
 
   componentDidMount() {
     const order = {};
-    order.description = this.props.pedido.necessidade;
-    order.category = this.props.pedido.categoriaPedido.name;
-    order.urgencia = this.props.pedido.urgencia;
-    order.user_id = TokenService.getInstance().getUser().id;
-    if (this.props.pedido.dataPedido) {
-      order.start_order = this.props.pedido.dataPedido;
+    if (this.props.pedido.isShowingPedido) {
+      order.description = this.props.pedido.pedidoCorrente.description;
+      order.category = this.props.pedido.pedidoCorrente.category.name;
+      order.urgencia = this.props.pedido.pedidoCorrente.urgency === 'urgent' ? 'definir-data' : 'semana';
+      order.user_id = this.props.pedido.pedidoCorrente.user.id
+      order.start_order = new Date(this.props.pedido.pedidoCorrente.start_order.split('.')[0]);
+    } else {
+      order.description = this.props.pedido.necessidade;
+      order.category = this.props.pedido.categoriaPedido.name;
+      order.urgencia = this.props.pedido.urgencia;
+      order.user_id = TokenService.getInstance().getUser().id;
+      if (this.props.pedido.dataPedido) {
+        order.start_order = this.props.pedido.dataPedido;
+      }
     }
+
     this.setState({ order });
   }
 
   render() {
     let diaInicio = '';
     let diaFim = '';
+    let horaInicio = '';
+    let minutosInicio = '';
+    let horaFim = '';
+    let minutosFim = '';
 
     if (this.state.order) {
 
       if (this.state.order.start_order && this.state.order.urgencia === 'semana') {
         diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
 
-        const dataFim = new Date(this.props.pedido.dataPedido.toDateString());
+        let dataFim = null;
+        if (this.props.pedido.isShowingPedido) {
+          dataFim = new Date(this.props.pedido.pedidoCorrente.start_order.split(".")[0]);
+        } else {
+          dataFim = new Date(this.props.pedido.dataPedido.toDateString());
+        }
+
         dataFim.setDate(dataFim.getDate() + 7);
 
         diaFim = `${dataFim.getDate()}/${+dataFim.getMonth() + 1}/${dataFim.getFullYear()}`;
       } else if (this.state.order.start_order && this.state.order.urgencia === 'definir-data') {
-        diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
+        if (this.props.pedido.isShowingPedido) {
+          const data = new Date(this.props.pedido.pedidoCorrente.start_order.split(".")[0]);
+          const dataF = new Date(this.props.pedido.pedidoCorrente.end_order.split(".")[0]);
+
+          diaInicio = `${data.getDate()}/${+data.getMonth() + 1}/${data.getFullYear()}`;
+
+          horaInicio = data.getHours() < 10 ? '0' + data.getHours() : data.getHours();
+          minutosInicio = data.getMinutes() < 10 ? '0' + data.getMinutes() : data.getMinutes();
+
+          horaFim = dataF.getHours() < 10 ? '0' + dataF.getHours() : dataF.getHours();
+          minutosFim = dataF.getMinutes() < 10 ? '0' + dataF.getMinutes() : dataF.getMinutes();
+        } else {
+          diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
+
+          horaInicio = this.props.pedido.hora.split(":")[0];
+          minutosInicio = this.props.pedido.hora.split(":")[1];
+
+          horaFim = this.props.pedido.horaFim.split(":")[0];
+          minutosFim = this.props.pedido.horaFim.split(":")[1];
+        }
       }
 
       return (
@@ -57,16 +96,36 @@ export default class VisualizarPedido extends Component {
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.category}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Descrição:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.description}</Text>
+                <Text style={this.visualizarPedidoStyle.titulos}>Endereço:</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.props.pedido.enderecoSelecionado.street}, ${this.props.pedido.enderecoSelecionado.number}`}</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.props.pedido.enderecoSelecionado.complement}, ${this.props.pedido.enderecoSelecionado.cep}`}</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>{`${this.props.pedido.enderecoSelecionado.district}`}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Fotos:</Text>
+                {
+                  (() => {
+                    let fotos = [];
+                    if (this.props.pedido.isShowingPedido) {
+                      fotos = this.props.pedido.pedidoCorrente.images.map((foto, index) => { return { id: "" + index, foto: { image: { uri: backendUrl + foto } } } })
+                    } else {
+                      fotos = this.props.pedido.fotosPedido.map((foto, index) => { return { id: "" + index, foto }; });
+                    }
+
+                    return (
+                      <FlatList data={fotos} renderItem={({ item }) => {
+                        return (<Image source={item.foto.image} style={{ width: 240, height: 240, marginTop: 10 }} />);
+                      }} />
+                    );
+                  })()
+                }
                 <Text style={this.visualizarPedidoStyle.titulos}>Data:</Text>{
                   (() => {
                     switch (this.state.order.urgencia) {
                       case 'semana':
-                        return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim} (semanal)</Text>;
+                        return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim} (Sem urgência)</Text>;
                       case 'urgente':
                         return <Text style={this.visualizarPedidoStyle.textos}>Urgente</Text>;
                       case 'definir-data':
-                        return <Text style={this.visualizarPedidoStyle.textos}>{diaInicio} (data definida)</Text>;
+                        return <Text style={this.visualizarPedidoStyle.textos}>{diaInicio}, entre {horaInicio}:{minutosInicio} e {horaFim}:{minutosFim} (Com urgência)</Text>;
                       default:
                         return null;
                     }
@@ -74,15 +133,21 @@ export default class VisualizarPedido extends Component {
               </View>
             </ScrollView>
             <View style={{ alignItems: 'center' }}>
-              <TouchableOpacity
-                onPress={this.props.onConfirm}
-                style={{
-                  width: 300, backgroundColor: colors.verdeFinddo,
-                  justifyContent: 'center', alignItems: 'center',
-                  borderRadius: 20, height: 45, marginBottom: 10
-                }}>
-                <Text style={{ color: colors.branco, fontSize: 18 }}>CONFIRMAR</Text>
-              </TouchableOpacity>
+              {(() => {
+                if (this.props.pedido.isShowingPedido) {
+                  return (null);
+                } else {
+                  return (<TouchableOpacity
+                    onPress={this.props.onConfirm}
+                    style={{
+                      width: 300, backgroundColor: colors.verdeFinddo,
+                      justifyContent: 'center', alignItems: 'center',
+                      borderRadius: 20, height: 45, marginBottom: 10
+                    }}>
+                    <Text style={{ color: colors.branco, fontSize: 18 }}>CONFIRMAR</Text>
+                  </TouchableOpacity>);
+                }
+              })()}
               <TouchableOpacity
                 onPress={this.props.onCancel}
                 style={{

@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Image, ImageBackground, Text, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Modal, Image, ImageBackground, Text, FlatList, StyleSheet, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
+import moipAPI, { headers } from '../../services/moip-api';
+import { colors } from '../../colors';
+import TokenService from '../../services/token-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -18,6 +21,48 @@ export default class Servicos extends Component {
       { id: '8', name: null }
     ],
     page: 1,
+    isLoading: false
+  };
+
+  creditCardFilter = (data) => {
+    return data.method === "CREDIT_CARD";
+  };
+
+  exibirAlertSemCartoes = () => {
+    Alert.alert(
+      'Forma de pagamento ainda não cadastrada',
+      'Para adicionar uma forma de pagamento vá para a aba Perfil',
+      [{ text: 'OK', onPress: () => { } }]
+    );
+  };
+
+  verificarCartoes = (item) => {
+    this.setState({ isLoading: true }, () => {
+      const tokenService = TokenService.getInstance();
+
+      moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headers })
+        .then((data) => {
+          const clientData = data.data;
+          if (clientData.fundingInstruments) {
+            const cardData = clientData.fundingInstruments.filter(data => this.creditCardFilter(data));
+
+            if (cardData.length > 0) {
+              this.props.navigation.navigate('NovoPedido', { item })
+            } else {
+              this.exibirAlertSemCartoes();
+            }
+          } else {
+            this.exibirAlertSemCartoes();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.exibirAlertSemCartoes();
+        })
+        .finally(_ => {
+          this.setState({ isLoading: false });
+        });
+    })
   };
 
   exibirItem = (item) => {
@@ -27,7 +72,7 @@ export default class Servicos extends Component {
     return (
       <View style={{ marginTop: 8 }}>
         <Text style={{ marginLeft: 4, fontWeight: 'bold', fontSize: 20 }}>{item.name}</Text>
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('NovoPedido', { item })}>
+        <TouchableOpacity onPress={() => this.verificarCartoes(item)}>
           <Image
             style={{
               marginTop: 4, borderRadius: 16,
@@ -45,6 +90,17 @@ export default class Servicos extends Component {
         style={this.servicosStyles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <View style={this.servicosStyles.container}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoading}
+          >
+            <View style={this.servicosStyles.modalStyle}>
+              <View>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </View>
+          </Modal>
           <FlatList
             data={this.state.docs}
             keyExtractor={item => item.id}
@@ -70,6 +126,7 @@ export default class Servicos extends Component {
     },
     backgroundImageContent: {
       width: '100%', height: '100%'
-    }
+    },
+    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   });
 }

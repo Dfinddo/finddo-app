@@ -30,6 +30,10 @@ build/
 local.properties
 *.iml
 
+# bundle por questões de segurança
+android/app/src/main/assets/index.android.bundle
+android/app/release/
+
 # node.js
 #
 node_modules/
