@@ -12,6 +12,9 @@ import { StackActions, NavigationActions, NavigationEvents } from 'react-navigat
 import { colors } from '../../colors';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
 import FotoService from '../../services/foto-service';
+import { ListaDeEnderecos } from '../../pages/perfil/enderecos';
+
+const fotoDefault = require('../../img/add_foto_problema.png');
 
 export default class FotosPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -24,21 +27,59 @@ export default class FotosPedido extends Component {
     categoriaPedido: null,
     isLoading: false,
     dataPedido: null,
+    hora: null,
+    horaFim: null,
     urgencia: '',
     isConfirming: false,
-    foto1: require('../../img/add_foto_problema.png')
+    foto1: fotoDefault,
+    foto1Setada: false,
+    foto2: fotoDefault,
+    foto2Setada: false,
+    foto3: fotoDefault,
+    foto3Setada: false,
+    foto4: fotoDefault,
+    foto4Setada: false,
+    fotosPedido: [],
+    isSelectEndereco: false,
+    enderecos: [],
+    enderecoSelecionado: null
   };
 
   componentDidMount() {
     this.obterDadosPrimeiraPartePedido();
   };
 
-  obterFoto1 = () => {
+  obterFoto = () => {
     const fotoService = FotoService.getInstance();
     const photo = fotoService.getFotoData();
+    const numeroFoto = fotoService.getFotoId();
+
+    const images = this.state.fotosPedido;
 
     if (photo) {
-      this.setState({ foto1: photo });
+      switch (numeroFoto) {
+        case 1:
+          images.push({ image: photo, file_name: 'foto1' });
+          this.setState({ foto1: photo, foto1Setada: true, isLoading: false, fotosPedido: [...images] });
+          break;
+        case 2:
+          images.push({ image: photo, file_name: 'foto2' });
+          this.setState({ foto2: photo, foto2Setada: true, isLoading: false, fotosPedido: [...images] });
+          break;
+        case 3:
+          images.push({ image: photo, file_name: 'foto3' });
+          this.setState({ foto3: photo, foto3Setada: true, isLoading: false, fotosPedido: [...images] });
+          break;
+        case 4:
+          images.push({ image: photo, file_name: 'foto4' });
+          this.setState({ foto4: photo, foto4Setada: true, isLoading: false, fotosPedido: [...images] });
+          break;
+        default:
+          this.setState({ isLoading: false });
+          break;
+      }
+    } else {
+      this.setState({ isLoading: false });
     }
   }
 
@@ -47,10 +88,12 @@ export default class FotosPedido extends Component {
     const necessidade = navigation.getParam('necessidade', 'no necessidade');
     const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
     const dataPedido = navigation.getParam('dataPedido', 'sem_data');
+    const hora = navigation.getParam('hora', 'sem_hora');
+    const horaFim = navigation.getParam('horaFim', 'sem_hora_fim');
     const urgencia = navigation.getParam('urgencia', 'sem_urgencia');
 
     if (dataPedido !== 'sem_data') {
-      this.setState({ dataPedido });
+      this.setState({ dataPedido, hora, horaFim });
     }
 
     if (urgencia !== 'sem_urgencia') {
@@ -59,6 +102,24 @@ export default class FotosPedido extends Component {
 
     this.setState({ necessidade, categoriaPedido });
     this.setState({ imageServicoUrl: categoriaPedido.image_url });
+  };
+
+  selecionarEndereco = () => {
+    this.setState({ isLoading: true }, () => {
+      const tokenService = TokenService.getInstance();
+
+      backendRails.get('/addresses/user/' + tokenService.getUser().id, { headers: tokenService.getHeaders() })
+        .then((data) => {
+          const addresses = data.data;
+          addresses.forEach(element => {
+            element.id = '' + element.id;
+          });
+
+          this.setState({ enderecos: [...addresses] });
+        }).finally(_ => {
+          this.setState({ isLoading: false, isSelectEndereco: true });
+        });
+    });
   };
 
   confirmarPedido = () => {
@@ -81,12 +142,19 @@ export default class FotosPedido extends Component {
     order.description = orderData.necessidade;
     order.category_id = +orderData.categoriaPedido.id;
     order.user_id = TokenService.getInstance().getUser().id;
-    if (this.state.dataPedido) {
-      order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.dataPedido.getHours()}:${this.state.dataPedido.getMinutes()}:${this.state.dataPedido.getSeconds()}`;
+    order.address_id = this.state.enderecoSelecionado.id;
+    if (this.state.urgencia === 'definir-data') {
+      order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
+      order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
+      order.urgency = 'urgent';
     }
 
-    backendRails.post('/orders', { order }, { headers: TokenService.getInstance().getHeaders() })
+    const images = this.state.fotosPedido.map((foto) => { return { base64: foto.image.base64, file_name: foto.file_name } });
+
+    backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
       .then((response) => {
+        FotoService.getInstance().setFotoId(0);
+        FotoService.getInstance().setFotoData(null);
         this.setState({ isLoading: false });
         const resetAction = StackActions.reset({
           index: 0,
@@ -131,6 +199,12 @@ export default class FotosPedido extends Component {
       });
   }
 
+  selecionarItem = (item) => {
+    this.setState({ isSelectEndereco: false, enderecoSelecionado: item.item }, () => {
+      this.confirmarPedido();
+    });
+  }
+
   render() {
     return (
       <ImageBackground
@@ -152,6 +226,31 @@ export default class FotosPedido extends Component {
             <Modal
               animationType="slide"
               transparent={true}
+              visible={this.state.isSelectEndereco}>
+              <View style={{
+                alignItems: 'center', justifyContent: 'center',
+                flex: 1, backgroundColor: colors.branco
+              }}>
+                <Text style={{
+                  fontSize: 24, fontWeight: 'bold',
+                  marginVertical: 18, paddingHorizontal: 20
+                }}>Escolha o endereço onde o serviço será realizado:</Text>
+                <ListaDeEnderecos
+                  readOnly={true}
+                  navigation={this.props.navigation}
+                  enderecos={this.state.enderecos}
+                  selecionarItem={this.selecionarItem}
+                  comp={this}></ListaDeEnderecos>
+                <TouchableOpacity
+                  style={this.fotosPedidoStyles.botaoContinuar}
+                  onPress={() => this.setState({ isSelectEndereco: false })}>
+                  <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>VOLTAR</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+            <Modal
+              animationType="slide"
+              transparent={true}
               visible={this.state.isConfirming}>
               <VisualizarPedido
                 pedido={this.state}
@@ -160,8 +259,13 @@ export default class FotosPedido extends Component {
             </Modal>
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
               <NavigationEvents
-                onWillFocus={_ => this.obterFoto1()}
-              //onDidFocus={payload => console.log('did focus', payload)}
+                onWillFocus={_ => {
+                  this.setState({ isLoading: true }, () => {
+                    setTimeout(() => { this.obterFoto() }, 1000);
+                  })
+                  // this.setState({ isLoading: true }, () => { this.obterFoto1() });
+                }}
+              //onDidFocus={_ => this.obterFoto1()}
               //onWillBlur={payload => console.log('will blur', payload)}
               //onDidBlur={payload => console.log('did blur', payload)}
               />
@@ -173,6 +277,7 @@ export default class FotosPedido extends Component {
                     Nos ajude com fotos do problema (opcional)
                   </Text>
                   <TouchableOpacity onPress={() => {
+                    FotoService.getInstance().setFotoId(1);
                     this.props.navigation.navigate('CameraPedido');
                   }} style={{ alignItems: 'center', marginTop: 30 }}>
                     <Image
@@ -180,20 +285,29 @@ export default class FotosPedido extends Component {
                       source={this.state.foto1} />
                   </TouchableOpacity>
                   <View style={this.fotosPedidoStyles.fotosProblemaContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                      FotoService.getInstance().setFotoId(2);
+                      this.props.navigation.navigate('CameraPedido');
+                    }}>
                       <Image
                         style={{ width: 80, height: 80 }}
-                        source={require('../../img/add_foto_problema.png')} />
+                        source={this.state.foto2} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                      FotoService.getInstance().setFotoId(3);
+                      this.props.navigation.navigate('CameraPedido');
+                    }}>
                       <Image
                         style={{ width: 80, height: 80 }}
-                        source={require('../../img/add_foto_problema.png')} />
+                        source={this.state.foto3} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                      FotoService.getInstance().setFotoId(4);
+                      this.props.navigation.navigate('CameraPedido');
+                    }}>
                       <Image
                         style={{ width: 80, height: 80 }}
-                        source={require('../../img/add_foto_problema.png')} />
+                        source={this.state.foto4} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -204,7 +318,7 @@ export default class FotosPedido extends Component {
         <View style={this.fotosPedidoStyles.botaoContainer}>
           <TouchableOpacity
             style={this.fotosPedidoStyles.botaoContinuar}
-            onPress={() => this.confirmarPedido()}>
+            onPress={() => /*this.confirmarPedido()*/ this.selecionarEndereco()}>
             <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>

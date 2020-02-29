@@ -12,6 +12,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import { colors } from '../../colors';
 import UserDTO from '../../models/UserDTO';
+import { SvgXml } from 'react-native-svg';
+import { finddoLogo } from '../../img/svg/finddo-logo';
 
 export default class LoginScreen extends Component {
   static navigationOptions = {
@@ -127,14 +129,13 @@ export default class LoginScreen extends Component {
             </View>
           </Modal>
           <View style={this.loginScreenStyle.loginForm}>
-            <Image
-              source={require('../../img/finddo-logo.png')}
-              style={this.loginScreenStyle.finddoLogoStyle} />
+            <SvgXml xml={finddoLogo} width={126} height={30} style={this.loginScreenStyle.finddoLogoStyle}></SvgXml>
             <View style={this.loginScreenStyle.loginMainForm}>
               <Text style={this.loginScreenStyle.fontTitle}>Login</Text>
               <TextInput
                 style={this.loginScreenStyle.loginFormSizeAndFont}
                 placeholder="E-mail"
+                autoCapitalize="none"
                 keyboardType="email-address"
                 onChangeText={
                   (usuario) => {
@@ -164,7 +165,7 @@ export default class LoginScreen extends Component {
             <Text>
               Ainda não é cadastrado?
             <Text> </Text>
-            <Text
+              <Text
                 style={this.loginScreenStyle.cadastreSe}
                 onPress={() => this.props.navigation.navigate('EscolhaTipo')}>Cadastre-se</Text>
             </Text>

@@ -7,9 +7,9 @@
         <item name="android:windowBackground">
             @drawable/background_splash
         </item>
-        <!-- <item name="android:statusBarColor">
+        <item name="android:statusBarColor">
             @color/primary
-        </item> -->
+        </item>
     </style>
 
 </resources>

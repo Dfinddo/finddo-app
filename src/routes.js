@@ -30,6 +30,10 @@ import { CameraPedidoComponent } from './pages/servicos/camera-component';
 import FormEnderecoScreen from './pages/perfil/form-endereco';
 import CartoesScreen from './pages/perfil/cartoes/cartoes';
 import FormCartaoScreen from './pages/perfil/cartoes/form-cartao';
+import ValorServicoScreen from './pages/acompanhamento-finddo-pay/tela-valor';
+import OneSignal from 'react-native-onesignal';
+import { SvgXml } from 'react-native-svg';
+import { finddoLogoNavegacao } from './img/svg/finddo-logo-navegacao';
 
 const AppStack = createStackNavigator(
   {
@@ -53,7 +57,7 @@ const AppStack = createStackNavigator(
 
       let tabBarVisible = true;
 
-      let routeName = navigation.state.routes[navigation.state.index].routeName
+      let routeName = navigation.state.routes[navigation.state.index].routeName;
 
       if (routeName == 'CameraPedido') {
         tabBarVisible = false
@@ -70,6 +74,7 @@ const ServicosStack = createStackNavigator(
   {
     AcompanhamentoPedido: AcompanhamentoPedido,
     Acompanhamento: TelaFinalPedidoScreen,
+    Cobranca: ValorServicoScreen
   },
   { initialRouteName: 'AcompanhamentoPedido' }
 );
@@ -92,9 +97,26 @@ const PerfilStack = createStackNavigator(
     Addresses: EnderecosScreen,
     CreateEditAddress: FormEnderecoScreen,
     Cards: CartoesScreen,
-    CreateEditCard: FormCartaoScreen
+    CreateEditCard: FormCartaoScreen,
+    CameraPerfil: CameraPedidoComponent
   },
-  { initialRouteName: 'Profile' }
+  {
+    initialRouteName: 'Profile',
+    navigationOptions: ({ navigation }) => {
+
+      let tabBarVisible = true;
+
+      let routeName = navigation.state.routes[navigation.state.index].routeName;
+
+      if (routeName == 'CameraPerfil') {
+        tabBarVisible = false;
+      }
+
+      return {
+        tabBarVisible,
+      }
+    }
+  }
 );
 
 const AjudaStack = createStackNavigator(
@@ -132,10 +154,7 @@ const TabMenu = createBottomTabNavigator(
         if (routeName === 'Histórico') {
           iconName = `ios-paper`;
         } else if (routeName === 'Finddo') {
-          return <Image
-            style={{ width: 25, height: 25 }}
-            source={require('../src/img/icon_principal.png')}
-          />
+          return <SvgXml xml={finddoLogoNavegacao} width={25} height={25}></SvgXml>
         } else if (routeName === 'Perfil') {
           iconName = `ios-person`;
         } else if (routeName === 'Serviços') {
@@ -167,6 +186,38 @@ const AppContainer = createAppContainer(createSwitchNavigator(
 ));
 
 export default class App extends Component {
+  constructor(props) {
+    super(props);
+    // ============================ ATENÇÃO ============================
+    // ================ NUNCA COMMITAR O ID DA APLICAÇÃO ===============
+    OneSignal.init("APPLICATION ID");
+
+    OneSignal.addEventListener('received', this.onReceived);
+    OneSignal.addEventListener('opened', this.onOpened);
+    OneSignal.addEventListener('ids', this.onIds);
+  }
+
+  componentWillUnmount() {
+    OneSignal.removeEventListener('received', this.onReceived);
+    OneSignal.removeEventListener('opened', this.onOpened);
+    OneSignal.removeEventListener('ids', this.onIds);
+  }
+
+  onReceived(notification) {
+    console.log("Notification received: ", notification);
+  }
+
+  onOpened(openResult) {
+    console.log('Message: ', openResult.notification.payload.body);
+    console.log('Data: ', openResult.notification.payload.additionalData);
+    console.log('isActive: ', openResult.notification.isAppInFocus);
+    console.log('openResult: ', openResult);
+  }
+
+  onIds(device) {
+    console.log('Device info: ', device);
+  }
+
   render() {
     return <AppContainer />;
   }

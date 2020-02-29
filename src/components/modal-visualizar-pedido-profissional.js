@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, FlatList, Image } from 'react-native';
 import { colors } from '../colors';
+import { backendUrl } from '../services/backend-rails-api';
 
 export default class VisualizarPedidoProfissional extends Component {
   constructor(props) {
@@ -13,22 +14,52 @@ export default class VisualizarPedidoProfissional extends Component {
 
   componentDidMount() {
     const order = {};
-    order.description = this.props.pedido.description;
-    order.category = this.props.pedido.category.name;
-    // TODO: inserir urgência no backend
-    // order.urgencia = this.props.pedido.urgencia;
-    order.user = this.props.pedido.user.name;
-    order.start_order = new Date(this.props.pedido.start_order);
-    order.address = this.props.pedido.address;
+    if (this.props.pedido.isShowingPedido) {
+      order.description = this.props.pedido.pedidoCorrente.description;
+      order.category = this.props.pedido.pedidoCorrente.category.name;
+      order.urgency = this.props.pedido.pedidoCorrente.urgency;
+      order.user = this.props.pedido.pedidoCorrente.user.name;
+      order.professional_order = this.props.pedido.pedidoCorrente.professional_order;
+      order.start_order = new Date(this.props.pedido.pedidoCorrente.start_order.split(".")[0]);
+      order.end_order = new Date(this.props.pedido.pedidoCorrente.end_order.split(".")[0]);
+      order.address = this.props.pedido.pedidoCorrente.address;
+      order.images = this.props.pedido.pedidoCorrente.images;
+      order.cellphone = this.props.pedido.pedidoCorrente.user.cellphone;
+    } else {
+      order.description = this.props.pedido.description;
+      order.category = this.props.pedido.category.name;
+      order.urgency = this.props.pedido.urgency;
+      order.user = this.props.pedido.user.name;
+      order.professional_order = this.props.pedido.professional_order;
+      order.start_order = new Date(this.props.pedido.start_order.split(".")[0]);
+      order.end_order = new Date(this.props.pedido.end_order.split(".")[0]);
+      order.address = this.props.pedido.address;
+      order.images = this.props.pedido.images;
+      order.cellphone = this.props.pedido.user.cellphone;
+    }
     this.setState({ order });
   }
 
   render() {
     let diaInicio = '';
+    let diaFim = '';
+    let horaInicio = '';
+    let minutosInicio = '';
+    let horaFim = '';
+    let minutosFim = '';
 
     if (this.state.order) {
-      diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
+      const data = this.state.order.start_order;
+      const dataF = this.state.order.end_order;
 
+      diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
+      diaFim = `${this.state.order.end_order.getDate()}/${+this.state.order.end_order.getMonth() + 1}/${this.state.order.end_order.getFullYear()}`;
+
+      horaInicio = data.getHours() < 10 ? '0' + data.getHours() : data.getHours();
+      minutosInicio = data.getMinutes() < 10 ? '0' + data.getMinutes() : data.getMinutes();
+
+      horaFim = dataF.getHours() < 10 ? '0' + dataF.getHours() : dataF.getHours();
+      minutosFim = dataF.getMinutes() < 10 ? '0' + dataF.getMinutes() : dataF.getMinutes();
       return (
         <View style={{
           flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.8)',
@@ -46,26 +77,72 @@ export default class VisualizarPedidoProfissional extends Component {
                 <Text style={this.visualizarPedidoStyle.titulos}>Descrição:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.description}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Fotos:</Text>
+                {
+                  (() => {
+                    const fotos = this.state.order.images.map((foto, index) => { return { id: "" + index, foto: { image: { uri: backendUrl + foto } } } })
+
+                    return (
+                      <FlatList data={fotos} renderItem={({ item }) => {
+                        return (<Image source={item.foto.image} style={{ width: 240, height: 240, marginTop: 10 }} />);
+                      }} />
+                    );
+                  })()
+                }
                 <Text style={this.visualizarPedidoStyle.titulos}>Nome cliente:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.user}</Text>
+                {
+                  (() => {
+                    if (this.state.order.professional_order) {
+                      return (
+                        <View style={{ width: '100%' }}>
+                          <Text style={this.visualizarPedidoStyle.titulos}>Contato:</Text>
+                          <Text style={this.visualizarPedidoStyle.textos}>{this.state.order.cellphone}</Text>
+                        </View>
+                      );
+                    } else {
+                      return (null);
+                    }
+                  })()
+                }
                 <Text style={this.visualizarPedidoStyle.titulos}>Endereço:</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.street}, ${this.state.order.address.number}`}</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.complement}, ${this.state.order.address.cep}`}</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.district}`}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Data:</Text>
-                <Text style={this.visualizarPedidoStyle.textos}>{diaInicio} (data definida)</Text>
+                {
+                  (() => {
+                    switch (this.state.order.urgency) {
+                      case 'not_urgent':
+                        return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim} (Sem urgência)</Text>;
+                      case 'urgente':
+                        return <Text style={this.visualizarPedidoStyle.textos}>Urgente</Text>;
+                      case 'urgent':
+                        return <Text style={this.visualizarPedidoStyle.textos}>{diaInicio}, entre {horaInicio}:{minutosInicio} e {horaFim}:{minutosFim} (Com urgência)</Text>;
+                      default:
+                        return null;
+                    }
+                  })()
+                }
               </View>
             </ScrollView>
             <View style={{ alignItems: 'center' }}>
-              <TouchableOpacity
-                onPress={this.props.onConfirm}
-                style={{
-                  width: 300, backgroundColor: colors.verdeFinddo,
-                  justifyContent: 'center', alignItems: 'center',
-                  borderRadius: 20, height: 45, marginBottom: 10
-                }}>
-                <Text style={{ color: colors.branco, fontSize: 18 }}>CONFIRMAR</Text>
-              </TouchableOpacity>
+              {
+                (() => {
+                  if (this.props.pedido.isShowingPedido) {
+                    return (null);
+                  } else {
+                    return (<TouchableOpacity
+                      onPress={this.props.onConfirm}
+                      style={{
+                        width: 300, backgroundColor: colors.verdeFinddo,
+                        justifyContent: 'center', alignItems: 'center',
+                        borderRadius: 20, height: 45, marginBottom: 10
+                      }}>
+                      <Text style={{ color: colors.branco, fontSize: 18 }}>CONFIRMAR</Text>
+                    </TouchableOpacity>);
+                  }
+                })()
+              }
               <TouchableOpacity
                 onPress={this.props.onCancel}
                 style={{
