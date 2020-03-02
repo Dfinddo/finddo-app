@@ -375,8 +375,8 @@ export default class FormCartaoScreen extends Component {
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('cvc', text) }}
-                placeholder="cvc" keyboardType={"number-pad"}
-                maxLength={10}
+                placeholder="cvv" keyboardType={"number-pad"}
+                maxLength={10} secureTextEntry={true}
                 value={this.state.cardData.creditCard.cvc}
               />
               <TextInput
