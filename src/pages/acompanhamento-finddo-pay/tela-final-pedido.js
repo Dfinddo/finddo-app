@@ -3,9 +3,10 @@ import {
   ImageBackground, View,
   ScrollView, StyleSheet,
   Text, Image,
-  Modal, ActivityIndicator, Alert
+  Modal, ActivityIndicator,
+  Alert, TouchableOpacity,
+  FlatList, TextInput
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { colors } from '../../colors';
 import backendRails, { backendUrl } from '../../services/backend-rails-api';
 import { enumEstadoPedidoMap } from '../profissional_servicos/index-profissional';
@@ -14,6 +15,42 @@ import { NavigationActions, StackActions, NavigationEvents } from 'react-navigat
 import { star } from '../../img/svg/star';
 import { SvgXml } from 'react-native-svg';
 import { starSolid } from '../../img/svg/star-solid';
+import moipAPI, { headers } from '../../services/moip-api';
+
+function Item(props) {
+  const itemStyle = StyleSheet.create({
+    itemCartaoText: {
+      color: 'black', fontSize: 16,
+      textAlign: 'left', width: 240
+    },
+    cartaoNome: {
+      fontWeight: 'bold'
+    }
+  });
+
+  return (
+    <TouchableOpacity style={{
+      width: 300, height: 90,
+      flexDirection: 'row', borderRadius: 20,
+      borderColor: colors.amareloIconeEditar,
+      borderWidth: 1, marginBottom: 10
+    }} onPress={props.selecionarCartao}>
+      <View style={{
+        width: 240, paddingLeft: 20,
+        alignItems: 'center', justifyContent: 'center'
+      }}>
+        <Text style={[itemStyle.itemCartaoText, itemStyle.cartaoNome]}>{props.dados.item.brand}</Text>
+        <Text style={itemStyle.itemCartaoText}>{props.dados.item.first6}XXXXXX{props.dados.item.last4}</Text>
+      </View>
+      <View style={{
+        width: 60, backgroundColor: 'transparent',
+        alignItems: 'center', justifyContent: 'space-evenly',
+        flexDirection: 'column'
+      }}>
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 export default class TelaFinalPedidoScreen extends Component {
   static navigationOptions = {
@@ -23,12 +60,78 @@ export default class TelaFinalPedidoScreen extends Component {
   state = {
     pedido: null,
     isLoading: false,
-    classificacaoProfissional: 0
+    classificacaoProfissional: 0,
+    isSelectingCard: false,
+    cartoes: [],
+    cartaoSelecionado: null,
+    secureCode: '',
+    isWritingSecureCode: false
   };
 
   constructor(props) {
     super(props);
   }
+
+  creditCardFilter = (data) => {
+    return data.method === "CREDIT_CARD";
+  };
+
+  obterCartoes = () => {
+    const tokenService = TokenService.getInstance();
+    if (tokenService.getUser().user_type !== 'professional') {
+      this.setState({ isLoading: true }, () => {
+
+        moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headers })
+          .then((data) => {
+            const clientData = data.data;
+            if (clientData.fundingInstruments) {
+              const cardData = clientData.fundingInstruments.filter(data => this.creditCardFilter(data));
+
+              if (cardData.length > 0) {
+                const cardWithId = cardData.map(data => { return data.creditCard });
+
+                this.setState({ cartoes: [...cardWithId] });
+              }
+            }
+          })
+          .catch(error => {
+            if (error.response) {
+              /*
+               * The request was made and the server responded with a
+               * status code that falls out of the range of 2xx
+               */
+              Alert.alert(
+                'Falha ao obter os dados',
+                'Verifique sua conexão e tente novamente',
+                [
+                  { text: 'OK', onPress: () => { } },
+                ],
+                { cancelable: false },
+              );
+            } else if (error.request) {
+              /*
+               * The request was made but no response was received, `error.request`
+               * is an instance of XMLHttpRequest in the browser and an instance
+               * of http.ClientRequest in Node.js
+               */
+              Alert.alert(
+                'Falha ao se conectar',
+                'Verifique sua conexão e tente novamente',
+                [
+                  { text: 'OK', onPress: () => { } },
+                ],
+                { cancelable: false },
+              );
+            } else {
+              /* Something happened in setting up the request and triggered an Error */
+            }
+          })
+          .finally(_ => {
+            this.setState({ isLoading: false });
+          });
+      });
+    }
+  };
 
   obterPedido = () => {
     this.setState({ isLoading: true }, () => {
@@ -36,11 +139,15 @@ export default class TelaFinalPedidoScreen extends Component {
       const pedido = navigation.getParam('pedido', null);
 
       if (pedido) {
-        this.setState({ pedido: pedido, classificacaoProfissional: Number(pedido.rate) });
+        this.setState({ pedido: pedido, classificacaoProfissional: Number(pedido.rate), isLoading: false }, () => this.obterCartoes());
         console.log(pedido);
+      } else {
+        const resetAction = StackActions.reset({
+          index: 0,
+          actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
+        });
+        this.props.navigation.dispatch(resetAction);
       }
-
-      this.setState({ isLoading: false });
     });
   }
 
@@ -71,6 +178,63 @@ export default class TelaFinalPedidoScreen extends Component {
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isWritingSecureCode}
+          >
+            <View style={{ flex: 1, backgroundColor: colors.branco, justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ height: 400, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 20 }}>Digite o código de segurança do cartão:</Text>
+                <View style={{ height: 20 }}></View>
+                <TextInput
+                  style={this.telaFinalStyles.cadastroFormSizeAndFont}
+                  onChangeText={text => { this.setState({ secureCode: text }) }}
+                  placeholder="CVV" keyboardType={'number-pad'}
+                  maxLength={10}
+                  secureTextEntry={true}
+                  value={this.state.secureCode}
+                />
+              </View>
+              <TouchableOpacity onPress={() => this.setState({ isWritingSecureCode: false }, () => {
+                this.efetuarPagamento();
+              })}>
+                <View style={{ width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 18, color: colors.branco }}>CONFIRMAR PAGAMENTO</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => this.setState({ isWritingSecureCode: false })}>
+                <View style={{ width: 340, height: 45, borderRadius: 20, marginTop: 20, backgroundColor: colors.verdeFinddo, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 18, color: colors.branco }}>CANCELAR</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isSelectingCard}
+          >
+            <View style={{ flex: 1, backgroundColor: colors.branco, justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ height: 600, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 20 }}>Por favor escolha uma forma de pagamento:</Text>
+                <View style={{ height: 20 }}></View>
+                <FlatList data={this.state.cartoes}
+                  renderItem={(item) => <Item dados={item} selecionarCartao={() => {
+                    this.setState({ cartaoSelecionado: item.item }, () => {
+                      this.setState({ isSelectingCard: false, isWritingSecureCode: true });
+                    });
+                  }}></Item>}
+                  keyExtractor={item => item.id}>
+                </FlatList>
+              </View>
+              <TouchableOpacity onPress={() => this.setState({ isSelectingCard: false })}>
+                <View style={{ width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 18, color: colors.branco }}>FECHAR</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </Modal>
           <Modal
             animationType="slide"
             transparent={true}
@@ -225,7 +389,7 @@ export default class TelaFinalPedidoScreen extends Component {
                 <Text style={{ fontSize: 18, textAlign: 'center' }}>{enumEstadoPedidoMap[this.state.pedido.order_status]}</Text>
               </View>
             </View>
-            <View style={this.telaFinalStyles.pagamentoRow}></View>
+
           </View>
           <View style={{
             alignItems: 'center', justifyContent: 'center',
@@ -274,27 +438,64 @@ export default class TelaFinalPedidoScreen extends Component {
                   );
                 } else {
                   return (
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: colors.verdeFinddo, width: 340,
-                        height: 45, alignItems: 'center',
-                        justifyContent: 'center', borderRadius: 20
-                      }} onPress={() => {
-                        Alert.alert(
-                          'Confirma valor e classificação?',
-                          'Valor: ' + (this.state.pedido.price / 100).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
-                          + '\nClassificação: ' + this.state.classificacaoProfissional + ' estrelas',
-                          [
-                            { text: 'Cancelar', onPress: () => { } },
-                            {
-                              text: 'OK', onPress: () => this.efetuarPagamento()
-                            },
-                          ],
-                          { cancelable: false },
-                        );
-                      }}>
-                      <Text style={{ fontSize: 18, color: colors.branco }}>CONFIRMAR PAGAMENTO</Text>
-                    </TouchableOpacity>
+                    <View>
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: colors.verdeFinddo, width: 340,
+                          height: 45, alignItems: 'center',
+                          justifyContent: 'center', borderRadius: 20, marginBottom: 20
+                        }} onPress={() => {
+                          this.setState({ isLoading: true }, () => {
+                            backendRails.get(`/orders/${this.state.pedido.id}`, { headers: tokenService.getHeaders() })
+                              .then((response) => {
+                                const pedido = response.data;
+                                if (pedido.paid === true) {
+                                  Alert.alert(
+                                    'Sucesso',
+                                    'Obrigado por usar o Finddo',
+                                    [{
+                                      text: 'Ok', onPress: () => {
+                                        const resetAction = StackActions.reset({
+                                          index: 0,
+                                          actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
+                                        });
+                                        this.props.navigation.dispatch(resetAction);
+                                      }
+                                    }]
+                                  );
+                                }
+                                this.setState({ pedido: response.data });
+                              }).catch((error) => {
+                                console.log(error);
+                              }).finally((_) => {
+                                this.setState({ isLoading: false });
+                              });
+                          });
+                        }}>
+                        <Text style={{ fontSize: 18, color: colors.branco }}>ATUALIZAR STATUS</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: colors.verdeFinddo, width: 340,
+                          height: 45, alignItems: 'center',
+                          justifyContent: 'center', borderRadius: 20
+                        }} onPress={() => {
+                          Alert.alert(
+                            'Confirma valor e classificação?',
+                            'Valor: ' + (this.state.pedido.price / 100).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
+                            + '\nClassificação: ' + this.state.classificacaoProfissional + ' estrelas',
+                            [
+                              { text: 'Cancelar', onPress: () => { } },
+                              {
+                                text: 'OK', onPress: () => this.setState({ isSelectingCard: true })
+                              },
+                            ],
+                            { cancelable: false },
+                          );
+                        }}>
+                        <Text style={{ fontSize: 18, color: colors.branco }}>CONFIRMAR PAGAMENTO</Text>
+                      </TouchableOpacity>
+                    </View>
                   );
                 }
               })()
@@ -314,25 +515,39 @@ export default class TelaFinalPedidoScreen extends Component {
       pedido.order_status = 'finalizado';
       pedido.rate = this.state.classificacaoProfissional;
 
-      backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
-        .then((response) => {
-          Alert.alert(
-            'Sucesso',
-            'Obrigado por usar o Finddo',
-            [{
-              text: 'Ok', onPress: () => {
-                const resetAction = StackActions.reset({
-                  index: 0,
-                  actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
-                });
-                this.props.navigation.dispatch(resetAction);
-              }
-            }]
-          );
-        }).catch((error) => {
-          console.log(error);
-        }).finally(_ => {
-          this.setState({ isLoading: false });
+      const orderWirecard = {};
+      orderWirecard.order_id = this.state.pedido.order_wirecard_id;
+      orderWirecard.installmentCount = 1;
+      orderWirecard.statementDescriptor = "Finddo";
+      orderWirecard.fundingInstrument = {};
+      orderWirecard.fundingInstrument.method = "CREDIT_CARD";
+      orderWirecard.fundingInstrument.creditCard = {};
+      orderWirecard.fundingInstrument.creditCard.id = this.state.cartaoSelecionado.id;
+      orderWirecard.fundingInstrument.creditCard.cvc = this.state.secureCode;
+
+      moipAPI.post('orders/' + this.state.pedido.order_wirecard_id + '/payments',
+        orderWirecard, { headers: headers }).then(responseWirecard => {
+          pedido.payment_wirecard_id = responseWirecard.data.id;
+          backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
+            .then((response) => {
+              Alert.alert(
+                'Sucesso',
+                'Obrigado por usar o Finddo',
+                [{
+                  text: 'Ok', onPress: () => {
+                    const resetAction = StackActions.reset({
+                      index: 0,
+                      actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
+                    });
+                    this.props.navigation.dispatch(resetAction);
+                  }
+                }]
+              );
+            }).catch((error) => {
+              console.log(error);
+            }).finally(_ => {
+              this.setState({ isLoading: false });
+            });
         });
     });
   }
@@ -374,5 +589,14 @@ export default class TelaFinalPedidoScreen extends Component {
       justifyContent: 'center', alignItems: 'center'
     },
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    cadastroFormSizeAndFont:
+    {
+      fontSize: 18,
+      height: 45,
+      borderBottomColor: colors.verdeFinddo,
+      borderBottomWidth: 2,
+      textAlign: 'left',
+      width: 300,
+    },
   });
 }
