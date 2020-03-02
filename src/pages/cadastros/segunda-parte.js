@@ -236,6 +236,7 @@ export default class SegundaParte extends Component {
     moipAPI.post('customers', this.criarClienteMoip(this.state), { headers: headers })
       .then(responseWirecard => {
         userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
+        userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
         backendRails.post('/users', userWithAddress).then(response => {
           const userData = {};
           userData['access-token'] = response['headers']['access-token'];

@@ -86,6 +86,33 @@ export default class FormCartaoScreen extends Component {
     this.keyboardDidHideListener.remove();
   }
 
+  updateBirthdate = (text = '') => {
+    const dataFormatada = [];
+    const textoASerFormatado = text.replace(/\//gi, '');
+
+    try {
+      for (let i = 0; i < textoASerFormatado.length; i++) {
+        if (i !== 1 && i !== 3) {
+          dataFormatada.push(textoASerFormatado[i]);
+        } else {
+          dataFormatada.push(textoASerFormatado[i]);
+          dataFormatada.push('/');
+        }
+      }
+
+      return dataFormatada.join('');
+    } catch {
+      return '';
+    }
+  }
+
+  preparaDataParaFormatoWirecard = (dataFormatada) => {
+    const dataArr = dataFormatada.split('/');
+    const dataFormatoWirecard = `${dataArr[2]}-${dataArr[1]}-${dataArr[0]}`;
+
+    return dataFormatoWirecard;
+  };
+
   atualizarDadosCartao = (chave, valor) => {
     const card = this.state.cardData;
     card.creditCard[chave] = valor;
@@ -95,7 +122,11 @@ export default class FormCartaoScreen extends Component {
 
   atualizarDadosHolder = (chave, valor) => {
     const card = this.state.cardData;
-    card.creditCard.holder[chave] = valor;
+    if (chave !== 'birthdate') {
+      card.creditCard.holder[chave] = valor;
+    } else {
+      card.creditCard.holder[chave] = this.updateBirthdate(valor);
+    }
 
     this.setState({ cardData: card });
   };
@@ -115,16 +146,118 @@ export default class FormCartaoScreen extends Component {
   };
 
   validateCard = () => {
-    this.salvarCartao();
+    const numberRegex = /^[0-9]*$/;
+
+    const errosArr = [];
+
+    const expirationMonthErrors = [];
+    const expirationYearErrors = [];
+    const numberErrors = [];
+    const cvcErrors = [];
+    const fullnameErrors = [];
+    const birthdateErrors = [];
+    const cpfErrors = [];
+    const areaCodeErrors = [];
+    const numberPhoneErrors = [];
+
+    // TODO: colocar tamanho máximo no form do input
+    // validar data de nascimento no cadastro de usuário
+    if (this.state.cardData.creditCard.expirationMonth.length === 0) {
+      expirationMonthErrors.push('É obrigatório.');
+    } else if (this.state.cardData.creditCard.expirationMonth.length < 2) {
+      expirationMonthErrors.push('Inválido.');
+    } else if (!numberRegex.test(this.state.cardData.creditCard.expirationMonth)) {
+      expirationMonthErrors.push('Apenas números.');
+    }
+
+    if (this.state.cardData.creditCard.expirationYear.length === 0) {
+      expirationYearErrors.push('É obrigatório.');
+    } else if (this.state.cardData.creditCard.expirationYear.length < 2 || this.state.cardData.creditCard.expirationYear.length === 3) {
+      expirationYearErrors.push('Inválido.');
+    } else if (!numberRegex.test(this.state.cardData.creditCard.expirationYear)) {
+      expirationYearErrors.push('Apenas números.');
+    }
+
+    if (this.state.cardData.creditCard.number.length === 0) {
+      numberErrors.push('É obrigatório.');
+    } else if (!numberRegex.test(this.state.cardData.creditCard.number)) {
+      numberErrors.push('Apenas números.');
+    }
+
+    if (this.state.cardData.creditCard.cvc.length === 0) {
+      cvcErrors.push('É obrigatório.');
+    } else if (!numberRegex.test(this.state.cardData.creditCard.cvc)) {
+      cvcErrors.push('Apenas números.');
+    }
+
+    if (this.state.cardData.creditCard.holder.fullname.length === 0) {
+      fullnameErrors.push('É obrigatório.');
+    }
+
+    if (this.state.cardData.creditCard.holder.birthdate.length === 0) {
+      birthdateErrors.push('É obrigatório.');
+    } else if (this.state.cardData.creditCard.holder.birthdate.length !== 10) {
+      birthdateErrors.push('Inválida.');
+    }
+
+    if (this.state.cardData.creditCard.holder.taxDocument.number.length === 0) {
+      cpfErrors.push('É obrigatório.');
+    }
+
+    if (this.state.cardData.creditCard.holder.phone.areaCode.length !== 2) {
+      areaCodeErrors.push('Inválido.');
+    }
+
+    if (this.state.cardData.creditCard.holder.phone.number.length < 8) {
+      numberPhoneErrors.push('Inválido.');
+    }
+
+    if (expirationMonthErrors.length > 0) {
+      errosArr.push({ title: 'Mês de Expiração', data: expirationMonthErrors });
+    }
+    if (expirationYearErrors.length > 0) {
+      errosArr.push({ title: 'Ano de Expiração', data: expirationYearErrors });
+    }
+    if (numberErrors.length > 0) {
+      errosArr.push({ title: 'Número de Cartão', data: numberErrors });
+    }
+    if (cvcErrors.length > 0) {
+      errosArr.push({ title: 'Código de Segurança', data: cvcErrors });
+    }
+    if (fullnameErrors.length > 0) {
+      errosArr.push({ title: 'Nome do Titular', data: fullnameErrors });
+    }
+    if (birthdateErrors.length > 0) {
+      errosArr.push({ title: 'Data de Nascimento do Titular', data: birthdateErrors });
+    }
+    if (cpfErrors.length > 0) {
+      errosArr.push({ title: 'CPF do Titular', data: cpfErrors });
+    }
+    if (areaCodeErrors.length > 0) {
+      errosArr.push({ title: 'DDD', data: areaCodeErrors });
+    }
+    if (numberPhoneErrors.length > 0) {
+      errosArr.push({ title: 'Telefone do Titular', data: numberPhoneErrors });
+    }
+
+    if (errosArr.length > 0) {
+      this.setState({ formErrors: [...errosArr] });
+      this.setState({ formInvalid: true });
+    } else {
+      this.salvarCartao();
+    }
   };
 
   salvarCartao = async () => {
     try {
       this.setState({ isLoading: true });
       const user = TokenService.getInstance().getUser();
+      const preparedData = JSON.parse(JSON.stringify(this.state.cardData));
+      preparedData.creditCard.holder.birthdate = this.preparaDataParaFormatoWirecard(preparedData.creditCard.holder.birthdate);
+
       const response = await moipAPI
         .post(`/customers/${user.customer_wirecard_id}/fundinginstruments`,
-          this.state.cardData, { headers: headers });
+          preparedData, { headers: headers });
 
       this.setState({ isLoading: false, id: response.data.id });
 
@@ -222,24 +355,28 @@ export default class FormCartaoScreen extends Component {
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('expirationMonth', text) }}
                 placeholder="Expiração MM" keyboardType={'number-pad'}
+                maxLength={2}
                 value={this.state.cardData.creditCard.expirationMonth}
               />
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('expirationYear', text) }}
                 placeholder="Expiração AAAA" keyboardType={'number-pad'}
+                maxLength={4}
                 value={this.state.cardData.creditCard.expirationYear}
               />
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('number', text) }}
                 placeholder="Número" keyboardType={"number-pad"}
+                maxLength={50}
                 value={this.state.cardData.creditCard.number}
               />
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('cvc', text) }}
                 placeholder="cvc" keyboardType={"number-pad"}
+                maxLength={10}
                 value={this.state.cardData.creditCard.cvc}
               />
               <TextInput
@@ -247,29 +384,34 @@ export default class FormCartaoScreen extends Component {
                 onChangeText={text => { this.atualizarDadosHolder('fullname', text) }}
                 placeholder="Titular (Nome completo)"
                 value={this.state.cardData.creditCard.holder.fullname}
+                maxLength={150}
               />
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolder('birthdate', text) }}
-                placeholder="Data nascimento (dd/mm/aaaa)" keyboardType={"numbers-and-punctuation"}
+                placeholder="Data nascimento (dd/mm/aaaa)" keyboardType={"number-pad"}
                 value={this.state.cardData.creditCard.holder.birthdate}
+                maxLength={10}
               />
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolderDocs('number', text) }}
-                placeholder="CPF" keyboardType={"number-pad"}
+                placeholder="CPF (apenas números)" keyboardType={"number-pad"}
+                maxLength={11}
                 value={this.state.cardData.creditCard.holder.taxDocument.number}
               />
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolderPhone('areaCode', text) }}
                 placeholder="DDD" keyboardType={"number-pad"}
+                maxLength={2}
                 value={this.state.cardData.creditCard.holder.phone.areaCode}
               />
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolderPhone('number', text) }}
                 placeholder="Telefone" keyboardType={"number-pad"}
+                maxLength={11}
                 value={this.state.cardData.creditCard.holder.phone.number}
               />
               <View style={{ height: 8 }}></View>
