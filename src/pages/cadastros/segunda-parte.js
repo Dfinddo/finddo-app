@@ -15,7 +15,7 @@ import TokenService from '../../services/token-service';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import { termos } from './termos';
 import moipAPI, { headers } from '../../services/moip-api';
-import { v4 as uuidv4 } from 'uuid';
+import UUIDGenerator from 'react-native-uuid-generator';
 
 function Item({ title }) {
   return (
@@ -79,7 +79,7 @@ export default class SegundaParte extends Component {
     this.keyboardDidHideListener.remove();
   }
 
-  criarClienteMoip = (clientData) => {
+  criarClienteMoip = (clientData, uuid) => {
     const clienteMoip = {};
 
     const dataNascimentoArray = clientData.birthdate.split('/');
@@ -88,7 +88,7 @@ export default class SegundaParte extends Component {
     const ddd = `${clientData.cellphone[0]}${clientData.cellphone[1]}`;
     const numberTel = clientData.cellphone.split('').slice(2).join('');
 
-    clienteMoip.ownId = uuidv4();
+    clienteMoip.ownId = uuid;
     clienteMoip.fullname = clientData.name;
     clienteMoip.email = clientData.email;
     clienteMoip.birthDate = dataNascimento;
@@ -233,28 +233,59 @@ export default class SegundaParte extends Component {
     const userWithAddress = UserDTO.gerarUsuarioComEnderecoDefault(user);
 
     this.setState({ isLoading: true });
-    moipAPI.post('customers', this.criarClienteMoip(this.state), { headers: headers })
-      .then(responseWirecard => {
-        userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
-        userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
-        backendRails.post('/users', userWithAddress).then(response => {
-          const userData = {};
-          userData['access-token'] = response['headers']['access-token'];
-          userData['client'] = response['headers']['client'];
-          userData['uid'] = response['headers']['uid'];
+    UUIDGenerator.getRandomUUID().then((uuid) => {
+      moipAPI.post('customers', this.criarClienteMoip(this.state, uuid), { headers: headers })
+        .then(responseWirecard => {
+          userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
+          userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
+          backendRails.post('/users', userWithAddress).then(response => {
+            const userData = {};
+            userData['access-token'] = response['headers']['access-token'];
+            userData['client'] = response['headers']['client'];
+            userData['uid'] = response['headers']['uid'];
 
-          const userDto = new UserDTO(response.data);
+            const userDto = new UserDTO(response.data);
 
-          AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
-            _ => {
-              AsyncStorage.setItem('user', JSON.stringify(userDto)).then(_ => {
-                const tokenService = TokenService.getInstance();
-                tokenService.setToken(userData);
-                tokenService.setUser(userDto);
+            AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
+              _ => {
+                AsyncStorage.setItem('user', JSON.stringify(userDto)).then(_ => {
+                  const tokenService = TokenService.getInstance();
+                  tokenService.setToken(userData);
+                  tokenService.setUser(userDto);
 
-                this.props.navigation.navigate('App');
+                  this.props.navigation.navigate('App');
+                });
+              }).catch((_) => {
+                Alert.alert(
+                  'Falha ao se conectar',
+                  'Verifique sua conexão e tente novamente',
+                  [
+                    { text: 'OK', onPress: () => { } },
+                  ],
+                  { cancelable: false },
+                );
+                this.setState({ isLoading: false });
               });
-            }).catch((_) => {
+          }).catch(error => {
+            if (error.response) {
+              /*
+               * The request was made and the server responded with a
+               * status code that falls out of the range of 2xx
+               */
+              Alert.alert(
+                'Erro ao se cadastrar',
+                'Verifique seus dados e tente novamente',
+                [
+                  { text: 'OK', onPress: () => { } },
+                ],
+                { cancelable: false },
+              );
+            } else if (error.request) {
+              /*
+               * The request was made but no response was received, `error.request`
+               * is an instance of XMLHttpRequest in the browser and an instance
+               * of http.ClientRequest in Node.js
+               */
               Alert.alert(
                 'Falha ao se conectar',
                 'Verifique sua conexão e tente novamente',
@@ -263,8 +294,11 @@ export default class SegundaParte extends Component {
                 ],
                 { cancelable: false },
               );
-              this.setState({ isLoading: false });
-            });
+            } else {
+              /* Something happened in setting up the request and triggered an Error */
+            }
+            this.setState({ isLoading: false });
+          });
         }).catch(error => {
           if (error.response) {
             /*
@@ -293,42 +327,10 @@ export default class SegundaParte extends Component {
               ],
               { cancelable: false },
             );
-          } else {
-            /* Something happened in setting up the request and triggered an Error */
           }
           this.setState({ isLoading: false });
         });
-      }).catch(error => {
-        if (error.response) {
-          /*
-           * The request was made and the server responded with a
-           * status code that falls out of the range of 2xx
-           */
-          Alert.alert(
-            'Erro ao se cadastrar',
-            'Verifique seus dados e tente novamente',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        } else if (error.request) {
-          /*
-           * The request was made but no response was received, `error.request`
-           * is an instance of XMLHttpRequest in the browser and an instance
-           * of http.ClientRequest in Node.js
-           */
-          Alert.alert(
-            'Falha ao se conectar',
-            'Verifique sua conexão e tente novamente',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        }
-        this.setState({ isLoading: false });
-      });
+    });
   }
 
   render() {
