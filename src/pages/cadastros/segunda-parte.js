@@ -14,6 +14,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import { termos } from './termos';
+import moipAPI, { headers } from '../../services/moip-api';
+import { v4 as uuidv4 } from 'uuid';
 
 function Item({ title }) {
   return (
@@ -34,15 +36,16 @@ export default class SegundaParte extends Component {
     email: '',
     cellphone: '',
     cpf: '',
-    cep: '20123456',
+    birthdate: '',
+    cep: '',
     estado: 'RJ',
     cidade: 'Rio de Janeiro',
-    bairro: 'São Cristóvão',
-    rua: 'Rua Teste',
-    numero: '34',
-    complemento: 'ap 320',
-    password: '12345678',
-    password_confirmation: '12345678',
+    bairro: '',
+    rua: '',
+    numero: '',
+    complemento: '',
+    password: '',
+    password_confirmation: '',
     user_type: '',
     formInvalid: false,
     formErrors: [],
@@ -76,6 +79,30 @@ export default class SegundaParte extends Component {
     this.keyboardDidHideListener.remove();
   }
 
+  criarClienteMoip = (clientData) => {
+    const clienteMoip = {};
+
+    const dataNascimentoArray = clientData.birthdate.split('/');
+    const dataNascimento = `${dataNascimentoArray[2]}-${dataNascimentoArray[1]}-${dataNascimentoArray[0]}`;
+
+    const ddd = `${clientData.cellphone[0]}${clientData.cellphone[1]}`;
+    const numberTel = clientData.cellphone.split('').slice(2).join('');
+
+    clienteMoip.ownId = uuidv4();
+    clienteMoip.fullname = clientData.name;
+    clienteMoip.email = clientData.email;
+    clienteMoip.birthDate = dataNascimento;
+    clienteMoip.taxDocument = {};
+    clienteMoip.taxDocument.type = 'CPF';
+    clienteMoip.taxDocument.number = clientData.cpf;
+    clienteMoip.phone = {};
+    clienteMoip.phone.countryCode = '55';
+    clienteMoip.phone.areaCode = ddd;
+    clienteMoip.phone.number = numberTel;
+
+    return clienteMoip;
+  };
+
   obterParametrosParteUm = () => {
     const { navigation } = this.props;
     const name = navigation.getParam('name', 'sem nome');
@@ -83,8 +110,9 @@ export default class SegundaParte extends Component {
     const cellphone = navigation.getParam('cellphone', 'sem telefone');
     const cpf = navigation.getParam('cpf', 'sem cpf');
     const user_type = navigation.getParam('user_type', 'sem tipo');
+    const birthdate = navigation.getParam('birthdate', 'no_birthdate');
 
-    this.setState({ name, email, cellphone, cpf, user_type });
+    this.setState({ name, email, cellphone, cpf, user_type, birthdate });
   };
 
   validateFields = () => {
@@ -200,32 +228,62 @@ export default class SegundaParte extends Component {
     }
   };
 
-  signUp = async (userState) => {
+  signUp = (userState) => {
     const user = new UserDTO(userState);
     const userWithAddress = UserDTO.gerarUsuarioComEnderecoDefault(user);
 
-    try {
-      this.setState({ isLoading: true });
-      const response = await backendRails.post('/users', userWithAddress);
+    this.setState({ isLoading: true });
+    moipAPI.post('customers', this.criarClienteMoip(this.state), { headers: headers })
+      .then(responseWirecard => {
+        userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
+        backendRails.post('/users', userWithAddress).then(response => {
+          const userData = {};
+          userData['access-token'] = response['headers']['access-token'];
+          userData['client'] = response['headers']['client'];
+          userData['uid'] = response['headers']['uid'];
 
-      const userData = {};
-      userData['access-token'] = response['headers']['access-token'];
-      userData['client'] = response['headers']['client'];
-      userData['uid'] = response['headers']['uid'];
+          const userDto = new UserDTO(response.data);
 
-      const userDto = new UserDTO(response.data);
+          AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
+            _ => {
+              AsyncStorage.setItem('user', JSON.stringify(userDto)).then(_ => {
+                const tokenService = TokenService.getInstance();
+                tokenService.setToken(userData);
+                tokenService.setUser(userDto);
 
-      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
-        async () => {
-          try {
-            await AsyncStorage.setItem('user', JSON.stringify(userDto));
-
-            const tokenService = TokenService.getInstance();
-            tokenService.setToken(userData);
-            tokenService.setUser(userDto);
-
-            this.props.navigation.navigate('App');
-          } catch (error) {
+                this.props.navigation.navigate('App');
+              });
+            }).catch((_) => {
+              Alert.alert(
+                'Falha ao se conectar',
+                'Verifique sua conexão e tente novamente',
+                [
+                  { text: 'OK', onPress: () => { } },
+                ],
+                { cancelable: false },
+              );
+              this.setState({ isLoading: false });
+            });
+        }).catch(error => {
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            Alert.alert(
+              'Erro ao se cadastrar',
+              'Verifique seus dados e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
             Alert.alert(
               'Falha ao se conectar',
               'Verifique sua conexão e tente novamente',
@@ -234,11 +292,31 @@ export default class SegundaParte extends Component {
               ],
               { cancelable: false },
             );
-            this.setState({ isLoading: false });
+          } else {
+            /* Something happened in setting up the request and triggered an Error */
           }
-        }
-      ).catch(
-        (error) => {
+          this.setState({ isLoading: false });
+        });
+      }).catch(error => {
+        if (error.response) {
+          /*
+           * The request was made and the server responded with a
+           * status code that falls out of the range of 2xx
+           */
+          Alert.alert(
+            'Erro ao se cadastrar',
+            'Verifique seus dados e tente novamente',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+        } else if (error.request) {
+          /*
+           * The request was made but no response was received, `error.request`
+           * is an instance of XMLHttpRequest in the browser and an instance
+           * of http.ClientRequest in Node.js
+           */
           Alert.alert(
             'Falha ao se conectar',
             'Verifique sua conexão e tente novamente',
@@ -247,43 +325,9 @@ export default class SegundaParte extends Component {
             ],
             { cancelable: false },
           );
-          this.setState({ isLoading: false });
         }
-      );
-    }
-    catch (error) {
-      if (error.response) {
-        /*
-         * The request was made and the server responded with a
-         * status code that falls out of the range of 2xx
-         */
-        Alert.alert(
-          'Erro ao se cadastrar',
-          'Verifique seus dados e tente novamente',
-          [
-            { text: 'OK', onPress: () => { } },
-          ],
-          { cancelable: false },
-        );
-      } else if (error.request) {
-        /*
-         * The request was made but no response was received, `error.request`
-         * is an instance of XMLHttpRequest in the browser and an instance
-         * of http.ClientRequest in Node.js
-         */
-        Alert.alert(
-          'Falha ao se conectar',
-          'Verifique sua conexão e tente novamente',
-          [
-            { text: 'OK', onPress: () => { } },
-          ],
-          { cancelable: false },
-        );
-      } else {
-        /* Something happened in setting up the request and triggered an Error */
-      }
-      this.setState({ isLoading: false });
-    }
+        this.setState({ isLoading: false });
+      });
   }
 
   render() {

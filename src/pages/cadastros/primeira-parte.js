@@ -24,11 +24,12 @@ export default class PrimeiraParte extends Component {
   };
 
   state = {
-    name: 'teste',
+    name: '',
     email: '',
-    cellphone: '21980808080',
-    cpf: '12345678900',
+    cellphone: '',
+    cpf: '',
     user_type: 'user',
+    birthdate: '',
     formInvalid: false,
     formErrors: []
   };
@@ -39,6 +40,26 @@ export default class PrimeiraParte extends Component {
 
     if (user_type !== 'não há tipo') {
       this.setState({ user_type });
+    }
+  }
+
+  updateBirthdate = (text = '') => {
+    const dataFormatada = [];
+    const textoASerFormatado = text.replace(/\//gi, '');
+
+    try {
+      for (let i = 0; i < textoASerFormatado.length; i++) {
+        if (i !== 1 && i !== 3) {
+          dataFormatada.push(textoASerFormatado[i]);
+        } else {
+          dataFormatada.push(textoASerFormatado[i]);
+          dataFormatada.push('/');
+        }
+      }
+
+      return dataFormatada.join('');
+    } catch {
+      return '';
     }
   }
 
@@ -154,6 +175,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ email: text }) }}
                 placeholder="Email"
                 keyboardType="email-address"
+                autoCapitalize="none"
                 maxLength={128}
                 value={this.state.email}
               />
@@ -173,6 +195,14 @@ export default class PrimeiraParte extends Component {
                 maxLength={11}
                 value={this.state.cpf}
               />
+              <TextInput
+                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                onChangeText={text => { this.setState({ birthdate: text }) }}
+                placeholder="Data de Nascimento dd/mm/aaaa"
+                keyboardType="numeric"
+                maxLength={10}
+                value={this.updateBirthdate(this.state.birthdate)}
+              />
             </View>
             <TouchableOpacity
               style={this.parteUmScreenStyle.continuarButton}
@@ -189,7 +219,7 @@ export default class PrimeiraParte extends Component {
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 260, backgroundColor: colors.branco },
+    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 280, backgroundColor: colors.branco },
     continuarButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     continuarButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
     cadastroFormSizeAndFont:
