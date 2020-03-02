@@ -13,6 +13,8 @@ import { colors } from '../../colors';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { SvgXml } from 'react-native-svg';
 import { finddoLogo } from '../../img/svg/finddo-logo';
+import moipAPI, { headers } from '../../services/moip-api';
+import { v4 as uuidv4 } from 'uuid';
 
 export default class ValorServicoScreen extends Component {
   static navigationOptions = {
@@ -44,6 +46,29 @@ export default class ValorServicoScreen extends Component {
       return '0'.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
     }
   };
+
+  prepararPedidoWirecard = (pedido) => {
+    const pedidoWirecard = {};
+
+    pedidoWirecard.ownId = uuidv4();
+    pedidoWirecard.amount = {};
+    pedidoWirecard.amount.currency = 'BRL';
+    pedidoWirecard.items = [];
+
+    const item = {};
+
+    item.product = pedido.category.name;
+    item.quantity = 1;
+    item.detail = 'Prestação de serviço residencial';
+    item.price = this.formatarValorServico(this.state.valorComTaxa).split('').slice(3).join('').replace('.', '').replace(',', '');
+
+    pedidoWirecard.items.push(item);
+
+    pedidoWirecard.customer = {};
+    pedidoWirecard.customer.id = pedido.user.customer_wirecard_id;
+
+    return pedidoWirecard;
+  }
 
   componentDidMount() {
     const { navigation } = this.props;
@@ -118,27 +143,93 @@ export default class ValorServicoScreen extends Component {
                     [
                       {
                         text: 'OK', onPress: () => {
-                          order.price = this.state.valorComTaxa * 100;
+                          this.setState({ isLoading: true }, () => {
+                            order.price = this.state.valorComTaxa * 100;
 
-                          backendRails.patch(`/orders/${this.state.pedido.id}`,
-                            { order },
-                            { headers: TokenService.getInstance().getHeaders() })
-                            .then(response => {
-                              this.setState(
-                                { pedido: response.data, isLoading: false },
-                                () => {
-                                  const resetAction = StackActions.reset({
-                                    index: 0,
-                                    actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido: this.state.pedido } })],
-                                  });
-                                  this.props.navigation.dispatch(resetAction);
-                                }
-                              );
-                            })
-                            .catch(error => {
-                              console.log(error);
+                            const pedidoWirecard = this.prepararPedidoWirecard(this.state.pedido);
+
+                            moipAPI.post('/orders', pedidoWirecard, { headers: headers }).then(responseWirecard => {
+                              order.order_wirecard_own_id = responseWirecard.data.ownId;
+                              order.order_wirecard_id = responseWirecard.data.id;
+
+                              backendRails.patch(`/orders/${this.state.pedido.id}`,
+                                { order },
+                                { headers: TokenService.getInstance().getHeaders() })
+                                .then(response => {
+                                  this.setState(
+                                    { pedido: response.data, isLoading: false },
+                                    () => {
+                                      const resetAction = StackActions.reset({
+                                        index: 0,
+                                        actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido: this.state.pedido } })],
+                                      });
+                                      this.props.navigation.dispatch(resetAction);
+                                    }
+                                  );
+                                })
+                                .catch(error => {
+                                  if (error.response) {
+                                    /*
+                                     * The request was made and the server responded with a
+                                     * status code that falls out of the range of 2xx
+                                     */
+                                    Alert.alert(
+                                      'Falha ao processar pedido',
+                                      'Seu pedido foi processado porém houve um erro interno, acesse a seção Contato em Ajuda para mais informações.',
+                                      [
+                                        { text: 'OK', onPress: () => { } },
+                                      ],
+                                      { cancelable: false },
+                                    );
+                                  } else if (error.request) {
+                                    /*
+                                     * The request was made but no response was received, `error.request`
+                                     * is an instance of XMLHttpRequest in the browser and an instance
+                                     * of http.ClientRequest in Node.js
+                                     */
+                                    Alert.alert(
+                                      'Falha de conexão',
+                                      'Seu pedido foi processado porém houve um erro interno, acesse a seção Contato em Ajuda para mais informações.',
+                                      [
+                                        { text: 'OK', onPress: () => { } },
+                                      ],
+                                      { cancelable: false },
+                                    );
+                                  }
+                                  this.setState({ isLoading: false });
+                                });
+                            }).catch(error => {
+                              if (error.response) {
+                                /*
+                                 * The request was made and the server responded with a
+                                 * status code that falls out of the range of 2xx
+                                 */
+                                Alert.alert(
+                                  'Falha ao processar pedido',
+                                  'Verifique seus dados e tente novamente',
+                                  [
+                                    { text: 'OK', onPress: () => { } },
+                                  ],
+                                  { cancelable: false },
+                                );
+                              } else if (error.request) {
+                                /*
+                                 * The request was made but no response was received, `error.request`
+                                 * is an instance of XMLHttpRequest in the browser and an instance
+                                 * of http.ClientRequest in Node.js
+                                 */
+                                Alert.alert(
+                                  'Falha ao se conectar',
+                                  'Verifique sua conexão e tente novamente',
+                                  [
+                                    { text: 'OK', onPress: () => { } },
+                                  ],
+                                  { cancelable: false },
+                                );
+                              }
                               this.setState({ isLoading: false });
                             });
+                          });
                         }
                       },
                     ],
