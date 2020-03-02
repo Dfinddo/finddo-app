@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   ImageBackground, View,
   Text, TextInput,
-  StyleSheet, Image,
+  StyleSheet,
   TouchableOpacity, ScrollView,
   Alert, ActivityIndicator,
   Modal
@@ -14,7 +14,7 @@ import { StackActions, NavigationActions } from 'react-navigation';
 import { SvgXml } from 'react-native-svg';
 import { finddoLogo } from '../../img/svg/finddo-logo';
 import moipAPI, { headers } from '../../services/moip-api';
-import { v4 as uuidv4 } from 'uuid';
+import UUIDGenerator from 'react-native-uuid-generator';
 
 export default class ValorServicoScreen extends Component {
   static navigationOptions = {
@@ -47,10 +47,10 @@ export default class ValorServicoScreen extends Component {
     }
   };
 
-  prepararPedidoWirecard = (pedido) => {
+  prepararPedidoWirecard = (pedido, uuid) => {
     const pedidoWirecard = {};
 
-    pedidoWirecard.ownId = uuidv4();
+    pedidoWirecard.ownId = uuid;
     pedidoWirecard.amount = {};
     pedidoWirecard.amount.currency = 'BRL';
     pedidoWirecard.items = [];
@@ -146,89 +146,90 @@ export default class ValorServicoScreen extends Component {
                           this.setState({ isLoading: true }, () => {
                             order.price = this.state.valorComTaxa * 100;
 
-                            const pedidoWirecard = this.prepararPedidoWirecard(this.state.pedido);
+                            UUIDGenerator.getRandomUUID().then((uuid) => {
+                              const pedidoWirecard = this.prepararPedidoWirecard(this.state.pedido, uuid);
+                              moipAPI.post('/orders', pedidoWirecard, { headers: headers }).then(responseWirecard => {
+                                order.order_wirecard_own_id = responseWirecard.data.ownId;
+                                order.order_wirecard_id = responseWirecard.data.id;
 
-                            moipAPI.post('/orders', pedidoWirecard, { headers: headers }).then(responseWirecard => {
-                              order.order_wirecard_own_id = responseWirecard.data.ownId;
-                              order.order_wirecard_id = responseWirecard.data.id;
-
-                              backendRails.patch(`/orders/${this.state.pedido.id}`,
-                                { order },
-                                { headers: TokenService.getInstance().getHeaders() })
-                                .then(response => {
-                                  this.setState(
-                                    { pedido: response.data, isLoading: false },
-                                    () => {
-                                      const resetAction = StackActions.reset({
-                                        index: 0,
-                                        actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido: this.state.pedido } })],
-                                      });
-                                      this.props.navigation.dispatch(resetAction);
+                                backendRails.patch(`/orders/${this.state.pedido.id}`,
+                                  { order },
+                                  { headers: TokenService.getInstance().getHeaders() })
+                                  .then(response => {
+                                    this.setState(
+                                      { pedido: response.data, isLoading: false },
+                                      () => {
+                                        const resetAction = StackActions.reset({
+                                          index: 0,
+                                          actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido: this.state.pedido } })],
+                                        });
+                                        this.props.navigation.dispatch(resetAction);
+                                      }
+                                    );
+                                  })
+                                  .catch(error => {
+                                    if (error.response) {
+                                      /*
+                                       * The request was made and the server responded with a
+                                       * status code that falls out of the range of 2xx
+                                       */
+                                      Alert.alert(
+                                        'Falha ao processar pedido',
+                                        'Seu pedido foi processado porém houve um erro interno, acesse a seção Contato em Ajuda para mais informações.',
+                                        [
+                                          { text: 'OK', onPress: () => { } },
+                                        ],
+                                        { cancelable: false },
+                                      );
+                                    } else if (error.request) {
+                                      /*
+                                       * The request was made but no response was received, `error.request`
+                                       * is an instance of XMLHttpRequest in the browser and an instance
+                                       * of http.ClientRequest in Node.js
+                                       */
+                                      Alert.alert(
+                                        'Falha de conexão',
+                                        'Seu pedido foi processado porém houve um erro interno, acesse a seção Contato em Ajuda para mais informações.',
+                                        [
+                                          { text: 'OK', onPress: () => { } },
+                                        ],
+                                        { cancelable: false },
+                                      );
                                     }
+                                    this.setState({ isLoading: false });
+                                  });
+                              }).catch(error => {
+                                if (error.response) {
+                                  /*
+                                   * The request was made and the server responded with a
+                                   * status code that falls out of the range of 2xx
+                                   */
+                                  Alert.alert(
+                                    'Falha ao processar pedido',
+                                    'Verifique seus dados e tente novamente',
+                                    [
+                                      { text: 'OK', onPress: () => { } },
+                                    ],
+                                    { cancelable: false },
                                   );
-                                })
-                                .catch(error => {
-                                  if (error.response) {
-                                    /*
-                                     * The request was made and the server responded with a
-                                     * status code that falls out of the range of 2xx
-                                     */
-                                    Alert.alert(
-                                      'Falha ao processar pedido',
-                                      'Seu pedido foi processado porém houve um erro interno, acesse a seção Contato em Ajuda para mais informações.',
-                                      [
-                                        { text: 'OK', onPress: () => { } },
-                                      ],
-                                      { cancelable: false },
-                                    );
-                                  } else if (error.request) {
-                                    /*
-                                     * The request was made but no response was received, `error.request`
-                                     * is an instance of XMLHttpRequest in the browser and an instance
-                                     * of http.ClientRequest in Node.js
-                                     */
-                                    Alert.alert(
-                                      'Falha de conexão',
-                                      'Seu pedido foi processado porém houve um erro interno, acesse a seção Contato em Ajuda para mais informações.',
-                                      [
-                                        { text: 'OK', onPress: () => { } },
-                                      ],
-                                      { cancelable: false },
-                                    );
-                                  }
-                                  this.setState({ isLoading: false });
-                                });
-                            }).catch(error => {
-                              if (error.response) {
-                                /*
-                                 * The request was made and the server responded with a
-                                 * status code that falls out of the range of 2xx
-                                 */
-                                Alert.alert(
-                                  'Falha ao processar pedido',
-                                  'Verifique seus dados e tente novamente',
-                                  [
-                                    { text: 'OK', onPress: () => { } },
-                                  ],
-                                  { cancelable: false },
-                                );
-                              } else if (error.request) {
-                                /*
-                                 * The request was made but no response was received, `error.request`
-                                 * is an instance of XMLHttpRequest in the browser and an instance
-                                 * of http.ClientRequest in Node.js
-                                 */
-                                Alert.alert(
-                                  'Falha ao se conectar',
-                                  'Verifique sua conexão e tente novamente',
-                                  [
-                                    { text: 'OK', onPress: () => { } },
-                                  ],
-                                  { cancelable: false },
-                                );
-                              }
-                              this.setState({ isLoading: false });
-                            });
+                                } else if (error.request) {
+                                  /*
+                                   * The request was made but no response was received, `error.request`
+                                   * is an instance of XMLHttpRequest in the browser and an instance
+                                   * of http.ClientRequest in Node.js
+                                   */
+                                  Alert.alert(
+                                    'Falha ao se conectar',
+                                    'Verifique sua conexão e tente novamente',
+                                    [
+                                      { text: 'OK', onPress: () => { } },
+                                    ],
+                                    { cancelable: false },
+                                  );
+                                }
+                                this.setState({ isLoading: false });
+                              });
+                            })
                           });
                         }
                       },
