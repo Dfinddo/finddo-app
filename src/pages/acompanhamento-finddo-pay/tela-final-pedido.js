@@ -144,7 +144,7 @@ export default class TelaFinalPedidoScreen extends Component {
       } else {
         const resetAction = StackActions.reset({
           index: 0,
-          actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
+          actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido', params: { pedido: null } })],
         });
         this.props.navigation.dispatch(resetAction);
       }

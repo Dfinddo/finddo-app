@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   View, Text,
   ScrollView, ImageBackground,
-  TouchableOpacity, StyleSheet
+  TouchableOpacity, StyleSheet,
+  ActivityIndicator, Modal
 } from 'react-native';
 import { colors } from '../../colors';
 import StatusPedidoStep from '../../components/status-pedido-step';
@@ -14,7 +15,8 @@ import backendRails from '../../services/backend-rails-api';
 
 export default class AcompanhamentoPedido extends Component {
   static navigationOptions = {
-    title: 'Acompanhe seu pedido'
+    title: 'Acompanhe seu pedido',
+    headerLeft: null
   };
 
   constructor(props) {
@@ -34,31 +36,40 @@ export default class AcompanhamentoPedido extends Component {
   state = {
     estadoAtual: 'analise',
     acaoBotao: 'PRÓXIMO',
-    pedido: null
+    pedido: null,
+    loadingData: false
   };
 
   componentDidMount() {
   };
 
   obterPedido = () => {
-    try {
-      const { navigation } = this.props;
-      const pedido = navigation.getParam('pedido', null);
+    this.setState({ loadingData: true }, () => {
+      try {
+        const { navigation } = this.props;
+        const pedido = navigation.getParam('pedido', null);
 
-      if (pedido) {
-        if (pedido.price > 0) {
-          const resetAction = StackActions.reset({
-            index: 0,
-            actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido } })],
-          });
-          this.props.navigation.dispatch(resetAction);
+        if (pedido) {
+          if (pedido.price > 0) {
+            this.setState({ loadingData: false }, () => {
+              const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido } })],
+              });
+              this.props.navigation.dispatch(resetAction);
+            });
+          } else {
+            setTimeout(() => {
+              this.setState({ pedido, estadoAtual: pedido.order_status, loadingData: false }, () => this.atualizaStatus())
+            }, 1000);
+          }
         } else {
-          this.setState({ pedido, estadoAtual: pedido.order_status }, () => this.atualizaStatus());
+          setTimeout(() => this.setState({ loadingData: false }), 1000);
         }
+      } catch {
+        setTimeout(() => this.setState({ loadingData: false }), 1000);
       }
-    } catch {
-      // TODO: implementação de erro
-    }
+    });
   };
 
   render() {
@@ -77,6 +88,18 @@ export default class AcompanhamentoPedido extends Component {
             <ScrollView style={{
               flex: 1
             }}>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={this.state.loadingData}
+              >
+                <View style={{
+                  flex: 1, alignItems: 'center',
+                  justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
+                }}>
+                  <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+                </View>
+              </Modal>
               <View style={this.acompanhamentoStyles.acompanhamentoContainer}>
                 <View
                   style={this.acompanhamentoStyles.acompanhamentoPontosContainer}>
@@ -140,6 +163,18 @@ export default class AcompanhamentoPedido extends Component {
           style={{ width: '100%', height: '100%' }}
           source={require('../../img/Ellipse.png')}>
           <View style={{ height: '90%' }}>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={this.state.loadingData}
+            >
+              <View style={{
+                flex: 1, alignItems: 'center',
+                justifyContent: 'center', backgroundColor: 'rgba(255,255,255,1)'
+              }}>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </Modal>
             <NavigationEvents
               onWillFocus={_ => this.obterPedido()}
             //onDidFocus={payload => console.log('did focus', payload)}
