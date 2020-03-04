@@ -144,7 +144,7 @@ export default class TelaFinalPedidoScreen extends Component {
       } else {
         const resetAction = StackActions.reset({
           index: 0,
-          actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
+          actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido', params: { pedido: null } })],
         });
         this.props.navigation.dispatch(resetAction);
       }
@@ -249,7 +249,7 @@ export default class TelaFinalPedidoScreen extends Component {
           <View style={this.telaFinalStyles.containerBase}>
             <View style={this.telaFinalStyles.linha}>
               <Text style={{ fontSize: 25, fontWeight: 'bold' }}>{this.state.pedido.category.name}</Text>
-              <Text style={{ fontSize: 25, fontWeight: 'bold', color: colors.verdeFinddo }}>{(this.state.pedido.price / 100).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}</Text>
+              <Text style={{ fontSize: 25, fontWeight: 'bold', color: colors.verdeFinddo }}>R$ {(this.state.pedido.price / 100).toFixed(2)}</Text>
             </View>
             <View style={[this.telaFinalStyles.linha, this.telaFinalStyles.avaliacaoFuncionario]}>
               <View>
@@ -482,7 +482,7 @@ export default class TelaFinalPedidoScreen extends Component {
                         }} onPress={() => {
                           Alert.alert(
                             'Confirma valor e classificação?',
-                            'Valor: ' + (this.state.pedido.price / 100).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
+                            'Valor: R$' + String((this.state.pedido.price / 100).toFixed(2))
                             + '\nClassificação: ' + this.state.classificacaoProfissional + ' estrelas',
                             [
                               { text: 'Cancelar', onPress: () => { } },
