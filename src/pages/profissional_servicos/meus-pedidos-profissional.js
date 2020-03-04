@@ -108,7 +108,7 @@ export default class MeusPedidosProfissional extends Component {
     }
   };
 
-  acaoPedido = async (pedido) => {
+  acaoPedido = (pedido) => {
     const buttons = [
       {
         text: 'Visualizar pedido',

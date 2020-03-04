@@ -91,10 +91,11 @@ export default class PrimeiraParte extends Component {
     if (this.state.cellphone.length === 0) {
       telErrors.push('É obrigatório.');
     } else if (
-      this.state.cellphone.length < 8
-      || this.state.cellphone.length > 11
+      this.state.cellphone.length < 10
+      || this.state.cellphone.length > 15
       || !numberRegex.test(this.state.cellphone)) {
       telErrors.push('Número inválido.');
+      telErrors.push('Favor inserir número com DDD.');
     }
 
     if (
@@ -184,7 +185,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ cellphone: text }) }}
                 placeholder="(99) 9999-99999"
                 keyboardType="numeric"
-                maxLength={11}
+                maxLength={15}
                 value={this.state.cellphone}
               />
               <TextInput

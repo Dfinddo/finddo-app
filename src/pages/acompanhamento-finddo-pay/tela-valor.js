@@ -40,11 +40,7 @@ export default class ValorServicoScreen extends Component {
   };
 
   formatarValorServico = (valor) => {
-    try {
-      return valor.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
-    } catch {
-      return '0'.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
-    }
+    return `R$ ${String((Math.round((valor + Number.EPSILON) * 100) / 100).toFixed(2))}`;
   };
 
   prepararPedidoWirecard = (pedido, uuid) => {
@@ -66,6 +62,27 @@ export default class ValorServicoScreen extends Component {
 
     pedidoWirecard.customer = {};
     pedidoWirecard.customer.id = pedido.user.customer_wirecard_id;
+    pedidoWirecard.customer.ownId = pedido.user.own_id_wirecard;
+    pedidoWirecard.customer.fullname = pedido.user.name;
+    const dataNascimentoArray = pedido.user.birthdate.split('/');
+    pedidoWirecard.customer.birthDate = `${dataNascimentoArray[2]}-${dataNascimentoArray[1]}-${dataNascimentoArray[0]}`;
+    pedidoWirecard.customer.email = pedido.user.email;
+    pedidoWirecard.customer.phone = {};
+    pedidoWirecard.customer.phone.countryCode = '55';
+    pedidoWirecard.customer.phone.areaCode = pedido.user.cellphone.slice(0, 2);
+    pedidoWirecard.customer.phone.number = pedido.user.cellphone.slice(2);
+    pedidoWirecard.customer.taxDocument = {};
+    pedidoWirecard.customer.taxDocument.type = 'CPF';
+    pedidoWirecard.customer.taxDocument.number = pedido.user.cpf;
+    pedidoWirecard.customer.shippingAddress = {
+      zipCode: pedido.user.cep,
+      street: pedido.user.rua,
+      complement: pedido.user.complemento,
+      city: pedido.user.cidade,
+      district: pedido.user.bairro,
+      state: pedido.user.estado,
+      country: 'BRA'
+    };
 
     return pedidoWirecard;
   }

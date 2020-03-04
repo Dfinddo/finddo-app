@@ -159,10 +159,11 @@ export default class EditarCampoPerfil extends Component {
       if (this.state.valor.length === 0) {
         telErrors.push('É obrigatório.');
       } else if (
-        this.state.valor.length < 8
-        || this.state.valor.length > 11
+        this.state.valor.length < 10
+        || this.state.valor.length > 15
         || !numberRegex.test(this.state.valor)) {
         telErrors.push('Número inválido.');
+        telErrors.push('Favor inserir número com DDD.');
       }
     }
 
