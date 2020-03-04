@@ -12,6 +12,8 @@ import { passo1 } from '../../img/svg/passo-1';
 import { passo2 } from '../../img/svg/passo-2';
 import { passo3 } from '../../img/svg/passo-3';
 import { fechar } from '../../img/svg/fechar';
+import AsyncStorage from '@react-native-community/async-storage';
+import { NavigationEvents } from 'react-navigation';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -31,7 +33,7 @@ export default class Servicos extends Component {
     ],
     page: 1,
     isLoading: false,
-    isShowingTutorial: true,
+    isShowingTutorial: false,
     currentTutorialStep: 0
   };
 
@@ -95,12 +97,52 @@ export default class Servicos extends Component {
     );
   }
 
+  verificaUsuarioTutorial = async () => {
+    const usuarios = await AsyncStorage.getItem('tutoriais');
+
+    if (usuarios) {
+      const arr = [...JSON.parse(usuarios)];
+      const encontrado = arr.find(el => el === TokenService.getInstance().getUser().email)
+      if (!encontrado) {
+        this.setState({ isShowingTutorial: true });
+      }
+    } else {
+      this.setState({ isShowingTutorial: true });
+    }
+  };
+
+  adicionarUsuarioTutorial = async () => {
+    const usuarios = await AsyncStorage.getItem('tutoriais');
+
+    if (!usuarios) {
+      const arr = [];
+      arr.push(TokenService.getInstance().getUser().email);
+      AsyncStorage.setItem('tutoriais', JSON.stringify(arr));
+    } else {
+      const arr = JSON.parse(usuarios);
+      arr.push(TokenService.getInstance().getUser().email);
+      AsyncStorage.setItem('tutoriais', JSON.stringify(arr));
+    }
+
+    this.setState({ isShowingTutorial: false });
+  }
+
   render() {
     return (
       <ImageBackground
         style={this.servicosStyles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <View style={this.servicosStyles.container}>
+          <NavigationEvents
+            onWillFocus={_ => {
+              console.log('hey');
+
+              this.verificaUsuarioTutorial()
+            }}
+          //onDidFocus={payload => console.log('did focus', payload)}
+          //onWillBlur={payload => console.log('will blur', payload)}
+          //onDidBlur={payload => console.log('did blur', payload)}
+          />
           <Modal
             animationType="slide"
             transparent={true}
@@ -128,7 +170,7 @@ export default class Servicos extends Component {
                   alignItems: 'center', justifyContent: 'center'
                 }}>
                 <TouchableOpacity
-                  onPress={() => this.setState({ isShowingTutorial: false })}
+                  onPress={() => this.adicionarUsuarioTutorial()}
                   style={{ marginHorizontal: 10, top: 10, left: 280, position: 'absolute' }}>
                   <SvgXml
                     xml={fechar}
@@ -246,7 +288,7 @@ export default class Servicos extends Component {
                                 backgroundColor: colors.verdeFinddo, borderRadius: 20,
                                 width: 240, height: 45
                               }}
-                              onPress={() => this.setState({ isShowingTutorial: false })}>
+                              onPress={() => this.adicionarUsuarioTutorial()}>
                               <Text style={{ fontSize: 20, color: colors.branco }}>CONCLUIR</Text>
                             </TouchableOpacity>
                           );
