@@ -28,6 +28,7 @@ export default class AjudaScreen extends Component {
   };
 
   openChat = () => {
+    // TODO: remover esse telefone e colocar nos environments
     let url = 'whatsapp://send?text=' + '' + '&phone=55' + '21980503130';
     Linking.openURL(url).catch((_) => {
       Alert.alert(

@@ -67,7 +67,25 @@ export default class EditarCampoPerfil extends Component {
             actions: [NavigationActions.navigate({ routeName: 'Profile' })],
           });
           this.props.navigation.dispatch(resetAction);
+        }).catch(_ => {
+          Alert.alert(
+            'Erro',
+            'Falha ao gravar os dados, favor sair e fazer login novamente',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
         });
+      }).catch(_ => {
+        Alert.alert(
+          'Erro',
+          'Falha ao gravar os dados, favor sair e fazer login novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
       });
     }).catch(error => {
       if (error.response) {

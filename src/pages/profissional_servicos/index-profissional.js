@@ -54,7 +54,36 @@ export default class IndexProfissional extends Component {
         pedidos: [...orders],
       });
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        /*
+         * The request was made and the server responded with a
+         * status code that falls out of the range of 2xx
+         */
+        Alert.alert(
+          'Erro',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else if (error.request) {
+        /*
+         * The request was made but no response was received, `error.request`
+         * is an instance of XMLHttpRequest in the browser and an instance
+         * of http.ClientRequest in Node.js
+         */
+        Alert.alert(
+          'Falha ao se conectar',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else {
+        /* Something happened in setting up the request and triggered an Error */
+      }
     }
   };
 
@@ -88,7 +117,39 @@ export default class IndexProfissional extends Component {
             );
           }
         })
-        .catch(_ => this.setState({ isShowingPedido: false, isLoadingRequest: false }));
+        .catch(error => {
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            Alert.alert(
+              'Erro',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            Alert.alert(
+              'Falha ao se conectar',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            /* Something happened in setting up the request and triggered an Error */
+          }
+          this.setState({ isShowingPedido: false, isLoadingRequest: false })
+        });
     });
   }
 
@@ -107,7 +168,36 @@ export default class IndexProfissional extends Component {
       this.setState({ isLoadingRequest: false });
       this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        /*
+         * The request was made and the server responded with a
+         * status code that falls out of the range of 2xx
+         */
+        Alert.alert(
+          'Erro',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else if (error.request) {
+        /*
+         * The request was made but no response was received, `error.request`
+         * is an instance of XMLHttpRequest in the browser and an instance
+         * of http.ClientRequest in Node.js
+         */
+        Alert.alert(
+          'Falha ao se conectar',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else {
+        /* Something happened in setting up the request and triggered an Error */
+      }
       this.setState({ isLoadingRequest: false });
     }
   };

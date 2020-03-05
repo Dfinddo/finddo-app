@@ -3,7 +3,7 @@ import {
   View, Text,
   ScrollView, ImageBackground,
   TouchableOpacity, StyleSheet,
-  ActivityIndicator, Modal
+  ActivityIndicator, Modal, Alert
 } from 'react-native';
 import { colors } from '../../colors';
 import StatusPedidoStep from '../../components/status-pedido-step';
@@ -261,7 +261,36 @@ export default class AcompanhamentoPedido extends Component {
       }
     }
     catch (error) {
-      console.log(error);
+      if (error.response) {
+        /*
+         * The request was made and the server responded with a
+         * status code that falls out of the range of 2xx
+         */
+        Alert.alert(
+          'Erro',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else if (error.request) {
+        /*
+         * The request was made but no response was received, `error.request`
+         * is an instance of XMLHttpRequest in the browser and an instance
+         * of http.ClientRequest in Node.js
+         */
+        Alert.alert(
+          'Falha ao se conectar',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else {
+        /* Something happened in setting up the request and triggered an Error */
+      }
     }
   }
 

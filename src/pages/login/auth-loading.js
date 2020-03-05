@@ -39,7 +39,7 @@ export default class AuthLoadingScreen extends Component {
             tokenValid = true;
           }
         ).catch( // token invalido
-          () => {
+          async () => {
             AsyncStorage.removeItem('userToken');
             AsyncStorage.removeItem('user');
           }
