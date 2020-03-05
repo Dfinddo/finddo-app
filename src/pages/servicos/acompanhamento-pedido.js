@@ -51,13 +51,15 @@ export default class AcompanhamentoPedido extends Component {
 
         if (pedido) {
           if (pedido.price > 0) {
-            this.setState({ loadingData: false }, () => {
-              const resetAction = StackActions.reset({
-                index: 0,
-                actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido } })],
+            setTimeout(() => {
+              this.setState({ loadingData: false }, () => {
+                const resetAction = StackActions.reset({
+                  index: 0,
+                  actions: [NavigationActions.navigate({ routeName: 'Acompanhamento', params: { pedido } })],
+                });
+                this.props.navigation.dispatch(resetAction);
               });
-              this.props.navigation.dispatch(resetAction);
-            });
+            }, 1000);
           } else {
             setTimeout(() => {
               this.setState({ pedido, estadoAtual: pedido.order_status, loadingData: false }, () => this.atualizaStatus())
