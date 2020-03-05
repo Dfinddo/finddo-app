@@ -77,6 +77,7 @@ export default class ValorServicoScreen extends Component {
     pedidoWirecard.customer.shippingAddress = {
       zipCode: pedido.user.cep,
       street: pedido.user.rua,
+      streetNumber: pedido.user.numero,
       complement: pedido.user.complemento,
       city: pedido.user.cidade,
       district: pedido.user.bairro,

@@ -40,6 +40,16 @@ export default class EnderecosScreen extends Component {
           });
 
           this.setState({ enderecos: [...addresses] });
+        }).catch(_ => {
+          Alert.alert(
+            'Falha ao obter os endereços',
+            'Por favor tente novamente.',
+            [
+              { text: 'Cancelar', onPress: () => { } },
+              { text: 'OK', onPress: () => { this.obterEnderecos() } },
+            ],
+            { cancelable: false },
+          );
         }).finally(_ => {
           this.setState({ isLoading: false });
         });
@@ -228,5 +238,14 @@ export const excluirItem = (item, comp) => {
       comp.obterEnderecos();
       comp.setState({ isLoading: false });
     }
-  );
+  ).catch(_ => {
+    Alert.alert(
+      'Falha ao excluir',
+      'Por favor tente novamente.',
+      [
+        { text: 'OK', onPress: () => { } },
+      ],
+      { cancelable: false },
+    );
+  });
 }

@@ -140,7 +140,6 @@ export default class TelaFinalPedidoScreen extends Component {
 
       if (pedido) {
         this.setState({ pedido: pedido, classificacaoProfissional: Number(pedido.rate), isLoading: false }, () => this.obterCartoes());
-        console.log(pedido);
       } else {
         const resetAction = StackActions.reset({
           index: 0,
@@ -157,8 +156,6 @@ export default class TelaFinalPedidoScreen extends Component {
 
   render() {
     if (!this.state.pedido) {
-      console.log('erro');
-
       return (
         <ImageBackground
           style={{ width: '100%', height: '100%' }}
@@ -427,7 +424,36 @@ export default class TelaFinalPedidoScreen extends Component {
                               }
                               this.setState({ pedido: response.data });
                             }).catch((error) => {
-                              console.log(error);
+                              if (error.response) {
+                                /*
+                                 * The request was made and the server responded with a
+                                 * status code that falls out of the range of 2xx
+                                 */
+                                Alert.alert(
+                                  'Falha ao obter os dados',
+                                  'Verifique sua conexão e tente novamente',
+                                  [
+                                    { text: 'OK', onPress: () => { } },
+                                  ],
+                                  { cancelable: false },
+                                );
+                              } else if (error.request) {
+                                /*
+                                 * The request was made but no response was received, `error.request`
+                                 * is an instance of XMLHttpRequest in the browser and an instance
+                                 * of http.ClientRequest in Node.js
+                                 */
+                                Alert.alert(
+                                  'Falha ao se conectar',
+                                  'Verifique sua conexão e tente novamente',
+                                  [
+                                    { text: 'OK', onPress: () => { } },
+                                  ],
+                                  { cancelable: false },
+                                );
+                              } else {
+                                /* Something happened in setting up the request and triggered an Error */
+                              }
                             }).finally((_) => {
                               this.setState({ isLoading: false });
                             });
@@ -466,7 +492,36 @@ export default class TelaFinalPedidoScreen extends Component {
                                 }
                                 this.setState({ pedido: response.data });
                               }).catch((error) => {
-                                console.log(error);
+                                if (error.response) {
+                                  /*
+                                   * The request was made and the server responded with a
+                                   * status code that falls out of the range of 2xx
+                                   */
+                                  Alert.alert(
+                                    'Falha ao obter os dados',
+                                    'Verifique sua conexão e tente novamente',
+                                    [
+                                      { text: 'OK', onPress: () => { } },
+                                    ],
+                                    { cancelable: false },
+                                  );
+                                } else if (error.request) {
+                                  /*
+                                   * The request was made but no response was received, `error.request`
+                                   * is an instance of XMLHttpRequest in the browser and an instance
+                                   * of http.ClientRequest in Node.js
+                                   */
+                                  Alert.alert(
+                                    'Falha ao se conectar',
+                                    'Verifique sua conexão e tente novamente',
+                                    [
+                                      { text: 'OK', onPress: () => { } },
+                                    ],
+                                    { cancelable: false },
+                                  );
+                                } else {
+                                  /* Something happened in setting up the request and triggered an Error */
+                                }
                               }).finally((_) => {
                                 this.setState({ isLoading: false });
                               });
@@ -544,10 +599,70 @@ export default class TelaFinalPedidoScreen extends Component {
                 }]
               );
             }).catch((error) => {
-              console.log(error);
+              if (error.response) {
+                /*
+                 * The request was made and the server responded with a
+                 * status code that falls out of the range of 2xx
+                 */
+                Alert.alert(
+                  'Erro',
+                  'Seu pedido foi pago mas não conseguimos salvar em nosso sistema, entre em contato conosco pela aba ajuda.',
+                  [
+                    { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
+                  ],
+                  { cancelable: false },
+                );
+              } else if (error.request) {
+                /*
+                 * The request was made but no response was received, `error.request`
+                 * is an instance of XMLHttpRequest in the browser and an instance
+                 * of http.ClientRequest in Node.js
+                 */
+                Alert.alert(
+                  'Erro',
+                  'Seu pedido foi pago mas não conseguimos salvar em nosso sistema, entre em contato conosco pela aba ajuda.',
+                  [
+                    { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
+                  ],
+                  { cancelable: false },
+                );
+              } else {
+                /* Something happened in setting up the request and triggered an Error */
+              }
             }).finally(_ => {
               this.setState({ isLoading: false });
             });
+        }).catch(error => {
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            Alert.alert(
+              'Falha ao executar o pagamento',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
+              ],
+              { cancelable: false },
+            );
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            Alert.alert(
+              'Falha ao executar o pagamento',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            /* Something happened in setting up the request and triggered an Error */
+          }
         });
     });
   }

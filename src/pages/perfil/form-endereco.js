@@ -209,7 +209,6 @@ export default class FormEnderecoScreen extends Component {
       this.setState({ formInvalid: true });
     } else {
       this.salvarEndereco();
-      // this.props.navigation.navigate('ParteDois', this.state);
     }
   };
 
