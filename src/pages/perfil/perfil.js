@@ -43,7 +43,6 @@ export default class PerfilScreen extends Component {
   }
 
   alterarFotoDialog = () => {
-    // () => this.props.navigation.navigate('CameraPerfil');
     FotoService.getInstance().setFotoId('perfil');
     Alert.alert(
       'Finddo',
@@ -70,7 +69,38 @@ export default class PerfilScreen extends Component {
           backendRails.put(`/users/profile_photo/${id}`,
             { profile_photo: { base64: this.state.profilePhoto.base64, file_name: `profile-${id}` } },
             { headers: TokenService.getInstance().getHeaders() })
-            .catch(error => console.log(error))
+            .catch(error => {
+              if (error.response) {
+                /*
+                 * The request was made and the server responded with a
+                 * status code that falls out of the range of 2xx
+                 */
+                Alert.alert(
+                  'Erro',
+                  'Verifique sua conexão e tente novamente',
+                  [
+                    { text: 'OK', onPress: () => { } },
+                  ],
+                  { cancelable: false },
+                );
+              } else if (error.request) {
+                /*
+                 * The request was made but no response was received, `error.request`
+                 * is an instance of XMLHttpRequest in the browser and an instance
+                 * of http.ClientRequest in Node.js
+                 */
+                Alert.alert(
+                  'Falha ao se conectar',
+                  'Verifique sua conexão e tente novamente',
+                  [
+                    { text: 'OK', onPress: () => { } },
+                  ],
+                  { cancelable: false },
+                );
+              } else {
+                /* Something happened in setting up the request and triggered an Error */
+              }
+            })
             .finally(
               _ => this.setState({ isLoading: false })
             );
@@ -83,6 +113,37 @@ export default class PerfilScreen extends Component {
         .then(data => {
           if (data.data.photo) {
             this.setState({ profilePhoto: { uri: `${backendUrl}/${data.data.photo}` } });
+          }
+        }).catch(error => {
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            Alert.alert(
+              'Erro',
+              'Verifique os dados e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            Alert.alert(
+              'Falha ao se conectar',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            /* Something happened in setting up the request and triggered an Error */
           }
         }).finally(_ => this.setState({ isLoading: false }))
     } else {
@@ -113,6 +174,7 @@ export default class PerfilScreen extends Component {
   logout = () => {
     backendRails
       .delete('/auth/sign_out', { headers: TokenService.getInstance().getHeaders() })
+      .catch(_ => { })
       .finally(() => {
         this.limparDadosLogin();
       });

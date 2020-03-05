@@ -257,8 +257,8 @@ export default class SegundaParte extends Component {
                 });
               }).catch((_) => {
                 Alert.alert(
-                  'Falha ao se conectar',
-                  'Verifique sua conexão e tente novamente',
+                  'Falha ao salvar sua sessão',
+                  'Favor sair e fazer login, seu cadastro foi concluído.',
                   [
                     { text: 'OK', onPress: () => { } },
                   ],

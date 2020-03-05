@@ -69,8 +69,36 @@ export default class Servicos extends Component {
           }
         })
         .catch(error => {
-          console.log(error);
-          this.exibirAlertSemCartoes();
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            Alert.alert(
+              'Erro',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            Alert.alert(
+              'Falha ao se conectar',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            /* Something happened in setting up the request and triggered an Error */
+          }
         })
         .finally(_ => {
           this.setState({ isLoading: false });
@@ -135,8 +163,6 @@ export default class Servicos extends Component {
         <View style={this.servicosStyles.container}>
           <NavigationEvents
             onWillFocus={_ => {
-              console.log('hey');
-
               this.verificaUsuarioTutorial()
             }}
           //onDidFocus={payload => console.log('did focus', payload)}
