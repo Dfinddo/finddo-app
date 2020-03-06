@@ -3,6 +3,7 @@ export default class TokenService {
 
   _tokenData = null;
   _user = null;
+  _playerID = null;
 
   /**
    * @returns {TokenService}
@@ -23,6 +24,10 @@ export default class TokenService {
     this._user = userDto;
   }
 
+  setPlayerIDOneSignal(playerID) {
+    this._playerID = playerID;
+  }
+
   getToken() {
     return this._tokenData;
   }
@@ -39,5 +44,9 @@ export default class TokenService {
     headers['Content-Type'] = 'application/json';
 
     return headers;
+  }
+
+  getPlayerIDOneSignal() {
+    return this._playerID;
   }
 }

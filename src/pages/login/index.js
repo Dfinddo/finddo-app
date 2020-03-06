@@ -47,6 +47,11 @@ export default class LoginScreen extends Component {
             await AsyncStorage.setItem('user', JSON.stringify(userDto));
             tokenService.setUser(userDto);
 
+            await backendRails.put(`users/player_id_notifications/${tokenService.getUser().id}`,
+              { player_id: tokenService.getPlayerIDOneSignal() },
+              { headers: tokenService.getHeaders() }
+            )
+
             this.setState({ isLoading: false });
             this.props.navigation.navigate('App');
           }
