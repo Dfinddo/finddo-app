@@ -565,8 +565,6 @@ export default class TelaFinalPedidoScreen extends Component {
 
     this.setState({ isLoading: true }, () => {
       const pedido = this.state.pedido;
-      pedido.paid = true;
-      pedido.order_status = 'finalizado';
       pedido.rate = this.state.classificacaoProfissional;
 
       const orderWirecard = {};
@@ -584,19 +582,7 @@ export default class TelaFinalPedidoScreen extends Component {
           pedido.payment_wirecard_id = responseWirecard.data.id;
           backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
             .then((response) => {
-              Alert.alert(
-                'Sucesso',
-                'Obrigado por usar o Finddo',
-                [{
-                  text: 'Ok', onPress: () => {
-                    const resetAction = StackActions.reset({
-                      index: 0,
-                      actions: [NavigationActions.navigate({ routeName: 'AcompanhamentoPedido' })],
-                    });
-                    this.props.navigation.dispatch(resetAction);
-                  }
-                }]
-              );
+              // TODO: melhorar feedback da mensagem aqui
             }).catch((error) => {
               if (error.response) {
                 /*
