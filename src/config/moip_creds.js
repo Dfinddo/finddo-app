@@ -1,4 +1,4 @@
-import { developConfig } from '../../credenciais-e-configuracoes';
+import { developConfig, productionConfig } from '../../credenciais-e-configuracoes';
 // ############################## ATENÇÃO ##############################
 // NUNCA COMITTAR OS SECRETS DO MOIP ###################################
 // CUIDADO #############################################################

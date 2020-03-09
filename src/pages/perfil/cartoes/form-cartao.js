@@ -71,6 +71,11 @@ export default class FormCartaoScreen extends Component {
       'keyboardDidHide',
       this._keyboardDidHide,
     );
+    Alert.alert(
+      'ATENÇÃO',
+      'Preencha os dados rigorosamente da MESMA forma que no seu cartão',
+      [{ text: 'OK', onPress: () => { } }]
+    );
   };
 
   _keyboardDidShow = () => {
@@ -361,7 +366,7 @@ export default class FormCartaoScreen extends Component {
               <TextInput
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('expirationYear', text) }}
-                placeholder="Expiração AAAA" keyboardType={'number-pad'}
+                placeholder="Expiração AA ou AAAA (igual ao seu cartão)" keyboardType={'number-pad'}
                 maxLength={4}
                 value={this.state.cardData.creditCard.expirationYear}
               />
@@ -376,7 +381,7 @@ export default class FormCartaoScreen extends Component {
                 style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('cvc', text) }}
                 placeholder="cvv" keyboardType={"number-pad"}
-                maxLength={10} secureTextEntry={true}
+                maxLength={10}
                 value={this.state.cardData.creditCard.cvc}
               />
               <TextInput

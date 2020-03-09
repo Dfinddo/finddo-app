@@ -6,6 +6,7 @@ headers['Content-Type'] = 'application/json';
 headers['Authorization'] = moipCredsData.Authorization;
 
 const moipAPI = axios.create({
+  // baseURL: 'https://api.moip.com.br/v2'
   baseURL: 'https://sandbox.moip.com.br/v2'
 });
 

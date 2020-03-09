@@ -33,7 +33,7 @@ import ValorServicoScreen from './pages/acompanhamento-finddo-pay/tela-valor';
 import OneSignal from 'react-native-onesignal';
 import { SvgXml } from 'react-native-svg';
 import { finddoLogoNavegacao } from './img/svg/finddo-logo-navegacao';
-import { developConfig } from '../credenciais-e-configuracoes';
+import { developConfig, productionConfig } from '../credenciais-e-configuracoes';
 import TokenService from './services/token-service';
 
 const AppStack = createStackNavigator(
@@ -191,7 +191,8 @@ export default class App extends Component {
     super(props);
     // ============================ ATENÇÃO ============================
     // ================ NUNCA COMMITAR O ID DA APLICAÇÃO ===============
-    OneSignal.init(developConfig.oneSignalApiKey);
+    // OneSignal.init(developConfig.oneSignalApiKey);
+    OneSignal.init(productionConfig.oneSignalApiKey);
 
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);

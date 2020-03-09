@@ -156,7 +156,6 @@ export default class PerfilScreen extends Component {
     AsyncStorage.removeItem('user');
     TokenService.getInstance().setToken(null);
     TokenService.getInstance().setUser(null);
-    TokenService.getInstance().setPlayerIDOneSignal(null);
     this.props.navigation.navigate('Auth');
   }
 
@@ -186,7 +185,6 @@ export default class PerfilScreen extends Component {
           )
           this.limparDadosLogin();
         } catch {
-          TokenService.getInstance().setPlayerIDOneSignal(null);
           Alert.alert(
             'Erro interno',
             'Por favor saia da aplicação e faça login novamente.',

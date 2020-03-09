@@ -189,7 +189,6 @@ export default class TelaFinalPedidoScreen extends Component {
                   onChangeText={text => { this.setState({ secureCode: text }) }}
                   placeholder="CVV" keyboardType={'number-pad'}
                   maxLength={10}
-                  secureTextEntry={true}
                   value={this.state.secureCode}
                 />
               </View>
