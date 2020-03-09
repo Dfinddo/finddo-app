@@ -3,7 +3,8 @@ import {
   Text, Modal,
   FlatList, StyleSheet,
   TouchableOpacity, View,
-  ImageBackground, Alert, ActivityIndicator
+  ImageBackground, Alert, ActivityIndicator,
+  RefreshControl
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
@@ -251,6 +252,11 @@ export default class IndexProfissional extends Component {
           <FlatList
             data={this.state.pedidos}
             keyExtractor={item => item.id}
+            refreshControl={<RefreshControl
+              colors={[colors.verdeFinddo]}
+              refreshing={this.state.isLoadingRequest}
+              onRefresh={() => this.obterPedidos()}
+            />}
             renderItem={
               ({ item }) =>
                 <TouchableOpacity
