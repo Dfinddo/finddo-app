@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import {
-  Text,
-  FlatList, StyleSheet,
-  TouchableOpacity, View,
-  ImageBackground,
-  Picker,
-  ActivityIndicator,
-  Modal,
-  Alert
+  Text, FlatList,
+  StyleSheet, TouchableOpacity,
+  View, ImageBackground,
+  Picker, ActivityIndicator,
+  Modal, Alert,
+  RefreshControl
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
@@ -222,35 +220,47 @@ export default class MeusPedidosProfissional extends Component {
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosAnalise}
+                      refreshing={this.state.loadingData}
+                      onRefresh={() => this.obterPedidos()}
                       onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 case ('a_caminho'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosCaminho}
+                      refreshing={this.state.loadingData}
+                      onRefresh={() => this.obterPedidos()}
                       onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 case ('em_servico'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosServico}
+                      refreshing={this.state.loadingData}
+                      onRefresh={() => this.obterPedidos()}
                       onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 case ('finalizado'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosFinalizado}
+                      refreshing={this.state.loadingData}
+                      onRefresh={() => this.obterPedidos()}
                       onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 case ('cancelado'):
                   return (
                     <ListaPedidos
                       pedidos={this.state.pedidosCancelado}
+                      refreshing={this.state.loadingData}
+                      onRefresh={() => this.obterPedidos()}
                       onPressItem={(item) => this.acaoPedido(item)} />
                   );
                 default: return (
                   <ListaPedidos
                     pedidos={this.state.pedidos}
+                    refreshing={this.state.loadingData}
+                    onRefresh={() => this.obterPedidos()}
                     onPressItem={(item) => this.acaoPedido(item)} />
                 );
               }
@@ -319,35 +329,38 @@ function NovoPedido(props) {
 }
 
 function ListaPedidos(props) {
-  if (props.pedidos && props.pedidos.length > 0) {
-    return (
-      <View>
-        <FlatList
-          data={props.pedidos}
-          keyExtractor={item => item.id}
-          renderItem={
-            ({ item }) =>
-              <TouchableOpacity
-                onPress={() => props.onPressItem(item)}
-                style={[meusPedidosStyles.item, meusPedidosStyles.pedidoLabel]}>
-                <View style={{ width: 260 }}>
-                  <Text style={{ fontSize: 20, marginBottom: 5 }}>{item.category.name}</Text>
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={meusPedidosStyles.pedidoIndicador}></View>
-                    <Text style={{ fontSize: 18, color: colors.cinza }}>    {enumEstadoPedidoMap[item.order_status]}</Text>
-                  </View>
+  return (
+    <View>
+      <FlatList
+        data={props.pedidos}
+        keyExtractor={item => item.id}
+        refreshControl={
+          <RefreshControl
+            colors={[colors.verdeFinddo]}
+            refreshing={props.refreshing}
+            onRefresh={props.onRefresh}
+          />
+        }
+        renderItem={
+          ({ item }) =>
+            <TouchableOpacity
+              onPress={() => props.onPressItem(item)}
+              style={[meusPedidosStyles.item, meusPedidosStyles.pedidoLabel]}>
+              <View style={{ width: 260 }}>
+                <Text style={{ fontSize: 20, marginBottom: 5 }}>{item.category.name}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <View style={meusPedidosStyles.pedidoIndicador}></View>
+                  <Text style={{ fontSize: 18, color: colors.cinza }}>    {enumEstadoPedidoMap[item.order_status]}</Text>
                 </View>
-                <View style={meusPedidosStyles.pedidoSetaDireita}>
-                  <Icon
-                    style={{ width: 40 }}
-                    name={'keyboard-arrow-right'}
-                    size={20} color={colors.cinza} />
-                </View>
-              </TouchableOpacity>}
-        />
-      </View>
-    );
-  } else {
-    return (null);
-  }
+              </View>
+              <View style={meusPedidosStyles.pedidoSetaDireita}>
+                <Icon
+                  style={{ width: 40 }}
+                  name={'keyboard-arrow-right'}
+                  size={20} color={colors.cinza} />
+              </View>
+            </TouchableOpacity>}
+      />
+    </View>
+  );
 }

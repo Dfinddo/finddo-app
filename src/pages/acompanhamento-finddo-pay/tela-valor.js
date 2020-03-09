@@ -159,6 +159,7 @@ export default class ValorServicoScreen extends Component {
                     'Finddo',
                     `Confirma o valor ${this.formatarValorServico(this.state.valorComTaxa)}?`,
                     [
+                      { text: 'Cancelar', onPress: () => { } },
                       {
                         text: 'OK', onPress: () => {
                           this.setState({ isLoading: true }, () => {

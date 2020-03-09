@@ -25,6 +25,8 @@ export default class VisualizarPedidoProfissional extends Component {
       order.address = this.props.pedido.pedidoCorrente.address;
       order.images = this.props.pedido.pedidoCorrente.images;
       order.cellphone = this.props.pedido.pedidoCorrente.user.cellphone;
+      order.hora_inicio = this.props.pedido.pedidoCorrente.hora_inicio;
+      order.hora_fim = this.props.pedido.pedidoCorrente.hora_fim;
     } else {
       order.description = this.props.pedido.description;
       order.category = this.props.pedido.category.name;
@@ -36,6 +38,8 @@ export default class VisualizarPedidoProfissional extends Component {
       order.address = this.props.pedido.address;
       order.images = this.props.pedido.images;
       order.cellphone = this.props.pedido.user.cellphone;
+      order.hora_inicio = this.props.pedido.hora_inicio;
+      order.hora_fim = this.props.pedido.hora_fim;
     }
     this.setState({ order });
   }
@@ -117,7 +121,7 @@ export default class VisualizarPedidoProfissional extends Component {
                       case 'urgente':
                         return <Text style={this.visualizarPedidoStyle.textos}>Urgente</Text>;
                       case 'urgent':
-                        return <Text style={this.visualizarPedidoStyle.textos}>{diaInicio}, entre {horaInicio}:{minutosInicio} e {horaFim}:{minutosFim} (Com urgência)</Text>;
+                        return <Text style={this.visualizarPedidoStyle.textos}>{diaInicio}, entre {this.state.order.hora_inicio} e {this.state.order.hora_fim} (Com urgência)</Text>;
                       default:
                         return null;
                     }

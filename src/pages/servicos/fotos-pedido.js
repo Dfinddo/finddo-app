@@ -177,6 +177,8 @@ export default class FotosPedido extends Component {
     if (this.state.urgencia === 'definir-data') {
       order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
       order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
+      order.hora_inicio = `${this.state.hora}`;
+      order.hora_fim = `${this.state.horaFim}`;
       order.urgency = 'urgent';
     }
 

@@ -34,6 +34,9 @@ local.properties
 android/app/src/main/assets/index.android.bundle
 android/app/release/
 
+# arquivo de credenciais
+credenciais-e-configuracoes.js
+
 # node.js
 #
 node_modules/

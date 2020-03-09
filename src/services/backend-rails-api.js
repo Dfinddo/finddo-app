@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { productionConfig, developConfig } from '../../credenciais-e-configuracoes';
 
-export const backendUrl = 'https://finddo-back-dev.herokuapp.com';
-// export const backendUrl = 'http://192.168.1.3:3000';
+export const backendUrl = developConfig.backendUrl;
 
 const backendRails = axios.create({
   baseURL: backendUrl,

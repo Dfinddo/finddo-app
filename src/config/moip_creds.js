@@ -1,3 +1,4 @@
+import { developConfig, productionConfig } from '../../credenciais-e-configuracoes';
 // ############################## ATENÇÃO ##############################
 // NUNCA COMITTAR OS SECRETS DO MOIP ###################################
 // CUIDADO #############################################################
@@ -8,8 +9,8 @@
 // ############################## ATENÇÃO ##############################
 
 const moipCredsData = {
-  publicKey: ``,
-  Authorization: ''
+  publicKey: developConfig.moipCredsData.publicKey,
+  Authorization: developConfig.moipCredsData.Authorization
 };
 
 export default moipCredsData;

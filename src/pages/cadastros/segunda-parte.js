@@ -231,6 +231,7 @@ export default class SegundaParte extends Component {
   signUp = (userState) => {
     const user = new UserDTO(userState);
     const userWithAddress = UserDTO.gerarUsuarioComEnderecoDefault(user);
+    const tokenService = TokenService.getInstance();
 
     this.setState({ isLoading: true });
     UUIDGenerator.getRandomUUID().then((uuid) => {
@@ -238,6 +239,7 @@ export default class SegundaParte extends Component {
         .then(responseWirecard => {
           userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
           userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
+          userWithAddress.player_ids = [tokenService.getPlayerIDOneSignal()];
           backendRails.post('/users', userWithAddress).then(response => {
             const userData = {};
             userData['access-token'] = response['headers']['access-token'];

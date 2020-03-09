@@ -172,11 +172,38 @@ export default class PerfilScreen extends Component {
   }
 
   logout = () => {
-    backendRails
-      .delete('/auth/sign_out', { headers: TokenService.getInstance().getHeaders() })
-      .catch(_ => { })
-      .finally(() => {
-        this.limparDadosLogin();
+    const tokenService = TokenService.getInstance();
+
+    backendRails.delete(
+      `users/remove_player_id_notifications/${tokenService.getUser().id}/${tokenService.getPlayerIDOneSignal()}`,
+      { headers: tokenService.getHeaders() }
+    )
+      .then(async (_) => {
+        try {
+          await backendRails.delete(`auth/sign_out`,
+            { headers: tokenService.getHeaders() }
+          )
+          this.limparDadosLogin();
+        } catch {
+          Alert.alert(
+            'Erro interno',
+            'Por favor saia da aplicação e faça login novamente.',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+        }
+      })
+      .catch(_ => {
+        Alert.alert(
+          'Falha ao se conectar',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
       });
   }
 

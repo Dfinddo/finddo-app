@@ -64,18 +64,18 @@ export default class VisualizarPedido extends Component {
 
           diaInicio = `${data.getDate()}/${+data.getMonth() + 1}/${data.getFullYear()}`;
 
-          horaInicio = data.getHours() < 10 ? '0' + data.getHours() : data.getHours();
+          horaInicio = this.props.pedido.pedidoCorrente.hora_inicio;
           minutosInicio = data.getMinutes() < 10 ? '0' + data.getMinutes() : data.getMinutes();
 
-          horaFim = dataF.getHours() < 10 ? '0' + dataF.getHours() : dataF.getHours();
+          horaFim = this.props.pedido.pedidoCorrente.hora_fim;
           minutosFim = dataF.getMinutes() < 10 ? '0' + dataF.getMinutes() : dataF.getMinutes();
         } else {
           diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
 
-          horaInicio = this.props.pedido.hora.split(":")[0];
+          horaInicio = this.props.pedido.hora;
           minutosInicio = this.props.pedido.hora.split(":")[1];
 
-          horaFim = this.props.pedido.horaFim.split(":")[0];
+          horaFim = this.props.pedido.horaFim;
           minutosFim = this.props.pedido.horaFim.split(":")[1];
         }
       }
@@ -125,7 +125,7 @@ export default class VisualizarPedido extends Component {
                       case 'urgente':
                         return <Text style={this.visualizarPedidoStyle.textos}>Urgente</Text>;
                       case 'definir-data':
-                        return <Text style={this.visualizarPedidoStyle.textos}>{diaInicio}, entre {horaInicio}:{minutosInicio} e {horaFim}:{minutosFim} (Com urgência)</Text>;
+                        return <Text style={this.visualizarPedidoStyle.textos}>{diaInicio}, entre {horaInicio} e {horaFim} (Com urgência)</Text>;
                       default:
                         return null;
                     }
