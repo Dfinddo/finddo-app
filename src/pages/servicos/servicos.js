@@ -14,6 +14,7 @@ import { passo3 } from '../../img/svg/passo-3';
 import { fechar } from '../../img/svg/fechar';
 import AsyncStorage from '@react-native-community/async-storage';
 import { NavigationEvents } from 'react-navigation';
+import CartaoFormService from '../../services/cartao-form-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -44,8 +45,16 @@ export default class Servicos extends Component {
   exibirAlertSemCartoes = () => {
     Alert.alert(
       'Forma de pagamento ainda não cadastrada',
-      'Para adicionar uma forma de pagamento vá para a aba Perfil',
-      [{ text: 'OK', onPress: () => { } }]
+      'Por favor adicione um cartão para pagamento',
+      [
+        { text: 'Cancelar', onPress: () => { } },
+        {
+          text: 'Adicionar Cartão', onPress: () => {
+            CartaoFormService.getInstance().setAdicionarNovoCard(true);
+            this.props.navigation.navigate('FormAddCartao');
+          }
+        },
+      ]
     );
   };
 
@@ -163,7 +172,12 @@ export default class Servicos extends Component {
         <View style={this.servicosStyles.container}>
           <NavigationEvents
             onWillFocus={_ => {
-              this.verificaUsuarioTutorial()
+              const cartaoService = CartaoFormService.getInstance();
+              if (!cartaoService.isAdicionarNovoCard()) {
+                this.verificaUsuarioTutorial();
+              } else {
+                cartaoService.setAdicionarNovoCard(false);
+              }
             }}
           //onDidFocus={payload => console.log('did focus', payload)}
           //onWillBlur={payload => console.log('will blur', payload)}

@@ -13,6 +13,7 @@ import { colors } from '../../colors';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
 import FotoService from '../../services/foto-service';
 import { ListaDeEnderecos } from '../../pages/perfil/enderecos';
+import EnderecoFormService from '../../services/endereco-form-service';
 
 const fotoDefault = require('../../img/add_foto_problema.png');
 
@@ -276,6 +277,14 @@ export default class FotosPedido extends Component {
                   comp={this}></ListaDeEnderecos>
                 <TouchableOpacity
                   style={this.fotosPedidoStyles.botaoContinuar}
+                  onPress={() => this.setState({ isSelectEndereco: false }, () => {
+                    EnderecoFormService.getInstance().setAdicionarNovoEndServico(true);
+                    this.props.navigation.navigate('FormAddEndereco');
+                  })}>
+                  <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>ADICIONAR ENDEREÇO</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={this.fotosPedidoStyles.botaoContinuar}
                   onPress={() => this.setState({ isSelectEndereco: false })}>
                   <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>VOLTAR</Text>
                 </TouchableOpacity>
@@ -293,9 +302,17 @@ export default class FotosPedido extends Component {
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
               <NavigationEvents
                 onWillFocus={_ => {
-                  this.setState({ isLoading: true }, () => {
-                    setTimeout(() => { this.obterFoto() }, 1000);
-                  })
+                  const enderecoService = EnderecoFormService.getInstance();
+                  if (!enderecoService.isAdicionarNovoEndServico()) {
+                    this.setState({ isLoading: true }, () => {
+                      setTimeout(() => { this.obterFoto() }, 1000);
+                    })
+                  } else {
+                    enderecoService.setAdicionarNovoEndServico(false);
+                    this.setState({ isLoading: true }, () => {
+                      this.selecionarEndereco();
+                    });
+                  }
                   // this.setState({ isLoading: true }, () => { this.obterFoto1() });
                 }}
               //onDidFocus={_ => this.obterFoto1()}

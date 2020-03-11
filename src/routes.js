@@ -41,6 +41,8 @@ const AppStack = createStackNavigator(
     Services: Servicos,
     NovoPedido: NovoPedido,
     FotosPedido: FotosPedido,
+    FormAddEndereco: FormEnderecoScreen,
+    FormAddCartao: FormCartaoScreen,
     // MeusPedidos: MeusPedidos,
     // AcompanhamentoPedido: AcompanhamentoPedido,
     // Acompanhamento: TelaFinalPedidoScreen,
@@ -75,7 +77,8 @@ const ServicosStack = createStackNavigator(
   {
     AcompanhamentoPedido: AcompanhamentoPedido,
     Acompanhamento: TelaFinalPedidoScreen,
-    Cobranca: ValorServicoScreen
+    Cobranca: ValorServicoScreen,
+    FormAddCartao: FormCartaoScreen
   },
   { initialRouteName: 'AcompanhamentoPedido' }
 );

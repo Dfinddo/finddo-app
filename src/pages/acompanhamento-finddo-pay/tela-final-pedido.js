@@ -16,6 +16,7 @@ import { star } from '../../img/svg/star';
 import { SvgXml } from 'react-native-svg';
 import { starSolid } from '../../img/svg/star-solid';
 import moipAPI, { headers } from '../../services/moip-api';
+import CartaoFormService from '../../services/cartao-form-service';
 
 function Item(props) {
   const itemStyle = StyleSheet.create({
@@ -90,7 +91,13 @@ export default class TelaFinalPedidoScreen extends Component {
               if (cardData.length > 0) {
                 const cardWithId = cardData.map(data => { return data.creditCard });
 
-                this.setState({ cartoes: [...cardWithId] });
+                this.setState({ cartoes: [...cardWithId] }, () => {
+                  const cartaoService = CartaoFormService.getInstance();
+                  if (cartaoService.isAdicionarNovoCard()) {
+                    cartaoService.setAdicionarNovoCard(false);
+                    this.setState({ isSelectingCard: true });
+                  }
+                });
               }
             }
           })
@@ -162,10 +169,14 @@ export default class TelaFinalPedidoScreen extends Component {
           source={require('../../img/Ellipse.png')}>
           <ScrollView>
             <NavigationEvents
-              onWillFocus={_ => this.obterPedido()}
-            //onDidFocus={payload => console.log('did focus', payload)}
-            //onWillBlur={payload => console.log('will blur', payload)}
-            //onDidBlur={payload => console.log('did blur', payload)}
+              onWillFocus={_ => {
+                const cartaoService = CartaoFormService.getInstance();
+                if (!cartaoService.isAdicionarNovoCard()) {
+                  this.obterPedido();
+                } else {
+                  this.obterCartoes();
+                }
+              }}
             />
           </ScrollView>
         </ImageBackground>
@@ -175,6 +186,16 @@ export default class TelaFinalPedidoScreen extends Component {
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
+          <NavigationEvents
+            onWillFocus={_ => {
+              const cartaoService = CartaoFormService.getInstance();
+              if (!cartaoService.isAdicionarNovoCard()) {
+                this.obterPedido();
+              } else {
+                this.obterCartoes();
+              }
+            }}
+          />
           <Modal
             animationType="slide"
             transparent={true}
@@ -212,7 +233,7 @@ export default class TelaFinalPedidoScreen extends Component {
             visible={this.state.isSelectingCard}
           >
             <View style={{ flex: 1, backgroundColor: colors.branco, justifyContent: 'center', alignItems: 'center' }}>
-              <View style={{ height: 600, justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ height: 500, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 20 }}>Por favor escolha uma forma de pagamento:</Text>
                 <View style={{ height: 20 }}></View>
                 <FlatList data={this.state.cartoes}
@@ -224,6 +245,16 @@ export default class TelaFinalPedidoScreen extends Component {
                   keyExtractor={item => item.id}>
                 </FlatList>
               </View>
+              <TouchableOpacity onPress={() =>
+                this.setState({ isSelectingCard: false }, () => {
+                  CartaoFormService.getInstance().setAdicionarNovoCard(true);
+                  this.props.navigation.navigate('FormAddCartao');
+                })}>
+                <View style={{ width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 18, color: colors.branco }}>ADICIONAR CARTÃO</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={{ height: 10 }}></View>
               <TouchableOpacity onPress={() => this.setState({ isSelectingCard: false })}>
                 <View style={{ width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo, alignItems: 'center', justifyContent: 'center' }}>
                   <Text style={{ fontSize: 18, color: colors.branco }}>FECHAR</Text>
@@ -564,7 +595,8 @@ export default class TelaFinalPedidoScreen extends Component {
     const tokenService = TokenService.getInstance();
 
     this.setState({ isLoading: true }, () => {
-      const pedido = this.state.pedido;
+      const pedido = {};
+      pedido.id = this.state.pedido.id;
       pedido.rate = this.state.classificacaoProfissional;
 
       const orderWirecard = {};
