@@ -175,12 +175,12 @@ export default class FotosPedido extends Component {
     order.category_id = +orderData.categoriaPedido.id;
     order.user_id = TokenService.getInstance().getUser().id;
     order.address_id = this.state.enderecoSelecionado.id;
+    order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
+    order.hora_inicio = `${this.state.hora}`;
+    order.hora_fim = `${this.state.horaFim}`;
     if (this.state.urgencia === 'definir-data') {
-      order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
-      order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
-      order.hora_inicio = `${this.state.hora}`;
-      order.hora_fim = `${this.state.horaFim}`;
       order.urgency = 'urgent';
+      order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
     }
 
     const images = this.state.fotosPedido.map((foto) => { return { base64: foto.image.base64, file_name: foto.file_name } });
