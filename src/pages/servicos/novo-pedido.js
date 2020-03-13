@@ -97,10 +97,10 @@ export default class NovoPedido extends Component {
       this.setState({ confirmarEmergencia: true });
     } else if (this.state.urgencia === 'semana') {
       this.props
-        .navigation.navigate('FotosPedido',
+        .navigation.navigate('DefinirData',
           {
             necessidade: this.state.necessidade, categoriaPedido: this.state.categoriaPedido,
-            dataPedido: new Date(), urgencia: this.state.urgencia
+            urgencia: this.state.urgencia
           });
     }
   }

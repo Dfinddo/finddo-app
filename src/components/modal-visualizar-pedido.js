@@ -21,6 +21,8 @@ export default class VisualizarPedido extends Component {
       order.urgencia = this.props.pedido.pedidoCorrente.urgency === 'urgent' ? 'definir-data' : 'semana';
       order.user_id = this.props.pedido.pedidoCorrente.user.id
       order.start_order = new Date(this.props.pedido.pedidoCorrente.start_order.split('.')[0]);
+      order.hora_inicio = this.props.pedido.pedidoCorrente.hora_inicio;
+      order.hora_fim = this.props.pedido.pedidoCorrente.hora_fim;
     } else {
       order.description = this.props.pedido.necessidade;
       order.category = this.props.pedido.categoriaPedido.name;
@@ -29,6 +31,8 @@ export default class VisualizarPedido extends Component {
       if (this.props.pedido.dataPedido) {
         order.start_order = this.props.pedido.dataPedido;
       }
+      order.hora_inicio = this.props.pedido.hora;
+      order.hora_fim = this.props.pedido.horaFim;
     }
 
     this.setState({ order });
@@ -43,7 +47,7 @@ export default class VisualizarPedido extends Component {
     let minutosFim = '';
 
     if (this.state.order) {
-
+      
       if (this.state.order.start_order && this.state.order.urgencia === 'semana') {
         diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
 
@@ -55,6 +59,9 @@ export default class VisualizarPedido extends Component {
         }
 
         dataFim.setDate(dataFim.getDate() + 7);
+
+        horaInicio = this.state.order.hora_inicio;
+        horaFim = this.state.order.hora_fim;
 
         diaFim = `${dataFim.getDate()}/${+dataFim.getMonth() + 1}/${dataFim.getFullYear()}`;
       } else if (this.state.order.start_order && this.state.order.urgencia === 'definir-data') {
@@ -121,7 +128,7 @@ export default class VisualizarPedido extends Component {
                   (() => {
                     switch (this.state.order.urgencia) {
                       case 'semana':
-                        return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim} (Sem urgência)</Text>;
+                        return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim}, e entre os horários {horaInicio} e {horaFim} (Sem urgência)</Text>;
                       case 'urgente':
                         return <Text style={this.visualizarPedidoStyle.textos}>Urgente</Text>;
                       case 'definir-data':

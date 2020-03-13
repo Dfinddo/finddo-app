@@ -117,7 +117,7 @@ export default class VisualizarPedidoProfissional extends Component {
                   (() => {
                     switch (this.state.order.urgency) {
                       case 'not_urgent':
-                        return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim} (Sem urgência)</Text>;
+                        return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim}, e entre os horários {this.state.order.hora_inicio} e {this.state.order.hora_fim} (Sem urgência)</Text>;
                       case 'urgente':
                         return <Text style={this.visualizarPedidoStyle.textos}>Urgente</Text>;
                       case 'urgent':
