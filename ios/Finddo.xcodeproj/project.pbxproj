@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* FinddoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* FinddoTests.m */; };
 		0ADEBBB4673AC7ACA7998839 /* libPods-Finddo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF25D349B1CC0ADD4CCCB668 /* libPods-Finddo.a */; };
@@ -181,6 +180,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				2E7FE70D98CBA8BCE590A61F /* Pods */,
+				2D4C547BA3FF49808BD1BCF6 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -197,6 +197,14 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		2D4C547BA3FF49808BD1BCF6 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -286,7 +294,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 940;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
