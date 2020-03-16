@@ -4558,11 +4558,6 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
-moip-sdk-js@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/moip-sdk-js/-/moip-sdk-js-2.1.1.tgz#822b59911afd4c2f00e9af2c81df4ac09cad0eb1"
-  integrity sha512-/ontlwJcrMNm0yLPsu5aj8AsxeBVVosiR8wbKOZqQDe9fj0iN0P56+UKR9XX9GWuEYmw/PmNSoStrTxu6CbuTQ==
-
 moment@^2.24.0:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
@@ -5350,11 +5345,6 @@ react-native-reanimated@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.2.0.tgz#9219227a52a5dfa4d34c324596d6726ccd874293"
   integrity sha512-vkWRHrPK5qfHP/ZawlRoo38oeYe9NZaaOH/lmFxRcsKzaSK6x3H5ZPXI8lK6MfTLveqwo1QhJje3zIKXO4nQQw==
-
-react-native-rsa-native@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/react-native-rsa-native/-/react-native-rsa-native-1.1.4.tgz#bce591e896ea08972189f70e665cd52bdb2f4c58"
-  integrity sha512-KgFoob40shClvLkLiIC43gtBDSiI3+fHf6rt/x+KWVpecQq4sHpxyFSvykm7sSqlC94GCYyPF6rx/7DBuV84AA==
 
 react-native-safe-area-view@^0.14.1:
   version "0.14.7"
