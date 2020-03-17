@@ -42,6 +42,10 @@ export default class PerfilScreen extends Component {
     this.setState({ email: userData.email, nomeCompleto: userData.name, cpf: userData.cpf, telefone: userData.cellphone });
   }
 
+  componentWillUnmount() {
+    this.setState({ isLoading: false });
+  }
+
   alterarFotoDialog = () => {
     FotoService.getInstance().setFotoId('perfil');
     Alert.alert(
@@ -172,39 +176,45 @@ export default class PerfilScreen extends Component {
   }
 
   logout = () => {
-    const tokenService = TokenService.getInstance();
+    this.setState({ isLoading: true }, () => {
+      const tokenService = TokenService.getInstance();
 
-    backendRails.delete(
-      `users/remove_player_id_notifications/${tokenService.getUser().id}/${tokenService.getPlayerIDOneSignal()}`,
-      { headers: tokenService.getHeaders() }
-    )
-      .then(async (_) => {
-        try {
-          await backendRails.delete(`auth/sign_out`,
-            { headers: tokenService.getHeaders() }
-          )
-          this.limparDadosLogin();
-        } catch {
-          Alert.alert(
-            'Erro interno',
-            'Por favor saia da aplicação e faça login novamente.',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        }
-      })
-      .catch(_ => {
-        Alert.alert(
-          'Falha ao se conectar',
-          'Verifique sua conexão e tente novamente',
-          [
-            { text: 'OK', onPress: () => { } },
-          ],
-          { cancelable: false },
-        );
-      });
+      backendRails.delete(
+        `users/remove_player_id_notifications/${tokenService.getUser().id}/${tokenService.getPlayerIDOneSignal()}`,
+        { headers: tokenService.getHeaders() }
+      )
+        .then(async (_) => {
+          try {
+            await backendRails.delete(`auth/sign_out`,
+              { headers: tokenService.getHeaders() }
+            )
+            this.limparDadosLogin();
+          } catch {
+            this.setState({ isLoading: false }, () => {
+              Alert.alert(
+                'Erro interno',
+                'Por favor saia da aplicação e faça login novamente.',
+                [
+                  { text: 'OK', onPress: () => { } },
+                ],
+                { cancelable: false },
+              );
+            });
+          }
+        })
+        .catch(_ => {
+          this.setState({ isLoading: false }, () => {
+            Alert.alert(
+              'Falha',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          });
+        })
+    });
   }
 
   render() {
