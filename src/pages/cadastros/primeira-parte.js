@@ -25,6 +25,7 @@ export default class PrimeiraParte extends Component {
 
   state = {
     name: '',
+    surname: '',
     email: '',
     cellphone: '',
     cpf: '',
@@ -44,6 +45,10 @@ export default class PrimeiraParte extends Component {
   }
 
   updateBirthdate = (text = '') => {
+    if (text.length === 5 || text.length === 2) {
+      return text;
+    }
+
     const dataFormatada = [];
     const textoASerFormatado = text.replace(/\//gi, '');
 
@@ -70,14 +75,21 @@ export default class PrimeiraParte extends Component {
     const errosArr = [];
 
     const nameErrors = [];
+    const surnameErrors = [];
     const emailErrors = [];
     const telErrors = [];
     const cpfErrors = [];
 
     if (this.state.name.length === 0) {
       nameErrors.push('É obrigatório.');
-    } else if (this.state.name.length > 128) {
-      nameErrors.push('Tamanho máximo 128.');
+    } else if (this.state.name.length > 70) {
+      nameErrors.push('Tamanho máximo 70.');
+    }
+
+    if (this.state.surname.length === 0) {
+      surnameErrors.push('É obrigatório.');
+    } else if (this.state.name.length > 255) {
+      surnameErrors.push('Tamanho máximo 255.');
     }
 
     if (this.state.email.length === 0) {
@@ -105,7 +117,10 @@ export default class PrimeiraParte extends Component {
     }
 
     if (nameErrors.length > 0) {
-      errosArr.push({ title: 'Name', data: nameErrors });
+      errosArr.push({ title: 'Nome', data: nameErrors });
+    }
+    if (surnameErrors.length > 0) {
+      errosArr.push({ title: 'Sobrenome', data: surnameErrors });
     }
     if (emailErrors.length > 0) {
       errosArr.push({ title: 'Email', data: emailErrors });
@@ -167,9 +182,16 @@ export default class PrimeiraParte extends Component {
               <TextInput
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ name: text }) }}
-                placeholder="Nome Completo"
-                maxLength={255}
+                placeholder="Nome"
+                maxLength={70}
                 value={this.state.name}
+              />
+              <TextInput
+                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                onChangeText={text => { this.setState({ surname: text }) }}
+                placeholder="Sobrenome"
+                maxLength={255}
+                value={this.state.surname}
               />
               <TextInput
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
@@ -220,7 +242,7 @@ export default class PrimeiraParte extends Component {
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 280, backgroundColor: colors.branco },
+    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 380, height: 360, backgroundColor: colors.branco },
     continuarButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     continuarButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
     cadastroFormSizeAndFont:

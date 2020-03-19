@@ -33,6 +33,7 @@ export default class SegundaParte extends Component {
 
   state = {
     name: '',
+    surname: '',
     email: '',
     cellphone: '',
     cpf: '',
@@ -106,13 +107,14 @@ export default class SegundaParte extends Component {
   obterParametrosParteUm = () => {
     const { navigation } = this.props;
     const name = navigation.getParam('name', 'sem nome');
+    const surname = navigation.getParam('surname', 'sem sobrenome');
     const email = navigation.getParam('email', 'sem email');
     const cellphone = navigation.getParam('cellphone', 'sem telefone');
     const cpf = navigation.getParam('cpf', 'sem cpf');
     const user_type = navigation.getParam('user_type', 'sem tipo');
     const birthdate = navigation.getParam('birthdate', 'no_birthdate');
 
-    this.setState({ name, email, cellphone, cpf, user_type, birthdate });
+    this.setState({ name, surname, email, cellphone, cpf, user_type, birthdate });
   };
 
   validateFields = () => {
