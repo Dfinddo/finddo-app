@@ -10,7 +10,8 @@ import { developConfig, productionConfig } from '../../credenciais-e-configuraco
 
 const moipCredsData = {
   publicKey: developConfig.moipCredsData.publicKey,
-  Authorization: developConfig.moipCredsData.Authorization
+  Authorization: developConfig.moipCredsData.Authorization,
+  OAuth2: developConfig.moipCredsData.oAuth2MainApp
 };
 
 export default moipCredsData;

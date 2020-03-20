@@ -26,6 +26,7 @@ export default class PrimeiraParte extends Component {
   state = {
     name: '',
     surname: '',
+    mothers_name: '',
     email: '',
     cellphone: '',
     cpf: '',
@@ -69,6 +70,7 @@ export default class PrimeiraParte extends Component {
   }
 
   validateFields = () => {
+    // TODO: validar nome mãe
     const numberRegex = /^[0-9]*$/;
     const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
@@ -183,15 +185,22 @@ export default class PrimeiraParte extends Component {
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ name: text }) }}
                 placeholder="Nome"
-                maxLength={70}
+                maxLength={70} numberOfLines={1}
                 value={this.state.name}
               />
               <TextInput
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ surname: text }) }}
                 placeholder="Sobrenome"
-                maxLength={255}
+                maxLength={255}  numberOfLines={1}
                 value={this.state.surname}
+              />
+              <TextInput
+                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                onChangeText={text => { this.setState({ mothers_name: text }) }}
+                placeholder="Nome da Mãe (Completo)"
+                maxLength={255}  numberOfLines={1}
+                value={this.state.mothers_name}
               />
               <TextInput
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
@@ -199,7 +208,7 @@ export default class PrimeiraParte extends Component {
                 placeholder="Email"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                maxLength={128}
+                maxLength={128}  numberOfLines={1}
                 value={this.state.email}
               />
               <TextInput
@@ -207,7 +216,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ cellphone: text }) }}
                 placeholder="(99) 9999-99999"
                 keyboardType="numeric"
-                maxLength={15}
+                maxLength={15}  numberOfLines={1}
                 value={this.state.cellphone}
               />
               <TextInput
@@ -215,7 +224,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ cpf: text }) }}
                 placeholder="CPF"
                 keyboardType="numeric"
-                maxLength={11}
+                maxLength={11}  numberOfLines={1}
                 value={this.state.cpf}
               />
               <TextInput
@@ -223,7 +232,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ birthdate: text }) }}
                 placeholder="Data de Nascimento dd/mm/aaaa"
                 keyboardType="numeric"
-                maxLength={10}
+                maxLength={10}  numberOfLines={1}
                 value={this.updateBirthdate(this.state.birthdate)}
               />
             </View>

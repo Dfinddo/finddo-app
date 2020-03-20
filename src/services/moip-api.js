@@ -6,6 +6,10 @@ export const headers = {};
 headers['Content-Type'] = 'application/json';
 headers['Authorization'] = moipCredsData.Authorization;
 
+export const headersOauth2 = {};
+headersOauth2['Content-Type'] = 'application/json';
+headersOauth2['Authorization'] = moipCredsData.OAuth2;
+
 const moipAPI = axios.create({
   baseURL: developConfig.moipUrl,
 });

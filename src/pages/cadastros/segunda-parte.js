@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import { termos } from './termos';
-import moipAPI, { headers } from '../../services/moip-api';
+import moipAPI, { headers, headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
 
 function Item({ title }) {
@@ -34,6 +34,7 @@ export default class SegundaParte extends Component {
   state = {
     name: '',
     surname: '',
+    mothers_name: '',
     email: '',
     cellphone: '',
     cpf: '',
@@ -80,6 +81,49 @@ export default class SegundaParte extends Component {
     this.keyboardDidHideListener.remove();
   }
 
+  criarContaMoip = (clientData) => {
+    const contaMoip = {};
+
+    const dataNascimentoArray = clientData.birthdate.split('/');
+    const dataNascimento = `${dataNascimentoArray[2]}-${dataNascimentoArray[1]}-${dataNascimentoArray[0]}`;
+
+    const ddd = `${clientData.cellphone[0]}${clientData.cellphone[1]}`;
+    const numberTel = clientData.cellphone.split('').slice(2).join('');
+
+    contaMoip.email = {};
+    contaMoip.email.address = clientData.email;
+
+    contaMoip.person = {};
+    contaMoip.person.name = clientData.name;
+    contaMoip.person.lastName = clientData.surname;
+    contaMoip.person.taxDocument = {};
+    contaMoip.person.taxDocument.type = 'CPF';
+    contaMoip.person.taxDocument.number = clientData.cpf;
+
+    contaMoip.person.birthDate = dataNascimento;
+    contaMoip.person.phone = {};
+    contaMoip.person.phone.countryCode = '55';
+    contaMoip.person.phone.areaCode = ddd;
+    contaMoip.person.phone.number = numberTel;
+
+    contaMoip.person.parentsName = {};
+    contaMoip.person.parentsName.mother = clientData.mothers_name;
+
+    contaMoip.person.address = {};
+    contaMoip.person.address.street = clientData.rua;
+    contaMoip.person.address.streetNumber = clientData.numero;
+    contaMoip.person.address.district = clientData.bairro;
+    contaMoip.person.address.zipCode = clientData.cep;
+    contaMoip.person.address.city = clientData.cidade;
+    contaMoip.person.address.state = clientData.estado;
+    contaMoip.person.address.country = 'BRA';
+    contaMoip.person.address.complement = clientData.complemento;
+
+    contaMoip.type = 'MERCHANT';
+
+    return contaMoip;
+  };
+
   criarClienteMoip = (clientData, uuid) => {
     const clienteMoip = {};
 
@@ -108,13 +152,14 @@ export default class SegundaParte extends Component {
     const { navigation } = this.props;
     const name = navigation.getParam('name', 'sem nome');
     const surname = navigation.getParam('surname', 'sem sobrenome');
+    const mothers_name = navigation.getParam('mothers_name', 'sem nome da mãe');
     const email = navigation.getParam('email', 'sem email');
     const cellphone = navigation.getParam('cellphone', 'sem telefone');
     const cpf = navigation.getParam('cpf', 'sem cpf');
     const user_type = navigation.getParam('user_type', 'sem tipo');
     const birthdate = navigation.getParam('birthdate', 'no_birthdate');
 
-    this.setState({ name, surname, email, cellphone, cpf, user_type, birthdate });
+    this.setState({ name, surname, email, cellphone, cpf, user_type, birthdate, mothers_name });
   };
 
   validateFields = () => {
@@ -230,111 +275,133 @@ export default class SegundaParte extends Component {
     }
   };
 
+  cadastrarUsuario = (usuario) => {
+    usuario.player_ids = [TokenService.getInstance().getPlayerIDOneSignal()];
+
+    backendRails.post('/users', usuario).then(response => {
+      const userData = {};
+      userData['access-token'] = response['headers']['access-token'];
+      userData['client'] = response['headers']['client'];
+      userData['uid'] = response['headers']['uid'];
+
+      const userDto = new UserDTO(response.data);
+
+      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
+        _ => {
+          AsyncStorage.setItem('user', JSON.stringify(userDto)).then(_ => {
+            const tokenService = TokenService.getInstance();
+            tokenService.setToken(userData);
+            tokenService.setUser(userDto);
+
+            this.props.navigation.navigate('App');
+          });
+        }).catch((_) => {
+          Alert.alert(
+            'Falha ao salvar sua sessão',
+            'Favor sair e fazer login, seu cadastro foi concluído.',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+          this.setState({ isLoading: false });
+        });
+    }).catch(error => {
+      if (error.response) {
+        /*
+         * The request was made and the server responded with a
+         * status code that falls out of the range of 2xx
+         */
+        Alert.alert(
+          'Erro ao se cadastrar',
+          'Verifique seus dados e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else if (error.request) {
+        /*
+         * The request was made but no response was received, `error.request`
+         * is an instance of XMLHttpRequest in the browser and an instance
+         * of http.ClientRequest in Node.js
+         */
+        Alert.alert(
+          'Falha ao se conectar',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else {
+        /* Something happened in setting up the request and triggered an Error */
+      }
+      this.setState({ isLoading: false });
+    });
+  }
+
+  handleErrorCadastro = (error) => {
+    if (error.response) {
+      /*
+       * The request was made and the server responded with a
+       * status code that falls out of the range of 2xx
+       */
+      Alert.alert(
+        'Erro ao se cadastrar',
+        'Verifique seus dados e tente novamente',
+        [
+          { text: 'OK', onPress: () => { } },
+        ],
+        { cancelable: false },
+      );
+    } else if (error.request) {
+      /*
+       * The request was made but no response was received, `error.request`
+       * is an instance of XMLHttpRequest in the browser and an instance
+       * of http.ClientRequest in Node.js
+       */
+      Alert.alert(
+        'Falha ao se conectar',
+        'Verifique sua conexão e tente novamente',
+        [
+          { text: 'OK', onPress: () => { } },
+        ],
+        { cancelable: false },
+      );
+    }
+    this.setState({ isLoading: false });
+  }
+
   signUp = (userState) => {
     const user = new UserDTO(userState);
     const userWithAddress = UserDTO.gerarUsuarioComEnderecoDefault(user);
-    const tokenService = TokenService.getInstance();
 
-    this.setState({ isLoading: true });
-    UUIDGenerator.getRandomUUID().then((uuid) => {
-      moipAPI.post('customers', this.criarClienteMoip(this.state, uuid), { headers: headers })
-        .then(responseWirecard => {
-          userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
-          userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
-          userWithAddress.player_ids = [tokenService.getPlayerIDOneSignal()];
-          backendRails.post('/users', userWithAddress).then(response => {
-            const userData = {};
-            userData['access-token'] = response['headers']['access-token'];
-            userData['client'] = response['headers']['client'];
-            userData['uid'] = response['headers']['uid'];
+    this.setState({ isLoading: true }, () => {
+      if (userWithAddress.user.user_type === 'user') {
+        UUIDGenerator.getRandomUUID().then((uuid) => {
+          moipAPI.post('customers', this.criarClienteMoip(this.state, uuid), { headers: headers })
+            .then(responseWirecard => {
+              userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
+              userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
 
-            const userDto = new UserDTO(response.data);
-
-            AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
-              _ => {
-                AsyncStorage.setItem('user', JSON.stringify(userDto)).then(_ => {
-                  const tokenService = TokenService.getInstance();
-                  tokenService.setToken(userData);
-                  tokenService.setUser(userDto);
-
-                  this.props.navigation.navigate('App');
-                });
-              }).catch((_) => {
-                Alert.alert(
-                  'Falha ao salvar sua sessão',
-                  'Favor sair e fazer login, seu cadastro foi concluído.',
-                  [
-                    { text: 'OK', onPress: () => { } },
-                  ],
-                  { cancelable: false },
-                );
-                this.setState({ isLoading: false });
-              });
-          }).catch(error => {
-            if (error.response) {
-              /*
-               * The request was made and the server responded with a
-               * status code that falls out of the range of 2xx
-               */
-              Alert.alert(
-                'Erro ao se cadastrar',
-                'Verifique seus dados e tente novamente',
-                [
-                  { text: 'OK', onPress: () => { } },
-                ],
-                { cancelable: false },
-              );
-            } else if (error.request) {
-              /*
-               * The request was made but no response was received, `error.request`
-               * is an instance of XMLHttpRequest in the browser and an instance
-               * of http.ClientRequest in Node.js
-               */
-              Alert.alert(
-                'Falha ao se conectar',
-                'Verifique sua conexão e tente novamente',
-                [
-                  { text: 'OK', onPress: () => { } },
-                ],
-                { cancelable: false },
-              );
-            } else {
-              /* Something happened in setting up the request and triggered an Error */
-            }
-            this.setState({ isLoading: false });
-          });
-        }).catch(error => {
-          if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            Alert.alert(
-              'Erro ao se cadastrar',
-              'Verifique seus dados e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            Alert.alert(
-              'Falha ao se conectar',
-              'Verifique sua conexão e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          }
-          this.setState({ isLoading: false });
+              this.cadastrarUsuario(userWithAddress);
+            }).catch(error => {
+              this.handleErrorCadastro(error);
+            });
         });
+      } else {
+        moipAPI.post('accounts', this.criarContaMoip(this.state), { headers: headersOauth2 })
+          .then(response => {
+            userWithAddress.id_wirecard_account = response.data.id;
+            userWithAddress.link_set_password = response.data._links.setPassword;
+            this.cadastrarUsuario(userWithAddress);
+          }).catch(error => {
+            this.handleErrorCadastro(error);
+          });
+      }
     });
+
   }
 
   render() {
