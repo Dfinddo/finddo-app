@@ -11,7 +11,7 @@ import { colors } from '../../../colors';
 import TokenService from '../../../services/token-service';
 import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
 import { StackActions } from 'react-navigation';
-import moipAPI, { headers } from '../../../services/moip-api';
+import moipAPI, { headersOauth2 } from '../../../services/moip-api';
 
 function Card() {
   return {
@@ -262,7 +262,7 @@ export default class FormCartaoScreen extends Component {
 
       const response = await moipAPI
         .post(`/customers/${user.customer_wirecard_id}/fundinginstruments`,
-          preparedData, { headers: headers });
+          preparedData, { headers: headersOauth2 });
 
       this.setState({ isLoading: false, id: response.data.id });
 

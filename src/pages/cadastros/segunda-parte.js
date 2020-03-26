@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import { termos } from './termos';
-import moipAPI, { headers, headersOauth2 } from '../../services/moip-api';
+import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
 
 function Item({ title }) {

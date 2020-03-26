@@ -13,7 +13,7 @@ import { colors } from '../../colors';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { SvgXml } from 'react-native-svg';
 import { finddoLogo } from '../../img/svg/finddo-logo';
-import moipAPI, { headers, headersOauth2 } from '../../services/moip-api';
+import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
 import { developConfig } from '../../../credenciais-e-configuracoes';
 
