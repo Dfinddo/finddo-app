@@ -380,7 +380,7 @@ export default class SegundaParte extends Component {
     this.setState({ isLoading: true }, () => {
       if (userWithAddress.user.user_type === 'user') {
         UUIDGenerator.getRandomUUID().then((uuid) => {
-          moipAPI.post('customers', this.criarClienteMoip(this.state, uuid), { headers: headers })
+          moipAPI.post('customers', this.criarClienteMoip(this.state, uuid), { headers: headersOauth2 })
             .then(responseWirecard => {
               userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
               userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
