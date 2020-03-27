@@ -5,7 +5,7 @@ import {
   TextInput, Text,
   StyleSheet, Image,
   Alert, Modal,
-  ActivityIndicator
+  ActivityIndicator, Linking
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
@@ -15,6 +15,7 @@ import HeaderTransparenteSemHistorico from '../../components/header-transparente
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationEvents } from 'react-navigation';
 import FotoService from '../../services/foto-service';
+import { developConfig } from '../../../credenciais-e-configuracoes';
 
 const semPerfil = require('../../img/sem-foto.png');
 
@@ -332,7 +333,17 @@ export default class PerfilScreen extends Component {
                 (() => {
                   const user = TokenService.getInstance().getUser();
                   if (user.user_type === 'professional') {
-                    return (null);
+                    const appID = developConfig.moipCredsData.moipAppID;
+                    const redirectUri = developConfig.moipCredsData.redirectUrl;
+                    const connectWirecardUrl = developConfig.moipCredsData.connectWirecardUrl;
+                    const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id_wirecard_account}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
+                    return (
+                      <View>
+                        <Text
+                          style={this.perfilScreenStyle.perfilEnderecoSelect}
+                          onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar Transações</Text>
+                      </View>
+                    );
                   } else {
                     return (
                       <View>
