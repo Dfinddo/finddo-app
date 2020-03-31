@@ -336,14 +336,24 @@ export default class PerfilScreen extends Component {
                     const appID = developConfig.moipCredsData.moipAppID;
                     const redirectUri = developConfig.moipCredsData.redirectUrl;
                     const connectWirecardUrl = developConfig.moipCredsData.connectWirecardUrl;
-                    const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id_wirecard_account}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
-                    return (
-                      <View>
-                        <Text
-                          style={this.perfilScreenStyle.perfilEnderecoSelect}
-                          onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar Transações</Text>
-                      </View>
-                    );
+                    const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
+                    if (!user.token_wirecard_account) {
+                      return (
+                        <View>
+                          <Text
+                            style={this.perfilScreenStyle.perfilEnderecoSelect}
+                            onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar Transações</Text>
+                        </View>
+                      );
+                    } else {
+                      return (
+                        <View>
+                          <Text
+                            style={this.perfilScreenStyle.perfilEnderecoSelect}
+                          >Transações autorizadas</Text>
+                        </View>
+                      );
+                    }
                   } else {
                     return (
                       <View>

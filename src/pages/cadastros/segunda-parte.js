@@ -271,7 +271,6 @@ export default class SegundaParte extends Component {
       delete stateDto.formInvalid;
       delete stateDto.isLoading;
       this.signUp(stateDto);
-      this.props.navigation.navigate('ParteDois', this.state);
     }
   };
 
@@ -391,13 +390,26 @@ export default class SegundaParte extends Component {
             });
         });
       } else {
-        moipAPI.post('accounts', this.criarContaMoip(this.state), { headers: headersOauth2 })
-          .then(response => {
-            userWithAddress.id_wirecard_account = response.data.id;
-            userWithAddress.link_set_password = response.data._links.setPassword;
+        // TODO: passar cpf formatado, verificar se o código está funcionando e
+        // colocar dialog avisando quando o cliente já possuir conta wirecard
+        // liberar link de set password no backend
+        moipAPI.get(`accounts/exists?tax_document=${this.state.cpf}`, { headers: headersOauth2 })
+          .then(res => {
             this.cadastrarUsuario(userWithAddress);
-          }).catch(error => {
-            this.handleErrorCadastro(error);
+          })
+          .catch(error => {
+            if (error.response.status === 404) {
+              moipAPI.post('accounts', this.criarContaMoip(this.state), { headers: headersOauth2 })
+                .then(response => {
+                  userWithAddress.id_wirecard_account = response.data.id;
+                  userWithAddress.link_set_password = response.data._links.setPassword;
+                  this.cadastrarUsuario(userWithAddress);
+                }).catch(error => {
+                  this.handleErrorCadastro(error);
+                });
+            } else {
+              this.handleErrorCadastro(error);
+            }
           });
       }
     });
