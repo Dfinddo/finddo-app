@@ -4,10 +4,12 @@ import {
   Text, TextInput,
   StyleSheet, Modal,
   TouchableOpacity, ScrollView,
-  SectionList
+  SectionList, Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { colors } from '../../colors';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
+import backendRails from '../../services/backend-rails-api';
 
 function Item({ title }) {
   return (
@@ -33,7 +35,8 @@ export default class PrimeiraParte extends Component {
     user_type: 'user',
     birthdate: '',
     formInvalid: false,
-    formErrors: []
+    formErrors: [],
+    isLoading: false,
   };
 
   componentDidMount() {
@@ -70,7 +73,7 @@ export default class PrimeiraParte extends Component {
   }
 
   validateFields = () => {
-    // TODO: validar nome mãe
+
     const numberRegex = /^[0-9]*$/;
     const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
@@ -78,6 +81,7 @@ export default class PrimeiraParte extends Component {
 
     const nameErrors = [];
     const surnameErrors = [];
+    const mothersNameErrors = [];
     const emailErrors = [];
     const telErrors = [];
     const cpfErrors = [];
@@ -92,6 +96,14 @@ export default class PrimeiraParte extends Component {
       surnameErrors.push('É obrigatório.');
     } else if (this.state.name.length > 255) {
       surnameErrors.push('Tamanho máximo 255.');
+    }
+
+    if (this.state.user_type === 'professional') {
+      if (this.state.mothers_name.length === 0) {
+        mothersNameErrors.push('É obrigatório.');
+      } else if (this.state.name.length > 255) {
+        mothersNameErrors.push('Tamanho máximo 255.');
+      }
     }
 
     if (this.state.email.length === 0) {
@@ -138,7 +150,29 @@ export default class PrimeiraParte extends Component {
       this.setState({ formErrors: [...errosArr] });
       this.setState({ formInvalid: true });
     } else {
-      this.props.navigation.navigate('ParteDois', this.state);
+      this.setState({ isLoading: true }, () => {
+        backendRails.get(`/users?email=${this.state.email}&cellphone=${this.state.cellphone}&cpf=${this.state.cpf}`)
+          .then(_ => {
+            this.setState({ isLoading: false }, () => {
+              this.props.navigation.navigate('ParteDois', this.state);
+            });
+          })
+          .catch(err => {
+            if (err.response && err.response.status === 403) {
+              Alert.alert(
+                'Erro',
+                err.response.data.error,
+                [{ text: 'OK', onPress: () => { } }]);
+            } else {
+              Alert.alert(
+                'Erro',
+                'Problema ao prosseguir com o cadastro, aguarde um instante e tente novamente.'
+                [{ text: 'OK', onPress: () => { } }]
+              );
+            }
+            this.setState({ isLoading: false });
+          });
+      });
     }
   };
 
@@ -148,6 +182,17 @@ export default class PrimeiraParte extends Component {
         style={this.parteUmScreenStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoading}
+          >
+            <View style={this.parteUmScreenStyle.modalStyle}>
+              <View>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </View>
+          </Modal>
           <Modal
             animationType="slide"
             transparent={true}
@@ -192,23 +237,30 @@ export default class PrimeiraParte extends Component {
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ surname: text }) }}
                 placeholder="Sobrenome"
-                maxLength={255}  numberOfLines={1}
+                maxLength={255} numberOfLines={1}
                 value={this.state.surname}
               />
-              <TextInput
-                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
-                onChangeText={text => { this.setState({ mothers_name: text }) }}
-                placeholder="Nome da Mãe (Completo)"
-                maxLength={255}  numberOfLines={1}
-                value={this.state.mothers_name}
-              />
+              {(() => {
+                if (this.state.user_type === 'professional') {
+                  return (
+                    <TextInput
+                      style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                      onChangeText={text => { this.setState({ mothers_name: text }) }}
+                      placeholder="Nome da Mãe (Completo)"
+                      maxLength={255} numberOfLines={1}
+                      value={this.state.mothers_name}
+                    />);
+                } else {
+                  return (null);
+                }
+              })()}
               <TextInput
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ email: text }) }}
                 placeholder="Email"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                maxLength={128}  numberOfLines={1}
+                maxLength={128} numberOfLines={1}
                 value={this.state.email}
               />
               <TextInput
@@ -216,7 +268,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ cellphone: text }) }}
                 placeholder="(99) 9999-99999"
                 keyboardType="numeric"
-                maxLength={15}  numberOfLines={1}
+                maxLength={15} numberOfLines={1}
                 value={this.state.cellphone}
               />
               <TextInput
@@ -224,7 +276,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ cpf: text }) }}
                 placeholder="CPF"
                 keyboardType="numeric"
-                maxLength={11}  numberOfLines={1}
+                maxLength={11} numberOfLines={1}
                 value={this.state.cpf}
               />
               <TextInput
@@ -232,7 +284,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ birthdate: text }) }}
                 placeholder="Data de Nascimento dd/mm/aaaa"
                 keyboardType="numeric"
-                maxLength={10}  numberOfLines={1}
+                maxLength={10} numberOfLines={1}
                 value={this.updateBirthdate(this.state.birthdate)}
               />
             </View>
@@ -279,6 +331,7 @@ export default class PrimeiraParte extends Component {
     modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
     modalErrosSectionList: { maxHeight: '60%', width: '100%' },
     modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo }
+    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   });
 }

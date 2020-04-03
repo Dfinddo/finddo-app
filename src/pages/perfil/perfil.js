@@ -338,13 +338,26 @@ export default class PerfilScreen extends Component {
                     const connectWirecardUrl = developConfig.moipCredsData.connectWirecardUrl;
                     const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
                     if (!user.token_wirecard_account) {
-                      return (
-                        <View>
-                          <Text
-                            style={this.perfilScreenStyle.perfilEnderecoSelect}
-                            onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar Transações</Text>
-                        </View>
-                      );
+                      if (user.is_new_wire_account) {
+                        return (
+                          <View>
+                            <Text
+                              style={this.perfilScreenStyle.perfilEnderecoSelect}
+                              onPress={() => { Linking.openURL(user.set_account) }}>Configurar recebimento de pagamentos</Text>
+                            <Text
+                              style={[this.perfilScreenStyle.perfilEnderecoSelect, { marginTop: 10 }]}
+                              onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
+                          </View>
+                        );
+                      } else {
+                        return (
+                          <View>
+                            <Text
+                              style={this.perfilScreenStyle.perfilEnderecoSelect}
+                              onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
+                          </View>
+                        );
+                      }
                     } else {
                       return (
                         <View>

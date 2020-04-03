@@ -7,6 +7,7 @@ import {
   SectionList, Alert, ActivityIndicator,
   Keyboard
 } from 'react-native';
+import axios from 'axios';
 import { colors } from '../../colors';
 import UserDTO from '../../models/UserDTO';
 import backendRails from '../../services/backend-rails-api';
@@ -16,6 +17,7 @@ import HeaderFundoTransparente from '../../components/header-fundo-transparente'
 import { termos } from './termos';
 import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
+import { formatarCpf } from './formatadores/formatador-cpf';
 
 function Item({ title }) {
   return (
@@ -134,7 +136,7 @@ export default class SegundaParte extends Component {
     const numberTel = clientData.cellphone.split('').slice(2).join('');
 
     clienteMoip.ownId = uuid;
-    clienteMoip.fullname = clientData.name;
+    clienteMoip.fullname = `${clientData.name} ${clientData.surname}`;
     clienteMoip.email = clientData.email;
     clienteMoip.birthDate = dataNascimento;
     clienteMoip.taxDocument = {};
@@ -152,7 +154,7 @@ export default class SegundaParte extends Component {
     const { navigation } = this.props;
     const name = navigation.getParam('name', 'sem nome');
     const surname = navigation.getParam('surname', 'sem sobrenome');
-    const mothers_name = navigation.getParam('mothers_name', 'sem nome da mãe');
+    const mothers_name = navigation.getParam('mothers_name', null);
     const email = navigation.getParam('email', 'sem email');
     const cellphone = navigation.getParam('cellphone', 'sem telefone');
     const cpf = navigation.getParam('cpf', 'sem cpf');
@@ -274,7 +276,7 @@ export default class SegundaParte extends Component {
     }
   };
 
-  cadastrarUsuario = (usuario) => {
+  cadastrarUsuario = (usuario, possuiContaMoip = false) => {
     usuario.player_ids = [TokenService.getInstance().getPlayerIDOneSignal()];
 
     backendRails.post('/users', usuario).then(response => {
@@ -284,6 +286,31 @@ export default class SegundaParte extends Component {
       userData['uid'] = response['headers']['uid'];
 
       const userDto = new UserDTO(response.data);
+
+      if (userDto.user_type === 'professional') {
+        if (possuiContaMoip) {
+          Alert.alert(
+            'Aviso',
+            'Foi identificado que você já possui uma conta Wirecard, vá para a aba perfil e'
+            + ' autorize o Finddo a executar transações para sua conta.',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+        } else {
+          Alert.alert(
+            'Aviso',
+            'Para que você comece a atender pedidos, vá pra a aba de perfil,'
+            + ' configure sua conta Wirecard e '
+            + ' autorize o Finddo a executar transações para sua conta.',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+        }
+      }
 
       AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
         _ => {
@@ -390,19 +417,19 @@ export default class SegundaParte extends Component {
             });
         });
       } else {
-        // TODO: passar cpf formatado, verificar se o código está funcionando e
-        // colocar dialog avisando quando o cliente já possuir conta wirecard
-        // liberar link de set password no backend
-        moipAPI.get(`accounts/exists?tax_document=${this.state.cpf}`, { headers: headersOauth2 })
+        const cpfFormatado = formatarCpf(this.state.cpf);
+
+        moipAPI.get(`accounts/exists?tax_document=${cpfFormatado}`, { headers: headersOauth2 })
           .then(res => {
-            this.cadastrarUsuario(userWithAddress);
+            this.cadastrarUsuario(userWithAddress, true);
           })
           .catch(error => {
             if (error.response.status === 404) {
               moipAPI.post('accounts', this.criarContaMoip(this.state), { headers: headersOauth2 })
                 .then(response => {
-                  userWithAddress.id_wirecard_account = response.data.id;
-                  userWithAddress.link_set_password = response.data._links.setPassword;
+                  userWithAddress.user.id_wirecard_account = response.data.id;
+                  userWithAddress.user.set_account = response.data._links.setPassword.href;
+                  userWithAddress.user.is_new_wire_account = true;
                   this.cadastrarUsuario(userWithAddress);
                 }).catch(error => {
                   this.handleErrorCadastro(error);
@@ -417,7 +444,6 @@ export default class SegundaParte extends Component {
   }
 
   render() {
-    // TODO: tipo inputs aqui e no login form
     return (
       <ImageBackground
         style={this.parteDoisScreenStyle.backgroundImageContent}
@@ -491,8 +517,26 @@ export default class SegundaParte extends Component {
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cep: text }) }}
                 placeholder="CEP"
+                onBlur={() => {
+                  if (this.state.cep.length === 8) {
+                    this.setState({ isLoading: true }, () => {
+                      axios.create({
+                        baseURL: 'https://viacep.com.br/ws'
+                      })
+                        .get(`${this.state.cep}/json`)
+                        .then(response => {
+                          const { bairro, logradouro, complemento } = response.data;
+
+                          this.setState({ bairro, rua: logradouro, complemento, isLoading: false });
+                        })
+                        .catch(_ => this.setState({ isLoading: false }))
+                    });
+                  }
+                }}
                 keyboardType={'number-pad'}
                 value={this.state.cep}
+                maxLength={8}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -500,6 +544,7 @@ export default class SegundaParte extends Component {
                 placeholder="Estado"
                 editable={false}
                 value={this.state.estado}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -507,30 +552,40 @@ export default class SegundaParte extends Component {
                 placeholder="Cidade"
                 editable={false}
                 value={this.state.cidade}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ bairro: text }) }}
                 placeholder="Bairro"
                 value={this.state.bairro}
+                maxLength={128}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ rua: text }) }}
                 placeholder="Rua"
                 value={this.state.rua}
+                maxLength={128}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ numero: text }) }}
+                keyboardType="number-pad"
                 placeholder="Número"
+                maxLength={10}
                 value={this.state.numero}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ complemento: text }) }}
                 placeholder="Complemento"
                 value={this.state.complemento}
+                maxLength={128}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -538,6 +593,8 @@ export default class SegundaParte extends Component {
                 placeholder="Senha"
                 value={this.state.password}
                 secureTextEntry={true}
+                maxLength={12}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -545,6 +602,8 @@ export default class SegundaParte extends Component {
                 placeholder="Confirmar Senha"
                 value={this.state.password_confirmation}
                 secureTextEntry={true}
+                maxLength={12}
+                numberOfLines={1}
               />
               <View style={{ height: 8 }}></View>
               <Text style={{ fontSize: 18 }}>Ao criar sua conta, você está concordando</Text>
