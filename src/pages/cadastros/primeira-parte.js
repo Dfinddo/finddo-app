@@ -303,7 +303,7 @@ export default class PrimeiraParte extends Component {
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 380, height: 360, backgroundColor: colors.branco },
+    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 380, height: 380, backgroundColor: colors.branco },
     continuarButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     continuarButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
     cadastroFormSizeAndFont:

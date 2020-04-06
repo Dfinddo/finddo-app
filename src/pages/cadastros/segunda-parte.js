@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import { termos } from './termos';
+import { politica } from './politica';
 import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
 import { formatarCpf } from './formatadores/formatador-cpf';
@@ -56,6 +57,7 @@ export default class SegundaParte extends Component {
     isLoading: false,
     isShowingKeyboard: false,
     showTermos: false,
+    showPolitica: false,
   };
 
   componentDidMount() {
@@ -491,6 +493,27 @@ export default class SegundaParte extends Component {
           <Modal
             animationType="slide"
             transparent={true}
+            visible={this.state.showPolitica}
+          >
+            <View style={this.parteDoisScreenStyle.modalBase}>
+              <View style={this.parteDoisScreenStyle.modalDialog}>
+                <View style={[this.parteDoisScreenStyle.modalDialogContent, { height: 500 }]}>
+                  <Text style={this.parteDoisScreenStyle.modalErrosTitulo}>Política:</Text>
+                  <ScrollView>
+                    <Text style={{ fontSize: 18 }}>{politica}</Text>
+                  </ScrollView>
+                  <TouchableOpacity
+                    style={[this.parteDoisScreenStyle.modalErrosBotaoContinuar, { marginTop: 8 }]}
+                    onPress={() => this.setState({ showPolitica: false })}>
+                    <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
             visible={this.state.showTermos}
           >
             <View style={this.parteDoisScreenStyle.modalBase}>
@@ -510,9 +533,8 @@ export default class SegundaParte extends Component {
             </View>
           </Modal>
           <View style={this.parteDoisScreenStyle.cadastroForm}>
+            <Text style={this.parteDoisScreenStyle.fontTitle}>Crie sua conta</Text>
             <View style={this.parteDoisScreenStyle.cadastroMainForm}>
-              <Text style={this.parteDoisScreenStyle.fontTitle}>Crie sua conta</Text>
-
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cep: text }) }}
@@ -606,8 +628,11 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <View style={{ height: 8 }}></View>
-              <Text style={{ fontSize: 18 }}>Ao criar sua conta, você está concordando</Text>
-              <Text style={{ fontSize: 18 }}>com os nossos<Text onPress={() => this.setState({ showTermos: true })} style={{ color: colors.verdeFinddo }}> Termos e Condições de Uso</Text></Text>
+              <View style={{ width: 300 }}>
+                <Text style={{ fontSize: 18 }}>Ao criar sua conta, você está concordando</Text>
+                <Text style={{ fontSize: 18 }}>com os nossos<Text onPress={() => this.setState({ showTermos: true })} style={{ color: colors.verdeFinddo }}> Termos e Condições de Uso</Text></Text>
+                <Text style={{ fontSize: 18 }}>e com nossa<Text onPress={() => this.setState({ showPolitica: true })} style={{ color: colors.verdeFinddo }}> Política de Privacidade.</Text></Text>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -619,12 +644,12 @@ export default class SegundaParte extends Component {
   parteDoisScreenStyle = StyleSheet.create({
     backgroundImageContent: { width: '100%', height: '100%' },
     cadastroForm: {
-      flex: 1, alignItems: 'center',
-      justifyContent: 'center', height: 550
+      alignItems: 'center',
+      justifyContent: 'center', height: 650
     },
     cadastroMainForm: {
       alignItems: 'center', justifyContent: 'center',
-      width: 340, height: 510,
+      width: 340, height: 600,
       backgroundColor: colors.branco
     },
     continuarButtonText: {
