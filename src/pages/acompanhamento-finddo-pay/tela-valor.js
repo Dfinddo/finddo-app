@@ -13,15 +13,16 @@ import { colors } from '../../colors';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { SvgXml } from 'react-native-svg';
 import { finddoLogo } from '../../img/svg/finddo-logo';
-import moipAPI, { headers } from '../../services/moip-api';
+import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
+import { developConfig } from '../../../credenciais-e-configuracoes';
 
 export default class ValorServicoScreen extends Component {
   static navigationOptions = {
     header: null,
   };
 
-  state = { valorServico: '', valorComTaxa: 0, isLoading: false, pedido: null };
+  state = { valorServico: '', valorComTaxa: 0, valorTaxa: 0, isLoading: false, pedido: null };
 
   constructor(props) {
     super(props);
@@ -29,13 +30,23 @@ export default class ValorServicoScreen extends Component {
 
   calcularValorServico = (valor) => {
     const valorServico = Number(valor);
+    let valorComTaxa = 0;
 
     if (valorServico < 80) {
-      return valorServico * 1.25;
+      valorComTaxa = valorServico * 1.25;
+      this.setState({ valorTaxa: valorComTaxa - valorServico });
+
+      return valorComTaxa;
     } else if (valorServico < 500) {
-      return valorServico * 1.2;
+      valorComTaxa = valorServico * 1.2;
+      this.setState({ valorTaxa: valorComTaxa - valorServico });
+
+      return valorComTaxa;
     } else if (valorServico >= 500) {
-      return valorServico * 1.15;
+      valorComTaxa = valorServico * 1.15;
+      this.setState({ valorTaxa: valorComTaxa - valorServico });
+
+      return valorComTaxa;
     }
   };
 
@@ -62,28 +73,32 @@ export default class ValorServicoScreen extends Component {
 
     pedidoWirecard.customer = {};
     pedidoWirecard.customer.id = pedido.user.customer_wirecard_id;
-    pedidoWirecard.customer.ownId = pedido.user.own_id_wirecard;
-    pedidoWirecard.customer.fullname = pedido.user.name;
-    const dataNascimentoArray = pedido.user.birthdate.split('/');
-    pedidoWirecard.customer.birthDate = `${dataNascimentoArray[2]}-${dataNascimentoArray[1]}-${dataNascimentoArray[0]}`;
-    pedidoWirecard.customer.email = pedido.user.email;
-    pedidoWirecard.customer.phone = {};
-    pedidoWirecard.customer.phone.countryCode = '55';
-    pedidoWirecard.customer.phone.areaCode = pedido.user.cellphone.slice(0, 2);
-    pedidoWirecard.customer.phone.number = pedido.user.cellphone.slice(2);
-    pedidoWirecard.customer.taxDocument = {};
-    pedidoWirecard.customer.taxDocument.type = 'CPF';
-    pedidoWirecard.customer.taxDocument.number = pedido.user.cpf;
-    pedidoWirecard.customer.shippingAddress = {
-      zipCode: pedido.user.cep,
-      street: pedido.user.rua,
-      streetNumber: pedido.user.numero,
-      complement: pedido.user.complemento,
-      city: pedido.user.cidade,
-      district: pedido.user.bairro,
-      state: pedido.user.estado,
-      country: 'BRA'
+
+    pedidoWirecard.receivers = [];
+
+    const primaryReceiver = {
+      type: 'PRIMARY',
+      feePayor: true,
+      moipAccount: {
+        id: developConfig.moipCredsData.moipAccountId
+      },
+      amount: {
+        fixed: this.formatarValorServico(this.state.valorTaxa).split('').slice(3).join('').replace('.', '').replace(',', '')
+      }
     };
+
+    const secondaryReceiver = {
+      type: 'SECONDARY',
+      feePayor: false,
+      moipAccount: {
+        id: TokenService.getInstance().getUser().id_wirecard_account
+      },
+      amount: {
+        fixed: this.formatarValorServico(Number(this.state.valorServico)).split('').slice(3).join('').replace('.', '').replace(',', '')
+      }
+    };
+
+    pedidoWirecard.receivers.push(primaryReceiver, secondaryReceiver);
 
     return pedidoWirecard;
   }
@@ -167,7 +182,7 @@ export default class ValorServicoScreen extends Component {
 
                             UUIDGenerator.getRandomUUID().then((uuid) => {
                               const pedidoWirecard = this.prepararPedidoWirecard(this.state.pedido, uuid);
-                              moipAPI.post('/orders', pedidoWirecard, { headers: headers }).then(responseWirecard => {
+                              moipAPI.post('/orders', pedidoWirecard, { headers: headersOauth2 }).then(responseWirecard => {
                                 order.order_wirecard_own_id = responseWirecard.data.ownId;
                                 order.order_wirecard_id = responseWirecard.data.id;
 

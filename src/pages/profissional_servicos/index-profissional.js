@@ -93,11 +93,11 @@ export default class IndexProfissional extends Component {
   }
 
   confirmarPedido = (pedido) => {
-    const id = TokenService.getInstance().getUser().id;
+    const user = TokenService.getInstance().getUser();
     this.setState({ isLoadingRequest: true }, () => {
-      backendRails.get(`/users/profile_photo/${id}`, { headers: TokenService.getInstance().getHeaders() })
+      backendRails.get(`/users/profile_photo/${user.id}`, { headers: TokenService.getInstance().getHeaders() })
         .then(data => {
-          if (data.data.photo) {
+          if (data.data.photo && user.token_wirecard_account) {
             Alert.alert(
               'Atendimento',
               'Deseja atender ao pedido?',
@@ -110,7 +110,7 @@ export default class IndexProfissional extends Component {
           } else {
             Alert.alert(
               'Atendimento',
-              'Para começar a atender você precisa adicionar uma foto de perfil (aba Perfil)',
+              'Para começar a atender você precisa adicionar uma foto de perfil e autorizar as transações (aba Perfil)',
               [
                 { text: 'Ok', onPress: () => { this.setState({ isShowingPedido: false, isLoadingRequest: false }) } },
               ],

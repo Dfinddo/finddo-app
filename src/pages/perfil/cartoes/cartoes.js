@@ -11,7 +11,7 @@ import HeaderFundoTransparente from '../../../components/header-fundo-transparen
 import { NavigationEvents } from 'react-navigation';
 import TokenService from '../../../services/token-service';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import moipAPI, { headers } from '../../../services/moip-api';
+import moipAPI, { headersOauth2 } from '../../../services/moip-api';
 
 export default class CartoesScreen extends Component {
   static navigationOptions = {
@@ -32,7 +32,7 @@ export default class CartoesScreen extends Component {
     this.setState({ isLoading: true }, () => {
       const tokenService = TokenService.getInstance();
 
-      moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headers })
+      moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headersOauth2 })
         .then((data) => {
           const clientData = data.data;
           if (clientData.fundingInstruments) {
@@ -239,7 +239,7 @@ export const excluirItem = (item, comp) => {
   // TODO: mensagem ao excluir endereços que tem pedidos ativos associados
   comp.setState({ isLoading: true })
 
-  moipAPI.delete(`/fundinginstruments/${item.id}`, { headers: headers }).then(
+  moipAPI.delete(`/fundinginstruments/${item.id}`, { headers: headersOauth2 }).then(
     _ => {
       comp.obterCartoes();
       comp.setState({ isLoading: false });

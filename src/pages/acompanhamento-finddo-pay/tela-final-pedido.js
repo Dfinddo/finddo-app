@@ -15,7 +15,7 @@ import { NavigationActions, StackActions, NavigationEvents } from 'react-navigat
 import { star } from '../../img/svg/star';
 import { SvgXml } from 'react-native-svg';
 import { starSolid } from '../../img/svg/star-solid';
-import moipAPI, { headers } from '../../services/moip-api';
+import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import CartaoFormService from '../../services/cartao-form-service';
 
 function Item(props) {
@@ -82,7 +82,7 @@ export default class TelaFinalPedidoScreen extends Component {
     if (tokenService.getUser().user_type !== 'professional') {
       this.setState({ isLoading: true }, () => {
 
-        moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headers })
+        moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headersOauth2 })
           .then((data) => {
             const clientData = data.data;
             if (clientData.fundingInstruments) {
@@ -610,7 +610,7 @@ export default class TelaFinalPedidoScreen extends Component {
       orderWirecard.fundingInstrument.creditCard.cvc = this.state.secureCode;
 
       moipAPI.post('orders/' + this.state.pedido.order_wirecard_id + '/payments',
-        orderWirecard, { headers: headers }).then(responseWirecard => {
+        orderWirecard, { headers: headersOauth2 }).then(responseWirecard => {
           pedido.payment_wirecard_id = responseWirecard.data.id;
           backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
             .then((response) => {

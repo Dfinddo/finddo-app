@@ -4,10 +4,12 @@ import {
   Text, TextInput,
   StyleSheet, Modal,
   TouchableOpacity, ScrollView,
-  SectionList
+  SectionList, Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { colors } from '../../colors';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
+import backendRails from '../../services/backend-rails-api';
 
 function Item({ title }) {
   return (
@@ -25,13 +27,16 @@ export default class PrimeiraParte extends Component {
 
   state = {
     name: '',
+    surname: '',
+    mothers_name: '',
     email: '',
     cellphone: '',
     cpf: '',
     user_type: 'user',
     birthdate: '',
     formInvalid: false,
-    formErrors: []
+    formErrors: [],
+    isLoading: false,
   };
 
   componentDidMount() {
@@ -44,6 +49,10 @@ export default class PrimeiraParte extends Component {
   }
 
   updateBirthdate = (text = '') => {
+    if (text.length === 5 || text.length === 2) {
+      return text;
+    }
+
     const dataFormatada = [];
     const textoASerFormatado = text.replace(/\//gi, '');
 
@@ -64,20 +73,37 @@ export default class PrimeiraParte extends Component {
   }
 
   validateFields = () => {
+
     const numberRegex = /^[0-9]*$/;
     const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
     const errosArr = [];
 
     const nameErrors = [];
+    const surnameErrors = [];
+    const mothersNameErrors = [];
     const emailErrors = [];
     const telErrors = [];
     const cpfErrors = [];
 
     if (this.state.name.length === 0) {
       nameErrors.push('É obrigatório.');
-    } else if (this.state.name.length > 128) {
-      nameErrors.push('Tamanho máximo 128.');
+    } else if (this.state.name.length > 70) {
+      nameErrors.push('Tamanho máximo 70.');
+    }
+
+    if (this.state.surname.length === 0) {
+      surnameErrors.push('É obrigatório.');
+    } else if (this.state.name.length > 255) {
+      surnameErrors.push('Tamanho máximo 255.');
+    }
+
+    if (this.state.user_type === 'professional') {
+      if (this.state.mothers_name.length === 0) {
+        mothersNameErrors.push('É obrigatório.');
+      } else if (this.state.name.length > 255) {
+        mothersNameErrors.push('Tamanho máximo 255.');
+      }
     }
 
     if (this.state.email.length === 0) {
@@ -105,7 +131,10 @@ export default class PrimeiraParte extends Component {
     }
 
     if (nameErrors.length > 0) {
-      errosArr.push({ title: 'Name', data: nameErrors });
+      errosArr.push({ title: 'Nome', data: nameErrors });
+    }
+    if (surnameErrors.length > 0) {
+      errosArr.push({ title: 'Sobrenome', data: surnameErrors });
     }
     if (emailErrors.length > 0) {
       errosArr.push({ title: 'Email', data: emailErrors });
@@ -121,7 +150,29 @@ export default class PrimeiraParte extends Component {
       this.setState({ formErrors: [...errosArr] });
       this.setState({ formInvalid: true });
     } else {
-      this.props.navigation.navigate('ParteDois', this.state);
+      this.setState({ isLoading: true }, () => {
+        backendRails.get(`/users?email=${this.state.email}&cellphone=${this.state.cellphone}&cpf=${this.state.cpf}`)
+          .then(_ => {
+            this.setState({ isLoading: false }, () => {
+              this.props.navigation.navigate('ParteDois', this.state);
+            });
+          })
+          .catch(err => {
+            if (err.response && err.response.status === 403) {
+              Alert.alert(
+                'Erro',
+                err.response.data.error,
+                [{ text: 'OK', onPress: () => { } }]);
+            } else {
+              Alert.alert(
+                'Erro',
+                'Problema ao prosseguir com o cadastro, aguarde um instante e tente novamente.'
+                [{ text: 'OK', onPress: () => { } }]
+              );
+            }
+            this.setState({ isLoading: false });
+          });
+      });
     }
   };
 
@@ -131,6 +182,17 @@ export default class PrimeiraParte extends Component {
         style={this.parteUmScreenStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.isLoading}
+          >
+            <View style={this.parteUmScreenStyle.modalStyle}>
+              <View>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </View>
+          </Modal>
           <Modal
             animationType="slide"
             transparent={true}
@@ -167,17 +229,38 @@ export default class PrimeiraParte extends Component {
               <TextInput
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ name: text }) }}
-                placeholder="Nome Completo"
-                maxLength={255}
+                placeholder="Nome"
+                maxLength={70} numberOfLines={1}
                 value={this.state.name}
               />
+              <TextInput
+                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                onChangeText={text => { this.setState({ surname: text }) }}
+                placeholder="Sobrenome"
+                maxLength={255} numberOfLines={1}
+                value={this.state.surname}
+              />
+              {(() => {
+                if (this.state.user_type === 'professional') {
+                  return (
+                    <TextInput
+                      style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                      onChangeText={text => { this.setState({ mothers_name: text }) }}
+                      placeholder="Nome da Mãe (Completo)"
+                      maxLength={255} numberOfLines={1}
+                      value={this.state.mothers_name}
+                    />);
+                } else {
+                  return (null);
+                }
+              })()}
               <TextInput
                 style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ email: text }) }}
                 placeholder="Email"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                maxLength={128}
+                maxLength={128} numberOfLines={1}
                 value={this.state.email}
               />
               <TextInput
@@ -185,7 +268,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ cellphone: text }) }}
                 placeholder="(99) 9999-99999"
                 keyboardType="numeric"
-                maxLength={15}
+                maxLength={15} numberOfLines={1}
                 value={this.state.cellphone}
               />
               <TextInput
@@ -193,7 +276,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ cpf: text }) }}
                 placeholder="CPF"
                 keyboardType="numeric"
-                maxLength={11}
+                maxLength={11} numberOfLines={1}
                 value={this.state.cpf}
               />
               <TextInput
@@ -201,7 +284,7 @@ export default class PrimeiraParte extends Component {
                 onChangeText={text => { this.setState({ birthdate: text }) }}
                 placeholder="Data de Nascimento dd/mm/aaaa"
                 keyboardType="numeric"
-                maxLength={10}
+                maxLength={10} numberOfLines={1}
                 value={this.updateBirthdate(this.state.birthdate)}
               />
             </View>
@@ -220,7 +303,7 @@ export default class PrimeiraParte extends Component {
     backgroundImageContent: { width: '100%', height: '100%' },
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 280, backgroundColor: colors.branco },
+    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 380, height: 380, backgroundColor: colors.branco },
     continuarButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
     continuarButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
     cadastroFormSizeAndFont:
@@ -248,6 +331,7 @@ export default class PrimeiraParte extends Component {
     modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
     modalErrosSectionList: { maxHeight: '60%', width: '100%' },
     modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo }
+    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   });
 }
