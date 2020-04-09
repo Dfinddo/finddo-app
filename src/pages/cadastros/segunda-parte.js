@@ -7,6 +7,7 @@ import {
   SectionList, Alert, ActivityIndicator,
   Keyboard
 } from 'react-native';
+import axios from 'axios';
 import { colors } from '../../colors';
 import UserDTO from '../../models/UserDTO';
 import backendRails from '../../services/backend-rails-api';
@@ -14,8 +15,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import { termos } from './termos';
-import moipAPI, { headers } from '../../services/moip-api';
+import { politica } from './politica';
+import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
+import { formatarCpf } from './formatadores/formatador-cpf';
 
 function Item({ title }) {
   return (
@@ -33,6 +36,8 @@ export default class SegundaParte extends Component {
 
   state = {
     name: '',
+    surname: '',
+    mothers_name: '',
     email: '',
     cellphone: '',
     cpf: '',
@@ -52,6 +57,7 @@ export default class SegundaParte extends Component {
     isLoading: false,
     isShowingKeyboard: false,
     showTermos: false,
+    showPolitica: false,
   };
 
   componentDidMount() {
@@ -79,6 +85,49 @@ export default class SegundaParte extends Component {
     this.keyboardDidHideListener.remove();
   }
 
+  criarContaMoip = (clientData) => {
+    const contaMoip = {};
+
+    const dataNascimentoArray = clientData.birthdate.split('/');
+    const dataNascimento = `${dataNascimentoArray[2]}-${dataNascimentoArray[1]}-${dataNascimentoArray[0]}`;
+
+    const ddd = `${clientData.cellphone[0]}${clientData.cellphone[1]}`;
+    const numberTel = clientData.cellphone.split('').slice(2).join('');
+
+    contaMoip.email = {};
+    contaMoip.email.address = clientData.email;
+
+    contaMoip.person = {};
+    contaMoip.person.name = clientData.name;
+    contaMoip.person.lastName = clientData.surname;
+    contaMoip.person.taxDocument = {};
+    contaMoip.person.taxDocument.type = 'CPF';
+    contaMoip.person.taxDocument.number = clientData.cpf;
+
+    contaMoip.person.birthDate = dataNascimento;
+    contaMoip.person.phone = {};
+    contaMoip.person.phone.countryCode = '55';
+    contaMoip.person.phone.areaCode = ddd;
+    contaMoip.person.phone.number = numberTel;
+
+    contaMoip.person.parentsName = {};
+    contaMoip.person.parentsName.mother = clientData.mothers_name;
+
+    contaMoip.person.address = {};
+    contaMoip.person.address.street = clientData.rua;
+    contaMoip.person.address.streetNumber = clientData.numero;
+    contaMoip.person.address.district = clientData.bairro;
+    contaMoip.person.address.zipCode = clientData.cep;
+    contaMoip.person.address.city = clientData.cidade;
+    contaMoip.person.address.state = clientData.estado;
+    contaMoip.person.address.country = 'BRA';
+    contaMoip.person.address.complement = clientData.complemento;
+
+    contaMoip.type = 'MERCHANT';
+
+    return contaMoip;
+  };
+
   criarClienteMoip = (clientData, uuid) => {
     const clienteMoip = {};
 
@@ -89,7 +138,7 @@ export default class SegundaParte extends Component {
     const numberTel = clientData.cellphone.split('').slice(2).join('');
 
     clienteMoip.ownId = uuid;
-    clienteMoip.fullname = clientData.name;
+    clienteMoip.fullname = `${clientData.name} ${clientData.surname}`;
     clienteMoip.email = clientData.email;
     clienteMoip.birthDate = dataNascimento;
     clienteMoip.taxDocument = {};
@@ -106,13 +155,15 @@ export default class SegundaParte extends Component {
   obterParametrosParteUm = () => {
     const { navigation } = this.props;
     const name = navigation.getParam('name', 'sem nome');
+    const surname = navigation.getParam('surname', 'sem sobrenome');
+    const mothers_name = navigation.getParam('mothers_name', null);
     const email = navigation.getParam('email', 'sem email');
     const cellphone = navigation.getParam('cellphone', 'sem telefone');
     const cpf = navigation.getParam('cpf', 'sem cpf');
     const user_type = navigation.getParam('user_type', 'sem tipo');
     const birthdate = navigation.getParam('birthdate', 'no_birthdate');
 
-    this.setState({ name, email, cellphone, cpf, user_type, birthdate });
+    this.setState({ name, surname, email, cellphone, cpf, user_type, birthdate, mothers_name });
   };
 
   validateFields = () => {
@@ -224,119 +275,177 @@ export default class SegundaParte extends Component {
       delete stateDto.formInvalid;
       delete stateDto.isLoading;
       this.signUp(stateDto);
-      this.props.navigation.navigate('ParteDois', this.state);
     }
   };
+
+  cadastrarUsuario = (usuario, possuiContaMoip = false) => {
+    usuario.player_ids = [TokenService.getInstance().getPlayerIDOneSignal()];
+
+    backendRails.post('/users', usuario).then(response => {
+      const userData = {};
+      userData['access-token'] = response['headers']['access-token'];
+      userData['client'] = response['headers']['client'];
+      userData['uid'] = response['headers']['uid'];
+
+      const userDto = new UserDTO(response.data);
+
+      if (userDto.user_type === 'professional') {
+        if (possuiContaMoip) {
+          Alert.alert(
+            'Aviso',
+            'Foi identificado que você já possui uma conta Wirecard, vá para a aba perfil e'
+            + ' autorize o Finddo a executar transações para sua conta.',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+        } else {
+          Alert.alert(
+            'Aviso',
+            'Para que você comece a atender pedidos, vá pra a aba de perfil,'
+            + ' configure sua conta Wirecard e '
+            + ' autorize o Finddo a executar transações para sua conta.',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+        }
+      }
+
+      AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
+        _ => {
+          AsyncStorage.setItem('user', JSON.stringify(userDto)).then(_ => {
+            const tokenService = TokenService.getInstance();
+            tokenService.setToken(userData);
+            tokenService.setUser(userDto);
+
+            this.props.navigation.navigate('App');
+          });
+        }).catch((_) => {
+          Alert.alert(
+            'Falha ao salvar sua sessão',
+            'Favor sair e fazer login, seu cadastro foi concluído.',
+            [
+              { text: 'OK', onPress: () => { } },
+            ],
+            { cancelable: false },
+          );
+          this.setState({ isLoading: false });
+        });
+    }).catch(error => {
+      if (error.response) {
+        /*
+         * The request was made and the server responded with a
+         * status code that falls out of the range of 2xx
+         */
+        Alert.alert(
+          'Erro ao se cadastrar',
+          'Verifique seus dados e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else if (error.request) {
+        /*
+         * The request was made but no response was received, `error.request`
+         * is an instance of XMLHttpRequest in the browser and an instance
+         * of http.ClientRequest in Node.js
+         */
+        Alert.alert(
+          'Falha ao se conectar',
+          'Verifique sua conexão e tente novamente',
+          [
+            { text: 'OK', onPress: () => { } },
+          ],
+          { cancelable: false },
+        );
+      } else {
+        /* Something happened in setting up the request and triggered an Error */
+      }
+      this.setState({ isLoading: false });
+    });
+  }
+
+  handleErrorCadastro = (error) => {
+    if (error.response) {
+      /*
+       * The request was made and the server responded with a
+       * status code that falls out of the range of 2xx
+       */
+      Alert.alert(
+        'Erro ao se cadastrar',
+        'Verifique seus dados e tente novamente',
+        [
+          { text: 'OK', onPress: () => { } },
+        ],
+        { cancelable: false },
+      );
+    } else if (error.request) {
+      /*
+       * The request was made but no response was received, `error.request`
+       * is an instance of XMLHttpRequest in the browser and an instance
+       * of http.ClientRequest in Node.js
+       */
+      Alert.alert(
+        'Falha ao se conectar',
+        'Verifique sua conexão e tente novamente',
+        [
+          { text: 'OK', onPress: () => { } },
+        ],
+        { cancelable: false },
+      );
+    }
+    this.setState({ isLoading: false });
+  }
 
   signUp = (userState) => {
     const user = new UserDTO(userState);
     const userWithAddress = UserDTO.gerarUsuarioComEnderecoDefault(user);
-    const tokenService = TokenService.getInstance();
 
-    this.setState({ isLoading: true });
-    UUIDGenerator.getRandomUUID().then((uuid) => {
-      moipAPI.post('customers', this.criarClienteMoip(this.state, uuid), { headers: headers })
-        .then(responseWirecard => {
-          userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
-          userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
-          userWithAddress.player_ids = [tokenService.getPlayerIDOneSignal()];
-          backendRails.post('/users', userWithAddress).then(response => {
-            const userData = {};
-            userData['access-token'] = response['headers']['access-token'];
-            userData['client'] = response['headers']['client'];
-            userData['uid'] = response['headers']['uid'];
+    this.setState({ isLoading: true }, () => {
+      if (userWithAddress.user.user_type === 'user') {
+        UUIDGenerator.getRandomUUID().then((uuid) => {
+          moipAPI.post('customers', this.criarClienteMoip(this.state, uuid), { headers: headersOauth2 })
+            .then(responseWirecard => {
+              userWithAddress.user.customer_wirecard_id = responseWirecard.data.id;
+              userWithAddress.user.own_id_wirecard = responseWirecard.data.ownId;
 
-            const userDto = new UserDTO(response.data);
-
-            AsyncStorage.setItem('userToken', JSON.stringify(userData)).then(
-              _ => {
-                AsyncStorage.setItem('user', JSON.stringify(userDto)).then(_ => {
-                  const tokenService = TokenService.getInstance();
-                  tokenService.setToken(userData);
-                  tokenService.setUser(userDto);
-
-                  this.props.navigation.navigate('App');
-                });
-              }).catch((_) => {
-                Alert.alert(
-                  'Falha ao salvar sua sessão',
-                  'Favor sair e fazer login, seu cadastro foi concluído.',
-                  [
-                    { text: 'OK', onPress: () => { } },
-                  ],
-                  { cancelable: false },
-                );
-                this.setState({ isLoading: false });
-              });
-          }).catch(error => {
-            if (error.response) {
-              /*
-               * The request was made and the server responded with a
-               * status code that falls out of the range of 2xx
-               */
-              Alert.alert(
-                'Erro ao se cadastrar',
-                'Verifique seus dados e tente novamente',
-                [
-                  { text: 'OK', onPress: () => { } },
-                ],
-                { cancelable: false },
-              );
-            } else if (error.request) {
-              /*
-               * The request was made but no response was received, `error.request`
-               * is an instance of XMLHttpRequest in the browser and an instance
-               * of http.ClientRequest in Node.js
-               */
-              Alert.alert(
-                'Falha ao se conectar',
-                'Verifique sua conexão e tente novamente',
-                [
-                  { text: 'OK', onPress: () => { } },
-                ],
-                { cancelable: false },
-              );
-            } else {
-              /* Something happened in setting up the request and triggered an Error */
-            }
-            this.setState({ isLoading: false });
-          });
-        }).catch(error => {
-          if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            Alert.alert(
-              'Erro ao se cadastrar',
-              'Verifique seus dados e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            Alert.alert(
-              'Falha ao se conectar',
-              'Verifique sua conexão e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          }
-          this.setState({ isLoading: false });
+              this.cadastrarUsuario(userWithAddress);
+            }).catch(error => {
+              this.handleErrorCadastro(error);
+            });
         });
+      } else {
+        const cpfFormatado = formatarCpf(this.state.cpf);
+
+        moipAPI.get(`accounts/exists?tax_document=${cpfFormatado}`, { headers: headersOauth2 })
+          .then(res => {
+            this.cadastrarUsuario(userWithAddress, true);
+          })
+          .catch(error => {
+            if (error.response.status === 404) {
+              moipAPI.post('accounts', this.criarContaMoip(this.state), { headers: headersOauth2 })
+                .then(response => {
+                  userWithAddress.user.id_wirecard_account = response.data.id;
+                  userWithAddress.user.set_account = response.data._links.setPassword.href;
+                  userWithAddress.user.is_new_wire_account = true;
+                  this.cadastrarUsuario(userWithAddress);
+                }).catch(error => {
+                  this.handleErrorCadastro(error);
+                });
+            } else {
+              this.handleErrorCadastro(error);
+            }
+          });
+      }
     });
+
   }
 
   render() {
-    // TODO: tipo inputs aqui e no login form
     return (
       <ImageBackground
         style={this.parteDoisScreenStyle.backgroundImageContent}
@@ -384,6 +493,27 @@ export default class SegundaParte extends Component {
           <Modal
             animationType="slide"
             transparent={true}
+            visible={this.state.showPolitica}
+          >
+            <View style={this.parteDoisScreenStyle.modalBase}>
+              <View style={this.parteDoisScreenStyle.modalDialog}>
+                <View style={[this.parteDoisScreenStyle.modalDialogContent, { height: 500 }]}>
+                  <Text style={this.parteDoisScreenStyle.modalErrosTitulo}>Política:</Text>
+                  <ScrollView>
+                    <Text style={{ fontSize: 18 }}>{politica}</Text>
+                  </ScrollView>
+                  <TouchableOpacity
+                    style={[this.parteDoisScreenStyle.modalErrosBotaoContinuar, { marginTop: 8 }]}
+                    onPress={() => this.setState({ showPolitica: false })}>
+                    <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
             visible={this.state.showTermos}
           >
             <View style={this.parteDoisScreenStyle.modalBase}>
@@ -403,15 +533,32 @@ export default class SegundaParte extends Component {
             </View>
           </Modal>
           <View style={this.parteDoisScreenStyle.cadastroForm}>
+            <Text style={this.parteDoisScreenStyle.fontTitle}>Crie sua conta</Text>
             <View style={this.parteDoisScreenStyle.cadastroMainForm}>
-              <Text style={this.parteDoisScreenStyle.fontTitle}>Crie sua conta</Text>
-
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cep: text }) }}
                 placeholder="CEP"
+                onBlur={() => {
+                  if (this.state.cep.length === 8) {
+                    this.setState({ isLoading: true }, () => {
+                      axios.create({
+                        baseURL: 'https://viacep.com.br/ws'
+                      })
+                        .get(`${this.state.cep}/json`)
+                        .then(response => {
+                          const { bairro, logradouro, complemento } = response.data;
+
+                          this.setState({ bairro, rua: logradouro, complemento, isLoading: false });
+                        })
+                        .catch(_ => this.setState({ isLoading: false }))
+                    });
+                  }
+                }}
                 keyboardType={'number-pad'}
                 value={this.state.cep}
+                maxLength={8}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -419,6 +566,7 @@ export default class SegundaParte extends Component {
                 placeholder="Estado"
                 editable={false}
                 value={this.state.estado}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -426,30 +574,40 @@ export default class SegundaParte extends Component {
                 placeholder="Cidade"
                 editable={false}
                 value={this.state.cidade}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ bairro: text }) }}
                 placeholder="Bairro"
                 value={this.state.bairro}
+                maxLength={128}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ rua: text }) }}
                 placeholder="Rua"
                 value={this.state.rua}
+                maxLength={128}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ numero: text }) }}
+                keyboardType="number-pad"
                 placeholder="Número"
+                maxLength={10}
                 value={this.state.numero}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ complemento: text }) }}
                 placeholder="Complemento"
                 value={this.state.complemento}
+                maxLength={128}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -457,6 +615,8 @@ export default class SegundaParte extends Component {
                 placeholder="Senha"
                 value={this.state.password}
                 secureTextEntry={true}
+                maxLength={12}
+                numberOfLines={1}
               />
               <TextInput
                 style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
@@ -464,10 +624,15 @@ export default class SegundaParte extends Component {
                 placeholder="Confirmar Senha"
                 value={this.state.password_confirmation}
                 secureTextEntry={true}
+                maxLength={12}
+                numberOfLines={1}
               />
               <View style={{ height: 8 }}></View>
-              <Text style={{ fontSize: 18 }}>Ao criar sua conta, você está concordando</Text>
-              <Text style={{ fontSize: 18 }}>com os nossos<Text onPress={() => this.setState({ showTermos: true })} style={{ color: colors.verdeFinddo }}> Termos e Condições de Uso</Text></Text>
+              <View style={{ width: 300 }}>
+                <Text style={{ fontSize: 18 }}>Ao criar sua conta, você está concordando</Text>
+                <Text style={{ fontSize: 18 }}>com os nossos<Text onPress={() => this.setState({ showTermos: true })} style={{ color: colors.verdeFinddo }}> Termos e Condições de Uso</Text></Text>
+                <Text style={{ fontSize: 18 }}>e com nossa<Text onPress={() => this.setState({ showPolitica: true })} style={{ color: colors.verdeFinddo }}> Política de Privacidade.</Text></Text>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -479,12 +644,12 @@ export default class SegundaParte extends Component {
   parteDoisScreenStyle = StyleSheet.create({
     backgroundImageContent: { width: '100%', height: '100%' },
     cadastroForm: {
-      flex: 1, alignItems: 'center',
-      justifyContent: 'center', height: 550
+      alignItems: 'center',
+      justifyContent: 'center', height: 650
     },
     cadastroMainForm: {
       alignItems: 'center', justifyContent: 'center',
-      width: 340, height: 510,
+      width: 340, height: 600,
       backgroundColor: colors.branco
     },
     continuarButtonText: {

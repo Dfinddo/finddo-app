@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Image, ImageBackground, Text, FlatList, StyleSheet, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
-import moipAPI, { headers } from '../../services/moip-api';
+import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import { colors } from '../../colors';
 import TokenService from '../../services/token-service';
 import { SvgXml } from 'react-native-svg';
@@ -62,7 +62,7 @@ export default class Servicos extends Component {
     this.setState({ isLoading: true }, () => {
       const tokenService = TokenService.getInstance();
 
-      moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headers })
+      moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headersOauth2 })
         .then((data) => {
           const clientData = data.data;
           if (clientData.fundingInstruments) {

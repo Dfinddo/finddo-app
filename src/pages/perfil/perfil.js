@@ -5,7 +5,7 @@ import {
   TextInput, Text,
   StyleSheet, Image,
   Alert, Modal,
-  ActivityIndicator
+  ActivityIndicator, Linking
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
@@ -15,6 +15,7 @@ import HeaderTransparenteSemHistorico from '../../components/header-transparente
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationEvents } from 'react-navigation';
 import FotoService from '../../services/foto-service';
+import { developConfig } from '../../../credenciais-e-configuracoes';
 
 const semPerfil = require('../../img/sem-foto.png');
 
@@ -40,6 +41,10 @@ export default class PerfilScreen extends Component {
   componentDidMount() {
     const userData = TokenService.getInstance().getUser();
     this.setState({ email: userData.email, nomeCompleto: userData.name, cpf: userData.cpf, telefone: userData.cellphone });
+  }
+
+  componentWillUnmount() {
+    this.setState({ isLoading: false });
   }
 
   alterarFotoDialog = () => {
@@ -172,39 +177,45 @@ export default class PerfilScreen extends Component {
   }
 
   logout = () => {
-    const tokenService = TokenService.getInstance();
+    this.setState({ isLoading: true }, () => {
+      const tokenService = TokenService.getInstance();
 
-    backendRails.delete(
-      `users/remove_player_id_notifications/${tokenService.getUser().id}/${tokenService.getPlayerIDOneSignal()}`,
-      { headers: tokenService.getHeaders() }
-    )
-      .then(async (_) => {
-        try {
-          await backendRails.delete(`auth/sign_out`,
-            { headers: tokenService.getHeaders() }
-          )
-          this.limparDadosLogin();
-        } catch {
-          Alert.alert(
-            'Erro interno',
-            'Por favor saia da aplicação e faça login novamente.',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        }
-      })
-      .catch(_ => {
-        Alert.alert(
-          'Falha ao se conectar',
-          'Verifique sua conexão e tente novamente',
-          [
-            { text: 'OK', onPress: () => { } },
-          ],
-          { cancelable: false },
-        );
-      });
+      backendRails.delete(
+        `users/remove_player_id_notifications/${tokenService.getUser().id}/${tokenService.getPlayerIDOneSignal()}`,
+        { headers: tokenService.getHeaders() }
+      )
+        .then(async (_) => {
+          try {
+            await backendRails.delete(`auth/sign_out`,
+              { headers: tokenService.getHeaders() }
+            )
+            this.limparDadosLogin();
+          } catch {
+            this.setState({ isLoading: false }, () => {
+              Alert.alert(
+                'Erro interno',
+                'Por favor saia da aplicação e faça login novamente.',
+                [
+                  { text: 'OK', onPress: () => { } },
+                ],
+                { cancelable: false },
+              );
+            });
+          }
+        })
+        .catch(_ => {
+          this.setState({ isLoading: false }, () => {
+            Alert.alert(
+              'Falha',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          });
+        })
+    });
   }
 
   render() {
@@ -322,7 +333,40 @@ export default class PerfilScreen extends Component {
                 (() => {
                   const user = TokenService.getInstance().getUser();
                   if (user.user_type === 'professional') {
-                    return (null);
+                    const appID = developConfig.moipCredsData.moipAppID;
+                    const redirectUri = developConfig.moipCredsData.redirectUrl;
+                    const connectWirecardUrl = developConfig.moipCredsData.connectWirecardUrl;
+                    const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
+                    if (!user.token_wirecard_account) {
+                      if (user.is_new_wire_account) {
+                        return (
+                          <View>
+                            <Text
+                              style={this.perfilScreenStyle.perfilEnderecoSelect}
+                              onPress={() => { Linking.openURL(user.set_account) }}>Configurar recebimento de pagamentos</Text>
+                            <Text
+                              style={[this.perfilScreenStyle.perfilEnderecoSelect, { marginTop: 10 }]}
+                              onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
+                          </View>
+                        );
+                      } else {
+                        return (
+                          <View>
+                            <Text
+                              style={this.perfilScreenStyle.perfilEnderecoSelect}
+                              onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
+                          </View>
+                        );
+                      }
+                    } else {
+                      return (
+                        <View>
+                          <Text
+                            style={this.perfilScreenStyle.perfilEnderecoSelect}
+                          >Transações autorizadas</Text>
+                        </View>
+                      );
+                    }
                   } else {
                     return (
                       <View>
