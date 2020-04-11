@@ -194,7 +194,7 @@ export default class App extends Component {
     super(props);
     // ============================ ATENÇÃO ============================
     // ================ NUNCA COMMITAR O ID DA APLICAÇÃO ===============
-    OneSignal.init(productionConfig.oneSignalApiKey);
+    OneSignal.init(developConfig.oneSignalApiKey);
 
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);
