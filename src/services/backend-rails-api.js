@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { productionConfig, developConfig } from '../../credenciais-e-configuracoes';
+import { developConfig, productionConfig } from '../../credenciais-e-configuracoes';
 
 export const backendUrl = productionConfig.backendUrl;
 

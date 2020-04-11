@@ -15,7 +15,7 @@ import HeaderTransparenteSemHistorico from '../../components/header-transparente
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationEvents } from 'react-navigation';
 import FotoService from '../../services/foto-service';
-import { developConfig } from '../../../credenciais-e-configuracoes';
+import { developConfig, productionConfig } from '../../../credenciais-e-configuracoes';
 
 const semPerfil = require('../../img/sem-foto.png');
 

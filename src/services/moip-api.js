@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moipCredsData from '../config/moip_creds';
-import { developConfig } from '../../credenciais-e-configuracoes';
+import { developConfig, productionConfig } from '../../credenciais-e-configuracoes';
 
 export const headersOauth2 = {};
 headersOauth2['Content-Type'] = 'application/json';
