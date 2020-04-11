@@ -333,9 +333,9 @@ export default class PerfilScreen extends Component {
                 (() => {
                   const user = TokenService.getInstance().getUser();
                   if (user.user_type === 'professional') {
-                    const appID = developConfig.moipCredsData.moipAppID;
-                    const redirectUri = developConfig.moipCredsData.redirectUrl;
-                    const connectWirecardUrl = developConfig.moipCredsData.connectWirecardUrl;
+                    const appID = productionConfig.moipCredsData.moipAppID;
+                    const redirectUri = productionConfig.moipCredsData.redirectUrl;
+                    const connectWirecardUrl = productionConfig.moipCredsData.connectWirecardUrl;
                     const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
                     if (!user.token_wirecard_account) {
                       if (user.is_new_wire_account) {
