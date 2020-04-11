@@ -158,6 +158,7 @@ export default class LoginScreen extends Component {
                 value={this.state.senha}
                 secureTextEntry={true}
               />
+              <View style={{ height: 30 }}></View>
               <Text
                 style={this.loginScreenStyle.loginEsqueciSenha}
                 onPress={() => this.props.navigation.navigate('EsqueciSenhaEmail')}>Esqueci minha senha</Text>
@@ -186,8 +187,16 @@ export default class LoginScreen extends Component {
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     loginForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
     loginMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 250, backgroundColor: colors.branco },
-    loginButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    loginButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    loginButton: {
+      marginTop: 40, marginBottom: 10,
+      width: 340, height: 45,
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
+    },
+    loginButtonText: {
+      fontSize: 18,
+      color: colors.branco, textAlign: 'center'
+    },
     loginFormSizeAndFont:
     {
       fontSize: 18,
@@ -202,6 +211,7 @@ export default class LoginScreen extends Component {
       fontSize: 18,
       height: 45,
       textAlign: 'center',
+      marginTop: 10,
       width: 300,
       textDecorationLine: 'underline',
       textAlignVertical: 'bottom'
