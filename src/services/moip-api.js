@@ -7,7 +7,7 @@ headersOauth2['Content-Type'] = 'application/json';
 headersOauth2['Authorization'] = moipCredsData.OAuth2;
 
 const moipAPI = axios.create({
-  baseURL: productionConfig.moipUrl,
+  baseURL: developConfig.moipUrl,
 });
 
 export default moipAPI;
