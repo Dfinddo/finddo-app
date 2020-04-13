@@ -26,6 +26,7 @@ const urgenciaValues = [
 export default class NovoPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: `${navigation.state.params.item.name}`,
+    headerBackTitle: 'Voltar'
   });
 
   state = {
@@ -177,21 +178,20 @@ export default class NovoPedido extends Component {
                 onChangeText={(necessidade) => this.setState({ necessidade: necessidade })}
                 value={this.state.necessidade}
               />
-              <View
-                style={this.novoPedidoStyle.selectStyle}>
-                <Picker
-                  selectedValue={this.state.urgencia}
-                  style={{
-                    height: 50, width: '100%'
-                  }}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({ urgencia: itemValue })
-                  }>
-                  <Picker.Item label={urgenciaValues[0].text} value={urgenciaValues[0].value} />
-                  <Picker.Item label={urgenciaValues[1].text} value={urgenciaValues[1].value} />
-                  <Picker.Item label={urgenciaValues[2].text} value={urgenciaValues[2].value} />
-                </Picker>
-              </View>
+
+              <Picker
+                selectedValue={this.state.urgencia}
+                style={{
+                  height: 80, width: '100%', flex: 1
+                }}
+                onValueChange={(itemValue, itemIndex) =>
+                  this.setState({ urgencia: itemValue })
+                }>
+                <Picker.Item label={urgenciaValues[0].text} value={urgenciaValues[0].value} />
+                <Picker.Item label={urgenciaValues[1].text} value={urgenciaValues[1].value} />
+                <Picker.Item label={urgenciaValues[2].text} value={urgenciaValues[2].value} />
+              </Picker>
+
             </View>
             <TouchableOpacity
               style={this.novoPedidoStyle.continuarButton}

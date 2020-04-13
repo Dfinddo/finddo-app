@@ -11,7 +11,8 @@ import HeaderFundoTransparente from '../../components/header-fundo-transparente'
 export default class EsqueciSenhaEmail extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: <HeaderFundoTransparente />
+    headerTitle: <HeaderFundoTransparente />,
+    headerBackTitle: 'Voltar'
   };
 
   state = {
@@ -40,7 +41,7 @@ export default class EsqueciSenhaEmail extends Component {
             <TouchableOpacity
               style={this.esqueciSenhaEmailStyle.continuarButton}
               onPress={() => { this.props.navigation.navigate('EsqueciSenhaNovaSenha'); }}>
-              <Text style={this.esqueciSenhaEmailStyle.continuarButtonText}>Continuar</Text>
+              <Text style={this.esqueciSenhaEmailStyle.continuarButtonText}>CONTINUAR</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -63,7 +64,7 @@ export default class EsqueciSenhaEmail extends Component {
       borderBottomColor: colors.verdeFinddo,
       borderBottomWidth: 2,
       textAlign: 'left',
-      width: '90%',
+      width: 300,
     },
     continuarButton: {
       marginTop: 40,
@@ -71,11 +72,11 @@ export default class EsqueciSenhaEmail extends Component {
       width: 360,
       height: 45,
       borderRadius: 20,
-      backgroundColor: colors.verdeFinddo
+      backgroundColor: colors.verdeFinddo,
+      alignItems: 'center',
+      justifyContent: 'center'
     },
     continuarButtonText: {
-      textAlignVertical: 'center',
-      height: 45,
       fontSize: 18,
       color: colors.branco,
       textAlign: 'center'

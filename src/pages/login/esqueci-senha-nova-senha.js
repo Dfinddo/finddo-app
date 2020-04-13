@@ -51,7 +51,7 @@ export default class EsqueciSenhaNovaSenha extends Component {
             <TouchableOpacity
               style={this.esqueciSenhaNovaSenha.continuarButton}
               onPress={() => { }}>
-              <Text style={this.esqueciSenhaNovaSenha.continuarButtonText}>Redefinir</Text>
+              <Text style={this.esqueciSenhaNovaSenha.continuarButtonText}>REDEFINIR</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -74,7 +74,7 @@ export default class EsqueciSenhaNovaSenha extends Component {
       borderBottomColor: colors.verdeFinddo,
       borderBottomWidth: 2,
       textAlign: 'left',
-      width: '90%',
+      width: 300,
     },
     continuarButton: {
       marginTop: 40,
@@ -82,11 +82,11 @@ export default class EsqueciSenhaNovaSenha extends Component {
       width: 360,
       height: 45,
       borderRadius: 20,
-      backgroundColor: colors.verdeFinddo
+      backgroundColor: colors.verdeFinddo,
+      alignItems: 'center',
+      justifyContent: 'center'
     },
     continuarButtonText: {
-      textAlignVertical: 'center',
-      height: 45,
       fontSize: 18,
       color: colors.branco,
       textAlign: 'center'

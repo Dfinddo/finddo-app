@@ -482,7 +482,12 @@ export default class SegundaParte extends Component {
                     )}
                   />
                   <TouchableOpacity
-                    style={this.parteDoisScreenStyle.modalErrosBotaoContinuar}
+                    style={[
+                      this.parteDoisScreenStyle.modalErrosBotaoContinuar,
+                      {
+                        marginTop: 8, alignItems: 'center', justifyContent: 'center'
+                      }
+                    ]}
                     onPress={() => this.setState({ formInvalid: false })}>
                     <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
@@ -503,7 +508,12 @@ export default class SegundaParte extends Component {
                     <Text style={{ fontSize: 18 }}>{politica}</Text>
                   </ScrollView>
                   <TouchableOpacity
-                    style={[this.parteDoisScreenStyle.modalErrosBotaoContinuar, { marginTop: 8 }]}
+                    style={[
+                      this.parteDoisScreenStyle.modalErrosBotaoContinuar,
+                      {
+                        marginTop: 8, alignItems: 'center', justifyContent: 'center'
+                      }
+                    ]}
                     onPress={() => this.setState({ showPolitica: false })}>
                     <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
@@ -524,7 +534,12 @@ export default class SegundaParte extends Component {
                     <Text style={{ fontSize: 18 }}>{termos}</Text>
                   </ScrollView>
                   <TouchableOpacity
-                    style={[this.parteDoisScreenStyle.modalErrosBotaoContinuar, { marginTop: 8 }]}
+                    style={[
+                      this.parteDoisScreenStyle.modalErrosBotaoContinuar,
+                      {
+                        marginTop: 8, alignItems: 'center', justifyContent: 'center'
+                      }
+                    ]}
                     onPress={() => this.setState({ showTermos: false })}>
                     <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
@@ -653,7 +668,6 @@ export default class SegundaParte extends Component {
       backgroundColor: colors.branco
     },
     continuarButtonText: {
-      textAlignVertical: 'center', height: 45,
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
     },
@@ -703,11 +717,11 @@ function BotaoCriar(props) {
           style={{
             marginBottom: 10, width: 340,
             height: 45, borderRadius: 20,
-            backgroundColor: colors.verdeFinddo
+            backgroundColor: colors.verdeFinddo,
+            alignItems: 'center', justifyContent: 'center'
           }}
           onPress={props.onPress}>
           <Text style={{
-            textAlignVertical: 'center', height: 45,
             fontSize: 18, color: colors.branco,
             textAlign: 'center'
           }}>CRIAR</Text>
