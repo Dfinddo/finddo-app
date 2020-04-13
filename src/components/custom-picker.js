@@ -2,6 +2,12 @@ import React, { Component } from 'react';
 import { View, TouchableOpacity, Text, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+/**
+ * Exemplo de uso
+ * ```
+ * <CustomPicker style={{height: 100, backgroundColor: 'white'}} items={[{ content: 'Teste' }]} />
+ * ```
+ */
 export class CustomPicker extends Component {
   constructor(props) {
     super(props);
@@ -34,7 +40,7 @@ export class CustomPicker extends Component {
           visible={this.state.isSelectingItem && this.state.items.length > 0}
         >
           <View>
-            
+
           </View>
         </Modal>
         <TouchableOpacity
