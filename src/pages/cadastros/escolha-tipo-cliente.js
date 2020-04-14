@@ -10,7 +10,8 @@ import HeaderFundoTransparente from '../../components/header-fundo-transparente'
 export default class EscolhaClienteScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: <HeaderFundoTransparente />
+    headerTitle: <HeaderFundoTransparente />,
+    headerBackTitle: 'Voltar'
   };
 
   _redirectCadastro = (tipoCliente) => this.props.navigation.navigate('ParteUm', { tipoCliente });
@@ -45,8 +46,16 @@ export default class EscolhaClienteScreen extends Component {
   escolhaTipoClienteStyle = StyleSheet.create({
     backgroundImageContent: { width: '100%', height: '100%' },
     escolhaForm: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    escolhaButton: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    escolhaButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    escolhaButton: { 
+      marginTop: 40, marginBottom: 10, 
+      width: 320, height: 45, 
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
+    },
+    escolhaButtonText: {
+      fontSize: 18, color: colors.branco, 
+      textAlign: 'center' 
+    },
     fontTitle: {
       fontSize: 30,
       textAlign: 'center',

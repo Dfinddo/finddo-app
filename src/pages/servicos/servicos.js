@@ -18,7 +18,8 @@ import CartaoFormService from '../../services/cartao-form-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
-    title: 'Onde quer atendimento?'
+    title: 'Onde quer atendimento?',
+    headerBackTitle: 'Voltar'
   };
 
   state = {

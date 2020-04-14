@@ -18,6 +18,7 @@ import { finddoLogo } from '../../img/svg/finddo-logo';
 export default class LoginScreen extends Component {
   static navigationOptions = {
     header: null,
+    headerBackTitle: 'Voltar'
   };
 
   state = { usuario: '', senha: '', isLoading: false };

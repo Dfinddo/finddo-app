@@ -22,7 +22,8 @@ function Item({ title }) {
 export default class PrimeiraParte extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: HeaderFundoTransparente
+    headerTitle: HeaderFundoTransparente,
+    headerBackTitle: 'Voltar'
   };
 
   state = {
@@ -212,7 +213,12 @@ export default class PrimeiraParte extends Component {
                     )}
                   />
                   <TouchableOpacity
-                    style={this.parteUmScreenStyle.modalErrosBotaoContinuar}
+                    style={[
+                      this.parteUmScreenStyle.modalErrosBotaoContinuar,
+                      {
+                        marginTop: 8, alignItems: 'center', justifyContent: 'center'
+                      }
+                    ]}
                     onPress={() => this.setState({ formInvalid: false })}>
                     <Text style={this.parteUmScreenStyle.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
@@ -304,8 +310,16 @@ export default class PrimeiraParte extends Component {
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
     cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 380, height: 380, backgroundColor: colors.branco },
-    continuarButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    continuarButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    continuarButton: {
+      marginTop: 40, marginBottom: 10,
+      width: 340, height: 45,
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
+    },
+    continuarButtonText: {
+      fontSize: 18, color: colors.branco,
+      textAlign: 'center'
+    },
     cadastroFormSizeAndFont:
     {
       fontSize: 18,
