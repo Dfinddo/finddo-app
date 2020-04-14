@@ -7,5 +7,6 @@ export const colors = {
   cinza: 'gray',
   bordaIconeStatus: '#595959',
   amareloIconeEditar: '#F2C94C',
-  vermelhoExcluir: '#B00F00'
+  vermelhoExcluir: '#B00F00',
+  transparenciaModais: 'rgba(255, 255, 255, 0.8)',
 };
