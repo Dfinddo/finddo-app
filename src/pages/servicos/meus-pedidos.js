@@ -4,11 +4,8 @@ import {
   FlatList, StyleSheet,
   TouchableOpacity, View,
   ImageBackground,
-  Picker,
-  ActivityIndicator,
-  Modal,
-  RefreshControl,
-  Alert
+  ActivityIndicator, Modal,
+  RefreshControl, Alert,
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
@@ -16,6 +13,17 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../colors';
 import { NavigationEvents } from 'react-navigation';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
+import { CustomPicker } from '../../components/custom-picker';
+
+const estadoPedidoValues = [
+  { content: 'Selecione um status', value: 'none', id: '0' },
+  { content: 'Pedido em Análise', value: 'analise', id: '1' },
+  { content: 'Agendando Visita', value: 'agendando_visita', id: '2' },
+  { content: 'Profissional à Caminho', value: 'a_caminho', id: '3' },
+  { content: 'Serviço em Execução', value: 'em_servico', id: '4' },
+  { content: 'Concluído', value: 'finalizado', id: '5' },
+  { content: 'Cancelado', value: 'cancelado', id: '6' },
+];
 
 const enumEstadoPedidoMap = {
   analise: 'Pedido em Análise',
@@ -40,7 +48,7 @@ export default class MeusPedidos extends Component {
     pedidosServico: [],
     pedidosFinalizado: [],
     pedidosCancelado: [],
-    tipoPedidoSelecionado: Object.keys(enumEstadoPedidoMap)[6],
+    tipoPedidoSelecionado: estadoPedidoValues[0].value,
     loadingData: false,
     loadingOrders: false,
     isShowingPedido: false,
@@ -261,21 +269,11 @@ export default class MeusPedidos extends Component {
             alignItems: 'center', justifyContent: 'center',
             marginBottom: 10
           }}>
-            <Picker
-              selectedValue={this.state.tipoPedidoSelecionado}
-              style={{
-                height: 50, width: 320,
-              }}
-              onValueChange={(itemValue, itemIndex) =>
-                this.setState({ tipoPedidoSelecionado: itemValue })
-              }>
-              <Picker.Item label={Object.values(enumEstadoPedidoMap)[0]} value={Object.keys(enumEstadoPedidoMap)[0]} />
-              <Picker.Item label={Object.values(enumEstadoPedidoMap)[2]} value={Object.keys(enumEstadoPedidoMap)[2]} />
-              <Picker.Item label={Object.values(enumEstadoPedidoMap)[3]} value={Object.keys(enumEstadoPedidoMap)[3]} />
-              <Picker.Item label={Object.values(enumEstadoPedidoMap)[4]} value={Object.keys(enumEstadoPedidoMap)[4]} />
-              <Picker.Item label={Object.values(enumEstadoPedidoMap)[5]} value={Object.keys(enumEstadoPedidoMap)[5]} />
-              <Picker.Item label={Object.values(enumEstadoPedidoMap)[6]} value={Object.keys(enumEstadoPedidoMap)[6]} />
-            </Picker>
+            <CustomPicker
+              style={meusPedidosStyles.selecionaStatus}
+              items={estadoPedidoValues}
+              onSelect={({ value }) => this.setState({ tipoPedidoSelecionado: value })}
+            />
           </View>
           <View style={{ height: 425 }}>
             {(() => {
@@ -383,8 +381,11 @@ const meusPedidosStyles = StyleSheet.create({
   novoPedidoButton: {
     backgroundColor: colors.verdeFinddo, height: 45,
     width: 340, borderRadius: 20,
-    color: colors.branco, marginTop: 10,
+    color: colors.branco, marginVertical: 10,
     alignItems: 'center', justifyContent: 'center'
+  },
+  selecionaStatus: {
+    height: 50, width: 320,
   }
 });
 
