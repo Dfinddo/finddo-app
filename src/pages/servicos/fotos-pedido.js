@@ -106,17 +106,18 @@ export default class FotosPedido extends Component {
   };
 
   selecionarEndereco = () => {
-    this.setState({ isLoading: true }, () => {
+    this.setState({ isSelectEndereco: true }, () => {
       const tokenService = TokenService.getInstance();
 
       backendRails.get('/addresses/user/' + tokenService.getUser().id, { headers: tokenService.getHeaders() })
         .then((data) => {
+
           const addresses = data.data;
           addresses.forEach(element => {
             element.id = '' + element.id;
           });
 
-          this.setState({ enderecos: [...addresses] });
+          this.setState({ enderecos: [...addresses], isLoading: false });
         }).catch(error => {
           if (error.response) {
             /*
@@ -148,8 +149,9 @@ export default class FotosPedido extends Component {
           } else {
             /* Something happened in setting up the request and triggered an Error */
           }
+          this.setState({ isLoading: false });
         }).finally(_ => {
-          this.setState({ isLoading: false, isSelectEndereco: true });
+          this.setState({ isSelectEndereco: true });
         });
     });
   };
@@ -409,10 +411,10 @@ export default class FotosPedido extends Component {
     botaoContinuar: {
       width: 340, height: 45,
       borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      marginBottom: 6
+      marginBottom: 6, alignItems: 'center',
+      justifyContent: 'center'
     },
     botaoContinuarTexto: {
-      textAlignVertical: 'center', height: 45,
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
     }

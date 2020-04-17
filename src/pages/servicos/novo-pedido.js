@@ -226,11 +226,11 @@ export default class NovoPedido extends Component {
     continuarButton:
     {
       width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
     },
     continuarButtonText:
     {
-      textAlignVertical: 'center', height: 45,
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
     },
@@ -253,7 +253,12 @@ export default class NovoPedido extends Component {
     modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
     modalErrosSectionList: { maxHeight: '60%', width: '100%' },
     modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
+    modalErrosBotaoContinuar: {
+      marginTop: 40, marginBottom: 10,
+      width: 320, height: 45,
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
+    },
     selectUrgenciaContainer: {
       height: 60, borderWidth: 2,
       borderColor: colors.verdeFinddo,

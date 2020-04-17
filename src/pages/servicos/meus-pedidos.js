@@ -275,7 +275,7 @@ export default class MeusPedidos extends Component {
               onSelect={({ value }) => this.setState({ tipoPedidoSelecionado: value })}
             />
           </View>
-          <View style={{ height: 425 }}>
+          <View style={{ height: 400 }}>
             {(() => {
               switch (this.state.tipoPedidoSelecionado) {
                 case ('analise'):
@@ -344,7 +344,7 @@ export default class MeusPedidos extends Component {
             onPress={() => {
               this.props.navigation.navigate('Services');
             }} user={user}
-          ></NovoPedido>
+          />
         </View>
       </ImageBackground>
     );

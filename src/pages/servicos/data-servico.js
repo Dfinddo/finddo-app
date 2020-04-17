@@ -205,11 +205,11 @@ export default class DataServico extends Component {
     continuarButton:
     {
       width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
     },
     continuarButtonText:
     {
-      textAlignVertical: 'center', height: 45,
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
     },
