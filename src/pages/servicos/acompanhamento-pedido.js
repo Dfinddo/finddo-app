@@ -16,7 +16,8 @@ import backendRails from '../../services/backend-rails-api';
 export default class AcompanhamentoPedido extends Component {
   static navigationOptions = {
     title: 'Acompanhe seu pedido',
-    headerLeft: null
+    headerLeft: null,
+    headerBackTitle: 'Voltar'
   };
 
   constructor(props) {

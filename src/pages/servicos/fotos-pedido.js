@@ -20,6 +20,7 @@ const fotoDefault = require('../../img/add_foto_problema.png');
 export default class FotosPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: `${navigation.state.params.categoriaPedido.name}`,
+    headerBackTitle: 'Voltar'
   });
 
   state = {
@@ -169,70 +170,77 @@ export default class FotosPedido extends Component {
     this.salvarPedido(this.state);
   };
 
-  salvarPedido = async (orderData) => {
-    this.setState({ isLoading: true });
+  salvarPedido = (orderData) => {
+    this.setState({ isLoading: false }, () => {
+      const order = {};
+      order.description = orderData.necessidade;
+      order.category_id = +orderData.categoriaPedido.id;
+      order.user_id = TokenService.getInstance().getUser().id;
+      order.address_id = this.state.enderecoSelecionado.id;
+      order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
+      order.hora_inicio = `${this.state.hora}`;
+      order.hora_fim = `${this.state.horaFim}`;
+      if (this.state.urgencia === 'definir-data') {
+        order.urgency = 'urgent';
+        order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
+      }
 
-    const order = {};
-    order.description = orderData.necessidade;
-    order.category_id = +orderData.categoriaPedido.id;
-    order.user_id = TokenService.getInstance().getUser().id;
-    order.address_id = this.state.enderecoSelecionado.id;
-    order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
-    order.hora_inicio = `${this.state.hora}`;
-    order.hora_fim = `${this.state.horaFim}`;
-    if (this.state.urgencia === 'definir-data') {
-      order.urgency = 'urgent';
-      order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
-    }
+      const images = this.state.fotosPedido.map((foto) => { return { base64: foto.image.base64, file_name: foto.file_name } });
 
-    const images = this.state.fotosPedido.map((foto) => { return { base64: foto.image.base64, file_name: foto.file_name } });
-
-    backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
-      .then((response) => {
-        FotoService.getInstance().setFotoId(0);
-        FotoService.getInstance().setFotoData(null);
-        this.setState({ isLoading: false });
-        const resetAction = StackActions.reset({
-          index: 0,
-          actions: [NavigationActions.navigate({ routeName: 'Services' })],
-          key: 'Finddo'
+      backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
+        .then((response) => {
+          FotoService.getInstance().setFotoId(0);
+          FotoService.getInstance().setFotoData(null);
+          this.setState({ isLoading: false }, () => {
+            console.log('update state');
+            
+            setTimeout(() => {
+              console.log('stack actions');
+              
+              const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({ routeName: 'Services' })],
+                key: 'Finddo'
+              });
+              this.props.navigation.dispatch(resetAction);
+              this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
+            }, 2000);
+          });
+        })
+        .catch((error) => {
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            Alert.alert(
+              'Falha ao realizar operação',
+              'Revise seus dados e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            Alert.alert(
+              'Falha ao se conectar',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            /* Something happened in setting up the request and triggered an Error */
+          }
+          this.setState({ isLoading: false });
         });
-        this.props.navigation.dispatch(resetAction);
-        this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
-      })
-      .catch((error) => {
-        if (error.response) {
-          /*
-           * The request was made and the server responded with a
-           * status code that falls out of the range of 2xx
-           */
-          Alert.alert(
-            'Falha ao realizar operação',
-            'Revise seus dados e tente novamente',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        } else if (error.request) {
-          /*
-           * The request was made but no response was received, `error.request`
-           * is an instance of XMLHttpRequest in the browser and an instance
-           * of http.ClientRequest in Node.js
-           */
-          Alert.alert(
-            'Falha ao se conectar',
-            'Verifique sua conexão e tente novamente',
-            [
-              { text: 'OK', onPress: () => { } },
-            ],
-            { cancelable: false },
-          );
-        } else {
-          /* Something happened in setting up the request and triggered an Error */
-        }
-        this.setState({ isLoading: false });
-      });
+    });
   }
 
   selecionarItem = (item) => {
