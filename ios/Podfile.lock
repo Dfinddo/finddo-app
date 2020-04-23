@@ -69,6 +69,8 @@ PODS:
   - react-native-onesignal (3.6.4):
     - OneSignal (= 2.12.6)
     - React (< 1.0.0, >= 0.13.0)
+  - react-native-splash-screen (3.2.0):
+    - React
   - react-native-uuid-generator (6.1.1):
     - React
   - React-RCTActionSheet (0.60.4):
@@ -121,6 +123,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
+  - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-uuid-generator (from `../node_modules/react-native-uuid-generator`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -171,6 +174,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-camera"
   react-native-onesignal:
     :path: "../node_modules/react-native-onesignal"
+  react-native-splash-screen:
+    :path: "../node_modules/react-native-splash-screen"
   react-native-uuid-generator:
     :path: "../node_modules/react-native-uuid-generator"
   React-RCTActionSheet:
@@ -222,6 +227,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 73f24a02fa684ed6a2b828ba116874a2191ded88
   react-native-camera: 705c7e9412436957b4dc894a1af61f43830787e2
   react-native-onesignal: 80fc3683083d23b17a2aba180f965dc83bd77efd
+  react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-uuid-generator: 82ffa2a1cac94242ebed52c4dedc5044d3412717
   React-RCTActionSheet: 9f71d7ae3e8fb10e08d162cbf14c621349dbfab3
   React-RCTAnimation: 981d8c95b0e30918a9832ccac32af83562a27fae
