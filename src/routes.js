@@ -200,6 +200,8 @@ export default class App extends Component {
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);
     OneSignal.addEventListener('ids', this.onIds);
+
+    SplashScreen.hide();
   }
 
   componentWillUnmount() {
