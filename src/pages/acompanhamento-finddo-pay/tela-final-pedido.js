@@ -433,7 +433,7 @@ export default class TelaFinalPedidoScreen extends Component {
                         height: 45, alignItems: 'center',
                         justifyContent: 'center', borderRadius: 20
                       }} onPress={() => {
-                        this.setState({ isLoading: true }, () => {
+                        this.setState({ isLoading: false }, () => {
                           backendRails.get(`/orders/${this.state.pedido.id}`, { headers: tokenService.getHeaders() })
                             .then((response) => {
                               const pedido = response.data;
@@ -501,7 +501,7 @@ export default class TelaFinalPedidoScreen extends Component {
                           height: 45, alignItems: 'center',
                           justifyContent: 'center', borderRadius: 20, marginBottom: 20
                         }} onPress={() => {
-                          this.setState({ isLoading: true }, () => {
+                          this.setState({ isLoading: false }, () => {
                             backendRails.get(`/orders/${this.state.pedido.id}`, { headers: tokenService.getHeaders() })
                               .then((response) => {
                                 const pedido = response.data;
