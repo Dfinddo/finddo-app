@@ -13,6 +13,9 @@
 
 #import "RNSplashScreen.h"
 
+@import Firebase;
+@import UIKit;
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -30,6 +33,7 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   
+  [FIRApp configure];
   [RNSplashScreen show];
   return YES;
 }
