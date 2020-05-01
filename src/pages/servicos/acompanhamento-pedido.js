@@ -16,7 +16,8 @@ import backendRails from '../../services/backend-rails-api';
 export default class AcompanhamentoPedido extends Component {
   static navigationOptions = {
     title: 'Acompanhe seu pedido',
-    headerLeft: null
+    headerLeft: null,
+    headerBackTitle: 'Voltar'
   };
 
   constructor(props) {
@@ -44,7 +45,7 @@ export default class AcompanhamentoPedido extends Component {
   };
 
   obterPedido = () => {
-    this.setState({ loadingData: true }, () => {
+    this.setState({ loadingData: false }, () => {
       try {
         const { navigation } = this.props;
         const pedido = navigation.getParam('pedido', null);
@@ -320,10 +321,10 @@ export default class AcompanhamentoPedido extends Component {
     acompanhamentoBotao: {
       width: 340, height: 45,
       borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      marginBottom: 6
+      marginBottom: 6, alignItems: 'center',
+      justifyContent: 'center'
     },
     corBotao: {
-      textAlignVertical: 'center', height: 45,
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
     }

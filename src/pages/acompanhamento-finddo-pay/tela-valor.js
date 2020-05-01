@@ -22,7 +22,13 @@ export default class ValorServicoScreen extends Component {
     header: null,
   };
 
-  state = { valorServico: '', valorComTaxa: 0, valorTaxa: 0, isLoading: false, pedido: null };
+  state = {
+    valorServico: '',
+    valorComTaxa: 0,
+    valorTaxa: 0,
+    isLoading: false,
+    pedido: null
+  };
 
   constructor(props) {
     super(props);
@@ -286,8 +292,15 @@ export default class ValorServicoScreen extends Component {
     finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
     loginForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
     loginMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 250, backgroundColor: colors.branco },
-    loginButton: { marginTop: 40, marginBottom: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    loginButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    loginButton: {
+      marginTop: 40, marginBottom: 10,
+      width: 340, height: 45,
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
+    },
+    loginButtonText: {
+      fontSize: 18, color: colors.branco, textAlign: 'center'
+    },
     loginFormSizeAndFont:
     {
       fontSize: 18,

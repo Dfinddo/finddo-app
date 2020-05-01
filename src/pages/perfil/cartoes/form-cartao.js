@@ -440,7 +440,6 @@ export default class FormCartaoScreen extends Component {
       backgroundColor: colors.branco
     },
     continuarButtonText: {
-      textAlignVertical: 'center', height: 45,
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
     },
@@ -476,7 +475,8 @@ export default class FormCartaoScreen extends Component {
     modalErrosBotaoContinuar: {
       marginTop: 40, marginBottom: 10,
       width: 320, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
     },
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   });
@@ -490,11 +490,11 @@ function BotaoCriar(props) {
           style={{
             marginBottom: 10, width: 340,
             height: 45, borderRadius: 20,
-            backgroundColor: colors.verdeFinddo
+            backgroundColor: colors.verdeFinddo,
+            alignItems: 'center', justifyContent: 'center'
           }}
           onPress={props.onPress}>
           <Text style={{
-            textAlignVertical: 'center', height: 45,
             fontSize: 18, color: colors.branco,
             textAlign: 'center'
           }}>SALVAR</Text>

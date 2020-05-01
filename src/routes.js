@@ -35,6 +35,7 @@ import { SvgXml } from 'react-native-svg';
 import { finddoLogoNavegacao } from './img/svg/finddo-logo-navegacao';
 import { developConfig, productionConfig } from '../credenciais-e-configuracoes';
 import TokenService from './services/token-service';
+import SplashScreen from 'react-native-splash-screen';
 
 const AppStack = createStackNavigator(
   {
@@ -199,6 +200,8 @@ export default class App extends Component {
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);
     OneSignal.addEventListener('ids', this.onIds);
+
+    SplashScreen.hide();
   }
 
   componentWillUnmount() {
