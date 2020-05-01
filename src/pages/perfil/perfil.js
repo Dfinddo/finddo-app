@@ -22,7 +22,8 @@ const semPerfil = require('../../img/sem-foto.png');
 export default class PerfilScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: <HeaderTransparenteSemHistorico />
+    headerTitle: <HeaderTransparenteSemHistorico />,
+    headerBackTitle: 'Voltar'
   };
 
   constructor(props) {
@@ -227,7 +228,7 @@ export default class PerfilScreen extends Component {
       <ImageBackground
         style={this.perfilScreenStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
-        <View style={{ height: 50 }}></View>
+        <View style={{ height: 70 }}></View>
         <ScrollView>
           <Modal
             animationType="slide"
@@ -382,14 +383,18 @@ export default class PerfilScreen extends Component {
               }
             </View>
           </View>
-          <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>
-            <TouchableOpacity
-              style={this.perfilScreenStyle.sairButton}
-              onPress={() => { this.logoutConfirm() }/*this.login(this.state.usuario, this.state.senha)*/}>
-              <Text style={this.perfilScreenStyle.sairButtonText}>SAIR</Text>
-            </TouchableOpacity>
-          </View>
+
         </ScrollView>
+        <View style={{
+          alignItems: 'center', justifyContent: 'center',
+          height: 60, marginBottom: 10
+        }}>
+          <TouchableOpacity
+            style={this.perfilScreenStyle.sairButton}
+            onPress={() => { this.logoutConfirm() }/*this.login(this.state.usuario, this.state.senha)*/}>
+            <Text style={this.perfilScreenStyle.sairButtonText}>SAIR</Text>
+          </TouchableOpacity>
+        </View>
       </ImageBackground>
     );
   }
@@ -397,8 +402,16 @@ export default class PerfilScreen extends Component {
   perfilScreenStyle = StyleSheet.create({
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     backgroundImageContent: { width: '100%', height: '100%' },
-    sairButton: { marginTop: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    sairButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    sairButton: {
+      marginTop: 10, width: 340,
+      height: 45, borderRadius: 20,
+      backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
+    },
+    sairButtonText: {
+      fontSize: 18, color: colors.branco,
+      textAlign: 'center'
+    },
     perfilFormSizeAndFont:
     {
       fontSize: 18,

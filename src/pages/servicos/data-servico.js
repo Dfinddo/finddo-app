@@ -1,12 +1,35 @@
 import React, { Component } from 'react';
 import {
   StyleSheet, TouchableOpacity,
-  Text, Picker,
+  Text,
   View, ImageBackground, Modal
 } from 'react-native';
 import CalendarPicker from 'react-native-calendar-picker';
 import { colors } from '../../colors';
 import { ScrollView } from 'react-native-gesture-handler';
+import { CustomPicker } from '../../components/custom-picker';
+
+const horariosParaAtendimento = [
+  { content: '--:--', value: '--:--', id: '0' },
+  { content: '09:00', value: '09:00', id: '1' },
+  { content: '09:30', value: '09:30', id: '2' },
+  { content: '10:00', value: '10:00', id: '3' },
+  { content: '10:30', value: '10:30', id: '4' },
+  { content: '11:00', value: '11:00', id: '5' },
+  { content: '11:30', value: '11:30', id: '6' },
+  { content: '12:00', value: '12:00', id: '7' },
+  { content: '12:30', value: '12:30', id: '8' },
+  { content: '13:00', value: '13:00', id: '9' },
+  { content: '13:30', value: '13:30', id: '10' },
+  { content: '14:00', value: '14:00', id: '11' },
+  { content: '14:30', value: '14:30', id: '12' },
+  { content: '15:00', value: '15:00', id: '13' },
+  { content: '15:30', value: '15:30', id: '14' },
+  { content: '16:00', value: '16:00', id: '15' },
+  { content: '16:30', value: '16:30', id: '16' },
+  { content: '17:00', value: '17:00', id: '17' },
+  { content: '17:30', value: '17:30', id: '18' },
+];
 
 export default class DataServico extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -17,12 +40,15 @@ export default class DataServico extends Component {
     super(props);
     this.state = {
       selectedStartDate: '',
-      hora: "09:00",
+      hora: "--:--",
+      horarios: horariosParaAtendimento.slice(0, horariosParaAtendimento.length - 1),
+      horaDefinida: false,
       horaFim: "10:00",
+      horariosFim: horariosParaAtendimento.slice(1),
       necessidade: null,
       categoriaPedido: null,
       urgencia: '',
-      formInvalid: false
+      formInvalid: false,
     };
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -37,13 +63,25 @@ export default class DataServico extends Component {
   }
 
   onDateChange(date) {
+    this.scrollView.scrollToEnd({ animated: true });
     this.setState({
       selectedStartDate: `${date._i.day}/${+date._i.month + 1}/${date._i.year}`,
     });
   }
 
+  setHora = (hora) => {
+    this.setState({ hora: hora.value, horaDefinida: false }, () => {
+      if (hora.value !== '--:--') {
+        const horaIndex = horariosParaAtendimento.indexOf(hora);
+        const horariosFim = horariosParaAtendimento.slice(horaIndex + 1);
+
+        this.setState({ horariosFim, horaDefinida: true });
+      }
+    });
+  }
+
   validarDataPedido = () => {
-    if (!!this.state.selectedStartDate === false) {
+    if (!!this.state.selectedStartDate === false || this.state.hora === '--:--') {
       this.setState({ formInvalid: true });
     } else {
       const dateSplit = this.state.selectedStartDate.split('/');
@@ -66,25 +104,23 @@ export default class DataServico extends Component {
       <ImageBackground
         style={this.dataStyles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
-        <ScrollView>
+        <ScrollView ref={(view) => {
+          this.scrollView = view;
+        }}>
           <Modal
             animationType="slide"
             transparent={true}
             visible={this.state.formInvalid}
           ><View
-            style={{
-              flex: 1, alignItems: 'center',
-              justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
-            }}>
+            style={this.dataStyles.modalDialogContainer}>
               <View style={this.dataStyles.modalDialogContent}>
                 <Text style={this.dataStyles.modalErrosTitulo}>Erros:</Text>
-                <Text style={{ fontSize: 18, marginVertical: 10 }}>{'Por favor defina uma data'}</Text>
-                <TouchableOpacity style={{
-                  width: 320, height: 45,
-                  backgroundColor: colors.verdeFinddo, alignItems: 'center',
-                  justifyContent: 'center', borderRadius: 20,
-                  marginBottom: 10
-                }} onPress={() => this.setState({ formInvalid: false })}>
+                <Text style={this.dataStyles.modalErrosContent}>
+                  {'Por favor defina uma data e uma faixa horário de preferência.'}
+                </Text>
+                <TouchableOpacity
+                  style={this.dataStyles.modalErrosVoltarButton}
+                  onPress={() => this.setState({ formInvalid: false })}>
                   <Text style={{ fontSize: 18, color: colors.branco }}>VOLTAR</Text>
                 </TouchableOpacity>
               </View>
@@ -92,102 +128,66 @@ export default class DataServico extends Component {
           </Modal>
           <View style={{
             flex: 1, alignItems: 'center',
-            justifyContent: 'flex-start', height: 500,
+            justifyContent: 'flex-start'
           }}>
             <View style={this.dataStyles.container}>
               <CalendarPicker
                 onDateChange={this.onDateChange}
                 weekdays={['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']}
-                months={['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']}
+                months={['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio',
+                  'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']}
                 previousTitle="Anterior" nextTitle="Próximo"
                 todayBackgroundColor={colors.cinza} selectedDayColor={colors.verdeFinddo}
                 minDate={initialDate} maxDate={finalDate}
               />
             </View>
             <View style={{ alignItems: 'center', marginTop: 30 }}>
-              <Text style={{ fontSize: 18 }}>Data Selecionada: {this.state.selectedStartDate}</Text>
+              <Text style={{ fontSize: 18, marginHorizontal: 10, width: 280 }}>
+                {'Escolha a melhor data e faixa de horário para seu atendimento:'}
+              </Text>
+              <Text style={{ fontSize: 18, marginHorizontal: 10, marginTop: 10 }}>
+                {this.state.selectedStartDate}
+              </Text>
             </View>
-            <View style={{
-              marginTop: 30, width: 340,
-              height: 55, flexDirection: 'row',
-              alignContent: 'center', justifyContent: 'space-around'
-            }}>
+            <View style={this.dataStyles.definirDataHoraContainer}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 18 }}>Início:</Text>
+                <Text style={{ fontSize: 18 }}>Entre:</Text>
               </View>
-              <View
-                style={this.dataStyles.selectStyle}>
-                <Picker
-                  selectedValue={this.state.hora}
-                  style={{
-                    height: 50, width: '100%'
-                  }}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({ hora: itemValue })
-                  }>
-                  <Picker.Item label="09:00" value="09:00" />
-                  <Picker.Item label="09:30" value="09:30" />
-                  <Picker.Item label="10:00" value="10:00" />
-                  <Picker.Item label="10:30" value="10:30" />
-                  <Picker.Item label="11:00" value="11:00" />
-                  <Picker.Item label="11:30" value="11:30" />
-                  <Picker.Item label="12:00" value="12:00" />
-                  <Picker.Item label="12:30" value="12:30" />
-                  <Picker.Item label="13:00" value="13:00" />
-                  <Picker.Item label="13:30" value="13:30" />
-                  <Picker.Item label="14:00" value="14:00" />
-                  <Picker.Item label="14:30" value="14:30" />
-                  <Picker.Item label="15:00" value="15:00" />
-                  <Picker.Item label="15:30" value="15:30" />
-                  <Picker.Item label="16:00" value="16:00" />
-                  <Picker.Item label="16:30" value="16:30" />
-                  <Picker.Item label="17:00" value="17:00" />
-                  <Picker.Item label="17:30" value="17:30" />
-                </Picker>
-              </View>
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 18 }}>Fim:</Text>
-              </View>
-              <View
-                style={this.dataStyles.selectStyle}>
-                <Picker
-                  selectedValue={this.state.horaFim}
-                  style={{
-                    height: 50, width: '100%'
-                  }}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({ horaFim: itemValue })
-                  }>
-                  <Picker.Item label="09:00" value="09:00" />
-                  <Picker.Item label="09:30" value="09:30" />
-                  <Picker.Item label="10:00" value="10:00" />
-                  <Picker.Item label="10:30" value="10:30" />
-                  <Picker.Item label="11:00" value="11:00" />
-                  <Picker.Item label="11:30" value="11:30" />
-                  <Picker.Item label="12:00" value="12:00" />
-                  <Picker.Item label="12:30" value="12:30" />
-                  <Picker.Item label="13:00" value="13:00" />
-                  <Picker.Item label="13:30" value="13:30" />
-                  <Picker.Item label="14:00" value="14:00" />
-                  <Picker.Item label="14:30" value="14:30" />
-                  <Picker.Item label="15:00" value="15:00" />
-                  <Picker.Item label="15:30" value="15:30" />
-                  <Picker.Item label="16:00" value="16:00" />
-                  <Picker.Item label="16:30" value="16:30" />
-                  <Picker.Item label="17:00" value="17:00" />
-                  <Picker.Item label="17:30" value="17:30" />
-                </Picker>
-              </View>
+              <CustomPicker
+                style={this.dataStyles.selectStyle}
+                items={this.state.horarios}
+                onSelect={this.setHora}
+              />
+              {(() => {
+                if (this.state.horaDefinida) {
+                  return (
+                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                      <Text style={{ fontSize: 18 }}>E:</Text>
+                    </View>);
+                } else { return (null); }
+              })()}
+              {(() => {
+                if (this.state.horaDefinida) {
+                  return (
+                    <CustomPicker
+                      style={this.dataStyles.selectStyle}
+                      items={this.state.horariosFim}
+                      onSelect={({ value }) => this.setState({ horaFim: value })}
+                    />);
+                } else {
+                  return (null);
+                }
+              })()}
             </View>
-          </View>
-          <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity
-              style={this.dataStyles.continuarButton}
-              onPress={() => this.validarDataPedido()}>
-              <Text style={this.dataStyles.continuarButtonText}>CONTINUAR</Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
+        <View style={{ marginVertical: 10, alignItems: 'center' }}>
+          <TouchableOpacity
+            style={this.dataStyles.continuarButton}
+            onPress={() => this.validarDataPedido()}>
+            <Text style={this.dataStyles.continuarButtonText}>CONTINUAR</Text>
+          </TouchableOpacity>
+        </View>
       </ImageBackground>
     );
   }
@@ -205,13 +205,17 @@ export default class DataServico extends Component {
     continuarButton:
     {
       width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
     },
     continuarButtonText:
     {
-      textAlignVertical: 'center', height: 45,
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
+    },
+    modalDialogContainer: {
+      flex: 1, alignItems: 'center',
+      justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
     },
     modalDialogContent: {
       backgroundColor: colors.branco, width: 340,
@@ -219,5 +223,19 @@ export default class DataServico extends Component {
       alignItems: 'center'
     },
     modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
+    modalErrosContent: {
+      fontSize: 18, marginVertical: 10
+    },
+    modalErrosVoltarButton: {
+      width: 320, height: 45,
+      backgroundColor: colors.verdeFinddo, alignItems: 'center',
+      justifyContent: 'center', borderRadius: 20,
+      marginBottom: 10
+    },
+    definirDataHoraContainer: {
+      marginTop: 30, width: 340,
+      height: 55, flexDirection: 'row',
+      alignContent: 'center', justifyContent: 'space-around'
+    }
   });
 }

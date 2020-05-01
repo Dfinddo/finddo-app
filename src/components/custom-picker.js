@@ -100,7 +100,7 @@ const customPickerStyles = StyleSheet.create({
     flex: 1, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between'
   },
-  rotuloSelecionado: { marginLeft: 10 },
+  rotuloSelecionado: { marginLeft: 10, fontSize: 18 },
   setaDropdown: { width: 35 },
   modalSelecaoContainer: {
     flex: 1, backgroundColor: colors.transparenciaModais,

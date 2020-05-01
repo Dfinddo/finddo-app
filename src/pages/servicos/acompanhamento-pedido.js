@@ -184,7 +184,10 @@ export default class AcompanhamentoPedido extends Component {
             //onDidBlur={payload => console.log('did blur', payload)}
             />
             <View>
-              <Text>Não há pedido ativo, selecione um pedido em andamento na aba histórico para acompanhar seu estado</Text>
+              <Text style={{
+                paddingHorizontal: 20, fontSize: 18,
+                paddingTop: 20
+              }}>Não há pedido ativo, selecione um pedido em andamento na aba histórico para acompanhar seu estado.</Text>
             </View>
           </View>
         </ImageBackground>

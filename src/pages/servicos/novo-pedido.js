@@ -3,11 +3,12 @@ import {
   Text, TextInput,
   View, StyleSheet,
   Image, TouchableOpacity,
-  Picker, Modal,
+  Modal,
   ScrollView, SectionList,
   ImageBackground
 } from 'react-native';
 import { colors } from '../../colors';
+import { CustomPicker } from '../../components/custom-picker';
 
 function Item({ title }) {
   return (
@@ -18,9 +19,9 @@ function Item({ title }) {
 }
 
 const urgenciaValues = [
-  { text: 'Grau de necessidade do servico', value: '' },
-  { text: 'Com urgência', value: 'definir-data' },
-  { text: 'Sem urgência', value: 'semana' },
+  { content: 'Necessidade do serviço', value: '', id: '0' },
+  { content: 'Com urgência', value: 'definir-data', id: '1' },
+  { content: 'Sem urgência', value: 'semana', id: '2' },
 ];
 
 export default class NovoPedido extends Component {
@@ -58,6 +59,10 @@ export default class NovoPedido extends Component {
     this.setState({ imageServicoUrl: categoriaSelecionada.image_url });
 
     this.obterCategoria();
+  };
+
+  setUrgencia = ({ value }) => {
+    this.setState({ urgencia: value });
   };
 
   obterCategoria = () => {
@@ -179,29 +184,24 @@ export default class NovoPedido extends Component {
                 value={this.state.necessidade}
               />
 
-              <Picker
-                selectedValue={this.state.urgencia}
-                style={{
-                  height: 80, width: '100%', flex: 1
-                }}
-                onValueChange={(itemValue, itemIndex) =>
-                  this.setState({ urgencia: itemValue })
-                }>
-                <Picker.Item label={urgenciaValues[0].text} value={urgenciaValues[0].value} />
-                <Picker.Item label={urgenciaValues[1].text} value={urgenciaValues[1].value} />
-                <Picker.Item label={urgenciaValues[2].text} value={urgenciaValues[2].value} />
-              </Picker>
+              <CustomPicker
+                style={this.novoPedidoStyle.selectUrgenciaContainer}
+                items={urgenciaValues}
+                onSelect={this.setUrgencia}
+              />
 
             </View>
-            <TouchableOpacity
-              style={this.novoPedidoStyle.continuarButton}
-              onPress={() => {
-                this.validaNecessiade();
-              }}>
-              <Text style={this.novoPedidoStyle.continuarButtonText}>CONTINUAR</Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
+        <View style={this.novoPedidoStyle.continuarButtonContainer}>
+          <TouchableOpacity
+            style={this.novoPedidoStyle.continuarButton}
+            onPress={() => {
+              this.validaNecessiade();
+            }}>
+            <Text style={this.novoPedidoStyle.continuarButtonText}>CONTINUAR</Text>
+          </TouchableOpacity>
+        </View>
       </ImageBackground>
     );
   }
@@ -218,15 +218,19 @@ export default class NovoPedido extends Component {
       borderStyle: 'solid', borderWidth: 2,
       borderColor: colors.verdeFinddo, width: '100%'
     },
+    continuarButtonContainer: {
+      marginVertical: 10,
+      width: '100%', height: 45,
+      alignItems: 'center', justifyContent: 'center'
+    },
     continuarButton:
     {
-      marginTop: 20,
       width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
     },
     continuarButtonText:
     {
-      textAlignVertical: 'center', height: 45,
       fontSize: 18, color: colors.branco,
       textAlign: 'center'
     },
@@ -249,6 +253,16 @@ export default class NovoPedido extends Component {
     modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
     modalErrosSectionList: { maxHeight: '60%', width: '100%' },
     modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo }
+    modalErrosBotaoContinuar: {
+      marginTop: 40, marginBottom: 10,
+      width: 320, height: 45,
+      borderRadius: 20, backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
+    },
+    selectUrgenciaContainer: {
+      height: 60, borderWidth: 2,
+      borderColor: colors.verdeFinddo,
+      marginTop: 10
+    }
   });
 }

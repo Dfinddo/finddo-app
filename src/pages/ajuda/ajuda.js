@@ -10,6 +10,7 @@ import { colors } from '../../colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { termos } from '../cadastros/termos';
 import { sobre } from './sobre-o-app';
+import { politica } from '../cadastros/politica';
 
 export default class AjudaScreen extends Component {
   static navigationOptions = {
@@ -25,6 +26,7 @@ export default class AjudaScreen extends Component {
     faleConoscoIsOpened: false,
     termosIsOpened: false,
     sobreIsOpened: false,
+    politicaPrivacidadeIsOpened: false
   };
 
   openChat = () => {
@@ -67,6 +69,12 @@ export default class AjudaScreen extends Component {
                 onPress={() => this.changeTermosIsOpenedState()}
                 content={termos}></AccordianInfoApp>
               <View style={{ height: 5 }} />
+              <AccordianInfoApp
+                titulo={'Politica de privacidade'}
+                opened={this.state.politicaPrivacidadeIsOpened}
+                onPress={() => this.changePoliticaIsOpenedState()}
+                content={politica}></AccordianInfoApp>
+              <View style={{ height: 5 }} />
               <AccordianInfoContato
                 opened={this.state.faleConoscoIsOpened}
                 onPress={() => this.changeFaleConoscoIsOpenedState()}
@@ -83,6 +91,11 @@ export default class AjudaScreen extends Component {
     const value = this.state.termosIsOpened;
     this.setState({ termosIsOpened: !value });
   };
+
+  changePoliticaIsOpenedState = () => {
+    const value = this.state.politicaPrivacidadeIsOpened;
+    this.setState({ politicaPrivacidadeIsOpened: !value });
+  }
 
   changeSobreIsOpenedState = () => {
     const value = this.state.sobreIsOpened;

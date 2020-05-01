@@ -16,7 +16,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 export default class EnderecosScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: <HeaderFundoTransparente />
+    headerTitle: <HeaderFundoTransparente />,
+    headerBackTitle: 'Voltar'
   };
 
   constructor(props) {
@@ -61,7 +62,7 @@ export default class EnderecosScreen extends Component {
       <ImageBackground
         style={this.enderecosScreenStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
-        <View style={{ height: 50 }}></View>
+        <View style={{ height: 70 }}></View>
         <ScrollView>
           <Modal
             animationType="slide"
@@ -90,17 +91,21 @@ export default class EnderecosScreen extends Component {
               <ListaDeEnderecos
                 navigation={this.props.navigation}
                 enderecos={this.state.enderecos}
-                comp={this}></ListaDeEnderecos>
+                comp={this}
+              />
             </View>
           </View>
-          <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>
-            <TouchableOpacity
-              style={this.enderecosScreenStyle.sairButton}
-              onPress={() => { this.props.navigation.navigate('CreateEditAddress') }}>
-              <Text style={this.enderecosScreenStyle.sairButtonText}>ADICIONAR ENDEREÇO</Text>
-            </TouchableOpacity>
-          </View>
         </ScrollView>
+        <View style={{
+          alignItems: 'center', justifyContent: 'center',
+          height: 60, paddingBottom: 10
+        }}>
+          <TouchableOpacity
+            style={this.enderecosScreenStyle.sairButton}
+            onPress={() => { this.props.navigation.navigate('CreateEditAddress') }}>
+            <Text style={this.enderecosScreenStyle.sairButtonText}>ADICIONAR ENDEREÇO</Text>
+          </TouchableOpacity>
+        </View>
       </ImageBackground>
     );
   }
@@ -108,8 +113,16 @@ export default class EnderecosScreen extends Component {
   enderecosScreenStyle = StyleSheet.create({
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     backgroundImageContent: { width: '100%', height: '100%' },
-    sairButton: { marginTop: 10, width: 340, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    sairButtonText: { textAlignVertical: 'center', height: 45, fontSize: 18, color: colors.branco, textAlign: 'center' },
+    sairButton: {
+      marginTop: 10, width: 340,
+      height: 45, borderRadius: 20,
+      backgroundColor: colors.verdeFinddo,
+      alignItems: 'center', justifyContent: 'center'
+    },
+    sairButtonText: {
+      fontSize: 18, color: colors.branco,
+      textAlign: 'center'
+    },
     enderecosFormSizeAndFont:
     {
       fontSize: 18,
