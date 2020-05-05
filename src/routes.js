@@ -44,15 +44,12 @@ const AppStack = createStackNavigator(
     FotosPedido: FotosPedido,
     FormAddEndereco: FormEnderecoScreen,
     FormAddCartao: FormCartaoScreen,
-    // MeusPedidos: MeusPedidos,
-    // AcompanhamentoPedido: AcompanhamentoPedido,
-    // Acompanhamento: TelaFinalPedidoScreen,
     DefinirData: DataServico,
     CameraPedido: CameraPedidoComponent,
 
     Redirecionador: RedirecionadorIndex,
-    /* rotas do profissional */
 
+    /* rotas do profissional */
     IndexProfissional: IndexProfissional
   },
   {
@@ -89,8 +86,6 @@ const MeusPedidosStack = createStackNavigator(
     MeusPedidos: MeusPedidos,
     RedirecionadorPedidos: RedirecionadorPedidos,
     MeusPedidosProfissional: MeusPedidosProfissional
-    // AcompanhamentoPedido: AcompanhamentoPedido,
-    // Acompanhamento: TelaFinalPedidoScreen,
   },
   { initialRouteName: 'RedirecionadorPedidos' }
 );
@@ -193,8 +188,6 @@ const AppContainer = createAppContainer(createSwitchNavigator(
 export default class App extends Component {
   constructor(props) {
     super(props);
-    // ============================ ATENÇÃO ============================
-    // ================ NUNCA COMMITAR O ID DA APLICAÇÃO ===============
     OneSignal.init(developConfig.oneSignalApiKey);
 
     OneSignal.addEventListener('received', this.onReceived);

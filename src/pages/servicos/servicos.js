@@ -123,7 +123,7 @@ export default class Servicos extends Component {
     return (
       <View style={{ marginTop: 8 }}>
         <Text style={{ marginLeft: 4, fontWeight: 'bold', fontSize: 20 }}>{item.name}</Text>
-        <TouchableOpacity onPress={() => this.verificarCartoes(item)}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('NovoPedido', { item })}>
           <Image
             style={{
               marginTop: 4, borderRadius: 16,
@@ -138,14 +138,16 @@ export default class Servicos extends Component {
   verificaUsuarioTutorial = async () => {
     const usuarios = await AsyncStorage.getItem('tutoriais');
 
+    // mudar forma, agora tutorial sera uma variavel no storage com base apenas
+    // no fato do app ter sido instalado e o tutorial nunca visto
     if (usuarios) {
       const arr = [...JSON.parse(usuarios)];
       const encontrado = arr.find(el => el === TokenService.getInstance().getUser().email)
       if (!encontrado) {
-        this.setState({ isShowingTutorial: true });
+        // this.setState({ isShowingTutorial: true });
       }
     } else {
-      this.setState({ isShowingTutorial: true });
+      // this.setState({ isShowingTutorial: true });
     }
   };
 
@@ -173,12 +175,12 @@ export default class Servicos extends Component {
         <View style={this.servicosStyles.container}>
           <NavigationEvents
             onWillFocus={_ => {
-              const cartaoService = CartaoFormService.getInstance();
-              if (!cartaoService.isAdicionarNovoCard()) {
-                this.verificaUsuarioTutorial();
-              } else {
-                cartaoService.setAdicionarNovoCard(false);
-              }
+              //const cartaoService = CartaoFormService.getInstance();
+              //if (!cartaoService.isAdicionarNovoCard()) {
+              //this.verificaUsuarioTutorial();
+              //} else {
+              //cartaoService.setAdicionarNovoCard(false);
+              //}
             }}
           //onDidFocus={payload => console.log('did focus', payload)}
           //onWillBlur={payload => console.log('will blur', payload)}

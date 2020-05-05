@@ -45,11 +45,12 @@ export default class AuthLoadingScreen extends Component {
           }
         ).finally(
           () => {
-            this.props.navigation.navigate(tokenValid ? 'App' : 'Auth');
+            // a partir de agora sera redirecionado para app sempre
+            this.props.navigation.navigate('App');
           }
         );
     } else {
-      this.props.navigation.navigate('Auth');
+      this.props.navigation.navigate('App');
     }
   };
 
