@@ -36,16 +36,17 @@ import { finddoLogoNavegacao } from './img/svg/finddo-logo-navegacao';
 import { developConfig, productionConfig } from '../credenciais-e-configuracoes';
 import TokenService from './services/token-service';
 import SplashScreen from 'react-native-splash-screen';
+import FormEnderecoPedidoScreen from './pages/servicos/form-endereco-pedido';
 
 const AppStack = createStackNavigator(
   {
     Services: Servicos,
     NovoPedido: NovoPedido,
     FotosPedido: FotosPedido,
-    FormAddEndereco: FormEnderecoScreen,
     FormAddCartao: FormCartaoScreen,
     DefinirData: DataServico,
     CameraPedido: CameraPedidoComponent,
+    FormAddEndereco: FormEnderecoPedidoScreen,
 
     Redirecionador: RedirecionadorIndex,
 
@@ -137,6 +138,16 @@ const AuthStack = createStackNavigator(
   }
 );
 
+const CadastroStack = createStackNavigator(
+  {
+    CadastroParteUm: PrimeiraParte,
+    CadastroParteDois: SegundaParte
+  },
+  {
+    initialRouteName: 'CadastroParteUm'
+  }
+);
+
 const TabMenu = createBottomTabNavigator(
   {
     Serviços: ServicosStack,
@@ -179,6 +190,7 @@ const AppContainer = createAppContainer(createSwitchNavigator(
     App: TabMenu,
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStack,
+    Cadastro: CadastroStack
   },
   {
     initialRouteName: 'AuthLoading',

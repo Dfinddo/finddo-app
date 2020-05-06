@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { Modal, Image, ImageBackground, Text, FlatList, StyleSheet, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
-import moipAPI, { headersOauth2 } from '../../services/moip-api';
+import {
+  Modal, Image,
+  ImageBackground, Text,
+  FlatList, StyleSheet,
+  TouchableOpacity, View,
+} from 'react-native';
 import { colors } from '../../colors';
-import TokenService from '../../services/token-service';
 import { SvgXml } from 'react-native-svg';
 import { bolaCheia } from '../../img/svg/bola-cheia';
 import { bolaApagada } from '../../img/svg/bola-apagada';
@@ -13,8 +16,6 @@ import { passo2 } from '../../img/svg/passo-2';
 import { passo3 } from '../../img/svg/passo-3';
 import { fechar } from '../../img/svg/fechar';
 import AsyncStorage from '@react-native-community/async-storage';
-import { NavigationEvents } from 'react-navigation';
-import CartaoFormService from '../../services/cartao-form-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -33,88 +34,14 @@ export default class Servicos extends Component {
       { id: '7', name: 'Consertos em geral', image_url: require('../../img/consertos.png') },
       { id: '8', name: null }
     ],
-    page: 1,
     isLoading: false,
     isShowingTutorial: false,
     currentTutorialStep: 0
   };
 
-  creditCardFilter = (data) => {
-    return data.method === "CREDIT_CARD";
-  };
-
-  exibirAlertSemCartoes = () => {
-    Alert.alert(
-      'Forma de pagamento ainda não cadastrada',
-      'Por favor adicione um cartão para pagamento',
-      [
-        { text: 'Cancelar', onPress: () => { } },
-        {
-          text: 'Adicionar Cartão', onPress: () => {
-            CartaoFormService.getInstance().setAdicionarNovoCard(true);
-            this.props.navigation.navigate('FormAddCartao');
-          }
-        },
-      ]
-    );
-  };
-
-  verificarCartoes = (item) => {
-    this.setState({ isLoading: true }, () => {
-      const tokenService = TokenService.getInstance();
-
-      moipAPI.get('/customers/' + tokenService.getUser().customer_wirecard_id, { headers: headersOauth2 })
-        .then((data) => {
-          const clientData = data.data;
-          if (clientData.fundingInstruments) {
-            const cardData = clientData.fundingInstruments.filter(data => this.creditCardFilter(data));
-
-            if (cardData.length > 0) {
-              this.props.navigation.navigate('NovoPedido', { item })
-            } else {
-              this.exibirAlertSemCartoes();
-            }
-          } else {
-            this.exibirAlertSemCartoes();
-          }
-        })
-        .catch(error => {
-          if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            Alert.alert(
-              'Erro',
-              'Verifique sua conexão e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            Alert.alert(
-              'Falha ao se conectar',
-              'Verifique sua conexão e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          } else {
-            /* Something happened in setting up the request and triggered an Error */
-          }
-        })
-        .finally(_ => {
-          this.setState({ isLoading: false });
-        });
-    })
-  };
+  componentDidMount() {
+    this.verificaRealizacaoTutorial();
+  }
 
   exibirItem = (item) => {
     if (item.name === null) {
@@ -135,34 +62,19 @@ export default class Servicos extends Component {
     );
   }
 
-  verificaUsuarioTutorial = async () => {
-    const usuarios = await AsyncStorage.getItem('tutoriais');
+  /**
+   * Verifica se o app já executou o tutorial no aparelho em que está instalado
+   */
+  verificaRealizacaoTutorial = async () => {
+    const jaRealizou = await AsyncStorage.getItem('tutorial-realizado');
 
-    // mudar forma, agora tutorial sera uma variavel no storage com base apenas
-    // no fato do app ter sido instalado e o tutorial nunca visto
-    if (usuarios) {
-      const arr = [...JSON.parse(usuarios)];
-      const encontrado = arr.find(el => el === TokenService.getInstance().getUser().email)
-      if (!encontrado) {
-        // this.setState({ isShowingTutorial: true });
-      }
-    } else {
-      // this.setState({ isShowingTutorial: true });
+    if (!jaRealizou) {
+      this.setState({ isShowingTutorial: true });
     }
   };
 
-  adicionarUsuarioTutorial = async () => {
-    const usuarios = await AsyncStorage.getItem('tutoriais');
-
-    if (!usuarios) {
-      const arr = [];
-      arr.push(TokenService.getInstance().getUser().email);
-      AsyncStorage.setItem('tutoriais', JSON.stringify(arr));
-    } else {
-      const arr = JSON.parse(usuarios);
-      arr.push(TokenService.getInstance().getUser().email);
-      AsyncStorage.setItem('tutoriais', JSON.stringify(arr));
-    }
+  marcarTutorialRealizado = async () => {
+    await AsyncStorage.setItem('tutorial-realizado', 'true');
 
     this.setState({ isShowingTutorial: false });
   }
@@ -173,30 +85,6 @@ export default class Servicos extends Component {
         style={this.servicosStyles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <View style={this.servicosStyles.container}>
-          <NavigationEvents
-            onWillFocus={_ => {
-              //const cartaoService = CartaoFormService.getInstance();
-              //if (!cartaoService.isAdicionarNovoCard()) {
-              //this.verificaUsuarioTutorial();
-              //} else {
-              //cartaoService.setAdicionarNovoCard(false);
-              //}
-            }}
-          //onDidFocus={payload => console.log('did focus', payload)}
-          //onWillBlur={payload => console.log('will blur', payload)}
-          //onDidBlur={payload => console.log('did blur', payload)}
-          />
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={this.state.isLoading}
-          >
-            <View style={this.servicosStyles.modalStyle}>
-              <View>
-                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
-              </View>
-            </View>
-          </Modal>
           <Modal
             animationType="slide"
             transparent={true}
@@ -213,7 +101,7 @@ export default class Servicos extends Component {
                   alignItems: 'center', justifyContent: 'center'
                 }}>
                 <TouchableOpacity
-                  onPress={() => this.adicionarUsuarioTutorial()}
+                  onPress={() => this.marcarTutorialRealizado()}
                   style={{ marginHorizontal: 10, top: 10, left: 280, position: 'absolute' }}>
                   <SvgXml
                     xml={fechar}
@@ -331,7 +219,7 @@ export default class Servicos extends Component {
                                 backgroundColor: colors.verdeFinddo, borderRadius: 20,
                                 width: 240, height: 45
                               }}
-                              onPress={() => this.adicionarUsuarioTutorial()}>
+                              onPress={() => this.marcarTutorialRealizado()}>
                               <Text style={{ fontSize: 20, color: colors.branco }}>CONCLUIR</Text>
                             </TouchableOpacity>
                           );

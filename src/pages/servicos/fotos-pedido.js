@@ -158,7 +158,7 @@ export default class FotosPedido extends Component {
   };
 
   confirmarPedido = () => {
-    this.setState({ isConfirming: true });
+    this.props.navigation.navigate('FormAddEndereco');
   };
 
   fecharDialogConfirmacaoSemConfirmarPedido = () => {
@@ -193,10 +193,10 @@ export default class FotosPedido extends Component {
           FotoService.getInstance().setFotoData(null);
           this.setState({ isLoading: false }, () => {
             console.log('update state');
-            
+
             setTimeout(() => {
               console.log('stack actions');
-              
+
               const resetAction = StackActions.reset({
                 index: 0,
                 actions: [NavigationActions.navigate({ routeName: 'Services' })],
@@ -312,18 +312,9 @@ export default class FotosPedido extends Component {
             <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
               <NavigationEvents
                 onWillFocus={_ => {
-                  const enderecoService = EnderecoFormService.getInstance();
-                  if (!enderecoService.isAdicionarNovoEndServico()) {
-                    this.setState({ isLoading: true }, () => {
-                      setTimeout(() => { this.obterFoto() }, 1000);
-                    })
-                  } else {
-                    enderecoService.setAdicionarNovoEndServico(false);
-                    this.setState({ isLoading: true }, () => {
-                      this.selecionarEndereco();
-                    });
-                  }
-                  // this.setState({ isLoading: true }, () => { this.obterFoto1() });
+                  this.setState({ isLoading: true }, () => {
+                    setTimeout(() => { this.obterFoto() }, 1000);
+                  })
                 }}
               //onDidFocus={_ => this.obterFoto1()}
               //onWillBlur={payload => console.log('will blur', payload)}
@@ -378,7 +369,7 @@ export default class FotosPedido extends Component {
         <View style={this.fotosPedidoStyles.botaoContainer}>
           <TouchableOpacity
             style={this.fotosPedidoStyles.botaoContinuar}
-            onPress={() => /*this.confirmarPedido()*/ this.selecionarEndereco()}>
+            onPress={() => this.confirmarPedido()}>
             <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>

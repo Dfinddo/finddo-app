@@ -56,19 +56,11 @@ export default class NovoPedido extends Component {
       return cat.id === categoria.id;
     });
 
-    this.setState({ imageServicoUrl: categoriaSelecionada.image_url });
-
-    this.obterCategoria();
+    this.setState({ imageServicoUrl: categoriaSelecionada.image_url, categoriaPedido: categoria });
   };
 
   setUrgencia = ({ value }) => {
     this.setState({ urgencia: value });
-  };
-
-  obterCategoria = () => {
-    const { navigation } = this.props;
-    const categoriaPedido = navigation.getParam('item', 'no item');
-    this.setState({ categoriaPedido });
   };
 
   validaNecessiade = () => {
