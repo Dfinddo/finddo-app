@@ -8,10 +8,10 @@ import {
   Keyboard
 } from 'react-native';
 import { colors } from '../../colors';
-import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
-import { StackActions } from 'react-navigation';
+import axios from 'axios';
+import PedidoCorrenteService from '../../services/pedido-corrente-service';
 
 function Item({ title }) {
   return (
@@ -106,7 +106,10 @@ export default class FormEnderecoPedidoScreen extends Component {
     address['number'] = this.state.numero;
     address['complement'] = this.state.complemento;
     address['selected'] = this.state.selected;
-    address['user_id'] = tokenService.getUser().id;
+
+    if (tokenService.getUser()) {
+      address['user_id'] = tokenService.getUser().id;
+    }
 
     return address;
   }
@@ -117,9 +120,6 @@ export default class FormEnderecoPedidoScreen extends Component {
   }
 
   validateFields = () => {
-    this.salvarEndereco();
-    return;
-
     const numberRegex = /^[0-9]*$/;
 
     const errosArr = [];
@@ -217,8 +217,14 @@ export default class FormEnderecoPedidoScreen extends Component {
   };
 
   salvarEndereco = async () => {
-    // const address = this.obterEndereco();
+    const address = this.obterEndereco();
     const tokenService = TokenService.getInstance();
+    const pedidoService = PedidoCorrenteService.getInstance();
+
+    const pedido = pedidoService.getPedidoCorrente();
+    pedido['address'] = address;
+
+    console.log(pedido);
 
     if (!tokenService.getUser()) {
       Alert.alert(
@@ -226,9 +232,11 @@ export default class FormEnderecoPedidoScreen extends Component {
         'Para poder continuar com seu pedido, '
         + 'você precisa estar logado no Finddo',
         [
-          { text: 'Cancelar', onPress: () => {
-            // lógica para remover o pedido
-          } },
+          {
+            text: 'Cancelar', onPress: () => {
+              // lógica para remover o pedido
+            }
+          },
           {
             text: 'Login', onPress: () => {
               this.props.navigation.navigate('Auth');
@@ -298,6 +306,22 @@ export default class FormEnderecoPedidoScreen extends Component {
                 placeholder="CEP"
                 keyboardType={'number-pad'}
                 value={this.state.cep}
+                onBlur={() => {
+                  if (this.state.cep.length === 8) {
+                    this.setState({ isLoading: true }, () => {
+                      axios.create({
+                        baseURL: 'https://viacep.com.br/ws'
+                      })
+                        .get(`${this.state.cep}/json`)
+                        .then(response => {
+                          const { bairro, logradouro, complemento } = response.data;
+
+                          this.setState({ bairro, rua: logradouro, complemento, isLoading: false });
+                        })
+                        .catch(_ => this.setState({ isLoading: false }))
+                    });
+                  }
+                }}
               />
               <TextInput
                 style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
@@ -335,6 +359,7 @@ export default class FormEnderecoPedidoScreen extends Component {
                 style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ numero: text }) }}
                 placeholder="Número"
+                keyboardType="number-pad"
                 value={this.state.numero}
               />
               <TextInput

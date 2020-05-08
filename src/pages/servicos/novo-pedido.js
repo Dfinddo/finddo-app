@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { colors } from '../../colors';
 import { CustomPicker } from '../../components/custom-picker';
+import PedidoCorrenteService from '../../services/pedido-corrente-service';
 
 function Item({ title }) {
   return (
@@ -57,7 +58,18 @@ export default class NovoPedido extends Component {
     });
 
     this.setState({ imageServicoUrl: categoriaSelecionada.image_url, categoriaPedido: categoria });
+    this.obtemDadosPedidoCorrente();
   };
+
+  obtemDadosPedidoCorrente = () => {
+    const pedidoService = PedidoCorrenteService.getInstance();
+
+    const { necessidade, urgencia } = pedidoService.getPedidoCorrente();
+
+    if (necessidade && urgencia) {
+      this.setState({ necessidade, urgencia });
+    }
+  }
 
   setUrgencia = ({ value }) => {
     this.setState({ urgencia: value });
@@ -94,6 +106,7 @@ export default class NovoPedido extends Component {
     } else if (this.state.urgencia === 'definir-data') {
       this.setState({ confirmarEmergencia: true });
     } else if (this.state.urgencia === 'semana') {
+      this.adicionarMotivoEUrgenciaAoPedido();
       this.props
         .navigation.navigate('DefinirData',
           {
@@ -101,6 +114,18 @@ export default class NovoPedido extends Component {
             urgencia: this.state.urgencia
           });
     }
+  }
+
+  adicionarMotivoEUrgenciaAoPedido = async () => {
+    const pedidoService = PedidoCorrenteService.getInstance();
+    const pedido = await pedidoService.getPedidoCorrente();
+
+    pedido['necessidade'] = this.state.necessidade;
+    pedido['urgencia'] = this.state.urgencia;
+
+    await pedidoService.setPedidoCorrente(pedido);
+    console.log("==========PAGINA NOVO PEDIDO==========");
+    console.log(await pedidoService.getPedidoCorrente());
   }
 
   render() {
@@ -150,6 +175,7 @@ export default class NovoPedido extends Component {
                   <TouchableOpacity
                     style={this.novoPedidoStyle.modalErrosBotaoContinuar}
                     onPress={() => this.setState({ confirmarEmergencia: false }, () => {
+                      this.adicionarMotivoEUrgenciaAoPedido();
                       this.props
                         .navigation.navigate('DefinirData',
                           {
@@ -179,6 +205,8 @@ export default class NovoPedido extends Component {
               <CustomPicker
                 style={this.novoPedidoStyle.selectUrgenciaContainer}
                 items={urgenciaValues}
+                defaultItem={urgenciaValues
+                  .find((urg) => urg.value === this.state.urgencia)}
                 onSelect={this.setUrgencia}
               />
 

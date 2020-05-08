@@ -17,7 +17,7 @@ urgência da demanda e o envio de fotos é opcional.
 No último passo de sua solicitação o profissional ideal para o problema exposto irá até
 a sua residência no tempo informado. No App você poderá acompanhar o status de
 sua solicitação na aba “Serviço” e de demais solicitações que tenha feito na aba
-“Histórico”. Na visita o profissional informará qual será o valor do serviço, ficando a
+“Pedidos”. Na visita o profissional informará qual será o valor do serviço, ficando a
 sua escolha fechar ou não o trabalho com nossos parceiros.
 
 O profissional resolverá o problema imediatamente?

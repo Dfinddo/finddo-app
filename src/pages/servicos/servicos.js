@@ -16,6 +16,7 @@ import { passo2 } from '../../img/svg/passo-2';
 import { passo3 } from '../../img/svg/passo-3';
 import { fechar } from '../../img/svg/fechar';
 import AsyncStorage from '@react-native-community/async-storage';
+import PedidoCorrenteService from '../../services/pedido-corrente-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -43,6 +44,20 @@ export default class Servicos extends Component {
     this.verificaRealizacaoTutorial();
   }
 
+  setCategoriaPedido = (categoria) => {
+    const pedidoService = PedidoCorrenteService.getInstance();
+    let pedido = pedidoService.getPedidoCorrente();
+
+    if (!pedido) {
+      pedido = {};
+    }
+    pedido['category_id'] = categoria.id;
+
+    pedidoService.setPedidoCorrente(pedido);
+    console.log("==========PAGINA SERVICOS==========");
+    console.log(pedidoService.getPedidoCorrente());
+  }
+
   exibirItem = (item) => {
     if (item.name === null) {
       return (<View style={{ height: 20 }}></View>);
@@ -50,7 +65,10 @@ export default class Servicos extends Component {
     return (
       <View style={{ marginTop: 8 }}>
         <Text style={{ marginLeft: 4, fontWeight: 'bold', fontSize: 20 }}>{item.name}</Text>
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('NovoPedido', { item })}>
+        <TouchableOpacity onPress={() => {
+          this.setCategoriaPedido(item);
+          this.props.navigation.navigate('NovoPedido', { item });
+        }}>
           <Image
             style={{
               marginTop: 4, borderRadius: 16,

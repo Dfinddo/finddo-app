@@ -14,6 +14,7 @@ import VisualizarPedido from '../../components/modal-visualizar-pedido';
 import FotoService from '../../services/foto-service';
 import { ListaDeEnderecos } from '../../pages/perfil/enderecos';
 import EnderecoFormService from '../../services/endereco-form-service';
+import PedidoCorrenteService from '../../services/pedido-corrente-service';
 
 const fotoDefault = require('../../img/add_foto_problema.png');
 
@@ -158,8 +159,28 @@ export default class FotosPedido extends Component {
   };
 
   confirmarPedido = () => {
+    this.setFotosPedido();
     this.props.navigation.navigate('FormAddEndereco');
   };
+
+  setFotosPedido = () => {
+    const pedidoService = PedidoCorrenteService.getInstance();
+    const pedido = pedidoService.getPedidoCorrente();
+
+    pedido['fotosPedido'] = [];
+    if (this.state.foto1Setada) {
+      pedido['fotosPedido'].push(this.state.foto1);
+    }
+    if (this.state.foto2Setada) {
+      pedido['fotosPedido'].push(this.state.foto2);
+    }
+    if (this.state.foto3Setada) {
+      pedido['fotosPedido'].push(this.state.foto3);
+    }
+    if (this.state.foto4Setada) {
+      pedido['fotosPedido'].push(this.state.foto4);
+    }
+  }
 
   fecharDialogConfirmacaoSemConfirmarPedido = () => {
     this.setState({ isConfirming: false });

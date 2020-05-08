@@ -8,6 +8,7 @@ import CalendarPicker from 'react-native-calendar-picker';
 import { colors } from '../../colors';
 import { ScrollView } from 'react-native-gesture-handler';
 import { CustomPicker } from '../../components/custom-picker';
+import PedidoCorrenteService from '../../services/pedido-corrente-service';
 
 const horariosParaAtendimento = [
   { content: '--:--', value: '--:--', id: '0' },
@@ -34,12 +35,14 @@ const horariosParaAtendimento = [
 export default class DataServico extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: `${navigation.state.params.categoriaPedido.name}`,
+    headerBackTitle: 'Voltar'
   });
 
   constructor(props) {
     super(props);
     this.state = {
       selectedStartDate: '',
+      selectedDate: null,
       hora: "--:--",
       horarios: horariosParaAtendimento.slice(0, horariosParaAtendimento.length - 1),
       horaDefinida: false,
@@ -59,7 +62,22 @@ export default class DataServico extends Component {
     const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
     const urgencia = navigation.getParam('urgencia', 'no urgencia');
 
-    this.setState({ necessidade, categoriaPedido, urgencia });
+    const pedidoService = PedidoCorrenteService.getInstance();
+    const { dataPedido, hora, horaFim } = pedidoService.getPedidoCorrente();
+
+    if (dataPedido && hora && horaFim) {
+      const dateJoin = `${dataPedido.getDate()}/${dataPedido.getMonth() + 1}/${dataPedido.getFullYear()}`;
+      this.setState({
+        necessidade, categoriaPedido,
+        urgencia, hora,
+        horaFim, selectedStartDate: dateJoin,
+        horaDefinida: true, selectedDate: dataPedido
+      }, () => {
+        setTimeout(() => this.scrollView.scrollToEnd({ animated: true }), 500);
+      });
+    } else {
+      this.setState({ necessidade, categoriaPedido, urgencia });
+    }
   }
 
   onDateChange(date) {
@@ -75,7 +93,7 @@ export default class DataServico extends Component {
         const horaIndex = horariosParaAtendimento.indexOf(hora);
         const horariosFim = horariosParaAtendimento.slice(horaIndex + 1);
 
-        this.setState({ horariosFim, horaDefinida: true });
+        this.setState({ horaFim: horariosFim[0].value, horariosFim, horaDefinida: true });
       }
     });
   }
@@ -85,6 +103,7 @@ export default class DataServico extends Component {
       this.setState({ formInvalid: true });
     } else {
       const dateSplit = this.state.selectedStartDate.split('/');
+      this.setDataHorarioPedido();
       this.props
         .navigation.navigate('FotosPedido',
           {
@@ -94,6 +113,19 @@ export default class DataServico extends Component {
             horaFim: this.state.horaFim
           });
     }
+  }
+
+  setDataHorarioPedido = () => {
+    const dateSplit = this.state.selectedStartDate.split('/');
+    const pedidoService = PedidoCorrenteService.getInstance();
+    const pedido = pedidoService.getPedidoCorrente();
+
+    pedido['dataPedido'] = new Date(`${dateSplit[1]}/${dateSplit[0]}/${dateSplit[2]}`);
+    pedido['hora'] = this.state.hora;
+    pedido['horaFim'] = this.state.horaFim;
+
+    console.log("==========PAGINA DATA==========");
+    console.log(pedidoService.getPedidoCorrente());
   }
 
   render() {
@@ -138,7 +170,7 @@ export default class DataServico extends Component {
                   'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']}
                 previousTitle="Anterior" nextTitle="Próximo"
                 todayBackgroundColor={colors.cinza} selectedDayColor={colors.verdeFinddo}
-                minDate={initialDate} maxDate={finalDate}
+                minDate={initialDate} maxDate={finalDate} selectedStartDate={this.state.selectedDate}
               />
             </View>
             <View style={{ alignItems: 'center', marginTop: 30 }}>
@@ -156,6 +188,8 @@ export default class DataServico extends Component {
               <CustomPicker
                 style={this.dataStyles.selectStyle}
                 items={this.state.horarios}
+                defaultItem={this.state.horarios
+                  .find(hor => hor.value === this.state.hora)}
                 onSelect={this.setHora}
               />
               {(() => {
@@ -172,6 +206,8 @@ export default class DataServico extends Component {
                     <CustomPicker
                       style={this.dataStyles.selectStyle}
                       items={this.state.horariosFim}
+                      defaultItem={this.state.horarios
+                        .find(hor => hor.value === this.state.horaFim)}
                       onSelect={({ value }) => this.setState({ horaFim: value })}
                     />);
                 } else {

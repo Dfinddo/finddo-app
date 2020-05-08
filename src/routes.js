@@ -151,7 +151,7 @@ const CadastroStack = createStackNavigator(
 const TabMenu = createBottomTabNavigator(
   {
     Serviços: ServicosStack,
-    Histórico: MeusPedidosStack,
+    Pedidos: MeusPedidosStack,
     Finddo: AppStack,
     Perfil: PerfilStack,
     Ajuda: AjudaStack
@@ -162,7 +162,7 @@ const TabMenu = createBottomTabNavigator(
         const { routeName } = navigation.state;
         let IconComponent = Ionicons;
         let iconName;
-        if (routeName === 'Histórico') {
+        if (routeName === 'Pedidos') {
           iconName = `ios-paper`;
         } else if (routeName === 'Finddo') {
           return <SvgXml xml={finddoLogoNavegacao} width={25} height={25}></SvgXml>
