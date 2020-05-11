@@ -38,6 +38,7 @@ export default class FormEnderecoPedidoScreen extends Component {
     rua: '',
     numero: '',
     complemento: '',
+    user_id: null,
     selected: false,
     formInvalid: false,
     formErrors: [],
@@ -56,7 +57,6 @@ export default class FormEnderecoPedidoScreen extends Component {
     );
 
     const { navigation } = this.props;
-    const endereco = navigation.getParam('endereco', null);
     const editar = navigation.getParam('editar', null);
 
     // TODO: refatorar para caso quando o usuário está logado e exibir um select com seus endereços
@@ -70,16 +70,18 @@ export default class FormEnderecoPedidoScreen extends Component {
       });
     }
 
-    if (endereco) {
+    const pedidoService = PedidoCorrenteService.getInstance();
+    const { address } = pedidoService.getPedidoCorrente();
+
+    if (address) {
+      const { id, name, cep, district, street, number, complement, selected, user_id } = address;
+
       this.setState({
-        id: endereco.id,
-        nome: endereco.name,
-        cep: endereco.cep,
-        bairro: endereco.district,
-        rua: endereco.street,
-        numero: endereco.number,
-        complemento: endereco.complement,
-        selected: endereco.selected,
+        id: id ? id : null, nome: name,
+        cep: cep, bairro: district,
+        rua: street, numero: number,
+        complemento: complement, selected: selected,
+        user_id: user_id ? user_id : null
       });
     }
   };
@@ -224,7 +226,8 @@ export default class FormEnderecoPedidoScreen extends Component {
     const pedido = pedidoService.getPedidoCorrente();
     pedido['address'] = address;
 
-    console.log(pedido);
+    console.log("==========PAGINA ENDERECO==========");
+    console.log(pedidoService.getPedidoCorrente());
 
     if (!tokenService.getUser()) {
       Alert.alert(

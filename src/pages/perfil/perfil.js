@@ -41,7 +41,10 @@ export default class PerfilScreen extends Component {
 
   componentDidMount() {
     const userData = TokenService.getInstance().getUser();
-    this.setState({ email: userData.email, nomeCompleto: userData.name, cpf: userData.cpf, telefone: userData.cellphone });
+
+    if (userData) {
+      this.setState({ email: userData.email, nomeCompleto: userData.name, cpf: userData.cpf, telefone: userData.cellphone });
+    }
   }
 
   componentWillUnmount() {
@@ -224,138 +227,148 @@ export default class PerfilScreen extends Component {
     let iconName = "ios-create";
     let tintColor = colors.amareloIconeEditar;
 
-    return (
-      <ImageBackground
-        style={this.perfilScreenStyle.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
-        <View style={{ height: 70 }}></View>
-        <ScrollView>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={this.state.isLoading}
-          >
-            <View style={this.perfilScreenStyle.loaderContainer}>
-              <View>
-                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+    if (this.state.nomeCompleto) {
+      return (
+        <ImageBackground
+          style={this.perfilScreenStyle.backgroundImageContent}
+          source={require('../../img/Ellipse.png')}>
+          <View style={{ height: 70 }}></View>
+          <ScrollView>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={this.state.isLoading}
+            >
+              <View style={this.perfilScreenStyle.loaderContainer}>
+                <View>
+                  <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+                </View>
               </View>
-            </View>
-          </Modal>
-          <NavigationEvents
-            onWillFocus={_ => {
-              this.setState({ isLoading: true }, () => {
-                setTimeout(() => {
-                  FotoService.getInstance().setFotoId('perfil');
-                  this.obterFoto();
-                }, 1000);
-              })
-              // this.setState({ isLoading: true }, () => { this.obterFoto1() });
-            }}
-          //onDidFocus={_ => this.obterFoto1()}
-          //onWillBlur={payload => console.log('will blur', payload)}
-          //onDidBlur={payload => console.log('did blur', payload)}
-          />
-          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{
-              backgroundColor: colors.branco, flexDirection: 'column',
-              height: 500, alignItems: 'center',
-              justifyContent: 'space-around', width: '90%'
-            }}>
-              <TouchableOpacity onPress={() => this.alterarFotoDialog()}>
-                <Image style={{ width: 150, height: 150, borderRadius: 100 }}
-                  source={this.state.profilePhoto} />
-              </TouchableOpacity>
+            </Modal>
+            <NavigationEvents
+              onWillFocus={_ => {
+                this.setState({ isLoading: true }, () => {
+                  setTimeout(() => {
+                    FotoService.getInstance().setFotoId('perfil');
+                    this.obterFoto();
+                  }, 1000);
+                })
+                // this.setState({ isLoading: true }, () => { this.obterFoto1() });
+              }}
+            //onDidFocus={_ => this.obterFoto1()}
+            //onWillBlur={payload => console.log('will blur', payload)}
+            //onDidBlur={payload => console.log('did blur', payload)}
+            />
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               <View style={{
-                width: '80%',
-                alignItems: 'flex-start'
+                backgroundColor: colors.branco, flexDirection: 'column',
+                height: 500, alignItems: 'center',
+                justifyContent: 'space-around', width: '90%'
               }}>
+                <TouchableOpacity onPress={() => this.alterarFotoDialog()}>
+                  <Image style={{ width: 150, height: 150, borderRadius: 100 }}
+                    source={this.state.profilePhoto} />
+                </TouchableOpacity>
                 <View style={{
-                  flexDirection: 'row', borderBottomColor: colors.verdeFinddo,
-                  borderBottomWidth: 2
+                  width: '80%',
+                  alignItems: 'flex-start'
                 }}>
-                  <TextInput
-                    style={this.perfilScreenStyle.perfilFormSizeAndFont}
-                    placeholder="Nome Completo"
-                    keyboardType="default"
-                    value={this.state.nomeCompleto}
-                    editable={false}
-                  />
-                  <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }} />
-                </View>
-                <View style={{
-                  flexDirection: 'row', borderBottomColor: colors.verdeFinddo,
-                  borderBottomWidth: 2
-                }}>
-                  <TextInput
-                    style={this.perfilScreenStyle.perfilFormSizeAndFont}
-                    placeholder="E-mail"
-                    keyboardType="email-address"
-                    value={this.state.email}
-                    editable={false}
-                  />
-                  <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('EditField', { tipo: 'email', titulo: 'Email', valor: this.state.email })}>
-                      <IconComponent name={iconName} size={25} color={tintColor} />
-                    </TouchableOpacity>
+                  <View style={{
+                    flexDirection: 'row', borderBottomColor: colors.verdeFinddo,
+                    borderBottomWidth: 2
+                  }}>
+                    <TextInput
+                      style={this.perfilScreenStyle.perfilFormSizeAndFont}
+                      placeholder="Nome Completo"
+                      keyboardType="default"
+                      value={this.state.nomeCompleto}
+                      editable={false}
+                    />
+                    <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }} />
+                  </View>
+                  <View style={{
+                    flexDirection: 'row', borderBottomColor: colors.verdeFinddo,
+                    borderBottomWidth: 2
+                  }}>
+                    <TextInput
+                      style={this.perfilScreenStyle.perfilFormSizeAndFont}
+                      placeholder="E-mail"
+                      keyboardType="email-address"
+                      value={this.state.email}
+                      editable={false}
+                    />
+                    <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+                      <TouchableOpacity onPress={() => this.props.navigation.navigate('EditField', { tipo: 'email', titulo: 'Email', valor: this.state.email })}>
+                        <IconComponent name={iconName} size={25} color={tintColor} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={{
+                    flexDirection: 'row', borderBottomColor: colors.verdeFinddo,
+                    borderBottomWidth: 2
+                  }}>
+                    <TextInput
+                      style={this.perfilScreenStyle.perfilFormSizeAndFont}
+                      placeholder="Telefone"
+                      keyboardType="phone-pad"
+                      editable={false}
+                      value={this.state.telefone}
+                    />
+                    <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+                      <TouchableOpacity onPress={() => this.props.navigation.navigate('EditField', { tipo: 'telefone', titulo: 'Telefone', valor: this.state.telefone })}>
+                        <IconComponent name={iconName} size={25} color={tintColor} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={{
+                    flexDirection: 'row', borderBottomColor: colors.verdeFinddo,
+                    borderBottomWidth: 2
+                  }}>
+                    <TextInput
+                      style={this.perfilScreenStyle.perfilFormSizeAndFont}
+                      placeholder="CPF"
+                      keyboardType="number-pad"
+                      value={this.state.cpf}
+                      editable={false}
+                    />
+                    <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }} />
                   </View>
                 </View>
-                <View style={{
-                  flexDirection: 'row', borderBottomColor: colors.verdeFinddo,
-                  borderBottomWidth: 2
-                }}>
-                  <TextInput
-                    style={this.perfilScreenStyle.perfilFormSizeAndFont}
-                    placeholder="Telefone"
-                    keyboardType="phone-pad"
-                    editable={false}
-                    value={this.state.telefone}
-                  />
-                  <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('EditField', { tipo: 'telefone', titulo: 'Telefone', valor: this.state.telefone })}>
-                      <IconComponent name={iconName} size={25} color={tintColor} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <View style={{
-                  flexDirection: 'row', borderBottomColor: colors.verdeFinddo,
-                  borderBottomWidth: 2
-                }}>
-                  <TextInput
-                    style={this.perfilScreenStyle.perfilFormSizeAndFont}
-                    placeholder="CPF"
-                    keyboardType="number-pad"
-                    value={this.state.cpf}
-                    editable={false}
-                  />
-                  <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }} />
-                </View>
-              </View>
-              {
-                (() => {
-                  const user = TokenService.getInstance().getUser();
-                  if (user.user_type === 'professional') {
-                    const appID = developConfig.moipCredsData.moipAppID;
-                    const redirectUri = developConfig.moipCredsData.redirectUrl;
-                    const connectWirecardUrl = developConfig.moipCredsData.connectWirecardUrl;
-                    const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
-                    if (!user.token_wirecard_account) {
-                      if (user.is_new_wire_account) {
-                        return (
-                          <View>
-                            <Text
-                              style={this.perfilScreenStyle.perfilEnderecoSelect}
-                              onPress={() => { Linking.openURL(user.set_account) }}>Configurar recebimento de pagamentos</Text>
-                            <Text
-                              style={[this.perfilScreenStyle.perfilEnderecoSelect, { marginTop: 10 }]}
-                              onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
-                          </View>
-                        );
+                {
+                  (() => {
+                    const user = TokenService.getInstance().getUser();
+                    if (user.user_type === 'professional') {
+                      const appID = developConfig.moipCredsData.moipAppID;
+                      const redirectUri = developConfig.moipCredsData.redirectUrl;
+                      const connectWirecardUrl = developConfig.moipCredsData.connectWirecardUrl;
+                      const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
+                      if (!user.token_wirecard_account) {
+                        if (user.is_new_wire_account) {
+                          return (
+                            <View>
+                              <Text
+                                style={this.perfilScreenStyle.perfilEnderecoSelect}
+                                onPress={() => { Linking.openURL(user.set_account) }}>Configurar recebimento de pagamentos</Text>
+                              <Text
+                                style={[this.perfilScreenStyle.perfilEnderecoSelect, { marginTop: 10 }]}
+                                onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
+                            </View>
+                          );
+                        } else {
+                          return (
+                            <View>
+                              <Text
+                                style={this.perfilScreenStyle.perfilEnderecoSelect}
+                                onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
+                            </View>
+                          );
+                        }
                       } else {
                         return (
                           <View>
                             <Text
                               style={this.perfilScreenStyle.perfilEnderecoSelect}
-                              onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
+                            >Transações autorizadas</Text>
                           </View>
                         );
                       }
@@ -364,39 +377,58 @@ export default class PerfilScreen extends Component {
                         <View>
                           <Text
                             style={this.perfilScreenStyle.perfilEnderecoSelect}
-                          >Transações autorizadas</Text>
-                        </View>
-                      );
+                            onPress={() => { this.props.navigation.navigate('Addresses'); }}>Endereço padrão</Text>
+                          <Text
+                            style={this.perfilScreenStyle.perfilEnderecoSelect}
+                            onPress={() => { this.props.navigation.navigate('Cards'); }}>Forma de pagamento padrão</Text>
+                        </View>);
                     }
-                  } else {
-                    return (
-                      <View>
-                        <Text
-                          style={this.perfilScreenStyle.perfilEnderecoSelect}
-                          onPress={() => { this.props.navigation.navigate('Addresses'); }}>Endereço padrão</Text>
-                        <Text
-                          style={this.perfilScreenStyle.perfilEnderecoSelect}
-                          onPress={() => { this.props.navigation.navigate('Cards'); }}>Forma de pagamento padrão</Text>
-                      </View>);
-                  }
-                })()
-              }
+                  })()
+                }
+              </View>
             </View>
-          </View>
 
-        </ScrollView>
-        <View style={{
-          alignItems: 'center', justifyContent: 'center',
-          height: 60, marginBottom: 10
-        }}>
-          <TouchableOpacity
-            style={this.perfilScreenStyle.sairButton}
-            onPress={() => { this.logoutConfirm() }/*this.login(this.state.usuario, this.state.senha)*/}>
-            <Text style={this.perfilScreenStyle.sairButtonText}>SAIR</Text>
-          </TouchableOpacity>
+          </ScrollView>
+          <View style={{
+            alignItems: 'center', justifyContent: 'center',
+            height: 60, marginBottom: 10
+          }}>
+            <TouchableOpacity
+              style={this.perfilScreenStyle.sairButton}
+              onPress={() => { this.logoutConfirm() }/*this.login(this.state.usuario, this.state.senha)*/}>
+              <Text style={this.perfilScreenStyle.sairButtonText}>SAIR</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+      );
+    } else {
+      return (<ImageBackground
+        style={{ width: '100%', height: '100%' }}
+        source={require('../../img/Ellipse.png')}>
+        <View style={{ height: '90%' }}>
+          <View style={{
+            flex: 1, alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <Text style={{
+              paddingHorizontal: 20, fontSize: 18,
+              paddingTop: 20
+            }}>Acesse sua conta para ter acesso à essa página.</Text>
+            <TouchableOpacity
+              style={this.perfilScreenStyle.sairButton}
+            >
+              <Text style={this.perfilScreenStyle.sairButtonText}>CADASTRO</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={this.perfilScreenStyle.sairButton}
+            >
+              <Text style={this.perfilScreenStyle.sairButtonText}>LOGIN</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </ImageBackground>
-    );
+      </ImageBackground>);
+    }
+
   }
 
   perfilScreenStyle = StyleSheet.create({

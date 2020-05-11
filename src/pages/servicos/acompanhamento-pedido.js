@@ -188,7 +188,7 @@ export default class AcompanhamentoPedido extends Component {
               <Text style={{
                 paddingHorizontal: 20, fontSize: 18,
                 paddingTop: 20
-              }}>Não há pedido ativo, selecione um pedido em andamento na aba histórico para acompanhar seu estado.</Text>
+              }}>Não há pedido ativo, selecione um pedido em andamento na aba Pedidos para acompanhar seu estado.</Text>
             </View>
           </View>
         </ImageBackground>

@@ -103,8 +103,16 @@ export default class FotosPedido extends Component {
       this.setState({ urgencia });
     }
 
-    this.setState({ necessidade, categoriaPedido });
-    this.setState({ imageServicoUrl: categoriaPedido.image_url });
+    const pedidoService = PedidoCorrenteService.getInstance();
+    const { foto1, foto2, foto3, foto4 } = pedidoService.getPedidoCorrente();
+
+    this.setState({
+      foto1: foto1 ? foto1 : fotoDefault, foto1Setada: foto1 ? true : false,
+      foto2: foto2 ? foto2 : fotoDefault, foto2Setada: foto2 ? true : false,
+      foto3: foto3 ? foto3 : fotoDefault, foto3Setada: foto3 ? true : false,
+      foto4: foto4 ? foto4 : fotoDefault, foto4Setada: foto4 ? true : false,
+      necessidade: categoriaPedido, imageServicoUrl: categoriaPedido.image_url
+    });
   };
 
   selecionarEndereco = () => {
@@ -167,19 +175,25 @@ export default class FotosPedido extends Component {
     const pedidoService = PedidoCorrenteService.getInstance();
     const pedido = pedidoService.getPedidoCorrente();
 
-    pedido['fotosPedido'] = [];
     if (this.state.foto1Setada) {
-      pedido['fotosPedido'].push(this.state.foto1);
+      pedido['foto1'] = {};
+      pedido['foto1'] = this.state.foto1;
     }
     if (this.state.foto2Setada) {
-      pedido['fotosPedido'].push(this.state.foto2);
+      pedido['foto2'] = {};
+      pedido['foto2'] = this.state.foto2;
     }
     if (this.state.foto3Setada) {
-      pedido['fotosPedido'].push(this.state.foto3);
+      pedido['foto3'] = {};
+      pedido['foto3'] = this.state.foto3;
     }
     if (this.state.foto4Setada) {
-      pedido['fotosPedido'].push(this.state.foto4);
+      pedido['foto4'] = {};
+      pedido['foto4'] = this.state.foto4;
     }
+
+    console.log("==========PAGINA FOTOS==========");
+    console.log(pedidoService.getPedidoCorrente());
   }
 
   fecharDialogConfirmacaoSemConfirmarPedido = () => {
@@ -210,8 +224,9 @@ export default class FotosPedido extends Component {
 
       backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
         .then((response) => {
-          FotoService.getInstance().setFotoId(0);
-          FotoService.getInstance().setFotoData(null);
+          // TODO: mover responsabilidade para depois do form de endereço
+          // FotoService.getInstance().setFotoId(0);
+          // FotoService.getInstance().setFotoData(null);
           this.setState({ isLoading: false }, () => {
             console.log('update state');
 
