@@ -14,6 +14,7 @@ import { colors } from '../../colors';
 import UserDTO from '../../models/UserDTO';
 import { SvgXml } from 'react-native-svg';
 import { finddoLogo } from '../../img/svg/finddo-logo';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class LoginScreen extends Component {
   static navigationOptions = {
@@ -135,6 +136,19 @@ export default class LoginScreen extends Component {
             </View>
           </Modal>
           <View style={this.loginScreenStyle.loginForm}>
+            <View style={{
+              width: '100%', height: 50,
+              marginTop: 20
+            }}>
+              <TouchableOpacity style={{
+                width: 50, height: 50
+              }} onPress={() => { this.props.navigation.navigate('App') }}>
+                <Icon
+                  style={{ width: 50 }}
+                  name='keyboard-arrow-left'
+                  size={50} color={colors.verdeFinddo} />
+              </TouchableOpacity>
+            </View>
             <SvgXml xml={finddoLogo} width={126} height={30} style={this.loginScreenStyle.finddoLogoStyle}></SvgXml>
             <View style={this.loginScreenStyle.loginMainForm}>
               <Text style={this.loginScreenStyle.fontTitle}>Login</Text>
@@ -185,7 +199,7 @@ export default class LoginScreen extends Component {
   loginScreenStyle = StyleSheet.create({
     modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     backgroundImageContent: { width: '100%', height: '100%' },
-    finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
+    finddoLogoStyle: { marginTop: 25, marginBottom: 120 },
     loginForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
     loginMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 250, backgroundColor: colors.branco },
     loginButton: {

@@ -123,9 +123,6 @@ export default class DataServico extends Component {
     pedido['dataPedido'] = new Date(`${dateSplit[1]}/${dateSplit[0]}/${dateSplit[2]}`);
     pedido['hora'] = this.state.hora;
     pedido['horaFim'] = this.state.horaFim;
-
-    console.log("==========PAGINA DATA==========");
-    console.log(pedidoService.getPedidoCorrente());
   }
 
   render() {

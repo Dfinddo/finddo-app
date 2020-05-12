@@ -37,6 +37,7 @@ import { developConfig, productionConfig } from '../credenciais-e-configuracoes'
 import TokenService from './services/token-service';
 import SplashScreen from 'react-native-splash-screen';
 import FormEnderecoPedidoScreen from './pages/servicos/form-endereco-pedido';
+import { ConfirmarPedido } from './pages/servicos/confirmar-pedido';
 
 const AppStack = createStackNavigator(
   {
@@ -47,6 +48,7 @@ const AppStack = createStackNavigator(
     DefinirData: DataServico,
     CameraPedido: CameraPedidoComponent,
     FormAddEndereco: FormEnderecoPedidoScreen,
+    ConfirmarPedido: ConfirmarPedido,
 
     Redirecionador: RedirecionadorIndex,
 
@@ -138,16 +140,6 @@ const AuthStack = createStackNavigator(
   }
 );
 
-const CadastroStack = createStackNavigator(
-  {
-    CadastroParteUm: PrimeiraParte,
-    CadastroParteDois: SegundaParte
-  },
-  {
-    initialRouteName: 'CadastroParteUm'
-  }
-);
-
 const TabMenu = createBottomTabNavigator(
   {
     Serviços: ServicosStack,
@@ -190,7 +182,6 @@ const AppContainer = createAppContainer(createSwitchNavigator(
     App: TabMenu,
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStack,
-    Cadastro: CadastroStack
   },
   {
     initialRouteName: 'AuthLoading',

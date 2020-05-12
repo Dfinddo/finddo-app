@@ -15,6 +15,8 @@ export default class VisualizarPedido extends Component {
 
   componentDidMount() {
     const order = {};
+    const tokenService = TokenService.getInstance();
+
     if (this.props.pedido.isShowingPedido) {
       order.description = this.props.pedido.pedidoCorrente.description;
       order.category = this.props.pedido.pedidoCorrente.category.name;
@@ -27,7 +29,9 @@ export default class VisualizarPedido extends Component {
       order.description = this.props.pedido.necessidade;
       order.category = this.props.pedido.categoriaPedido.name;
       order.urgencia = this.props.pedido.urgencia;
-      order.user_id = TokenService.getInstance().getUser().id;
+      if (tokenService.getUser()) {
+        order.user_id = tokenService.getUser().id;
+      }
       if (this.props.pedido.dataPedido) {
         order.start_order = this.props.pedido.dataPedido;
       }
@@ -47,7 +51,7 @@ export default class VisualizarPedido extends Component {
     let minutosFim = '';
 
     if (this.state.order) {
-      
+
       if (this.state.order.start_order && this.state.order.urgencia === 'semana') {
         diaInicio = `${this.state.order.start_order.getDate()}/${+this.state.order.start_order.getMonth() + 1}/${this.state.order.start_order.getFullYear()}`;
 

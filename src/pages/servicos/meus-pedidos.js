@@ -111,7 +111,7 @@ export default class MeusPedidos extends Component {
         pedidosCancelado: [...pedidosCancelado],
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     } finally {
       this.setState({ loadingData: false });
     }

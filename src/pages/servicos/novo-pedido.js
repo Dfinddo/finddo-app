@@ -116,16 +116,14 @@ export default class NovoPedido extends Component {
     }
   }
 
-  adicionarMotivoEUrgenciaAoPedido = async () => {
+  adicionarMotivoEUrgenciaAoPedido = () => {
     const pedidoService = PedidoCorrenteService.getInstance();
-    const pedido = await pedidoService.getPedidoCorrente();
+    const pedido = pedidoService.getPedidoCorrente();
 
     pedido['necessidade'] = this.state.necessidade;
     pedido['urgencia'] = this.state.urgencia;
 
-    await pedidoService.setPedidoCorrente(pedido);
-    console.log("==========PAGINA NOVO PEDIDO==========");
-    console.log(await pedidoService.getPedidoCorrente());
+    pedidoService.setPedidoCorrente(pedido);
   }
 
   render() {

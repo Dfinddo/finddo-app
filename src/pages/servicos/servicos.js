@@ -17,6 +17,7 @@ import { passo3 } from '../../img/svg/passo-3';
 import { fechar } from '../../img/svg/fechar';
 import AsyncStorage from '@react-native-community/async-storage';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
+import { NavigationEvents } from 'react-navigation';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -44,6 +45,22 @@ export default class Servicos extends Component {
     this.verificaRealizacaoTutorial();
   }
 
+  carregaPedidoLocalStorage = () => {
+    const pedidoService = PedidoCorrenteService.getInstance();
+
+    this.setState({ isLoading: true }, () => {
+      pedidoService.getPedidoLocalStorage().then(
+        (pedido) => {
+          if (pedido) {
+            pedidoService.setPedidoFromLocalStorage(pedido);
+          }
+          console.log(pedidoService.getPedidoCorrente());
+        }).finally(() => {
+          this.setState({ isLoading: false });
+        });
+    });
+  };
+
   setCategoriaPedido = (categoria) => {
     const pedidoService = PedidoCorrenteService.getInstance();
     let pedido = pedidoService.getPedidoCorrente();
@@ -51,11 +68,9 @@ export default class Servicos extends Component {
     if (!pedido) {
       pedido = {};
     }
-    pedido['category_id'] = categoria.id;
+    pedido['categoriaPedido'] = categoria;
 
     pedidoService.setPedidoCorrente(pedido);
-    console.log("==========PAGINA SERVICOS==========");
-    console.log(pedidoService.getPedidoCorrente());
   }
 
   exibirItem = (item) => {
@@ -103,6 +118,9 @@ export default class Servicos extends Component {
         style={this.servicosStyles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <View style={this.servicosStyles.container}>
+          <NavigationEvents
+            onWillFocus={_ => this.carregaPedidoLocalStorage()}
+          />
           <Modal
             animationType="slide"
             transparent={true}

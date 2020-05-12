@@ -191,9 +191,6 @@ export default class FotosPedido extends Component {
       pedido['foto4'] = {};
       pedido['foto4'] = this.state.foto4;
     }
-
-    console.log("==========PAGINA FOTOS==========");
-    console.log(pedidoService.getPedidoCorrente());
   }
 
   fecharDialogConfirmacaoSemConfirmarPedido = () => {
@@ -228,10 +225,8 @@ export default class FotosPedido extends Component {
           // FotoService.getInstance().setFotoId(0);
           // FotoService.getInstance().setFotoData(null);
           this.setState({ isLoading: false }, () => {
-            console.log('update state');
 
             setTimeout(() => {
-              console.log('stack actions');
 
               const resetAction = StackActions.reset({
                 index: 0,

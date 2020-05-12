@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { colors } from '../../colors';
 import TokenService from '../../services/token-service';
-import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import axios from 'axios';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
 
@@ -23,8 +22,8 @@ function Item({ title }) {
 
 export default class FormEnderecoPedidoScreen extends Component {
   static navigationOptions = {
-    headerTransparent: true,
-    headerTitle: HeaderFundoTransparente
+    title: `Endereço`,
+    headerBackTitle: 'Voltar'
   };
 
   state = {
@@ -226,32 +225,8 @@ export default class FormEnderecoPedidoScreen extends Component {
     const pedido = pedidoService.getPedidoCorrente();
     pedido['address'] = address;
 
-    console.log("==========PAGINA ENDERECO==========");
-    console.log(pedidoService.getPedidoCorrente());
-
-    if (!tokenService.getUser()) {
-      Alert.alert(
-        'Complete seu cadastro',
-        'Para poder continuar com seu pedido, '
-        + 'você precisa estar logado no Finddo',
-        [
-          {
-            text: 'Cancelar', onPress: () => {
-              // lógica para remover o pedido
-            }
-          },
-          {
-            text: 'Login', onPress: () => {
-              this.props.navigation.navigate('Auth');
-            }
-          },
-          {
-            text: 'Cadastro', onPress: () => {
-              this.props.navigation.navigate('Cadastro');
-            }
-          },
-        ]);
-    }
+    this.props.navigation.navigate('ConfirmarPedido');
+    return;
   }
 
   render() {
@@ -259,7 +234,7 @@ export default class FormEnderecoPedidoScreen extends Component {
       <ImageBackground
         style={this.formEnderecoScreenStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')} >
-        <View style={{ height: 60 }}></View>
+        
         <ScrollView>
           <Modal
             animationType="slide"

@@ -417,11 +417,6 @@ export default class PerfilScreen extends Component {
             <TouchableOpacity
               style={this.perfilScreenStyle.sairButton}
             >
-              <Text style={this.perfilScreenStyle.sairButtonText}>CADASTRO</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={this.perfilScreenStyle.sairButton}
-            >
               <Text style={this.perfilScreenStyle.sairButtonText}>LOGIN</Text>
             </TouchableOpacity>
           </View>
