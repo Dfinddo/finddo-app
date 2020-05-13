@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
-import { ImageBackground, View, Alert } from 'react-native';
+import { ImageBackground, View, Alert, Modal, ActivityIndicator } from 'react-native';
 import TokenService from '../../services/token-service';
 import { StackActions } from 'react-navigation';
+import { colors } from '../../colors';
 
 const fotoDefault = require('../../img/add_foto_problema.png');
 
@@ -80,6 +81,18 @@ export class ConfirmarPedido extends Component {
                   .then(_ => {
                     this.setState({ isLoading: false });
                     this.props.navigation.navigate('Auth');
+                  }).catch(_ => {
+                    const pedido = pedidoService.getPedidoCorrente();
+                    if (pedido.foto1) { delete pedido.foto1 };
+                    if (pedido.foto2) { delete pedido.foto2 };
+                    if (pedido.foto3) { delete pedido.foto3 };
+                    if (pedido.foto4) { delete pedido.foto4 };
+
+                    pedidoService.salvarPedidoLocalStorage(pedidoService.getPedidoCorrente())
+                      .then(_ => {
+                        this.setState({ isLoading: false });
+                        this.props.navigation.navigate('Auth');
+                      })
                   });
               });
             }
@@ -93,6 +106,14 @@ export class ConfirmarPedido extends Component {
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
         source={require('../../img/Ellipse.png')}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.isLoading}>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+          </View>
+        </Modal>
         <View style={{
           flex: 1,
           paddingTop: 10,

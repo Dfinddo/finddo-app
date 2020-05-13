@@ -74,7 +74,7 @@ export default class RedirecionadorPedidos extends Component {
                   height: 45, borderRadius: 20,
                   backgroundColor: colors.verdeFinddo,
                   alignItems: 'center', justifyContent: 'center'
-                }}
+                }} onPress={() => this.props.navigation.navigate('Auth')}
               >
                 <Text style={{
                   fontSize: 18, color: colors.branco,

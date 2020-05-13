@@ -88,7 +88,6 @@ export default class FotosPedido extends Component {
 
   obterDadosPrimeiraPartePedido = () => {
     const { navigation } = this.props;
-    const necessidade = navigation.getParam('necessidade', 'no necessidade');
     const categoriaPedido = navigation.getParam('categoriaPedido', 'no categoria');
     const dataPedido = navigation.getParam('dataPedido', 'sem_data');
     const hora = navigation.getParam('hora', 'sem_hora');

@@ -416,6 +416,7 @@ export default class PerfilScreen extends Component {
             }}>Acesse sua conta para ter acesso à essa página.</Text>
             <TouchableOpacity
               style={this.perfilScreenStyle.sairButton}
+              onPress={() => this.props.navigation.navigate('Auth')}
             >
               <Text style={this.perfilScreenStyle.sairButtonText}>LOGIN</Text>
             </TouchableOpacity>

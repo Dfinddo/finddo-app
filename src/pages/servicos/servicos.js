@@ -18,6 +18,7 @@ import { fechar } from '../../img/svg/fechar';
 import AsyncStorage from '@react-native-community/async-storage';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
 import { NavigationEvents } from 'react-navigation';
+import TokenService from '../../services/token-service';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -38,11 +39,21 @@ export default class Servicos extends Component {
     ],
     isLoading: false,
     isShowingTutorial: false,
-    currentTutorialStep: 0
+    currentTutorialStep: 0,
+    continuarPedidoFeito: false
   };
 
   componentDidMount() {
-    this.verificaRealizacaoTutorial();
+    const pedidoService = PedidoCorrenteService.getInstance();
+    const tokenService = TokenService.getInstance();
+
+    pedidoService.getPedidoLocalStorage().then((pedido) => {
+      if (pedido && tokenService.getUser()) {
+        this.setState({ continuarPedidoFeito: true });
+      } else {
+        this.verificaRealizacaoTutorial();
+      }
+    });
   }
 
   carregaPedidoLocalStorage = () => {
@@ -121,6 +132,47 @@ export default class Servicos extends Component {
           <NavigationEvents
             onWillFocus={_ => this.carregaPedidoLocalStorage()}
           />
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.continuarPedidoFeito}
+          >
+            <View style={{
+              flex: 1, alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <View style={{
+                width: 320, height: 200,
+                borderRadius: 20, backgroundColor: colors.branco,
+                alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Text style={{
+                  fontSize: 20, color: colors.preto,
+                  marginBottom: 20
+                }}>Deseja retomar o pedido?</Text>
+                <TouchableOpacity style={{
+                  backgroundColor: colors.verdeFinddo,
+                  alignItems: 'center', justifyContent: 'center',
+                  height: 45, width: 280, borderRadius: 20
+                }} onPress={() => this.setState({ continuarPedidoFeito: false }, () => {
+                  this.props.navigation.navigate('Pedidos');
+                })}>
+                  <Text style={{ fontSize: 18, color: colors.branco }}>SIM</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{
+                  backgroundColor: colors.verdeFinddo,
+                  alignItems: 'center', justifyContent: 'center',
+                  height: 45, width: 280, borderRadius: 20, marginTop: 20
+                }} onPress={() => this.setState({ continuarPedidoFeito: false }, () => {
+                  const pedidoService = PedidoCorrenteService.getInstance();
+
+                  pedidoService.salvarPedidoLocalStorage({});
+                })}>
+                  <Text style={{ fontSize: 18, color: colors.branco }}>CRIAR NOVO PEDIDO</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
           <Modal
             animationType="slide"
             transparent={true}

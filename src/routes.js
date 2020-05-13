@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Platform } from 'react-native';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import Servicos from './pages/servicos/servicos';
 import LoginScreen from './pages/login';
@@ -197,7 +198,9 @@ export default class App extends Component {
     OneSignal.addEventListener('opened', this.onOpened);
     OneSignal.addEventListener('ids', this.onIds);
 
-    SplashScreen.hide();
+    if (Platform.OS === 'ios') {
+      SplashScreen.hide();
+    }
   }
 
   componentWillUnmount() {
