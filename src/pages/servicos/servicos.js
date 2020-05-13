@@ -155,7 +155,7 @@ export default class Servicos extends Component {
                   alignItems: 'center', justifyContent: 'center',
                   height: 45, width: 280, borderRadius: 20
                 }} onPress={() => this.setState({ continuarPedidoFeito: false }, () => {
-                  this.props.navigation.navigate('Pedidos');
+                  this.props.navigation.navigate('ConfirmarPedido');
                 })}>
                   <Text style={{ fontSize: 18, color: colors.branco }}>SIM</Text>
                 </TouchableOpacity>
@@ -166,7 +166,7 @@ export default class Servicos extends Component {
                 }} onPress={() => this.setState({ continuarPedidoFeito: false }, () => {
                   const pedidoService = PedidoCorrenteService.getInstance();
 
-                  pedidoService.salvarPedidoLocalStorage({});
+                  pedidoService.salvarPedidoLocalStorage(null);
                 })}>
                   <Text style={{ fontSize: 18, color: colors.branco }}>CRIAR NOVO PEDIDO</Text>
                 </TouchableOpacity>

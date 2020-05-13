@@ -177,19 +177,56 @@ export default class FotosPedido extends Component {
     if (this.state.foto1Setada) {
       pedido['foto1'] = {};
       pedido['foto1'] = this.state.foto1;
-    }
+    } else { pedido['foto1'] = null }
     if (this.state.foto2Setada) {
       pedido['foto2'] = {};
       pedido['foto2'] = this.state.foto2;
-    }
+    } else { pedido['foto2'] = null }
     if (this.state.foto3Setada) {
       pedido['foto3'] = {};
       pedido['foto3'] = this.state.foto3;
-    }
+    } else { pedido['foto3'] = null }
     if (this.state.foto4Setada) {
       pedido['foto4'] = {};
       pedido['foto4'] = this.state.foto4;
+    } else { pedido['foto4'] = null }
+  }
+
+  redefinirFoto = (id = 1) => {
+    switch (id) {
+      case 1:
+        this.setState({ foto1: fotoDefault, foto1Setada: false });
+        break;
+      case 2:
+        this.setState({ foto2: fotoDefault, foto2Setada: false });
+        break;
+      case 3:
+        this.setState({ foto3: fotoDefault, foto3Setada: false });
+        break;
+      case 4:
+        this.setState({ foto4: fotoDefault, foto4Setada: false });
+        break;
+      default:
+        break;
     }
+  }
+
+  baterFotoOuRemover = (id = 1) => {
+    Alert.alert(
+      'Foto',
+      'O que deseja fazer?',
+      [
+        { text: 'Cancelar', onPress: () => { } },
+        {
+          text: 'Adicionar foto', onPress: () => {
+            FotoService.getInstance().setFotoId(id);
+            this.props.navigation.navigate('CameraPedido');
+          }
+        },
+        { text: 'Remover foto', onPress: () => { this.redefinirFoto(id) } },
+      ],
+      { cancelable: false },
+    );
   }
 
   fecharDialogConfirmacaoSemConfirmarPedido = () => {
@@ -198,86 +235,16 @@ export default class FotosPedido extends Component {
 
   salvarAposPedidoConfirmado = () => {
     this.setState({ isConfirming: false });
-    this.salvarPedido(this.state);
+    // this.salvarPedido(this.state);
   };
-
-  salvarPedido = (orderData) => {
-    this.setState({ isLoading: false }, () => {
-      const order = {};
-      order.description = orderData.necessidade;
-      order.category_id = +orderData.categoriaPedido.id;
-      order.user_id = TokenService.getInstance().getUser().id;
-      order.address_id = this.state.enderecoSelecionado.id;
-      order.start_order = `${this.state.dataPedido.toDateString()} ${this.state.hora}`;
-      order.hora_inicio = `${this.state.hora}`;
-      order.hora_fim = `${this.state.horaFim}`;
-      if (this.state.urgencia === 'definir-data') {
-        order.urgency = 'urgent';
-        order.end_order = `${this.state.dataPedido.toDateString()} ${this.state.horaFim}`;
-      }
-
-      const images = this.state.fotosPedido.map((foto) => { return { base64: foto.image.base64, file_name: foto.file_name } });
-
-      backendRails.post('/orders', { order, images }, { headers: TokenService.getInstance().getHeaders() })
-        .then((response) => {
-          // TODO: mover responsabilidade para depois do form de endereço
-          // FotoService.getInstance().setFotoId(0);
-          // FotoService.getInstance().setFotoData(null);
-          this.setState({ isLoading: false }, () => {
-
-            setTimeout(() => {
-
-              const resetAction = StackActions.reset({
-                index: 0,
-                actions: [NavigationActions.navigate({ routeName: 'Services' })],
-                key: 'Finddo'
-              });
-              this.props.navigation.dispatch(resetAction);
-              this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
-            }, 2000);
-          });
-        })
-        .catch((error) => {
-          if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            Alert.alert(
-              'Falha ao realizar operação',
-              'Revise seus dados e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            Alert.alert(
-              'Falha ao se conectar',
-              'Verifique sua conexão e tente novamente',
-              [
-                { text: 'OK', onPress: () => { } },
-              ],
-              { cancelable: false },
-            );
-          } else {
-            /* Something happened in setting up the request and triggered an Error */
-          }
-          this.setState({ isLoading: false });
-        });
-    });
-  }
 
   selecionarItem = (item) => {
     this.setState({ isSelectEndereco: false, enderecoSelecionado: item.item }, () => {
       this.confirmarPedido();
     });
   }
+
+
 
   render() {
     return (
@@ -358,8 +325,7 @@ export default class FotosPedido extends Component {
                     Nos ajude com fotos do problema (opcional)
                   </Text>
                   <TouchableOpacity onPress={() => {
-                    FotoService.getInstance().setFotoId(1);
-                    this.props.navigation.navigate('CameraPedido');
+                    this.baterFotoOuRemover(1);
                   }} style={{ alignItems: 'center', marginTop: 30 }}>
                     <Image
                       style={{ width: 120, height: 120 }}
@@ -367,24 +333,21 @@ export default class FotosPedido extends Component {
                   </TouchableOpacity>
                   <View style={this.fotosPedidoStyles.fotosProblemaContainer}>
                     <TouchableOpacity onPress={() => {
-                      FotoService.getInstance().setFotoId(2);
-                      this.props.navigation.navigate('CameraPedido');
+                      this.baterFotoOuRemover(2);
                     }}>
                       <Image
                         style={{ width: 80, height: 80 }}
                         source={this.state.foto2} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                      FotoService.getInstance().setFotoId(3);
-                      this.props.navigation.navigate('CameraPedido');
+                      this.baterFotoOuRemover(3);
                     }}>
                       <Image
                         style={{ width: 80, height: 80 }}
                         source={this.state.foto3} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                      FotoService.getInstance().setFotoId(4);
-                      this.props.navigation.navigate('CameraPedido');
+                      this.baterFotoOuRemover(4);
                     }}>
                       <Image
                         style={{ width: 80, height: 80 }}

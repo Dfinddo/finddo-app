@@ -25,6 +25,9 @@ export default class PedidoCorrenteService {
   }
 
   salvarPedidoLocalStorage(pedido) {
+    if (!pedido) {
+      return AsyncStorage.removeItem('pedido-corrente');
+    }
     return AsyncStorage.setItem('pedido-corrente', JSON.stringify(pedido));
   }
 

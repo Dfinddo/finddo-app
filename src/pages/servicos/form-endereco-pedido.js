@@ -11,6 +11,8 @@ import { colors } from '../../colors';
 import TokenService from '../../services/token-service';
 import axios from 'axios';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
+import backendRails from '../../services/backend-rails-api';
+import { CustomPicker } from '../../components/custom-picker';
 
 function Item({ title }) {
   return (
@@ -43,7 +45,41 @@ export default class FormEnderecoPedidoScreen extends Component {
     formErrors: [],
     isLoading: false,
     isShowingKeyboard: false,
+    enderecos: [],
+    enderecoSelecionado: null
   };
+
+  obterEnderecos = () => {
+    const tokenService = TokenService.getInstance();
+    if (tokenService.getUser()) {
+      this.setState({ isLoading: true }, () => {
+        backendRails.get('/addresses/user/' + tokenService.getUser().id, { headers: tokenService.getHeaders() })
+          .then((data) => {
+            const addresses = data.data;
+            addresses.forEach(element => {
+              element.id = '' + element.id;
+            });
+
+            const addresses_select = addresses.map(add => { return { content: add.name, value: add, id: add.id } });
+            addresses_select.unshift({ content: 'Selecione um endereço', value: {}, id: '0' });
+
+            this.setState({ enderecos: [...addresses_select] });
+          }).catch(_ => {
+            Alert.alert(
+              'Falha ao obter os endereços',
+              'Por favor tente novamente.',
+              [
+                { text: 'Cancelar', onPress: () => { } },
+                { text: 'OK', onPress: () => { this.obterEnderecos() } },
+              ],
+              { cancelable: false },
+            );
+          }).finally(_ => {
+            this.setState({ isLoading: false });
+          });
+      });
+    }
+  }
 
   componentDidMount() {
     this.keyboardDidShowListener = Keyboard.addListener(
@@ -68,6 +104,8 @@ export default class FormEnderecoPedidoScreen extends Component {
         tituloForm: 'Adicionar Endereço'
       });
     }
+
+    this.obterEnderecos();
 
     const pedidoService = PedidoCorrenteService.getInstance();
     const { address } = pedidoService.getPedidoCorrente();
@@ -229,12 +267,26 @@ export default class FormEnderecoPedidoScreen extends Component {
     return;
   }
 
+  setEndereco = ({ value }) => {
+    const { id, name, cep, district, street, number, complement, selected } = value;
+    if (name) {
+      this.setState({
+        id: id, nome: name,
+        cep: cep, bairro: district,
+        rua: street, numero: number,
+        complemento: complement, selected: selected,
+        user_id: TokenService.getInstance().getUser().id,
+        enderecoSelecionado: value
+      });
+    }
+  };
+
   render() {
     return (
       <ImageBackground
         style={this.formEnderecoScreenStyle.backgroundImageContent}
         source={require('../../img/Ellipse.png')} >
-        
+
         <ScrollView>
           <Modal
             animationType="slide"
@@ -277,7 +329,20 @@ export default class FormEnderecoPedidoScreen extends Component {
           <View style={this.formEnderecoScreenStyle.cadastroForm}>
             <View style={this.formEnderecoScreenStyle.cadastroMainForm}>
               <Text style={this.formEnderecoScreenStyle.fontTitle}>{this.state.tituloForm}</Text>
-              {/*Local onde será o select de endereço para usuario logado*/}
+              {(() => {
+                if (this.state.enderecos.length > 0) {
+                  return (
+                    <CustomPicker
+                      style={{
+                        height: 60, borderWidth: 2,
+                        borderColor: colors.verdeFinddo,
+                        marginTop: 10, width: 300
+                      }}
+                      items={this.state.enderecos}
+                      onSelect={this.setEndereco}
+                    />);
+                } else { return (null); }
+              })()}
               <TextInput
                 style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cep: text }) }}

@@ -3,8 +3,10 @@ import VisualizarPedido from '../../components/modal-visualizar-pedido';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
 import { ImageBackground, View, Alert, Modal, ActivityIndicator } from 'react-native';
 import TokenService from '../../services/token-service';
-import { StackActions } from 'react-navigation';
 import { colors } from '../../colors';
+import backendRails from '../../services/backend-rails-api';
+import { StackActions, NavigationActions } from 'react-navigation';
+import FotoService from '../../services/foto-service';
 
 const fotoDefault = require('../../img/add_foto_problema.png');
 
@@ -63,6 +65,7 @@ export class ConfirmarPedido extends Component {
 
   salvarPedidoLocalStorage = () => {
     const tokenService = TokenService.getInstance();
+    const pedidoService = PedidoCorrenteService.getInstance();
 
     if (!tokenService.getUser()) {
       Alert.alert(
@@ -76,7 +79,6 @@ export class ConfirmarPedido extends Component {
           {
             text: 'Login', onPress: () => {
               this.setState({ isLoading: true }, () => {
-                const pedidoService = PedidoCorrenteService.getInstance();
                 pedidoService.salvarPedidoLocalStorage(pedidoService.getPedidoCorrente())
                   .then(_ => {
                     this.setState({ isLoading: false });
@@ -98,42 +100,131 @@ export class ConfirmarPedido extends Component {
             }
           },
         ]);
+    } else {
+      this.salvarPedido(pedidoService.getPedidoCorrente());
     }
   }
 
+  salvarPedido = (orderData) => {
+    const pedidoService = PedidoCorrenteService.getInstance();
+
+    this.setState({ isLoading: true }, () => {
+      const order = {};
+      order.description = orderData.necessidade;
+      order.category_id = +orderData.categoriaPedido.id;
+      order.user_id = TokenService.getInstance().getUser().id;
+      order.start_order = `${orderData.dataPedido.toDateString()} ${orderData.hora}`;
+      order.hora_inicio = `${orderData.hora}`;
+      order.hora_fim = `${orderData.horaFim}`;
+      if (orderData.urgencia === 'definir-data') {
+        order.urgency = 'urgent';
+        order.end_order = `${orderData.dataPedido.toDateString()} ${orderData.horaFim}`;
+      }
+      const images = [];
+      if (pedidoService.getPedidoCorrente().foto1) { images.push({ base64: pedidoService.getPedidoCorrente().foto1.base64, file_name: 'foto1.jpg' }) }
+      if (pedidoService.getPedidoCorrente().foto2) { images.push({ base64: pedidoService.getPedidoCorrente().foto2.base64, file_name: 'foto2.jpg' }) }
+      if (pedidoService.getPedidoCorrente().foto3) { images.push({ base64: pedidoService.getPedidoCorrente().foto3.base64, file_name: 'foto3.jpg' }) }
+      if (pedidoService.getPedidoCorrente().foto4) { images.push({ base64: pedidoService.getPedidoCorrente().foto4.base64, file_name: 'foto4.jpg' }) }
+
+      if (orderData.address.id) {
+        order.address_id = this.state.enderecoSelecionado.id;
+      } else {
+        order.address_id = null
+      }
+
+      backendRails.post('/orders', { order, images, address: orderData.address }, { headers: TokenService.getInstance().getHeaders() })
+        .then((response) => {
+          // TODO: mover responsabilidade para depois do form de endereço
+          FotoService.getInstance().setFotoId(0);
+          FotoService.getInstance().setFotoData(null);
+          pedidoService.salvarPedidoLocalStorage(null).then(_ => {
+            this.setState({ isLoading: true }, () => {
+
+              setTimeout(() => {
+
+                const resetAction = StackActions.reset({
+                  index: 0,
+                  actions: [NavigationActions.navigate({ routeName: 'Services' })],
+                  key: 'Finddo'
+                });
+                this.props.navigation.dispatch(resetAction);
+                this.props.navigation.navigate('AcompanhamentoPedido', { pedido: response.data });
+              }, 2000);
+            });
+          });
+        })
+        .catch((error) => {
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            Alert.alert(
+              'Falha ao realizar operação',
+              'Revise seus dados e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            Alert.alert(
+              'Falha ao se conectar',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { } },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            /* Something happened in setting up the request and triggered an Error */
+          }
+          this.setState({ isLoading: false });
+        });
+    });
+  }
+
   render() {
-    return (
-      <ImageBackground
-        style={{ width: '100%', height: '100%' }}
-        source={require('../../img/Ellipse.png')}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.isLoading}>
+    if (this.state.isLoading) {
+      return (
+        <ImageBackground
+          style={{ width: '100%', height: '100%' }}
+          source={require('../../img/Ellipse.png')}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
           </View>
-        </Modal>
-        <View style={{
-          flex: 1,
-          paddingTop: 10,
-          alignItems: 'center'
-        }}>
-          {(() => {
-            if (this.state.temPedido) {
-              return (<VisualizarPedido
-                pedido={this.state}
-                onConfirm={() => { this.salvarPedidoLocalStorage() }}
-                onCancel={() => {
-                  const resetAction = StackActions.pop();
-                  this.props.navigation.dispatch(resetAction);
-                }} />);
-            } else {
-              return (null);
-            }
-          })()}
-        </View>
-      </ImageBackground>
-    );
+        </ImageBackground>);
+    } else {
+      return (
+        <ImageBackground
+          style={{ width: '100%', height: '100%' }}
+          source={require('../../img/Ellipse.png')}>
+          <View style={{
+            flex: 1,
+            paddingTop: 10,
+            alignItems: 'center'
+          }}>
+            {(() => {
+              if (this.state.temPedido) {
+                return (<VisualizarPedido
+                  pedido={this.state}
+                  onConfirm={() => { this.salvarPedidoLocalStorage() }}
+                  onCancel={() => {
+                    const resetAction = StackActions.pop();
+                    this.props.navigation.dispatch(resetAction);
+                  }} />);
+              } else {
+                return (null);
+              }
+            })()}
+          </View>
+        </ImageBackground>
+      );
+    }
   }
 }
