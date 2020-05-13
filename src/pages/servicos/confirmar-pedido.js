@@ -140,6 +140,7 @@ export class ConfirmarPedido extends Component {
           pedidoService.salvarPedidoLocalStorage(null).then(_ => {
             this.setState({ isLoading: true }, () => {
 
+              pedidoService.setPedidoCorrente(null);
               setTimeout(() => {
 
                 const resetAction = StackActions.reset({
