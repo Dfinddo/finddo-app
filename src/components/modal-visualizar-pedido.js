@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, FlatList, Image }
 import { colors } from '../colors';
 import TokenService from '../services/token-service';
 import { backendUrl } from '../services/backend-rails-api';
+import PedidoCorrenteService from '../services/pedido-corrente-service';
 
 export default class VisualizarPedido extends Component {
   constructor(props) {
@@ -115,17 +116,37 @@ export default class VisualizarPedido extends Component {
                 {
                   (() => {
                     let fotos = [];
+                    const fotosPedido = [];
                     if (this.props.pedido.isShowingPedido) {
                       fotos = this.props.pedido.pedidoCorrente.images.map((foto, index) => { return { id: "" + index, foto: { image: { uri: backendUrl + foto } } } })
                     } else {
                       fotos = this.props.pedido.fotosPedido.map((foto, index) => { return { id: "" + index, foto }; });
+
+                      if (fotos.length === 0) {
+                        const pedidoService = PedidoCorrenteService.getInstance();
+
+                        if (pedidoService.getPedidoCorrente().foto1) { fotosPedido.push(pedidoService.getPedidoCorrente().foto1); }
+                        if (pedidoService.getPedidoCorrente().foto2) { fotosPedido.push(pedidoService.getPedidoCorrente().foto2); }
+                        if (pedidoService.getPedidoCorrente().foto3) { fotosPedido.push(pedidoService.getPedidoCorrente().foto3); }
+                        if (pedidoService.getPedidoCorrente().foto4) { fotosPedido.push(pedidoService.getPedidoCorrente().foto4); }
+
+                        fotos = fotosPedido.map((foto, index) => { return { id: "" + index, foto }; });
+                      }
                     }
 
-                    return (
-                      <FlatList data={fotos} renderItem={({ item }) => {
-                        return (<Image source={item.foto.image} style={{ width: 240, height: 240, marginTop: 10 }} />);
-                      }} />
-                    );
+                    if (fotosPedido.length > 0) {
+                      return (
+                        <FlatList data={fotos} renderItem={({ item }) => {
+                          return (<Image source={item.foto} style={{ width: 240, height: 240, marginTop: 10 }} />);
+                        }} />
+                      );
+                    } else {
+                      return (
+                        <FlatList data={fotos} renderItem={({ item }) => {
+                          return (<Image source={item.foto.image} style={{ width: 240, height: 240, marginTop: 10 }} />);
+                        }} />
+                      );
+                    }
                   })()
                 }
                 <Text style={this.visualizarPedidoStyle.titulos}>Data:</Text>{
