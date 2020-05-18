@@ -86,7 +86,7 @@ export default class ValorServicoScreen extends Component {
       type: 'PRIMARY',
       feePayor: true,
       moipAccount: {
-        id: developConfig.moipCredsData.moipAccountId
+        id: productionConfig.moipCredsData.moipAccountId
       },
       amount: {
         fixed: this.formatarValorServico(this.state.valorTaxa).split('').slice(3).join('').replace('.', '').replace(',', '')

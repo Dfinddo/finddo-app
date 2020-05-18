@@ -192,7 +192,7 @@ const AppContainer = createAppContainer(createSwitchNavigator(
 export default class App extends Component {
   constructor(props) {
     super(props);
-    OneSignal.init(developConfig.oneSignalApiKey);
+    OneSignal.init(productionConfig.oneSignalApiKey);
 
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);

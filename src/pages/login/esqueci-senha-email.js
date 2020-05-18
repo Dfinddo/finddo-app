@@ -25,7 +25,7 @@ export default class EsqueciSenhaEmail extends Component {
 
   enviarFormRecuperacaoDeSenha = (email) => {
     this.setState({ isLoading: true }, () => {
-      backendRails.post('auth/password', { email, redirect_url: developConfig.backendUrl })
+      backendRails.post('auth/password', { email, redirect_url: productionConfig.backendUrl })
         .then(_ => {
           Alert.alert(
             'Recuperação de Senha',
