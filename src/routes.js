@@ -34,7 +34,7 @@ import ValorServicoScreen from './pages/acompanhamento-finddo-pay/tela-valor';
 import OneSignal from 'react-native-onesignal';
 import { SvgXml } from 'react-native-svg';
 import { finddoLogoNavegacao } from './img/svg/finddo-logo-navegacao';
-import { developConfig, productionConfig } from '../credenciais-e-configuracoes';
+import { ambienteASerConstruido } from '../credenciais-e-configuracoes';
 import TokenService from './services/token-service';
 import SplashScreen from 'react-native-splash-screen';
 import FormEnderecoPedidoScreen from './pages/servicos/form-endereco-pedido';
@@ -192,7 +192,7 @@ const AppContainer = createAppContainer(createSwitchNavigator(
 export default class App extends Component {
   constructor(props) {
     super(props);
-    OneSignal.init(productionConfig.oneSignalApiKey);
+    OneSignal.init(ambienteASerConstruido.oneSignalApiKey);
 
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);

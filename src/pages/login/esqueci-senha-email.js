@@ -8,7 +8,7 @@ import {
 import { colors } from '../../colors';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import backendRails from '../../services/backend-rails-api';
-import { developConfig, productionConfig } from '../../../credenciais-e-configuracoes';
+import { ambienteASerConstruido } from '../../../credenciais-e-configuracoes';
 import { StackActions } from 'react-navigation';
 
 export default class EsqueciSenhaEmail extends Component {
@@ -25,7 +25,7 @@ export default class EsqueciSenhaEmail extends Component {
 
   enviarFormRecuperacaoDeSenha = (email) => {
     this.setState({ isLoading: true }, () => {
-      backendRails.post('auth/password', { email, redirect_url: productionConfig.backendUrl })
+      backendRails.post('auth/password', { email, redirect_url: ambienteASerConstruido.backendUrl })
         .then(_ => {
           Alert.alert(
             'Recuperação de Senha',

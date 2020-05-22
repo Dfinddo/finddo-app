@@ -1,4 +1,4 @@
-import { developConfig, productionConfig } from '../../credenciais-e-configuracoes';
+import { ambienteASerConstruido } from '../../credenciais-e-configuracoes';
 // ############################## ATENÇÃO ##############################
 // NUNCA COMITTAR OS SECRETS DO MOIP ###################################
 // CUIDADO #############################################################
@@ -9,9 +9,9 @@ import { developConfig, productionConfig } from '../../credenciais-e-configuraco
 // ############################## ATENÇÃO ##############################
 
 const moipCredsData = {
-  publicKey: productionConfig.moipCredsData.publicKey,
-  Authorization: productionConfig.moipCredsData.Authorization,
-  OAuth2: productionConfig.moipCredsData.oAuth2MainApp
+  publicKey: ambienteASerConstruido.moipCredsData.publicKey,
+  Authorization: ambienteASerConstruido.moipCredsData.Authorization,
+  OAuth2: ambienteASerConstruido.moipCredsData.oAuth2MainApp
 };
 
 export default moipCredsData;

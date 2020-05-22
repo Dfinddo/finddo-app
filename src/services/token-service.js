@@ -1,3 +1,9 @@
+/**
+ * Responsável por guardar informações de:
+ *   - Autenticação (tokens)
+ *   - Usuário logado
+ *   - ID do device do usuário
+ */
 export default class TokenService {
   static myInstance = null;
 

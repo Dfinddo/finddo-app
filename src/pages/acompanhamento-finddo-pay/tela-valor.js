@@ -15,7 +15,7 @@ import { SvgXml } from 'react-native-svg';
 import { finddoLogo } from '../../img/svg/finddo-logo';
 import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
-import { developConfig, productionConfig } from '../../../credenciais-e-configuracoes';
+import { ambienteASerConstruido } from '../../../credenciais-e-configuracoes';
 
 export default class ValorServicoScreen extends Component {
   static navigationOptions = {
@@ -86,7 +86,7 @@ export default class ValorServicoScreen extends Component {
       type: 'PRIMARY',
       feePayor: true,
       moipAccount: {
-        id: productionConfig.moipCredsData.moipAccountId
+        id: ambienteASerConstruido.moipCredsData.moipAccountId
       },
       amount: {
         fixed: this.formatarValorServico(this.state.valorTaxa).split('').slice(3).join('').replace('.', '').replace(',', '')

@@ -15,7 +15,7 @@ import HeaderTransparenteSemHistorico from '../../components/header-transparente
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationEvents } from 'react-navigation';
 import FotoService from '../../services/foto-service';
-import { developConfig, productionConfig } from '../../../credenciais-e-configuracoes';
+import { ambienteASerConstruido } from '../../../credenciais-e-configuracoes';
 
 const semPerfil = require('../../img/sem-foto.png');
 
@@ -338,9 +338,9 @@ export default class PerfilScreen extends Component {
                   (() => {
                     const user = TokenService.getInstance().getUser();
                     if (user.user_type === 'professional') {
-                      const appID = productionConfig.moipCredsData.moipAppID;
-                      const redirectUri = productionConfig.moipCredsData.redirectUrl;
-                      const connectWirecardUrl = productionConfig.moipCredsData.connectWirecardUrl;
+                      const appID = ambienteASerConstruido.moipCredsData.moipAppID;
+                      const redirectUri = ambienteASerConstruido.moipCredsData.redirectUrl;
+                      const connectWirecardUrl = ambienteASerConstruido.moipCredsData.connectWirecardUrl;
                       const urlAuthorization = `${connectWirecardUrl}authorize?response_type=code&client_id=${appID}&redirect_uri=${redirectUri}?${user.id}&scope=RECEIVE_FUNDS,REFUND,MANAGE_ACCOUNT_INFO,RETRIEVE_FINANCIAL_INFO,TRANSFER_FUNDS,DEFINE_PREFERENCES`;
                       if (!user.token_wirecard_account) {
                         if (user.is_new_wire_account) {
