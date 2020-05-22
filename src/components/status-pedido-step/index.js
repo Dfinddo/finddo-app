@@ -41,6 +41,7 @@ export default class StatusPedidoStep extends Component {
     );
   }
 
+  // os estilos desse componente usam o state, não dá pra colocar em style separado
   statusPedidoStyles = StyleSheet.create({
     circuloStatus: {
       borderWidth: 1, marginTop: this.props.hasMarginTop ? 20 : 0,
