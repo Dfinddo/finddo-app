@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import {
   View, TouchableOpacity,
   Text, Modal,
-  StyleSheet,
   FlatList
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../colors';
+import { styles } from './styles';
 
 /**
  * Objetos para o array precisam ter `content`, `value` e `id`,
@@ -24,7 +24,7 @@ import { colors } from '../colors';
  *   onSelect={onSelect} />
  * ```
  */
-export class CustomPicker extends Component {
+export default class CustomPicker extends Component {
   constructor(props) {
     super(props);
   }
@@ -60,10 +60,10 @@ export class CustomPicker extends Component {
           visible={this.state.isSelectingItem && this.state.items.length > 0}
         >
           <View style={[
-            customPickerStyles.modalSelecaoContainer,
-            customPickerStyles.centralizar]}>
+            styles.modalSelecaoContainer,
+            styles.centralizar]}>
             <FlatList
-              style={customPickerStyles.listaDeItems}
+              style={styles.listaDeItems}
               data={this.state.items}
               renderItem={({ item }) => (
                 <Item
@@ -77,14 +77,14 @@ export class CustomPicker extends Component {
           </View>
         </Modal>
         <TouchableOpacity
-          style={customPickerStyles.botaoPrincipalSelectContainer}
+          style={styles.botaoPrincipalSelectContainer}
           onPress={() => this.setState({ isSelectingItem: true })}>
 
-          <Text style={customPickerStyles.rotuloSelecionado}>
+          <Text style={styles.rotuloSelecionado}>
             {this.state.selectedItem.content}
           </Text>
           <Icon
-            style={customPickerStyles.setaDropdown}
+            style={styles.setaDropdown}
             name={'keyboard-arrow-down'}
             size={25} color={colors.cinza} />
 
@@ -94,29 +94,11 @@ export class CustomPicker extends Component {
   }
 }
 
-const customPickerStyles = StyleSheet.create({
-  centralizar: { alignItems: 'center', justifyContent: 'center' },
-  botaoPrincipalSelectContainer: {
-    flex: 1, flexDirection: 'row',
-    alignItems: 'center', justifyContent: 'space-between'
-  },
-  rotuloSelecionado: { marginLeft: 10, fontSize: 18 },
-  setaDropdown: { width: 35 },
-  modalSelecaoContainer: {
-    flex: 1, backgroundColor: colors.transparenciaModais,
-  },
-  itemSelecionavelContainer: {
-    width: 320, height: 50,
-    backgroundColor: colors.branco, marginVertical: 10
-  },
-  listaDeItems: { marginVertical: 20, flex: 1 }
-});
-
-export default function Item(props) {
+function Item(props) {
   return (
     <TouchableOpacity style={[
-      customPickerStyles.itemSelecionavelContainer,
-      customPickerStyles.centralizar]}
+      styles.itemSelecionavelContainer,
+      styles.centralizar]}
       onPress={() => props.onPress(props.item)}>
       <Text style={{ fontSize: 18 }}>{props.item.content}</Text>
     </TouchableOpacity>
