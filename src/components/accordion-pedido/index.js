@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { View, TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { backendUrl } from '../services/backend-rails-api';
+import { styles } from './styles';
 
 export default class Accordian extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      // variável não utilizada
       data: props.data,
       accordianClosed: true,
       estadoAtual: 'analise',
@@ -19,8 +21,13 @@ export default class Accordian extends Component {
     this.setState({ estadoComponente: this.props.estadoInicial });
   }
 
+  /** Esta função é utilizada pelo componente que faz referência ao accordion */
   setEstadoAtual = (estado) => {
     this.setState({ estadoAtual: estado });
+  }
+
+  toggleExpand = () => {
+    this.setState({ expanded: !this.state.expanded })
   }
 
   render() {
@@ -28,23 +35,24 @@ export default class Accordian extends Component {
       return (
         <View>
           <View
-            style={this.accordionStyle.accordionFechadoEstadoInativo}>
+            style={styles.accordionFechadoEstadoInativo}>
             <Text
-              style={this.accordionStyle.accordionFechadoTextEstadoInativo}>{this.props.conteudo}</Text>
+              style={styles.accordionFechadoTextEstadoInativo}>
+              {this.props.conteudo}</Text>
           </View>
-          <View style={{ height: 80 }} />
+          <View style={styles.margemPreenchimento} />
         </View>
       );
     } else if (this.state.accordianClosed) {
       return (
         <View>
           <TouchableOpacity
-            style={this.accordionStyle.accordionFechadoEstadoAtivo}
+            style={styles.accordionFechadoEstadoAtivo}
             onPress={() => {
               this.setState({ accordianClosed: !this.state.accordianClosed })
             }}>
-            <View style={this.accordionStyle.accordionFechadoConteudoEstadoAtivo}>
-              <Text style={this.accordionStyle.accordionFechadoConteudoEstadoAtivoText}>
+            <View style={styles.accordionFechadoConteudoEstadoAtivo}>
+              <Text style={styles.accordionFechadoConteudoEstadoAtivoText}>
                 {this.props.conteudo}</Text>
               <Icon
                 style={{ width: 35 }}
@@ -57,14 +65,15 @@ export default class Accordian extends Component {
       );
     } else {
       return (
-        <View style={this.accordionStyle.accordionAberto}>
+        <View style={styles.accordionAberto}>
           <TouchableOpacity
-            style={{ paddingLeft: 8, height: 40 }}
+            style={styles.accordionAbertoProfissional}
             onPress={() => {
               this.setState({ accordianClosed: !this.state.accordianClosed })
             }}>
-            <View style={this.accordionStyle.accordionAbertoConteudo}>
-              <Text style={{ fontSize: 20, width: 235 }}>{this.props.conteudo}</Text>
+            <View style={styles.accordionAbertoConteudo}>
+              <Text style={{ fontSize: 20, width: 235 }}>
+                {this.props.conteudo}</Text>
               <Icon
                 style={{ width: 35 }}
                 name={this.state.accordianClosed ? 'keyboard-arrow-down' : 'keyboard-arrow-up'}
@@ -74,16 +83,17 @@ export default class Accordian extends Component {
           <TouchableOpacity style={{ height: 110 }}
             onPress={() => this.setState({ accordianClosed: !this.state.accordianClosed })}>
             <View style={{ flex: 1, alignItems: 'center' }}>
-              <Text> </Text>
+              <Text />
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={this.accordionStyle.accordionAbertoProfissionalFoto}>
+                <View style={styles.accordionAbertoProfissionalFoto}>
                   <Image
                     style={{ width: 85, height: 85, borderRadius: 50 }}
                     source={{ uri: backendUrl + `/${this.props.pedido.professional_photo}` }} />
                 </View>
-                <View style={this.accordionStyle.accordionAbertoProfissionalInfo}>
-                  <Text style={{ fontSize: 20, marginBottom: 8 }}>{this.props.pedido.professional_order.name}</Text>
-                  <View style={this.accordionStyle.accordionAbertoEstrelas}>
+                <View style={styles.accordionAbertoProfissionalInfo}>
+                  <Text style={{ fontSize: 20, marginBottom: 8 }}>
+                    {this.props.pedido.professional_order.name}</Text>
+                  <View style={styles.accordionAbertoEstrelas}>
                     {
                       // TODO adicionar classificação do profissional
                       // em quantidade de estrelas
@@ -97,58 +107,4 @@ export default class Accordian extends Component {
       );
     }
   }
-
-  toggleExpand = () => {
-    this.setState({ expanded: !this.state.expanded })
-  }
-
-  accordionStyle = StyleSheet.create({
-    accordionFechadoEstadoInativo: {
-      height: 40,
-      justifyContent: 'center'
-    },
-    accordionFechadoTextEstadoInativo: {
-      fontSize: 18,
-      color: 'gray',
-    },
-    accordionFechadoEstadoAtivo: {
-      height: 40, width: 270,
-      borderRadius: 10, backgroundColor: 'white',
-      paddingLeft: 8
-    },
-    accordionFechadoConteudoEstadoAtivo: {
-      flex: 1, flexDirection: 'row',
-      width: 270, alignItems: 'center'
-    },
-    accordionFechadoConteudoEstadoAtivoText: {
-      fontSize: 20, width: 235
-    },
-    accordionAberto: {
-      height: 170, backgroundColor: 'white',
-      width: 270, borderRadius: 10
-    },
-    accordionAbertoConteudo: {
-      flex: 1, flexDirection: 'row',
-      width: 270, alignItems: 'flex-start',
-      paddingTop: 9
-    },
-    accordionAbertoProfissionalFoto: {
-      width: 90, height: 110,
-      alignItems: 'center', justifyContent: 'center',
-    },
-    accordionAbertoProfissionalInfo: {
-      width: 180, height: 110,
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-      paddingLeft: 8
-    },
-    accordionAbertoEstrelas: {
-      alignItems: 'center', justifyContent: 'center',
-      flexDirection: 'row'
-    },
-    accordionAbertoEstrela: {
-      width: 20, height: 20,
-      marginRight: 5
-    }
-  });
 }
