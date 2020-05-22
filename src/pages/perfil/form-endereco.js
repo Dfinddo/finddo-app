@@ -265,7 +265,6 @@ export default class FormEnderecoScreen extends Component {
   }
 
   render() {
-    // TODO: tipo inputs aqui e no login form
     return (
       <ImageBackground
         style={this.formEnderecoScreenStyle.backgroundImageContent}

@@ -614,7 +614,9 @@ export default class TelaFinalPedidoScreen extends Component {
           pedido.payment_wirecard_id = responseWirecard.data.id;
           backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
             .then((response) => {
-              // TODO: melhorar feedback da mensagem aqui
+              // TODO: adicionar mensagem de feedback
+              // ex.: seu pagamento foi enviado com sucesso
+              // mensagem deve sumir rapidamente, não ser um alert
             }).catch((error) => {
               if (error.response) {
                 /*

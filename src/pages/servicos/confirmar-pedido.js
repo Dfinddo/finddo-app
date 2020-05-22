@@ -134,7 +134,6 @@ export class ConfirmarPedido extends Component {
 
       backendRails.post('/orders', { order, images, address: orderData.address }, { headers: TokenService.getInstance().getHeaders() })
         .then((response) => {
-          // TODO: mover responsabilidade para depois do form de endereço
           FotoService.getInstance().setFotoId(0);
           FotoService.getInstance().setFotoData(null);
           pedidoService.salvarPedidoLocalStorage(null).then(_ => {

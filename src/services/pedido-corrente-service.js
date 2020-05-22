@@ -31,7 +31,6 @@ export default class PedidoCorrenteService {
     return AsyncStorage.setItem('pedido-corrente', JSON.stringify(pedido));
   }
 
-  // TODO: verificar se as fotos aparecem normalmente
   setPedidoFromLocalStorage(pedido) {
     const pedidoSalvo = JSON.parse(pedido);
     pedidoSalvo.dataPedido = new Date(pedidoSalvo.dataPedido);

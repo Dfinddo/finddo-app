@@ -85,7 +85,8 @@ export default class Accordian extends Component {
                   <Text style={{ fontSize: 20, marginBottom: 8 }}>{this.props.pedido.professional_order.name}</Text>
                   <View style={this.accordionStyle.accordionAbertoEstrelas}>
                     {
-                      // TODO adicionar classificação
+                      // TODO adicionar classificação do profissional
+                      // em quantidade de estrelas
                     }
                   </View>
                 </View>

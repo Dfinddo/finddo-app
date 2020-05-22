@@ -95,6 +95,7 @@ export default class FormEnderecoPedidoScreen extends Component {
     const editar = navigation.getParam('editar', null);
 
     // TODO: refatorar para caso quando o usuário está logado e exibir um select com seus endereços
+    // no caso, fazer com que o primeiro endereço já preencha o form
     if (editar) {
       this.setState({
         tituloForm: 'Editar Endereço'

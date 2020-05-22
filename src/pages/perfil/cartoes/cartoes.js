@@ -245,7 +245,6 @@ export const excluirItemConfirm = (item, comp, size) => {
 }
 
 export const excluirItem = (item, comp) => {
-  // TODO: mensagem ao excluir endereços que tem pedidos ativos associados
   comp.setState({ isLoading: true })
 
   moipAPI.delete(`/fundinginstruments/${item.id}`, { headers: headersOauth2 }).then(

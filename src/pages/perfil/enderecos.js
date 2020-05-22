@@ -242,6 +242,7 @@ export const excluirItemConfirm = (item, comp, size) => {
 
 export const excluirItem = (item, comp) => {
   // TODO: mensagem ao excluir endereços que tem pedidos ativos associados
+  // aviso: passa por validação no backend
   comp.setState({ isLoading: true })
 
   const tokenService = TokenService.getInstance();

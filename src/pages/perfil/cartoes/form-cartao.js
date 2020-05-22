@@ -165,8 +165,6 @@ export default class FormCartaoScreen extends Component {
     const areaCodeErrors = [];
     const numberPhoneErrors = [];
 
-    // TODO: colocar tamanho máximo no form do input
-    // validar data de nascimento no cadastro de usuário
     if (this.state.cardData.creditCard.expirationMonth.length === 0) {
       expirationMonthErrors.push('É obrigatório.');
     } else if (this.state.cardData.creditCard.expirationMonth.length < 2) {
@@ -307,7 +305,6 @@ export default class FormCartaoScreen extends Component {
   }
 
   render() {
-    // TODO: tipo inputs aqui e no login form
     return (
       <ImageBackground
         style={this.formCartaoScreenStyle.backgroundImageContent}
