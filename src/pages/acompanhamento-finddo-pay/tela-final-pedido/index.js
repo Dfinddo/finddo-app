@@ -17,41 +17,7 @@ import { SvgXml } from 'react-native-svg';
 import { starSolid } from '../../img/svg/star-solid';
 import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import CartaoFormService from '../../services/cartao-form-service';
-
-function Item(props) {
-  const itemStyle = StyleSheet.create({
-    itemCartaoText: {
-      color: 'black', fontSize: 16,
-      textAlign: 'left', width: 240
-    },
-    cartaoNome: {
-      fontWeight: 'bold'
-    }
-  });
-
-  return (
-    <TouchableOpacity style={{
-      width: 300, height: 90,
-      flexDirection: 'row', borderRadius: 20,
-      borderColor: colors.amareloIconeEditar,
-      borderWidth: 1, marginBottom: 10
-    }} onPress={props.selecionarCartao}>
-      <View style={{
-        width: 240, paddingLeft: 20,
-        alignItems: 'center', justifyContent: 'center'
-      }}>
-        <Text style={[itemStyle.itemCartaoText, itemStyle.cartaoNome]}>{props.dados.item.brand}</Text>
-        <Text style={itemStyle.itemCartaoText}>{props.dados.item.first6}XXXXXX{props.dados.item.last4}</Text>
-      </View>
-      <View style={{
-        width: 60, backgroundColor: 'transparent',
-        alignItems: 'center', justifyContent: 'space-evenly',
-        flexDirection: 'column'
-      }}>
-      </View>
-    </TouchableOpacity>
-  );
-}
+import { styles } from './styles';
 
 export default class TelaFinalPedidoScreen extends Component {
   static navigationOptions = {
@@ -161,6 +127,101 @@ export default class TelaFinalPedidoScreen extends Component {
     this.setState({ classificacaoProfissional });
   };
 
+  efetuarPagamento = () => {
+    const tokenService = TokenService.getInstance();
+
+    this.setState({ isLoading: true }, () => {
+      const pedido = {};
+      pedido.id = this.state.pedido.id;
+      pedido.rate = this.state.classificacaoProfissional;
+
+      const orderWirecard = {};
+      orderWirecard.order_id = this.state.pedido.order_wirecard_id;
+      orderWirecard.installmentCount = 1;
+      orderWirecard.statementDescriptor = "Finddo";
+      orderWirecard.fundingInstrument = {};
+      orderWirecard.fundingInstrument.method = "CREDIT_CARD";
+      orderWirecard.fundingInstrument.creditCard = {};
+      orderWirecard.fundingInstrument.creditCard.id = this.state.cartaoSelecionado.id;
+      orderWirecard.fundingInstrument.creditCard.cvc = this.state.secureCode;
+
+      moipAPI.post('orders/' + this.state.pedido.order_wirecard_id + '/payments',
+        orderWirecard, { headers: headersOauth2 }).then(responseWirecard => {
+          pedido.payment_wirecard_id = responseWirecard.data.id;
+          backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
+            .then((response) => {
+              // TODO: adicionar mensagem de feedback
+              // ex.: seu pagamento foi enviado com sucesso
+              // mensagem deve sumir rapidamente, não ser um alert
+            }).catch((error) => {
+              if (error.response) {
+                /*
+                 * The request was made and the server responded with a
+                 * status code that falls out of the range of 2xx
+                 */
+                Alert.alert(
+                  'Erro',
+                  'Seu pedido foi pago mas não conseguimos salvar em nosso sistema, entre em contato conosco pela aba ajuda.',
+                  [
+                    { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
+                  ],
+                  { cancelable: false },
+                );
+              } else if (error.request) {
+                /*
+                 * The request was made but no response was received, `error.request`
+                 * is an instance of XMLHttpRequest in the browser and an instance
+                 * of http.ClientRequest in Node.js
+                 */
+                Alert.alert(
+                  'Erro',
+                  'Seu pedido foi pago mas não conseguimos salvar em nosso sistema, entre em contato conosco pela aba ajuda.',
+                  [
+                    { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
+                  ],
+                  { cancelable: false },
+                );
+              } else {
+                /* Something happened in setting up the request and triggered an Error */
+              }
+            }).finally(_ => {
+              this.setState({ isLoading: false });
+            });
+        }).catch(error => {
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            Alert.alert(
+              'Falha ao executar o pagamento',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
+              ],
+              { cancelable: false },
+            );
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            Alert.alert(
+              'Falha ao executar o pagamento',
+              'Verifique sua conexão e tente novamente',
+              [
+                { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            /* Something happened in setting up the request and triggered an Error */
+          }
+        });
+    });
+  }
+
   render() {
     if (!this.state.pedido) {
       return (
@@ -206,7 +267,7 @@ export default class TelaFinalPedidoScreen extends Component {
                 <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 20 }}>Digite o código de segurança do cartão:</Text>
                 <View style={{ height: 20 }}></View>
                 <TextInput
-                  style={this.telaFinalStyles.cadastroFormSizeAndFont}
+                  style={styles.cadastroFormSizeAndFont}
                   onChangeText={text => { this.setState({ secureCode: text }) }}
                   placeholder="CVV" keyboardType={'number-pad'}
                   maxLength={10}
@@ -267,18 +328,18 @@ export default class TelaFinalPedidoScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.telaFinalStyles.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
             </View>
           </Modal>
-          <View style={this.telaFinalStyles.containerBase}>
-            <View style={this.telaFinalStyles.linha}>
+          <View style={styles.containerBase}>
+            <View style={styles.linha}>
               <Text style={{ fontSize: 25, fontWeight: 'bold' }}>{this.state.pedido.category.name}</Text>
               <Text style={{ fontSize: 25, fontWeight: 'bold', color: colors.verdeFinddo }}>R$ {(this.state.pedido.price / 100).toFixed(2)}</Text>
             </View>
-            <View style={[this.telaFinalStyles.linha, this.telaFinalStyles.avaliacaoFuncionario]}>
+            <View style={[styles.linha, styles.avaliacaoFuncionario]}>
               <View>
                 <Image
                   style={{ width: 80, height: 80, borderRadius: 100 }}
@@ -384,7 +445,7 @@ export default class TelaFinalPedidoScreen extends Component {
               alignItems: 'flex-start', justifyContent: 'space-around',
               flexDirection: 'row'
             }}>
-              <View style={this.telaFinalStyles.horaAgendamento}>
+              <View style={styles.horaAgendamento}>
                 <Text style={{ fontSize: 18, textAlign: 'center' }}>Data agendada:</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
@@ -412,7 +473,7 @@ export default class TelaFinalPedidoScreen extends Component {
                 </View>
               </View>
               <View style={{ width: 40 }}></View>
-              <View style={this.telaFinalStyles.profissionalACaminho}>
+              <View style={styles.profissionalACaminho}>
                 <Text style={{ fontSize: 18, textAlign: 'center' }}>{enumEstadoPedidoMap[this.state.pedido.order_status]}</Text>
               </View>
             </View>
@@ -590,147 +651,39 @@ export default class TelaFinalPedidoScreen extends Component {
       </ImageBackground>
     );
   }
+}
 
-  efetuarPagamento = () => {
-    const tokenService = TokenService.getInstance();
-
-    this.setState({ isLoading: true }, () => {
-      const pedido = {};
-      pedido.id = this.state.pedido.id;
-      pedido.rate = this.state.classificacaoProfissional;
-
-      const orderWirecard = {};
-      orderWirecard.order_id = this.state.pedido.order_wirecard_id;
-      orderWirecard.installmentCount = 1;
-      orderWirecard.statementDescriptor = "Finddo";
-      orderWirecard.fundingInstrument = {};
-      orderWirecard.fundingInstrument.method = "CREDIT_CARD";
-      orderWirecard.fundingInstrument.creditCard = {};
-      orderWirecard.fundingInstrument.creditCard.id = this.state.cartaoSelecionado.id;
-      orderWirecard.fundingInstrument.creditCard.cvc = this.state.secureCode;
-
-      moipAPI.post('orders/' + this.state.pedido.order_wirecard_id + '/payments',
-        orderWirecard, { headers: headersOauth2 }).then(responseWirecard => {
-          pedido.payment_wirecard_id = responseWirecard.data.id;
-          backendRails.put(`/orders/${pedido.id}`, { order: pedido }, { headers: tokenService.getHeaders() })
-            .then((response) => {
-              // TODO: adicionar mensagem de feedback
-              // ex.: seu pagamento foi enviado com sucesso
-              // mensagem deve sumir rapidamente, não ser um alert
-            }).catch((error) => {
-              if (error.response) {
-                /*
-                 * The request was made and the server responded with a
-                 * status code that falls out of the range of 2xx
-                 */
-                Alert.alert(
-                  'Erro',
-                  'Seu pedido foi pago mas não conseguimos salvar em nosso sistema, entre em contato conosco pela aba ajuda.',
-                  [
-                    { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
-                  ],
-                  { cancelable: false },
-                );
-              } else if (error.request) {
-                /*
-                 * The request was made but no response was received, `error.request`
-                 * is an instance of XMLHttpRequest in the browser and an instance
-                 * of http.ClientRequest in Node.js
-                 */
-                Alert.alert(
-                  'Erro',
-                  'Seu pedido foi pago mas não conseguimos salvar em nosso sistema, entre em contato conosco pela aba ajuda.',
-                  [
-                    { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
-                  ],
-                  { cancelable: false },
-                );
-              } else {
-                /* Something happened in setting up the request and triggered an Error */
-              }
-            }).finally(_ => {
-              this.setState({ isLoading: false });
-            });
-        }).catch(error => {
-          if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            Alert.alert(
-              'Falha ao executar o pagamento',
-              'Verifique sua conexão e tente novamente',
-              [
-                { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
-              ],
-              { cancelable: false },
-            );
-          } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            Alert.alert(
-              'Falha ao executar o pagamento',
-              'Verifique sua conexão e tente novamente',
-              [
-                { text: 'OK', onPress: () => { this.setState({ isLoading: false }); } },
-              ],
-              { cancelable: false },
-            );
-          } else {
-            /* Something happened in setting up the request and triggered an Error */
-          }
-        });
-    });
-  }
-
-  telaFinalStyles = StyleSheet.create({
-    containerBase: {
-      alignItems: 'center',
-      justifyContent: 'center',
+function Item(props) {
+  const itemStyle = StyleSheet.create({
+    itemCartaoText: {
+      color: 'black', fontSize: 16,
+      textAlign: 'left', width: 240
     },
-    linha: {
-      backgroundColor: 'white', width: 300,
-      height: 120, marginTop: 20,
-      borderRadius: 20,
-      alignItems: 'center', justifyContent: 'space-evenly'
-    },
-    avaliacaoFuncionario: {
-      flexDirection: 'row'
-    },
-    estrela: { width: 25, height: 25 },
-    horaAgendamento: {
-      backgroundColor: 'white', borderRadius: 20,
-      width: 130, height: 100,
-      justifyContent: 'center', alignItems: 'center'
-    },
-    profissionalACaminho: {
-      backgroundColor: 'white', borderRadius: 20,
-      width: 130, height: 100,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    pagamentoRow: {
-      height: 50, width: 300,
-      marginTop: 20,
-      alignItems: 'flex-start', justifyContent: 'space-around',
-      flexDirection: 'row'
-    },
-    pagamentoValor: {
-      backgroundColor: 'white', borderRadius: 20,
-      width: 150, height: 50,
-      justifyContent: 'center', alignItems: 'center'
-    },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    cadastroFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: 300,
-    },
+    cartaoNome: {
+      fontWeight: 'bold'
+    }
   });
+
+  return (
+    <TouchableOpacity style={{
+      width: 300, height: 90,
+      flexDirection: 'row', borderRadius: 20,
+      borderColor: colors.amareloIconeEditar,
+      borderWidth: 1, marginBottom: 10
+    }} onPress={props.selecionarCartao}>
+      <View style={{
+        width: 240, paddingLeft: 20,
+        alignItems: 'center', justifyContent: 'center'
+      }}>
+        <Text style={[itemStyle.itemCartaoText, itemStyle.cartaoNome]}>{props.dados.item.brand}</Text>
+        <Text style={itemStyle.itemCartaoText}>{props.dados.item.first6}XXXXXX{props.dados.item.last4}</Text>
+      </View>
+      <View style={{
+        width: 60, backgroundColor: 'transparent',
+        alignItems: 'center', justifyContent: 'space-evenly',
+        flexDirection: 'column'
+      }}>
+      </View>
+    </TouchableOpacity>
+  );
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   ImageBackground, View,
   Text, TextInput,
-  StyleSheet, Modal,
+  Modal,
   TouchableOpacity, ScrollView,
   SectionList, Alert, ActivityIndicator,
   Keyboard
@@ -19,14 +19,7 @@ import { politica } from './politica';
 import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
 import { formatarCpf } from './formatadores/formatador-cpf';
-
-function Item({ title }) {
-  return (
-    <View>
-      <Text style={{ fontSize: 18 }}>{'\t'}{title}</Text>
-    </View>
-  );
-}
+import { styles } from './styles';
 
 export default class SegundaParte extends Component {
   static navigationOptions = {
@@ -72,17 +65,17 @@ export default class SegundaParte extends Component {
     );
   };
 
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
   _keyboardDidShow = () => {
     this.setState({ isShowingKeyboard: true });
   }
 
   _keyboardDidHide = () => {
     this.setState({ isShowingKeyboard: false });
-  }
-
-  componentWillUnmount() {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
   }
 
   criarContaMoip = (clientData) => {
@@ -448,7 +441,7 @@ export default class SegundaParte extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.parteDoisScreenStyle.backgroundImageContent}
+        style={styles.backgroundImageContent}
         source={require('../../img/Ellipse.png')} >
         <View style={{ height: 60 }}></View>
         <ScrollView>
@@ -457,7 +450,7 @@ export default class SegundaParte extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.parteDoisScreenStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
@@ -468,28 +461,28 @@ export default class SegundaParte extends Component {
             transparent={true}
             visible={this.state.formInvalid}
           >
-            <View style={this.parteDoisScreenStyle.modalBase}>
-              <View style={this.parteDoisScreenStyle.modalDialog}>
-                <View style={this.parteDoisScreenStyle.modalDialogContent}>
-                  <Text style={this.parteDoisScreenStyle.modalErrosTitulo}>Erros:</Text>
+            <View style={styles.modalBase}>
+              <View style={styles.modalDialog}>
+                <View style={styles.modalDialogContent}>
+                  <Text style={styles.modalErrosTitulo}>Erros:</Text>
                   <SectionList
-                    style={this.parteDoisScreenStyle.modalErrosSectionList}
+                    style={styles.modalErrosSectionList}
                     sections={this.state.formErrors}
                     keyExtractor={(item, index) => item + index}
                     renderItem={({ item }) => <Item title={item} />}
                     renderSectionHeader={({ section: { title } }) => (
-                      <Text style={this.parteDoisScreenStyle.modalErrosTituloErro}>{title}</Text>
+                      <Text style={styles.modalErrosTituloErro}>{title}</Text>
                     )}
                   />
                   <TouchableOpacity
                     style={[
-                      this.parteDoisScreenStyle.modalErrosBotaoContinuar,
+                      styles.modalErrosBotaoContinuar,
                       {
                         marginTop: 8, alignItems: 'center', justifyContent: 'center'
                       }
                     ]}
                     onPress={() => this.setState({ formInvalid: false })}>
-                    <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
+                    <Text style={styles.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -500,22 +493,22 @@ export default class SegundaParte extends Component {
             transparent={true}
             visible={this.state.showPolitica}
           >
-            <View style={this.parteDoisScreenStyle.modalBase}>
-              <View style={this.parteDoisScreenStyle.modalDialog}>
-                <View style={[this.parteDoisScreenStyle.modalDialogContent, { height: 500 }]}>
-                  <Text style={this.parteDoisScreenStyle.modalErrosTitulo}>Política:</Text>
+            <View style={styles.modalBase}>
+              <View style={styles.modalDialog}>
+                <View style={[styles.modalDialogContent, { height: 500 }]}>
+                  <Text style={styles.modalErrosTitulo}>Política:</Text>
                   <ScrollView>
                     <Text style={{ fontSize: 18 }}>{politica}</Text>
                   </ScrollView>
                   <TouchableOpacity
                     style={[
-                      this.parteDoisScreenStyle.modalErrosBotaoContinuar,
+                      styles.modalErrosBotaoContinuar,
                       {
                         marginTop: 8, alignItems: 'center', justifyContent: 'center'
                       }
                     ]}
                     onPress={() => this.setState({ showPolitica: false })}>
-                    <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
+                    <Text style={styles.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -526,32 +519,32 @@ export default class SegundaParte extends Component {
             transparent={true}
             visible={this.state.showTermos}
           >
-            <View style={this.parteDoisScreenStyle.modalBase}>
-              <View style={this.parteDoisScreenStyle.modalDialog}>
-                <View style={[this.parteDoisScreenStyle.modalDialogContent, { height: 500 }]}>
-                  <Text style={this.parteDoisScreenStyle.modalErrosTitulo}>Termos:</Text>
+            <View style={styles.modalBase}>
+              <View style={styles.modalDialog}>
+                <View style={[styles.modalDialogContent, { height: 500 }]}>
+                  <Text style={styles.modalErrosTitulo}>Termos:</Text>
                   <ScrollView>
                     <Text style={{ fontSize: 18 }}>{termos}</Text>
                   </ScrollView>
                   <TouchableOpacity
                     style={[
-                      this.parteDoisScreenStyle.modalErrosBotaoContinuar,
+                      styles.modalErrosBotaoContinuar,
                       {
                         marginTop: 8, alignItems: 'center', justifyContent: 'center'
                       }
                     ]}
                     onPress={() => this.setState({ showTermos: false })}>
-                    <Text style={this.parteDoisScreenStyle.continuarButtonText}>VOLTAR</Text>
+                    <Text style={styles.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           </Modal>
-          <View style={this.parteDoisScreenStyle.cadastroForm}>
-            <Text style={this.parteDoisScreenStyle.fontTitle}>Crie sua conta</Text>
-            <View style={this.parteDoisScreenStyle.cadastroMainForm}>
+          <View style={styles.cadastroForm}>
+            <Text style={styles.fontTitle}>Crie sua conta</Text>
+            <View style={styles.cadastroMainForm}>
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cep: text }) }}
                 placeholder="CEP"
                 onBlur={() => {
@@ -576,7 +569,7 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ estado: text }) }}
                 placeholder="Estado"
                 editable={false}
@@ -584,7 +577,7 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cidade: text }) }}
                 placeholder="Cidade"
                 editable={false}
@@ -592,7 +585,7 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ bairro: text }) }}
                 placeholder="Bairro"
                 value={this.state.bairro}
@@ -600,7 +593,7 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ rua: text }) }}
                 placeholder="Rua"
                 value={this.state.rua}
@@ -608,7 +601,7 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ numero: text }) }}
                 keyboardType="number-pad"
                 placeholder="Número"
@@ -617,7 +610,7 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ complemento: text }) }}
                 placeholder="Complemento"
                 value={this.state.complemento}
@@ -625,7 +618,7 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ password: text }) }}
                 placeholder="Senha"
                 value={this.state.password}
@@ -634,7 +627,7 @@ export default class SegundaParte extends Component {
                 numberOfLines={1}
               />
               <TextInput
-                style={this.parteDoisScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ password_confirmation: text }) }}
                 placeholder="Confirmar Senha"
                 value={this.state.password_confirmation}
@@ -655,58 +648,6 @@ export default class SegundaParte extends Component {
       </ImageBackground>
     );
   }
-
-  parteDoisScreenStyle = StyleSheet.create({
-    backgroundImageContent: { width: '100%', height: '100%' },
-    cadastroForm: {
-      alignItems: 'center',
-      justifyContent: 'center', height: 650
-    },
-    cadastroMainForm: {
-      alignItems: 'center', justifyContent: 'center',
-      width: 340, height: 600,
-      backgroundColor: colors.branco
-    },
-    continuarButtonText: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
-    },
-    cadastroFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: 300,
-    },
-    fontTitle: {
-      fontSize: 30,
-      textAlign: 'center',
-      fontWeight: 'bold'
-    },
-    modalBase: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    modalDialog: {
-      padding: 16, borderRadius: 20,
-      backgroundColor: 'rgba(255, 255, 255, 0.8)', width: '100%',
-      height: '80%', flex: 1,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    modalDialogContent: {
-      backgroundColor: colors.branco, width: 340,
-      borderRadius: 18, opacity: 1,
-      alignItems: 'center'
-    },
-    modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
-    modalErrosSectionList: { maxHeight: '60%', width: '100%' },
-    modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: {
-      marginTop: 40, marginBottom: 10,
-      width: 320, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo
-    },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  });
 }
 
 function BotaoCriar(props) {
@@ -730,4 +671,12 @@ function BotaoCriar(props) {
   } else {
     return (null);
   }
+}
+
+function Item({ title }) {
+  return (
+    <View>
+      <Text style={{ fontSize: 18 }}>{'\t'}{title}</Text>
+    </View>
+  );
 }

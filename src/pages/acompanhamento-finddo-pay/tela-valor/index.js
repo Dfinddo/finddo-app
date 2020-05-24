@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   ImageBackground, View,
   Text, TextInput,
-  StyleSheet,
   TouchableOpacity, ScrollView,
   Alert, ActivityIndicator,
   Modal
@@ -16,6 +15,7 @@ import { finddoLogo } from '../../img/svg/finddo-logo';
 import moipAPI, { headersOauth2 } from '../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
 import { ambienteASerConstruido } from '../../../credenciais-e-configuracoes';
+import { styles } from './styles';
 
 export default class ValorServicoScreen extends Component {
   static navigationOptions = {
@@ -121,7 +121,7 @@ export default class ValorServicoScreen extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.telaValorStyle.backgroundImageContent}
+        style={styles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
           <Modal
@@ -129,18 +129,18 @@ export default class ValorServicoScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.telaValorStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
             </View>
           </Modal>
-          <View style={this.telaValorStyle.loginForm}>
-            <SvgXml xml={finddoLogo} width={126} height={30} style={this.telaValorStyle.finddoLogoStyle}></SvgXml>
-            <View style={this.telaValorStyle.loginMainForm}>
-              <Text style={this.telaValorStyle.fontTitle}>Cobrança</Text>
+          <View style={styles.loginForm}>
+            <SvgXml xml={finddoLogo} width={126} height={30} style={styles.finddoLogoStyle}></SvgXml>
+            <View style={styles.loginMainForm}>
+              <Text style={styles.fontTitle}>Cobrança</Text>
               <TextInput
-                style={this.telaValorStyle.loginFormSizeAndFont}
+                style={styles.loginFormSizeAndFont}
                 placeholder="Valor do serviço"
                 keyboardType="number-pad"
                 onChangeText={
@@ -155,14 +155,14 @@ export default class ValorServicoScreen extends Component {
                 value={this.state.valorServico}
               />
               <TextInput
-                style={this.telaValorStyle.loginFormSizeAndFont}
+                style={styles.loginFormSizeAndFont}
                 placeholder="Total a ser cobrado"
                 value={this.formatarValorServico(this.state.valorComTaxa)}
                 editable={false}
               />
             </View>
             <TouchableOpacity
-              style={this.telaValorStyle.loginButton}
+              style={styles.loginButton}
               onPress={() => {
                 if (!this.state.valorServico || this.state.valorComTaxa < 0) {
                   Alert.alert(
@@ -278,52 +278,11 @@ export default class ValorServicoScreen extends Component {
                   );
                 }
               }}>
-              <Text style={this.telaValorStyle.loginButtonText}>COBRAR</Text>
+              <Text style={styles.loginButtonText}>COBRAR</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </ImageBackground>
     );
   }
-
-  telaValorStyle = StyleSheet.create({
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    backgroundImageContent: { width: '100%', height: '100%' },
-    finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
-    loginForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    loginMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 250, backgroundColor: colors.branco },
-    loginButton: {
-      marginTop: 40, marginBottom: 10,
-      width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    loginButtonText: {
-      fontSize: 18, color: colors.branco, textAlign: 'center'
-    },
-    loginFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: 300,
-    },
-    loginEsqueciSenha:
-    {
-      fontSize: 18,
-      height: 45,
-      textAlign: 'center',
-      width: 300,
-      textDecorationLine: 'underline',
-      textAlignVertical: 'bottom'
-    },
-    fontTitle: {
-      fontSize: 30,
-      textAlign: 'center',
-      fontWeight: 'bold'
-    },
-    cadastreSe: { fontWeight: 'bold', textDecorationLine: 'underline' }
-  });
 }

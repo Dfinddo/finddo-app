@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   ImageBackground, View,
   Text, TextInput,
-  StyleSheet, Modal,
+  Modal,
   TouchableOpacity, ScrollView,
   SectionList, Alert,
   ActivityIndicator,
@@ -10,14 +10,7 @@ import {
 import { colors } from '../../colors';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import backendRails from '../../services/backend-rails-api';
-
-function Item({ title }) {
-  return (
-    <View>
-      <Text style={{ fontSize: 18 }}>{'\t'}{title}</Text>
-    </View>
-  );
-}
+import { styles } from './styles';
 
 export default class PrimeiraParte extends Component {
   static navigationOptions = {
@@ -180,7 +173,7 @@ export default class PrimeiraParte extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.parteUmScreenStyle.backgroundImageContent}
+        style={styles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
           <Modal
@@ -188,7 +181,7 @@ export default class PrimeiraParte extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.parteUmScreenStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
@@ -199,48 +192,48 @@ export default class PrimeiraParte extends Component {
             transparent={true}
             visible={this.state.formInvalid}
           >
-            <View style={this.parteUmScreenStyle.modalBase}>
-              <View style={this.parteUmScreenStyle.modalDialog}>
-                <View style={this.parteUmScreenStyle.modalDialogContent}>
-                  <Text style={this.parteUmScreenStyle.modalErrosTitulo}>Erros:</Text>
+            <View style={styles.modalBase}>
+              <View style={styles.modalDialog}>
+                <View style={styles.modalDialogContent}>
+                  <Text style={styles.modalErrosTitulo}>Erros:</Text>
                   <SectionList
-                    style={this.parteUmScreenStyle.modalErrosSectionList}
+                    style={styles.modalErrosSectionList}
                     sections={this.state.formErrors}
                     keyExtractor={(item, index) => item + index}
                     renderItem={({ item }) => <Item title={item} />}
                     renderSectionHeader={({ section: { title } }) => (
-                      <Text style={this.parteUmScreenStyle.modalErrosTituloErro}>{title}</Text>
+                      <Text style={styles.modalErrosTituloErro}>{title}</Text>
                     )}
                   />
                   <TouchableOpacity
                     style={[
-                      this.parteUmScreenStyle.modalErrosBotaoContinuar,
+                      styles.modalErrosBotaoContinuar,
                       {
                         marginTop: 8, alignItems: 'center', justifyContent: 'center'
                       }
                     ]}
                     onPress={() => this.setState({ formInvalid: false })}>
-                    <Text style={this.parteUmScreenStyle.continuarButtonText}>VOLTAR</Text>
+                    <Text style={styles.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           </Modal>
-          <View style={this.parteUmScreenStyle.cadastroForm}>
+          <View style={styles.cadastroForm}>
             <View
-              style={this.parteUmScreenStyle.finddoLogoStyle}></View>
-            <View style={this.parteUmScreenStyle.cadastroMainForm}>
-              <Text style={this.parteUmScreenStyle.fontTitle}>Crie sua conta</Text>
+              style={styles.finddoLogoStyle}></View>
+            <View style={styles.cadastroMainForm}>
+              <Text style={styles.fontTitle}>Crie sua conta</Text>
 
               <TextInput
-                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ name: text }) }}
                 placeholder="Nome"
                 maxLength={70} numberOfLines={1}
                 value={this.state.name}
               />
               <TextInput
-                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ surname: text }) }}
                 placeholder="Sobrenome"
                 maxLength={255} numberOfLines={1}
@@ -250,7 +243,7 @@ export default class PrimeiraParte extends Component {
                 if (this.state.user_type === 'professional') {
                   return (
                     <TextInput
-                      style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                      style={styles.cadastroFormSizeAndFont}
                       onChangeText={text => { this.setState({ mothers_name: text }) }}
                       placeholder="Nome da Mãe (Completo)"
                       maxLength={255} numberOfLines={1}
@@ -261,7 +254,7 @@ export default class PrimeiraParte extends Component {
                 }
               })()}
               <TextInput
-                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ email: text }) }}
                 placeholder="Email"
                 keyboardType="email-address"
@@ -270,7 +263,7 @@ export default class PrimeiraParte extends Component {
                 value={this.state.email}
               />
               <TextInput
-                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cellphone: text }) }}
                 placeholder="(99) 9999-99999"
                 keyboardType="numeric"
@@ -278,7 +271,7 @@ export default class PrimeiraParte extends Component {
                 value={this.state.cellphone}
               />
               <TextInput
-                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cpf: text }) }}
                 placeholder="CPF"
                 keyboardType="numeric"
@@ -286,7 +279,7 @@ export default class PrimeiraParte extends Component {
                 value={this.state.cpf}
               />
               <TextInput
-                style={this.parteUmScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ birthdate: text }) }}
                 placeholder="Data de Nascimento dd/mm/aaaa"
                 keyboardType="numeric"
@@ -295,57 +288,21 @@ export default class PrimeiraParte extends Component {
               />
             </View>
             <TouchableOpacity
-              style={this.parteUmScreenStyle.continuarButton}
+              style={styles.continuarButton}
               onPress={() => this.validateFields()}>
-              <Text style={this.parteUmScreenStyle.continuarButtonText}>CONTINUAR</Text>
+              <Text style={styles.continuarButtonText}>CONTINUAR</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </ImageBackground>
     );
   }
+}
 
-  parteUmScreenStyle = StyleSheet.create({
-    backgroundImageContent: { width: '100%', height: '100%' },
-    finddoLogoStyle: { marginTop: 60, marginBottom: 120 },
-    cadastroForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    cadastroMainForm: { alignItems: 'center', justifyContent: 'center', width: 380, height: 380, backgroundColor: colors.branco },
-    continuarButton: {
-      marginTop: 40, marginBottom: 10,
-      width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    continuarButtonText: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
-    },
-    cadastroFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: 300,
-    },
-    fontTitle: {
-      fontSize: 30,
-      textAlign: 'center',
-      fontWeight: 'bold'
-    },
-    modalBase: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    modalDialog: {
-      padding: 16, borderRadius: 20,
-      backgroundColor: 'rgba(255, 255, 255, 0.8)', width: '100%',
-      height: '80%', flex: 1,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    modalDialogContent: { backgroundColor: colors.branco, width: 340, borderRadius: 18, opacity: 1, alignItems: 'center' },
-    modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
-    modalErrosSectionList: { maxHeight: '60%', width: '100%' },
-    modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: { marginTop: 40, marginBottom: 10, width: 320, height: 45, borderRadius: 20, backgroundColor: colors.verdeFinddo },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  });
+function Item({ title }) {
+  return (
+    <View>
+      <Text style={{ fontSize: 18 }}>{'\t'}{title}</Text>
+    </View>
+  );
 }
