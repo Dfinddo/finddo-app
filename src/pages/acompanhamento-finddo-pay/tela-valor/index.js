@@ -122,7 +122,7 @@ export default class ValorServicoScreen extends Component {
     return (
       <ImageBackground
         style={styles.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         <ScrollView>
           <Modal
             animationType="slide"

@@ -3,8 +3,8 @@ import {
   ImageBackground, View,
   Text, TouchableOpacity,
 } from 'react-native';
-import { colors } from '../../colors';
-import HeaderFundoTransparente from '../../components/header-fundo-transparente';
+import { colors } from '../../../colors';
+import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
 import { styles } from './styles';
 
 export default class EscolhaClienteScreen extends Component {
@@ -20,7 +20,7 @@ export default class EscolhaClienteScreen extends Component {
     return (
       <ImageBackground
         style={styles.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         <View style={styles.escolhaForm}>
           <View style={{
             width: 340,

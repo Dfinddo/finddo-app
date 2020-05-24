@@ -8,17 +8,17 @@ import {
   Keyboard
 } from 'react-native';
 import axios from 'axios';
-import { colors } from '../../colors';
-import UserDTO from '../../models/UserDTO';
-import backendRails from '../../services/backend-rails-api';
+import { colors } from '../../../colors';
+import UserDTO from '../../../models/UserDTO';
+import backendRails from '../../../services/backend-rails-api';
 import AsyncStorage from '@react-native-community/async-storage';
-import TokenService from '../../services/token-service';
-import HeaderFundoTransparente from '../../components/header-fundo-transparente';
-import { termos } from './termos';
-import { politica } from './politica';
-import moipAPI, { headersOauth2 } from '../../services/moip-api';
+import TokenService from '../../../services/token-service';
+import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
+import { termos } from '../termos';
+import { politica } from '../politica';
+import moipAPI, { headersOauth2 } from '../../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
-import { formatarCpf } from './formatadores/formatador-cpf';
+import { formatarCpf } from '../formatadores/formatador-cpf';
 import { styles } from './styles';
 
 export default class SegundaParte extends Component {
@@ -442,7 +442,7 @@ export default class SegundaParte extends Component {
     return (
       <ImageBackground
         style={styles.backgroundImageContent}
-        source={require('../../img/Ellipse.png')} >
+        source={require('../../../img/Ellipse.png')} >
         <View style={{ height: 60 }}></View>
         <ScrollView>
           <Modal

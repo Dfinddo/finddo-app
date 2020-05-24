@@ -7,9 +7,9 @@ import {
   SectionList, Alert,
   ActivityIndicator,
 } from 'react-native';
-import { colors } from '../../colors';
-import HeaderFundoTransparente from '../../components/header-fundo-transparente';
-import backendRails from '../../services/backend-rails-api';
+import { colors } from '../../../colors';
+import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
+import backendRails from '../../../services/backend-rails-api';
 import { styles } from './styles';
 
 export default class PrimeiraParte extends Component {
@@ -174,7 +174,7 @@ export default class PrimeiraParte extends Component {
     return (
       <ImageBackground
         style={styles.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         <ScrollView>
           <Modal
             animationType="slide"

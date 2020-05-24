@@ -6,12 +6,12 @@ import {
   Alert, ActivityIndicator,
   Modal
 } from 'react-native';
-import backendRails from '../../services/backend-rails-api';
+import backendRails from '../../../services/backend-rails-api';
 import AsyncStorage from '@react-native-community/async-storage';
-import TokenService from '../../services/token-service';
-import UserDTO from '../../models/UserDTO';
+import TokenService from '../../../services/token-service';
+import UserDTO from '../../../models/UserDTO';
 import { SvgXml } from 'react-native-svg';
-import { finddoLogo } from '../../img/svg/finddo-logo';
+import { finddoLogo } from '../../../img/svg/finddo-logo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../../colors';
 import { styles } from './styles';
@@ -122,7 +122,7 @@ export default class LoginScreen extends Component {
     return (
       <ImageBackground
         style={styles.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         <ScrollView>
           <Modal
             animationType="slide"

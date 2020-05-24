@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { colors } from '../../../colors';
 import backendRails, { backendUrl } from '../../../services/backend-rails-api';
-import { enumEstadoPedidoMap } from '../profissional_servicos/index-profissional';
+import { enumEstadoPedidoMap } from '../../profissional_servicos/index-profissional';
 import TokenService from '../../../services/token-service';
 import { NavigationActions, StackActions, NavigationEvents } from 'react-navigation';
 import { star } from '../../../img/svg/star';
@@ -227,7 +227,7 @@ export default class TelaFinalPedidoScreen extends Component {
       return (
         <ImageBackground
           style={{ width: '100%', height: '100%' }}
-          source={require('../../img/Ellipse.png')}>
+          source={require('../../../img/Ellipse.png')}>
           <ScrollView>
             <NavigationEvents
               onWillFocus={_ => {
@@ -245,7 +245,7 @@ export default class TelaFinalPedidoScreen extends Component {
     } else return (
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         <ScrollView>
           <NavigationEvents
             onWillFocus={_ => {

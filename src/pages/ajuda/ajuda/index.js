@@ -67,7 +67,7 @@ export default class AjudaScreen extends Component {
     return (
       <ImageBackground
         style={this.ajudaScreenStyle.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         <View style={{ height: 50 }}></View>
         <View style={{ flex: 1 }}>
           <ScrollView>

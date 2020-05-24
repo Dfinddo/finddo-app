@@ -5,9 +5,9 @@ import {
   TextInput, ScrollView, Alert, ActivityIndicator
 } from 'react-native';
 import { colors } from '../../../colors';
-import HeaderFundoTransparente from '../../components/header-fundo-transparente';
-import backendRails from '../../services/backend-rails-api';
-import { ambienteASerConstruido } from '../../../credenciais-e-configuracoes';
+import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
+import backendRails from '../../../services/backend-rails-api';
+import { ambienteASerConstruido } from '../../../../credenciais-e-configuracoes';
 import { StackActions } from 'react-navigation';
 import { styles } from './styles';
 
@@ -80,7 +80,7 @@ export default class EsqueciSenhaEmail extends Component {
     return (
       <ImageBackground
         style={styles.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         {(() => {
           if (this.state.isLoading) {
             return (

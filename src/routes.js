@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Platform } from 'react-native';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import Servicos from './pages/servicos/servicos';
-import LoginScreen from './pages/login';
+import LoginScreen from './pages/login/login';
 import AuthLoadingScreen from './pages/login/auth-loading';
 import NovoPedido from './pages/servicos/novo-pedido';
 import PrimeiraParte from './pages/cadastros/primeira-parte';
@@ -14,7 +14,6 @@ import EscolhaClienteScreen from './pages/cadastros/escolha-tipo-cliente';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from './colors';
 import EsqueciSenhaEmail from './pages/login/esqueci-senha-email';
-import EsqueciSenhaNovaSenha from './pages/login/esqueci-senha-nova-senha';
 import AcompanhamentoPedido from './pages/servicos/acompanhamento-pedido';
 import TelaFinalPedidoScreen from './pages/acompanhamento-finddo-pay/tela-final-pedido';
 import DataServico from './pages/servicos/data-servico';
@@ -133,8 +132,7 @@ const AuthStack = createStackNavigator(
     ParteUm: PrimeiraParte,
     ParteDois: SegundaParte,
     EscolhaTipo: EscolhaClienteScreen,
-    EsqueciSenhaEmail: EsqueciSenhaEmail,
-    EsqueciSenhaNovaSenha: EsqueciSenhaNovaSenha
+    EsqueciSenhaEmail: EsqueciSenhaEmail
   },
   {
     initialRouteName: 'Login'
