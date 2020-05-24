@@ -4,10 +4,10 @@ import {
   ScrollView, StyleSheet,
   Linking, Alert
 } from 'react-native';
-import HeaderTransparenteSemHistorico from '../../components/header-transparente-sem-historico';
-import { termos } from '../cadastros/termos';
-import { sobre } from './sobre-o-app';
-import { politica } from '../cadastros/politica';
+import HeaderTransparenteSemHistorico from '../../../components/header-transparente-sem-historico';
+import { termos } from '../../cadastros/termos';
+import { sobre } from '../sobre-o-app';
+import { politica } from '../../cadastros/politica';
 import AccordianInfoApp from '../../../components/accordian-info-app';
 import AccordianInfoContato from '../../../components/accordian-info-contato';
 

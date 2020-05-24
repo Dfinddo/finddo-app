@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import {
   ImageBackground, View,
-  Text, StyleSheet,
-  TouchableOpacity,
+  Text, TouchableOpacity,
   TextInput, ScrollView, Alert, ActivityIndicator
 } from 'react-native';
-import { colors } from '../../colors';
+import { colors } from '../../../colors';
 import HeaderFundoTransparente from '../../components/header-fundo-transparente';
 import backendRails from '../../services/backend-rails-api';
 import { ambienteASerConstruido } from '../../../credenciais-e-configuracoes';
 import { StackActions } from 'react-navigation';
+import { styles } from './styles';
 
 export default class EsqueciSenhaEmail extends Component {
   static navigationOptions = {
@@ -79,7 +79,7 @@ export default class EsqueciSenhaEmail extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.esqueciSenhaEmailStyle.backgroundImageContent}
+        style={styles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         {(() => {
           if (this.state.isLoading) {
@@ -92,11 +92,11 @@ export default class EsqueciSenhaEmail extends Component {
             return (
               <ScrollView>
                 <View style={{ height: 220 }}></View>
-                <View style={this.esqueciSenhaEmailStyle.emailForm}>
-                  <View style={this.esqueciSenhaEmailStyle.containerForm}>
-                    <Text style={this.esqueciSenhaEmailStyle.fontTitle}>Esqueci minha senha</Text>
+                <View style={styles.emailForm}>
+                  <View style={styles.containerForm}>
+                    <Text style={styles.fontTitle}>Esqueci minha senha</Text>
                     <TextInput
-                      style={this.esqueciSenhaEmailStyle.formSizeAndFont}
+                      style={styles.formSizeAndFont}
                       onChangeText={text => { this.setState({ email: text }) }}
                       placeholder="Email"
                       keyboardType="email-address"
@@ -105,9 +105,9 @@ export default class EsqueciSenhaEmail extends Component {
                     />
                   </View>
                   <TouchableOpacity
-                    style={this.esqueciSenhaEmailStyle.continuarButton}
+                    style={styles.continuarButton}
                     onPress={() => { this.enviarFormRecuperacaoDeSenha(this.state.email) }}>
-                    <Text style={this.esqueciSenhaEmailStyle.continuarButtonText}>CONTINUAR</Text>
+                    <Text style={styles.continuarButtonText}>CONTINUAR</Text>
                   </TouchableOpacity>
                 </View>
               </ScrollView>
@@ -117,45 +117,4 @@ export default class EsqueciSenhaEmail extends Component {
       </ImageBackground >
     );
   }
-
-  esqueciSenhaEmailStyle = StyleSheet.create({
-    backgroundImageContent: { width: '100%', height: '100%' },
-    emailForm: { flex: 1, alignItems: 'center', justifyContent: 'center', height: 240 },
-    fontTitle: {
-      fontSize: 30,
-      textAlign: 'center',
-      fontWeight: 'bold'
-    },
-    formSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: 300,
-    },
-    continuarButton: {
-      marginTop: 40,
-      marginBottom: 10,
-      width: 360,
-      height: 45,
-      borderRadius: 20,
-      backgroundColor: colors.verdeFinddo,
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    continuarButtonText: {
-      fontSize: 18,
-      color: colors.branco,
-      textAlign: 'center'
-    },
-    containerForm: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: 160,
-      width: '100%',
-      backgroundColor: colors.branco
-    }
-  });
 }

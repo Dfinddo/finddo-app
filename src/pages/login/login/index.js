@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   ImageBackground, View,
   Text, TextInput,
-  StyleSheet,
   TouchableOpacity, ScrollView,
   Alert, ActivityIndicator,
   Modal
@@ -10,11 +9,12 @@ import {
 import backendRails from '../../services/backend-rails-api';
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
-import { colors } from '../../colors';
 import UserDTO from '../../models/UserDTO';
 import { SvgXml } from 'react-native-svg';
 import { finddoLogo } from '../../img/svg/finddo-logo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { colors } from '../../../colors';
+import { styles } from './styles';
 
 export default class LoginScreen extends Component {
   static navigationOptions = {
@@ -121,7 +121,7 @@ export default class LoginScreen extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.loginScreenStyle.backgroundImageContent}
+        style={styles.backgroundImageContent}
         source={require('../../img/Ellipse.png')}>
         <ScrollView>
           <Modal
@@ -129,13 +129,13 @@ export default class LoginScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.loginScreenStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
             </View>
           </Modal>
-          <View style={this.loginScreenStyle.loginForm}>
+          <View style={styles.loginForm}>
             <View style={{
               width: '100%', height: 50,
               marginTop: 20
@@ -149,11 +149,11 @@ export default class LoginScreen extends Component {
                   size={50} color={colors.verdeFinddo} />
               </TouchableOpacity>
             </View>
-            <SvgXml xml={finddoLogo} width={126} height={30} style={this.loginScreenStyle.finddoLogoStyle}></SvgXml>
-            <View style={this.loginScreenStyle.loginMainForm}>
-              <Text style={this.loginScreenStyle.fontTitle}>Login</Text>
+            <SvgXml xml={finddoLogo} width={126} height={30} style={styles.finddoLogoStyle}></SvgXml>
+            <View style={styles.loginMainForm}>
+              <Text style={styles.fontTitle}>Login</Text>
               <TextInput
-                style={this.loginScreenStyle.loginFormSizeAndFont}
+                style={styles.loginFormSizeAndFont}
                 placeholder="E-mail"
                 autoCapitalize="none"
                 keyboardType="email-address"
@@ -164,7 +164,7 @@ export default class LoginScreen extends Component {
                 value={this.state.usuario}
               />
               <TextInput
-                style={this.loginScreenStyle.loginFormSizeAndFont}
+                style={styles.loginFormSizeAndFont}
                 placeholder="Senha"
                 onChangeText={
                   (senha) => {
@@ -175,19 +175,19 @@ export default class LoginScreen extends Component {
               />
               <View style={{ height: 30 }}></View>
               <Text
-                style={this.loginScreenStyle.loginEsqueciSenha}
+                style={styles.loginEsqueciSenha}
                 onPress={() => this.props.navigation.navigate('EsqueciSenhaEmail')}>Esqueci minha senha</Text>
             </View>
             <TouchableOpacity
-              style={this.loginScreenStyle.loginButton}
+              style={styles.loginButton}
               onPress={() => this.login(this.state.usuario, this.state.senha)}>
-              <Text style={this.loginScreenStyle.loginButtonText}>ENTRAR</Text>
+              <Text style={styles.loginButtonText}>ENTRAR</Text>
             </TouchableOpacity>
             <Text>
               Ainda não é cadastrado?
             <Text> </Text>
               <Text
-                style={this.loginScreenStyle.cadastreSe}
+                style={styles.cadastreSe}
                 onPress={() => this.props.navigation.navigate('EscolhaTipo')}>Cadastre-se</Text>
             </Text>
           </View>
@@ -195,47 +195,4 @@ export default class LoginScreen extends Component {
       </ImageBackground>
     );
   }
-
-  loginScreenStyle = StyleSheet.create({
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    backgroundImageContent: { width: '100%', height: '100%' },
-    finddoLogoStyle: { marginTop: 25, marginBottom: 120 },
-    loginForm: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
-    loginMainForm: { alignItems: 'center', justifyContent: 'center', width: 340, height: 250, backgroundColor: colors.branco },
-    loginButton: {
-      marginTop: 40, marginBottom: 10,
-      width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    loginButtonText: {
-      fontSize: 18,
-      color: colors.branco, textAlign: 'center'
-    },
-    loginFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: 300,
-    },
-    loginEsqueciSenha:
-    {
-      fontSize: 18,
-      height: 45,
-      textAlign: 'center',
-      marginTop: 10,
-      width: 300,
-      textDecorationLine: 'underline',
-      textAlignVertical: 'bottom'
-    },
-    fontTitle: {
-      fontSize: 30,
-      textAlign: 'center',
-      fontWeight: 'bold'
-    },
-    cadastreSe: { fontWeight: 'bold', textDecorationLine: 'underline' }
-  });
 }

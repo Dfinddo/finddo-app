@@ -6,7 +6,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import TokenService from '../../services/token-service';
 import backendRails from '../../services/backend-rails-api';
-import { colors } from '../../colors';
+import { colors } from '../../../colors';
 
 export default class AuthLoadingScreen extends Component {
   constructor(props) {

@@ -6,15 +6,15 @@ import {
   Alert, ActivityIndicator,
   Modal
 } from 'react-native';
-import backendRails from '../../services/backend-rails-api';
-import TokenService from '../../services/token-service';
-import { colors } from '../../colors';
+import backendRails from '../../../services/backend-rails-api';
+import TokenService from '../../../services/token-service';
+import { colors } from '../../../colors';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { SvgXml } from 'react-native-svg';
-import { finddoLogo } from '../../img/svg/finddo-logo';
-import moipAPI, { headersOauth2 } from '../../services/moip-api';
+import { finddoLogo } from '../../../img/svg/finddo-logo';
+import moipAPI, { headersOauth2 } from '../../../services/moip-api';
 import UUIDGenerator from 'react-native-uuid-generator';
-import { ambienteASerConstruido } from '../../../credenciais-e-configuracoes';
+import { ambienteASerConstruido } from '../../../../credenciais-e-configuracoes';
 import { styles } from './styles';
 
 export default class ValorServicoScreen extends Component {

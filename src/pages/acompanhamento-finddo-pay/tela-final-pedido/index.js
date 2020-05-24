@@ -7,16 +7,16 @@ import {
   Alert, TouchableOpacity,
   FlatList, TextInput
 } from 'react-native';
-import { colors } from '../../colors';
-import backendRails, { backendUrl } from '../../services/backend-rails-api';
+import { colors } from '../../../colors';
+import backendRails, { backendUrl } from '../../../services/backend-rails-api';
 import { enumEstadoPedidoMap } from '../profissional_servicos/index-profissional';
-import TokenService from '../../services/token-service';
+import TokenService from '../../../services/token-service';
 import { NavigationActions, StackActions, NavigationEvents } from 'react-navigation';
-import { star } from '../../img/svg/star';
+import { star } from '../../../img/svg/star';
 import { SvgXml } from 'react-native-svg';
-import { starSolid } from '../../img/svg/star-solid';
-import moipAPI, { headersOauth2 } from '../../services/moip-api';
-import CartaoFormService from '../../services/cartao-form-service';
+import { starSolid } from '../../../img/svg/star-solid';
+import moipAPI, { headersOauth2 } from '../../../services/moip-api';
+import CartaoFormService from '../../../services/cartao-form-service';
 import { styles } from './styles';
 
 export default class TelaFinalPedidoScreen extends Component {
