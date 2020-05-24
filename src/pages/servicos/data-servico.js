@@ -7,7 +7,7 @@ import {
 import CalendarPicker from 'react-native-calendar-picker';
 import { colors } from '../../colors';
 import { ScrollView } from 'react-native-gesture-handler';
-import { CustomPicker } from '../../components/custom-picker';
+import CustomPicker from '../../components/custom-picker';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
 
 const horariosParaAtendimento = [

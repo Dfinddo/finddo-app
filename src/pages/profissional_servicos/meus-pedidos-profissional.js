@@ -13,7 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../colors';
 import { NavigationEvents } from 'react-navigation';
 import VisualizarPedidoProfissional from '../../components/modal-visualizar-pedido-profissional';
-import { CustomPicker } from '../../components/custom-picker';
+import CustomPicker from '../../components/custom-picker';
 
 const estadoPedidoValues = [
   { content: 'Selecione um status', value: 'none', id: '0' },

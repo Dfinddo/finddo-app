@@ -5,7 +5,7 @@ import {
   FlatList
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { colors } from '../colors';
+import { colors } from '../../colors';
 import { styles } from './styles';
 
 /**

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { colors } from '../colors';
+import { colors } from '../../colors';
 
 export default class StatusPedidoDescricao extends Component {
   state = {

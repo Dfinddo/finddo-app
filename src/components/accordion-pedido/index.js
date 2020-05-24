@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, TouchableOpacity, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { backendUrl } from '../services/backend-rails-api';
+import { backendUrl } from '../../services/backend-rails-api';
 import { styles } from './styles';
 
 export default class Accordian extends Component {

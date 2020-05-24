@@ -8,7 +8,7 @@ import {
   ImageBackground
 } from 'react-native';
 import { colors } from '../../colors';
-import { CustomPicker } from '../../components/custom-picker';
+import CustomPicker from '../../components/custom-picker';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
 
 function Item({ title }) {

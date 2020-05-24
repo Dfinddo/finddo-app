@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
-import { finddoLogo } from '../img/svg/finddo-logo';
+import { finddoLogo } from '../../img/svg/finddo-logo';
 
 export default class HeaderTransparenteSemHistorico extends Component {
   render() {

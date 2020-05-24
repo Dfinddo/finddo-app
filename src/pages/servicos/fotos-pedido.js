@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import backendRails from '../../services/backend-rails-api';
 import TokenService from '../../services/token-service';
-import { StackActions, NavigationActions, NavigationEvents } from 'react-navigation';
+import { NavigationEvents } from 'react-navigation';
 import { colors } from '../../colors';
 import VisualizarPedido from '../../components/modal-visualizar-pedido';
 import FotoService from '../../services/foto-service';

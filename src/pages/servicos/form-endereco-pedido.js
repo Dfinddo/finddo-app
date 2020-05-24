@@ -12,7 +12,7 @@ import TokenService from '../../services/token-service';
 import axios from 'axios';
 import PedidoCorrenteService from '../../services/pedido-corrente-service';
 import backendRails from '../../services/backend-rails-api';
-import { CustomPicker } from '../../components/custom-picker';
+import CustomPicker from '../../components/custom-picker';
 
 function Item({ title }) {
   return (
