@@ -8,3 +8,4 @@
 - `npx react-native run-ios` para iOS
 
 ## [Documentação do React Native](https://reactnative.dev/)
+## [Configuração do ambiente de desenvolvimento do React Native](https://reactnative.dev/docs/environment-setup)
