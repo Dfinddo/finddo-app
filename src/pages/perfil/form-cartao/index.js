@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   ImageBackground, View,
   Text, TextInput,
-  StyleSheet, Modal,
+  Modal,
   TouchableOpacity, ScrollView,
   SectionList, Alert, ActivityIndicator,
   Keyboard
@@ -12,39 +12,7 @@ import TokenService from '../../../services/token-service';
 import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
 import { StackActions } from 'react-navigation';
 import moipAPI, { headersOauth2 } from '../../../services/moip-api';
-
-function Card() {
-  return {
-    method: 'CREDIT_CARD',
-    creditCard: {
-      expirationMonth: '',
-      expirationYear: '',
-      number: '',
-      cvc: '',
-      holder: {
-        fullname: '',
-        birthdate: '',
-        taxDocument: {
-          type: 'CPF',
-          number: ''
-        },
-        phone: {
-          countryCode: '55',
-          areaCode: '',
-          number: ''
-        }
-      }
-    }
-  };
-}
-
-function Item({ title }) {
-  return (
-    <View>
-      <Text style={{ fontSize: 18 }}>{'\t'}{title}</Text>
-    </View>
-  );
-}
+import { styles } from './styles';
 
 export default class FormCartaoScreen extends Component {
   static navigationOptions = {
@@ -78,17 +46,17 @@ export default class FormCartaoScreen extends Component {
     );
   };
 
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
   _keyboardDidShow = () => {
     this.setState({ isShowingKeyboard: true });
   }
 
   _keyboardDidHide = () => {
     this.setState({ isShowingKeyboard: false });
-  }
-
-  componentWillUnmount() {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
   }
 
   updateBirthdate = (text = '') => {
@@ -307,7 +275,7 @@ export default class FormCartaoScreen extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.formCartaoScreenStyle.backgroundImageContent}
+        style={styles.backgroundImageContent}
         source={require('../../../img/Ellipse.png')} >
         <View style={{ height: 60 }}></View>
         <ScrollView>
@@ -316,7 +284,7 @@ export default class FormCartaoScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.formCartaoScreenStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
@@ -327,90 +295,90 @@ export default class FormCartaoScreen extends Component {
             transparent={true}
             visible={this.state.formInvalid}
           >
-            <View style={this.formCartaoScreenStyle.modalBase}>
-              <View style={this.formCartaoScreenStyle.modalDialog}>
-                <View style={this.formCartaoScreenStyle.modalDialogContent}>
-                  <Text style={this.formCartaoScreenStyle.modalErrosTitulo}>Erros:</Text>
+            <View style={styles.modalBase}>
+              <View style={styles.modalDialog}>
+                <View style={styles.modalDialogContent}>
+                  <Text style={styles.modalErrosTitulo}>Erros:</Text>
                   <SectionList
-                    style={this.formCartaoScreenStyle.modalErrosSectionList}
+                    style={styles.modalErrosSectionList}
                     sections={this.state.formErrors}
                     keyExtractor={(item, index) => item + index}
                     renderItem={({ item }) => <Item title={item} />}
                     renderSectionHeader={({ section: { title } }) => (
-                      <Text style={this.formCartaoScreenStyle.modalErrosTituloErro}>{title}</Text>
+                      <Text style={styles.modalErrosTituloErro}>{title}</Text>
                     )}
                   />
                   <TouchableOpacity
-                    style={this.formCartaoScreenStyle.modalErrosBotaoContinuar}
+                    style={styles.modalErrosBotaoContinuar}
                     onPress={() => this.setState({ formInvalid: false })}>
-                    <Text style={this.formCartaoScreenStyle.continuarButtonText}>VOLTAR</Text>
+                    <Text style={styles.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           </Modal>
-          <View style={this.formCartaoScreenStyle.cadastroForm}>
-            <View style={this.formCartaoScreenStyle.cadastroMainForm}>
-              <Text style={this.formCartaoScreenStyle.fontTitle}>{this.state.tituloForm}</Text>
+          <View style={styles.cadastroForm}>
+            <View style={styles.cadastroMainForm}>
+              <Text style={styles.fontTitle}>{this.state.tituloForm}</Text>
 
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('expirationMonth', text) }}
                 placeholder="Expiração MM" keyboardType={'number-pad'}
                 maxLength={2}
                 value={this.state.cardData.creditCard.expirationMonth}
               />
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('expirationYear', text) }}
                 placeholder="Expiração AA ou AAAA (igual ao seu cartão)" keyboardType={'number-pad'}
                 maxLength={4}
                 value={this.state.cardData.creditCard.expirationYear}
               />
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('number', text) }}
                 placeholder="Número" keyboardType={"number-pad"}
                 maxLength={50}
                 value={this.state.cardData.creditCard.number}
               />
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosCartao('cvc', text) }}
                 placeholder="cvv" keyboardType={"number-pad"}
                 maxLength={10}
                 value={this.state.cardData.creditCard.cvc}
               />
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolder('fullname', text) }}
                 placeholder="Titular (Nome completo)"
                 value={this.state.cardData.creditCard.holder.fullname}
                 maxLength={150}
               />
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolder('birthdate', text) }}
                 placeholder="Data nascimento (dd/mm/aaaa)" keyboardType={"number-pad"}
                 value={this.state.cardData.creditCard.holder.birthdate}
                 maxLength={10}
               />
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolderDocs('number', text) }}
                 placeholder="CPF (apenas números)" keyboardType={"number-pad"}
                 maxLength={11}
                 value={this.state.cardData.creditCard.holder.taxDocument.number}
               />
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolderPhone('areaCode', text) }}
                 placeholder="DDD" keyboardType={"number-pad"}
                 maxLength={2}
                 value={this.state.cardData.creditCard.holder.phone.areaCode}
               />
               <TextInput
-                style={this.formCartaoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.atualizarDadosHolderPhone('number', text) }}
                 placeholder="Telefone" keyboardType={"number-pad"}
                 maxLength={11}
@@ -424,59 +392,6 @@ export default class FormCartaoScreen extends Component {
       </ImageBackground>
     );
   }
-
-  formCartaoScreenStyle = StyleSheet.create({
-    backgroundImageContent: { width: '100%', height: '100%' },
-    cadastroForm: {
-      flex: 1, alignItems: 'center',
-      justifyContent: 'center', height: 550
-    },
-    cadastroMainForm: {
-      alignItems: 'center', justifyContent: 'center',
-      width: 340, height: 510,
-      backgroundColor: colors.branco
-    },
-    continuarButtonText: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
-    },
-    cadastroFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: 300,
-    },
-    fontTitle: {
-      fontSize: 30,
-      textAlign: 'center',
-      fontWeight: 'bold'
-    },
-    modalBase: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    modalDialog: {
-      padding: 16, borderRadius: 20,
-      backgroundColor: 'rgba(255, 255, 255, 0.8)', width: '100%',
-      height: '80%', flex: 1,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    modalDialogContent: {
-      backgroundColor: colors.branco, width: 340,
-      borderRadius: 18, opacity: 1,
-      alignItems: 'center'
-    },
-    modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
-    modalErrosSectionList: { maxHeight: '60%', width: '100%' },
-    modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: {
-      marginTop: 40, marginBottom: 10,
-      width: 320, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  });
 }
 
 function BotaoCriar(props) {
@@ -500,4 +415,37 @@ function BotaoCriar(props) {
   } else {
     return (null);
   }
+}
+
+function Card() {
+  return {
+    method: 'CREDIT_CARD',
+    creditCard: {
+      expirationMonth: '',
+      expirationYear: '',
+      number: '',
+      cvc: '',
+      holder: {
+        fullname: '',
+        birthdate: '',
+        taxDocument: {
+          type: 'CPF',
+          number: ''
+        },
+        phone: {
+          countryCode: '55',
+          areaCode: '',
+          number: ''
+        }
+      }
+    }
+  };
+}
+
+function Item({ title }) {
+  return (
+    <View>
+      <Text style={{ fontSize: 18 }}>{'\t'}{title}</Text>
+    </View>
+  );
 }

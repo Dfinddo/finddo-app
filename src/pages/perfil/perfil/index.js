@@ -3,21 +3,22 @@ import {
   TouchableOpacity, View,
   ImageBackground, ScrollView,
   TextInput, Text,
-  StyleSheet, Image,
+  Image,
   Alert, Modal,
   ActivityIndicator, Linking
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import TokenService from '../../services/token-service';
-import backendRails, { backendUrl } from '../../services/backend-rails-api';
-import { colors } from '../../colors';
-import HeaderTransparenteSemHistorico from '../../components/header-transparente-sem-historico';
+import TokenService from '../../../services/token-service';
+import backendRails, { backendUrl } from '../../../services/backend-rails-api';
+import { colors } from '../../../colors';
+import HeaderTransparenteSemHistorico from '../../../components/header-transparente-sem-historico';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationEvents } from 'react-navigation';
-import FotoService from '../../services/foto-service';
-import { ambienteASerConstruido } from '../../../credenciais-e-configuracoes';
+import FotoService from '../../../services/foto-service';
+import { ambienteASerConstruido } from '../../../../credenciais-e-configuracoes';
+import { styles } from './styles';
 
-const semPerfil = require('../../img/sem-foto.png');
+const semPerfil = require('../../../img/sem-foto.png');
 
 export default class PerfilScreen extends Component {
   static navigationOptions = {
@@ -230,8 +231,8 @@ export default class PerfilScreen extends Component {
     if (this.state.nomeCompleto) {
       return (
         <ImageBackground
-          style={this.perfilScreenStyle.backgroundImageContent}
-          source={require('../../img/Ellipse.png')}>
+          style={styles.backgroundImageContent}
+          source={require('../../../img/Ellipse.png')}>
           <View style={{ height: 70 }}></View>
           <ScrollView>
             <Modal
@@ -239,7 +240,7 @@ export default class PerfilScreen extends Component {
               transparent={true}
               visible={this.state.isLoading}
             >
-              <View style={this.perfilScreenStyle.loaderContainer}>
+              <View style={styles.loaderContainer}>
                 <View>
                   <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
                 </View>
@@ -278,7 +279,7 @@ export default class PerfilScreen extends Component {
                     borderBottomWidth: 2
                   }}>
                     <TextInput
-                      style={this.perfilScreenStyle.perfilFormSizeAndFont}
+                      style={styles.perfilFormSizeAndFont}
                       placeholder="Nome Completo"
                       keyboardType="default"
                       value={this.state.nomeCompleto}
@@ -291,7 +292,7 @@ export default class PerfilScreen extends Component {
                     borderBottomWidth: 2
                   }}>
                     <TextInput
-                      style={this.perfilScreenStyle.perfilFormSizeAndFont}
+                      style={styles.perfilFormSizeAndFont}
                       placeholder="E-mail"
                       keyboardType="email-address"
                       value={this.state.email}
@@ -308,7 +309,7 @@ export default class PerfilScreen extends Component {
                     borderBottomWidth: 2
                   }}>
                     <TextInput
-                      style={this.perfilScreenStyle.perfilFormSizeAndFont}
+                      style={styles.perfilFormSizeAndFont}
                       placeholder="Telefone"
                       keyboardType="phone-pad"
                       editable={false}
@@ -325,7 +326,7 @@ export default class PerfilScreen extends Component {
                     borderBottomWidth: 2
                   }}>
                     <TextInput
-                      style={this.perfilScreenStyle.perfilFormSizeAndFont}
+                      style={styles.perfilFormSizeAndFont}
                       placeholder="CPF"
                       keyboardType="number-pad"
                       value={this.state.cpf}
@@ -347,10 +348,10 @@ export default class PerfilScreen extends Component {
                           return (
                             <View>
                               <Text
-                                style={this.perfilScreenStyle.perfilEnderecoSelect}
+                                style={styles.perfilEnderecoSelect}
                                 onPress={() => { Linking.openURL(user.set_account) }}>Configurar recebimento de pagamentos</Text>
                               <Text
-                                style={[this.perfilScreenStyle.perfilEnderecoSelect, { marginTop: 10 }]}
+                                style={[styles.perfilEnderecoSelect, { marginTop: 10 }]}
                                 onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
                             </View>
                           );
@@ -358,7 +359,7 @@ export default class PerfilScreen extends Component {
                           return (
                             <View>
                               <Text
-                                style={this.perfilScreenStyle.perfilEnderecoSelect}
+                                style={styles.perfilEnderecoSelect}
                                 onPress={() => { Linking.openURL(urlAuthorization) }}>Autorizar transações</Text>
                             </View>
                           );
@@ -367,7 +368,7 @@ export default class PerfilScreen extends Component {
                         return (
                           <View>
                             <Text
-                              style={this.perfilScreenStyle.perfilEnderecoSelect}
+                              style={styles.perfilEnderecoSelect}
                             >Transações autorizadas</Text>
                           </View>
                         );
@@ -376,10 +377,10 @@ export default class PerfilScreen extends Component {
                       return (
                         <View>
                           <Text
-                            style={this.perfilScreenStyle.perfilEnderecoSelect}
+                            style={styles.perfilEnderecoSelect}
                             onPress={() => { this.props.navigation.navigate('Addresses'); }}>Endereço padrão</Text>
                           <Text
-                            style={this.perfilScreenStyle.perfilEnderecoSelect}
+                            style={styles.perfilEnderecoSelect}
                             onPress={() => { this.props.navigation.navigate('Cards'); }}>Forma de pagamento padrão</Text>
                         </View>);
                     }
@@ -394,9 +395,9 @@ export default class PerfilScreen extends Component {
             height: 60, marginBottom: 10
           }}>
             <TouchableOpacity
-              style={this.perfilScreenStyle.sairButton}
+              style={styles.sairButton}
               onPress={() => { this.logoutConfirm() }/*this.login(this.state.usuario, this.state.senha)*/}>
-              <Text style={this.perfilScreenStyle.sairButtonText}>SAIR</Text>
+              <Text style={styles.sairButtonText}>SAIR</Text>
             </TouchableOpacity>
           </View>
         </ImageBackground>
@@ -404,7 +405,7 @@ export default class PerfilScreen extends Component {
     } else {
       return (<ImageBackground
         style={{ width: '100%', height: '100%' }}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         <View style={{ height: '90%' }}>
           <View style={{
             flex: 1, alignItems: 'center',
@@ -415,10 +416,10 @@ export default class PerfilScreen extends Component {
               paddingTop: 20
             }}>Acesse sua conta para ter acesso à essa página.</Text>
             <TouchableOpacity
-              style={this.perfilScreenStyle.sairButton}
+              style={styles.sairButton}
               onPress={() => this.props.navigation.navigate('Auth')}
             >
-              <Text style={this.perfilScreenStyle.sairButtonText}>LOGIN</Text>
+              <Text style={styles.sairButtonText}>LOGIN</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -426,42 +427,4 @@ export default class PerfilScreen extends Component {
     }
 
   }
-
-  perfilScreenStyle = StyleSheet.create({
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    backgroundImageContent: { width: '100%', height: '100%' },
-    sairButton: {
-      marginTop: 10, width: 340,
-      height: 45, borderRadius: 20,
-      backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    sairButtonText: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
-    },
-    perfilFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      textAlign: 'left',
-      width: '80%',
-      paddingLeft: 20
-    },
-    perfilEnderecoSelect:
-    {
-      fontSize: 18,
-      height: 45,
-      textAlign: 'center',
-      width: 300,
-      textDecorationLine: 'underline',
-      textAlignVertical: 'bottom'
-    },
-    loaderContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgba(255,255,255,0.5)'
-    }
-  });
 }

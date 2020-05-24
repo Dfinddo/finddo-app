@@ -2,24 +2,17 @@ import React, { Component } from 'react';
 import {
   ImageBackground, View,
   Text, TextInput,
-  StyleSheet, Modal,
+  Modal,
   TouchableOpacity, ScrollView,
   SectionList, Alert, ActivityIndicator,
   Keyboard
 } from 'react-native';
-import { colors } from '../../colors';
-import backendRails from '../../services/backend-rails-api';
-import TokenService from '../../services/token-service';
-import HeaderFundoTransparente from '../../components/header-fundo-transparente';
+import { colors } from '../../../colors';
+import backendRails from '../../../services/backend-rails-api';
+import TokenService from '../../../services/token-service';
+import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
 import { StackActions } from 'react-navigation';
-
-function Item({ title }) {
-  return (
-    <View>
-      <Text style={{ fontSize: 18 }}>{'\t'}{title}</Text>
-    </View>
-  );
-}
+import { styles } from './styles';
 
 export default class FormEnderecoScreen extends Component {
   static navigationOptions = {
@@ -83,6 +76,11 @@ export default class FormEnderecoScreen extends Component {
     }
   };
 
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
   _keyboardDidShow = () => {
     this.setState({ isShowingKeyboard: true });
   }
@@ -108,11 +106,6 @@ export default class FormEnderecoScreen extends Component {
     address['user_id'] = tokenService.getUser().id;
 
     return address;
-  }
-
-  componentWillUnmount() {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
   }
 
   validateFields = () => {
@@ -267,8 +260,8 @@ export default class FormEnderecoScreen extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.formEnderecoScreenStyle.backgroundImageContent}
-        source={require('../../img/Ellipse.png')} >
+        style={styles.backgroundImageContent}
+        source={require('../../../img/Ellipse.png')} >
         <View style={{ height: 60 }}></View>
         <ScrollView>
           <Modal
@@ -276,7 +269,7 @@ export default class FormEnderecoScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.formEnderecoScreenStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
@@ -287,79 +280,79 @@ export default class FormEnderecoScreen extends Component {
             transparent={true}
             visible={this.state.formInvalid}
           >
-            <View style={this.formEnderecoScreenStyle.modalBase}>
-              <View style={this.formEnderecoScreenStyle.modalDialog}>
-                <View style={this.formEnderecoScreenStyle.modalDialogContent}>
-                  <Text style={this.formEnderecoScreenStyle.modalErrosTitulo}>Erros:</Text>
+            <View style={styles.modalBase}>
+              <View style={styles.modalDialog}>
+                <View style={styles.modalDialogContent}>
+                  <Text style={styles.modalErrosTitulo}>Erros:</Text>
                   <SectionList
-                    style={this.formEnderecoScreenStyle.modalErrosSectionList}
+                    style={styles.modalErrosSectionList}
                     sections={this.state.formErrors}
                     keyExtractor={(item, index) => item + index}
                     renderItem={({ item }) => <Item title={item} />}
                     renderSectionHeader={({ section: { title } }) => (
-                      <Text style={this.formEnderecoScreenStyle.modalErrosTituloErro}>{title}</Text>
+                      <Text style={styles.modalErrosTituloErro}>{title}</Text>
                     )}
                   />
                   <TouchableOpacity
-                    style={this.formEnderecoScreenStyle.modalErrosBotaoContinuar}
+                    style={styles.modalErrosBotaoContinuar}
                     onPress={() => this.setState({ formInvalid: false })}>
-                    <Text style={this.formEnderecoScreenStyle.continuarButtonText}>VOLTAR</Text>
+                    <Text style={styles.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           </Modal>
-          <View style={this.formEnderecoScreenStyle.cadastroForm}>
-            <View style={this.formEnderecoScreenStyle.cadastroMainForm}>
-              <Text style={this.formEnderecoScreenStyle.fontTitle}>{this.state.tituloForm}</Text>
+          <View style={styles.cadastroForm}>
+            <View style={styles.cadastroMainForm}>
+              <Text style={styles.fontTitle}>{this.state.tituloForm}</Text>
 
               <TextInput
-                style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ nome: text }) }}
                 placeholder="Nome do endereço"
                 value={this.state.nome}
               />
               <TextInput
-                style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cep: text }) }}
                 placeholder="CEP"
                 keyboardType={'number-pad'}
                 value={this.state.cep}
               />
               <TextInput
-                style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ estado: text }) }}
                 placeholder="Estado"
                 editable={false}
                 value={this.state.estado}
               />
               <TextInput
-                style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ cidade: text }) }}
                 placeholder="Cidade"
                 editable={false}
                 value={this.state.cidade}
               />
               <TextInput
-                style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ bairro: text }) }}
                 placeholder="Bairro"
                 value={this.state.bairro}
               />
               <TextInput
-                style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ rua: text }) }}
                 placeholder="Rua"
                 value={this.state.rua}
               />
               <TextInput
-                style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ numero: text }) }}
                 placeholder="Número"
                 value={this.state.numero}
               />
               <TextInput
-                style={this.formEnderecoScreenStyle.cadastroFormSizeAndFont}
+                style={styles.cadastroFormSizeAndFont}
                 onChangeText={text => { this.setState({ complemento: text }) }}
                 placeholder="Complemento"
                 value={this.state.complemento}
@@ -372,59 +365,6 @@ export default class FormEnderecoScreen extends Component {
       </ImageBackground>
     );
   }
-
-  formEnderecoScreenStyle = StyleSheet.create({
-    backgroundImageContent: { width: '100%', height: '100%' },
-    cadastroForm: {
-      flex: 1, alignItems: 'center',
-      justifyContent: 'center', height: 550
-    },
-    cadastroMainForm: {
-      alignItems: 'center', justifyContent: 'center',
-      width: 340, height: 510,
-      backgroundColor: colors.branco
-    },
-    continuarButtonText: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
-    },
-    cadastroFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: 300,
-    },
-    fontTitle: {
-      fontSize: 30,
-      textAlign: 'center',
-      fontWeight: 'bold'
-    },
-    modalBase: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    modalDialog: {
-      padding: 16, borderRadius: 20,
-      backgroundColor: 'rgba(255, 255, 255, 0.8)', width: '100%',
-      height: '80%', flex: 1,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    modalDialogContent: {
-      backgroundColor: colors.branco, width: 340,
-      borderRadius: 18, opacity: 1,
-      alignItems: 'center'
-    },
-    modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
-    modalErrosSectionList: { maxHeight: '60%', width: '100%' },
-    modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: {
-      marginTop: 40, marginBottom: 10,
-      width: 320, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  });
 }
 
 function BotaoCriar(props) {
@@ -448,4 +388,12 @@ function BotaoCriar(props) {
   } else {
     return (null);
   }
+}
+
+function Item({ title }) {
+  return (
+    <View>
+      <Text style={{ fontSize: 18 }}>{'\t'}{title}</Text>
+    </View>
+  );
 }

@@ -12,6 +12,7 @@ import { NavigationEvents } from 'react-navigation';
 import TokenService from '../../../services/token-service';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moipAPI, { headersOauth2 } from '../../../services/moip-api';
+import { styles } from './styles';
 
 export default class CartoesScreen extends Component {
   static navigationOptions = {
@@ -91,7 +92,7 @@ export default class CartoesScreen extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.cartoesScreenStyle.backgroundImageContent}
+        style={styles.backgroundImageContent}
         source={require('../../../img/Ellipse.png')}>
         <View style={{ height: 70 }}></View>
         <ScrollView>
@@ -100,7 +101,7 @@ export default class CartoesScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.cartoesScreenStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
@@ -128,47 +129,14 @@ export default class CartoesScreen extends Component {
         </ScrollView>
         <View style={{ alignItems: 'center', justifyContent: 'center', height: 60 }}>
           <TouchableOpacity
-            style={this.cartoesScreenStyle.sairButton}
+            style={styles.sairButton}
             onPress={() => { this.props.navigation.navigate('CreateEditCard') }}>
-            <Text style={this.cartoesScreenStyle.addButtonText}>ADICIONAR CARTÃO</Text>
+            <Text style={styles.addButtonText}>ADICIONAR CARTÃO</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
     );
   }
-
-  cartoesScreenStyle = StyleSheet.create({
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    backgroundImageContent: { width: '100%', height: '100%' },
-    sairButton: {
-      marginTop: 10, width: 340,
-      height: 45, borderRadius: 20,
-      backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    addButtonText: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center',
-    },
-    cartoesFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      textAlign: 'left',
-      width: '80%',
-      paddingLeft: 20
-    },
-    cartoesEnderecoSelect:
-    {
-      fontSize: 18,
-      height: 45,
-      textAlign: 'center',
-      width: 300,
-      textDecorationLine: 'underline',
-      textAlignVertical: 'bottom'
-    },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  });
 }
 
 export function Item(props) {

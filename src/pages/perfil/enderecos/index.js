@@ -6,12 +6,13 @@ import {
   ActivityIndicator,
   Alert
 } from 'react-native';
-import { colors } from '../../colors';
-import HeaderFundoTransparente from '../../components/header-fundo-transparente';
+import { colors } from '../../../colors';
+import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
 import { NavigationEvents } from 'react-navigation';
-import backendRails from '../../services/backend-rails-api';
-import TokenService from '../../services/token-service';
+import backendRails from '../../../services/backend-rails-api';
+import TokenService from '../../../services/token-service';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { styles } from './styles';
 
 export default class EnderecosScreen extends Component {
   static navigationOptions = {
@@ -60,8 +61,8 @@ export default class EnderecosScreen extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.enderecosScreenStyle.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        style={styles.backgroundImageContent}
+        source={require('../../../img/Ellipse.png')}>
         <View style={{ height: 70 }}></View>
         <ScrollView>
           <Modal
@@ -69,7 +70,7 @@ export default class EnderecosScreen extends Component {
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.enderecosScreenStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
@@ -101,47 +102,14 @@ export default class EnderecosScreen extends Component {
           height: 60, paddingBottom: 10
         }}>
           <TouchableOpacity
-            style={this.enderecosScreenStyle.sairButton}
+            style={styles.sairButton}
             onPress={() => { this.props.navigation.navigate('CreateEditAddress') }}>
-            <Text style={this.enderecosScreenStyle.sairButtonText}>ADICIONAR ENDEREÇO</Text>
+            <Text style={styles.sairButtonText}>ADICIONAR ENDEREÇO</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
     );
   }
-
-  enderecosScreenStyle = StyleSheet.create({
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    backgroundImageContent: { width: '100%', height: '100%' },
-    sairButton: {
-      marginTop: 10, width: 340,
-      height: 45, borderRadius: 20,
-      backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    sairButtonText: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
-    },
-    enderecosFormSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      textAlign: 'left',
-      width: '80%',
-      paddingLeft: 20
-    },
-    enderecosEnderecoSelect:
-    {
-      fontSize: 18,
-      height: 45,
-      textAlign: 'center',
-      width: 300,
-      textDecorationLine: 'underline',
-      textAlignVertical: 'bottom'
-    },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  });
 }
 
 export function Item(props) {

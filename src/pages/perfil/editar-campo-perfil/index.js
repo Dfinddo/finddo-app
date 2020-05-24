@@ -1,22 +1,18 @@
 import React, { Component } from 'react';
 import {
   ImageBackground, View,
-  Text, StyleSheet,
+  Text,
   TouchableOpacity,
   TextInput, ScrollView, Modal, SectionList, Alert, ActivityIndicator
 } from 'react-native';
-import { colors } from '../../colors';
-import HeaderFundoTransparente from '../../components/header-fundo-transparente';
-import TokenService from '../../services/token-service';
-import backendRails from '../../services/backend-rails-api';
+import { colors } from '../../../colors';
+import HeaderFundoTransparente from '../../../components/header-fundo-transparente';
+import TokenService from '../../../services/token-service';
+import backendRails from '../../../services/backend-rails-api';
 import AsyncStorage from '@react-native-community/async-storage';
 import { StackActions, NavigationActions } from 'react-navigation';
-import UserDTO from '../../models/UserDTO';
-
-const campos = {
-  email: 'email',
-  telefone: 'telefone'
-};
+import UserDTO from '../../../models/UserDTO';
+import { styles } from './styles';
 
 export default class EditarCampoPerfil extends Component {
   static navigationOptions = {
@@ -207,15 +203,15 @@ export default class EditarCampoPerfil extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.editarCampoPerfilStyle.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        style={styles.backgroundImageContent}
+        source={require('../../../img/Ellipse.png')}>
         <ScrollView>
           <Modal
             animationType="slide"
             transparent={true}
             visible={this.state.isLoading}
           >
-            <View style={this.editarCampoPerfilStyle.modalStyle}>
+            <View style={styles.modalStyle}>
               <View>
                 <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
               </View>
@@ -226,37 +222,37 @@ export default class EditarCampoPerfil extends Component {
             transparent={true}
             visible={this.state.formInvalid}
           >
-            <View style={this.editarCampoPerfilStyle.modalBase}>
-              <View style={this.editarCampoPerfilStyle.modalDialog}>
-                <View style={this.editarCampoPerfilStyle.modalDialogContent}>
-                  <Text style={this.editarCampoPerfilStyle.modalErrosTitulo}>Erros:</Text>
+            <View style={styles.modalBase}>
+              <View style={styles.modalDialog}>
+                <View style={styles.modalDialogContent}>
+                  <Text style={styles.modalErrosTitulo}>Erros:</Text>
                   <SectionList
-                    style={this.editarCampoPerfilStyle.modalErrosSectionList}
+                    style={styles.modalErrosSectionList}
                     sections={this.state.formErrors}
                     keyExtractor={(item, index) => item + index}
                     renderItem={({ item }) => <Item title={item} />}
                     renderSectionHeader={({ section: { title } }) => (
-                      <Text style={this.editarCampoPerfilStyle.modalErrosTituloErro}>{title}</Text>
+                      <Text style={styles.modalErrosTituloErro}>{title}</Text>
                     )}
                   />
                   <TouchableOpacity
-                    style={this.editarCampoPerfilStyle.modalErrosBotaoContinuar}
+                    style={styles.modalErrosBotaoContinuar}
                     onPress={() => this.setState({ formInvalid: false })}>
-                    <Text style={this.editarCampoPerfilStyle.continuarButtonText}>VOLTAR</Text>
+                    <Text style={styles.continuarButtonText}>VOLTAR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           </Modal>
           <View style={{ height: 220 }}></View>
-          <View style={this.editarCampoPerfilStyle.fieldForm}>
-            <View style={this.editarCampoPerfilStyle.containerForm}>
-              <Text style={this.editarCampoPerfilStyle.fontTitle}>{this.state.titulo}</Text>
+          <View style={styles.fieldForm}>
+            <View style={styles.containerForm}>
+              <Text style={styles.fontTitle}>{this.state.titulo}</Text>
               {
                 (() => {
                   if (this.state.tipo === campos.email) {
                     return (<TextInput
-                      style={this.editarCampoPerfilStyle.formSizeAndFont}
+                      style={styles.formSizeAndFont}
                       onChangeText={text => { this.setState({ valor: text }) }}
                       placeholder="Email"
                       keyboardType="email-address"
@@ -264,7 +260,7 @@ export default class EditarCampoPerfil extends Component {
                     />);
                   } else if (this.state.tipo === campos.telefone) {
                     return (<TextInput
-                      style={this.editarCampoPerfilStyle.formSizeAndFont}
+                      style={styles.formSizeAndFont}
                       onChangeText={text => { this.setState({ valor: text }) }}
                       placeholder="Telefone"
                       keyboardType="phone-pad"
@@ -277,74 +273,21 @@ export default class EditarCampoPerfil extends Component {
               }
             </View>
             <TouchableOpacity
-              style={this.editarCampoPerfilStyle.continuarButton}
+              style={styles.continuarButton}
               onPress={() => this.validateFields()}>
-              <Text style={this.editarCampoPerfilStyle.continuarButtonText}>CONFIRMAR</Text>
+              <Text style={styles.continuarButtonText}>CONFIRMAR</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </ImageBackground >
     );
   }
-
-  editarCampoPerfilStyle = StyleSheet.create({
-    backgroundImageContent: { width: '100%', height: '100%' },
-    fieldForm: { flex: 1, alignItems: 'center', justifyContent: 'center', height: 240 },
-    fontTitle: {
-      fontSize: 30,
-      textAlign: 'center',
-      fontWeight: 'bold'
-    },
-    formSizeAndFont:
-    {
-      fontSize: 18,
-      height: 45,
-      borderBottomColor: colors.verdeFinddo,
-      borderBottomWidth: 2,
-      textAlign: 'left',
-      width: '90%',
-    },
-    continuarButton: {
-      marginTop: 40,
-      marginBottom: 10,
-      width: 340,
-      height: 45,
-      borderRadius: 20,
-      backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    continuarButtonText: {
-      fontSize: 18,
-      color: colors.branco,
-      textAlign: 'center'
-    },
-    containerForm: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: 160,
-      width: 340,
-      backgroundColor: colors.branco
-    },
-    modalBase: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    modalDialog: {
-      padding: 16, borderRadius: 20,
-      backgroundColor: 'rgba(255, 255, 255, 0.8)', width: '100%',
-      height: '80%', flex: 1,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    modalDialogContent: { backgroundColor: colors.branco, width: 340, borderRadius: 18, opacity: 1, alignItems: 'center' },
-    modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
-    modalErrosSectionList: { maxHeight: '60%', width: '100%' },
-    modalErrosTituloErro: { fontSize: 24, fontWeight: 'bold' },
-    modalErrosBotaoContinuar: {
-      marginTop: 40, marginBottom: 10,
-      width: 320, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  });
 }
+
+const campos = {
+  email: 'email',
+  telefone: 'telefone'
+};
 
 function Item({ title }) {
   return (
