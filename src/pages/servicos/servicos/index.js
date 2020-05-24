@@ -2,23 +2,24 @@ import React, { Component } from 'react';
 import {
   Modal, Image,
   ImageBackground, Text,
-  FlatList, StyleSheet,
+  FlatList,
   TouchableOpacity, View,
 } from 'react-native';
-import { colors } from '../../colors';
+import { colors } from '../../../colors';
 import { SvgXml } from 'react-native-svg';
-import { bolaCheia } from '../../img/svg/bola-cheia';
-import { bolaApagada } from '../../img/svg/bola-apagada';
+import { bolaCheia } from '../../../img/svg/bola-cheia';
+import { bolaApagada } from '../../../img/svg/bola-apagada';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { passo0 } from '../../img/svg/passo-0';
-import { passo1 } from '../../img/svg/passo-1';
-import { passo2 } from '../../img/svg/passo-2';
-import { passo3 } from '../../img/svg/passo-3';
-import { fechar } from '../../img/svg/fechar';
+import { passo0 } from '../../../img/svg/passo-0';
+import { passo1 } from '../../../img/svg/passo-1';
+import { passo2 } from '../../../img/svg/passo-2';
+import { passo3 } from '../../../img/svg/passo-3';
+import { fechar } from '../../../img/svg/fechar';
 import AsyncStorage from '@react-native-community/async-storage';
-import PedidoCorrenteService from '../../services/pedido-corrente-service';
+import PedidoCorrenteService from '../../../services/pedido-corrente-service';
 import { NavigationEvents } from 'react-navigation';
-import TokenService from '../../services/token-service';
+import TokenService from '../../../services/token-service';
+import { styles } from './styles';
 
 export default class Servicos extends Component {
   static navigationOptions = {
@@ -28,13 +29,13 @@ export default class Servicos extends Component {
 
   state = {
     docs: [
-      { id: '1', name: 'Hidráulica', image_url: require('../../img/jacek-dylag-unsplash.png') },
-      { id: '2', name: 'Elétrica', image_url: require('../../img/eletrica.png') },
-      { id: '3', name: 'Pintura', image_url: require('../../img/pintura.png') },
-      { id: '4', name: 'Ar condicionado', image_url: require('../../img/ar-condicionado.png') },
-      { id: '5', name: 'Instalações', image_url: require('../../img/instalacao.png') },
-      { id: '6', name: 'Pequenas reformas', image_url: require('../../img/peq-reforma.png') },
-      { id: '7', name: 'Consertos em geral', image_url: require('../../img/consertos.png') },
+      { id: '1', name: 'Hidráulica', image_url: require('../../../img/jacek-dylag-unsplash.png') },
+      { id: '2', name: 'Elétrica', image_url: require('../../../img/eletrica.png') },
+      { id: '3', name: 'Pintura', image_url: require('../../../img/pintura.png') },
+      { id: '4', name: 'Ar condicionado', image_url: require('../../../img/ar-condicionado.png') },
+      { id: '5', name: 'Instalações', image_url: require('../../../img/instalacao.png') },
+      { id: '6', name: 'Pequenas reformas', image_url: require('../../../img/peq-reforma.png') },
+      { id: '7', name: 'Consertos em geral', image_url: require('../../../img/consertos.png') },
       { id: '8', name: null }
     ],
     isLoading: false,
@@ -126,9 +127,9 @@ export default class Servicos extends Component {
   render() {
     return (
       <ImageBackground
-        style={this.servicosStyles.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
-        <View style={this.servicosStyles.container}>
+        style={styles.backgroundImageContent}
+        source={require('../../../img/Ellipse.png')}>
+        <View style={styles.container}>
           <NavigationEvents
             onWillFocus={_ => this.carregaPedidoLocalStorage()}
           />
@@ -366,22 +367,4 @@ export default class Servicos extends Component {
       </ImageBackground>
     );
   }
-
-  servicosStyles = StyleSheet.create({
-    container: {
-      marginTop: 10,
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    item: {
-      padding: 10,
-      fontSize: 18,
-      height: 44,
-    },
-    backgroundImageContent: {
-      width: '100%', height: '100%'
-    },
-    modalStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  });
 }

@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import VisualizarPedido from '../../components/modal-visualizar-pedido';
-import PedidoCorrenteService from '../../services/pedido-corrente-service';
-import { ImageBackground, View, Alert, Modal, ActivityIndicator } from 'react-native';
-import TokenService from '../../services/token-service';
-import { colors } from '../../colors';
-import backendRails from '../../services/backend-rails-api';
+import VisualizarPedido from '../../../components/modal-visualizar-pedido';
+import PedidoCorrenteService from '../../../services/pedido-corrente-service';
+import { ImageBackground, View, Alert, ActivityIndicator } from 'react-native';
+import TokenService from '../../../services/token-service';
+import { colors } from '../../../colors';
+import backendRails from '../../../services/backend-rails-api';
 import { StackActions, NavigationActions } from 'react-navigation';
-import FotoService from '../../services/foto-service';
+import FotoService from '../../../services/foto-service';
 
-const fotoDefault = require('../../img/add_foto_problema.png');
+const fotoDefault = require('../../../img/add_foto_problema.png');
 
 export class ConfirmarPedido extends Component {
   static navigationOptions = {
@@ -21,7 +21,7 @@ export class ConfirmarPedido extends Component {
 
     this.state = {
       necessidade: '',
-      imageServicoUrl: require('../../img/jacek-dylag-unsplash.png'),
+      imageServicoUrl: require('../../../img/jacek-dylag-unsplash.png'),
       categoriaPedido: null,
       isLoading: false,
       dataPedido: null,
@@ -48,7 +48,6 @@ export class ConfirmarPedido extends Component {
   componentDidMount() {
     const pedidoService = PedidoCorrenteService.getInstance();
     const pedidoCorrente = pedidoService.getPedidoCorrente();
-    console.log(pedidoService.getPedidoCorrente());
 
     this.setState({
       necessidade: pedidoCorrente.necessidade,
@@ -194,7 +193,7 @@ export class ConfirmarPedido extends Component {
       return (
         <ImageBackground
           style={{ width: '100%', height: '100%' }}
-          source={require('../../img/Ellipse.png')}>
+          source={require('../../../img/Ellipse.png')}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
           </View>
@@ -203,7 +202,7 @@ export class ConfirmarPedido extends Component {
       return (
         <ImageBackground
           style={{ width: '100%', height: '100%' }}
-          source={require('../../img/Ellipse.png')}>
+          source={require('../../../img/Ellipse.png')}>
           <View style={{
             flex: 1,
             paddingTop: 10,

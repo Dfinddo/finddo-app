@@ -1,36 +1,14 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet, TouchableOpacity,
-  Text,
+  TouchableOpacity, Text,
   View, ImageBackground, Modal
 } from 'react-native';
 import CalendarPicker from 'react-native-calendar-picker';
-import { colors } from '../../colors';
+import { colors } from '../../../colors';
 import { ScrollView } from 'react-native-gesture-handler';
-import CustomPicker from '../../components/custom-picker';
-import PedidoCorrenteService from '../../services/pedido-corrente-service';
-
-const horariosParaAtendimento = [
-  { content: '--:--', value: '--:--', id: '0' },
-  { content: '09:00', value: '09:00', id: '1' },
-  { content: '09:30', value: '09:30', id: '2' },
-  { content: '10:00', value: '10:00', id: '3' },
-  { content: '10:30', value: '10:30', id: '4' },
-  { content: '11:00', value: '11:00', id: '5' },
-  { content: '11:30', value: '11:30', id: '6' },
-  { content: '12:00', value: '12:00', id: '7' },
-  { content: '12:30', value: '12:30', id: '8' },
-  { content: '13:00', value: '13:00', id: '9' },
-  { content: '13:30', value: '13:30', id: '10' },
-  { content: '14:00', value: '14:00', id: '11' },
-  { content: '14:30', value: '14:30', id: '12' },
-  { content: '15:00', value: '15:00', id: '13' },
-  { content: '15:30', value: '15:30', id: '14' },
-  { content: '16:00', value: '16:00', id: '15' },
-  { content: '16:30', value: '16:30', id: '16' },
-  { content: '17:00', value: '17:00', id: '17' },
-  { content: '17:30', value: '17:30', id: '18' },
-];
+import CustomPicker from '../../../components/custom-picker';
+import PedidoCorrenteService from '../../../services/pedido-corrente-service';
+import { styles } from './styles';
 
 export default class DataServico extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -131,8 +109,8 @@ export default class DataServico extends Component {
     finalDate.setDate(initialDate.getDate() + 6);
     return (
       <ImageBackground
-        style={this.dataStyles.backgroundImageContent}
-        source={require('../../img/Ellipse.png')}>
+        style={styles.backgroundImageContent}
+        source={require('../../../img/Ellipse.png')}>
         <ScrollView ref={(view) => {
           this.scrollView = view;
         }}>
@@ -141,14 +119,14 @@ export default class DataServico extends Component {
             transparent={true}
             visible={this.state.formInvalid}
           ><View
-            style={this.dataStyles.modalDialogContainer}>
-              <View style={this.dataStyles.modalDialogContent}>
-                <Text style={this.dataStyles.modalErrosTitulo}>Erros:</Text>
-                <Text style={this.dataStyles.modalErrosContent}>
+            style={styles.modalDialogContainer}>
+              <View style={styles.modalDialogContent}>
+                <Text style={styles.modalErrosTitulo}>Erros:</Text>
+                <Text style={styles.modalErrosContent}>
                   {'Por favor defina uma data e uma faixa horário de preferência.'}
                 </Text>
                 <TouchableOpacity
-                  style={this.dataStyles.modalErrosVoltarButton}
+                  style={styles.modalErrosVoltarButton}
                   onPress={() => this.setState({ formInvalid: false })}>
                   <Text style={{ fontSize: 18, color: colors.branco }}>VOLTAR</Text>
                 </TouchableOpacity>
@@ -159,7 +137,7 @@ export default class DataServico extends Component {
             flex: 1, alignItems: 'center',
             justifyContent: 'flex-start'
           }}>
-            <View style={this.dataStyles.container}>
+            <View style={styles.container}>
               <CalendarPicker
                 onDateChange={this.onDateChange}
                 weekdays={['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']}
@@ -178,12 +156,12 @@ export default class DataServico extends Component {
                 {this.state.selectedStartDate}
               </Text>
             </View>
-            <View style={this.dataStyles.definirDataHoraContainer}>
+            <View style={styles.definirDataHoraContainer}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ fontSize: 18 }}>Entre:</Text>
               </View>
               <CustomPicker
-                style={this.dataStyles.selectStyle}
+                style={styles.selectStyle}
                 items={this.state.horarios}
                 defaultItem={this.state.horarios
                   .find(hor => hor.value === this.state.hora)}
@@ -201,7 +179,7 @@ export default class DataServico extends Component {
                 if (this.state.horaDefinida) {
                   return (
                     <CustomPicker
-                      style={this.dataStyles.selectStyle}
+                      style={styles.selectStyle}
                       items={this.state.horariosFim}
                       defaultItem={this.state.horarios
                         .find(hor => hor.value === this.state.horaFim)}
@@ -216,59 +194,34 @@ export default class DataServico extends Component {
         </ScrollView>
         <View style={{ marginVertical: 10, alignItems: 'center' }}>
           <TouchableOpacity
-            style={this.dataStyles.continuarButton}
+            style={styles.continuarButton}
             onPress={() => this.validarDataPedido()}>
-            <Text style={this.dataStyles.continuarButtonText}>CONTINUAR</Text>
+            <Text style={styles.continuarButtonText}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
     );
   }
-
-  dataStyles = StyleSheet.create({
-    container: {
-      backgroundColor: colors.branco,
-      marginTop: 15
-    },
-    backgroundImageContent: { width: '100%', height: '100%' },
-    selectStyle: {
-      borderStyle: 'solid', width: 120,
-      borderWidth: 2, borderColor: colors.verdeFinddo,
-    },
-    continuarButton:
-    {
-      width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      alignItems: 'center', justifyContent: 'center'
-    },
-    continuarButtonText:
-    {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
-    },
-    modalDialogContainer: {
-      flex: 1, alignItems: 'center',
-      justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
-    },
-    modalDialogContent: {
-      backgroundColor: colors.branco, width: 340,
-      borderRadius: 18, opacity: 1,
-      alignItems: 'center'
-    },
-    modalErrosTitulo: { fontWeight: 'bold', textAlign: 'center', fontSize: 24 },
-    modalErrosContent: {
-      fontSize: 18, marginVertical: 10
-    },
-    modalErrosVoltarButton: {
-      width: 320, height: 45,
-      backgroundColor: colors.verdeFinddo, alignItems: 'center',
-      justifyContent: 'center', borderRadius: 20,
-      marginBottom: 10
-    },
-    definirDataHoraContainer: {
-      marginTop: 30, width: 340,
-      height: 55, flexDirection: 'row',
-      alignContent: 'center', justifyContent: 'space-around'
-    }
-  });
 }
+
+const horariosParaAtendimento = [
+  { content: '--:--', value: '--:--', id: '0' },
+  { content: '09:00', value: '09:00', id: '1' },
+  { content: '09:30', value: '09:30', id: '2' },
+  { content: '10:00', value: '10:00', id: '3' },
+  { content: '10:30', value: '10:30', id: '4' },
+  { content: '11:00', value: '11:00', id: '5' },
+  { content: '11:30', value: '11:30', id: '6' },
+  { content: '12:00', value: '12:00', id: '7' },
+  { content: '12:30', value: '12:30', id: '8' },
+  { content: '13:00', value: '13:00', id: '9' },
+  { content: '13:30', value: '13:30', id: '10' },
+  { content: '14:00', value: '14:00', id: '11' },
+  { content: '14:30', value: '14:30', id: '12' },
+  { content: '15:00', value: '15:00', id: '13' },
+  { content: '15:30', value: '15:30', id: '14' },
+  { content: '16:00', value: '16:00', id: '15' },
+  { content: '16:30', value: '16:30', id: '16' },
+  { content: '17:00', value: '17:00', id: '17' },
+  { content: '17:30', value: '17:30', id: '18' },
+];

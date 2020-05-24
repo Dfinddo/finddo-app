@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
 import {
   Modal, View,
-  Text, StyleSheet,
+  Text,
   ScrollView, ImageBackground,
   TouchableOpacity, Image,
   ActivityIndicator, Alert
 } from 'react-native';
-import backendRails from '../../services/backend-rails-api';
-import TokenService from '../../services/token-service';
+import backendRails from '../../../services/backend-rails-api';
+import TokenService from '../../../services/token-service';
 import { NavigationEvents } from 'react-navigation';
-import { colors } from '../../colors';
-import VisualizarPedido from '../../components/modal-visualizar-pedido';
-import FotoService from '../../services/foto-service';
-import { ListaDeEnderecos } from '../../pages/perfil/enderecos';
-import EnderecoFormService from '../../services/endereco-form-service';
-import PedidoCorrenteService from '../../services/pedido-corrente-service';
-
-const fotoDefault = require('../../img/add_foto_problema.png');
+import { colors } from '../../../colors';
+import VisualizarPedido from '../../../components/modal-visualizar-pedido';
+import FotoService from '../../../services/foto-service';
+import { ListaDeEnderecos } from '../../../pages/perfil/enderecos';
+import EnderecoFormService from '../../../services/endereco-form-service';
+import PedidoCorrenteService from '../../../services/pedido-corrente-service';
+import { styles } from './styles';
 
 export default class FotosPedido extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -26,7 +25,7 @@ export default class FotosPedido extends Component {
 
   state = {
     necessidade: '',
-    imageServicoUrl: require('../../img/jacek-dylag-unsplash.png'),
+    imageServicoUrl: require('../../../img/jacek-dylag-unsplash.png'),
     categoriaPedido: null,
     isLoading: false,
     dataPedido: null,
@@ -244,13 +243,11 @@ export default class FotosPedido extends Component {
     });
   }
 
-
-
   render() {
     return (
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
-        source={require('../../img/Ellipse.png')}>
+        source={require('../../../img/Ellipse.png')}>
         <View style={{ flex: 1 }}>
           <ScrollView>
             <Modal
@@ -258,7 +255,7 @@ export default class FotosPedido extends Component {
               transparent={true}
               visible={this.state.isLoading}
             >
-              <View style={this.fotosPedidoStyles.loaderContainer}>
+              <View style={styles.loaderContainer}>
                 <View>
                   <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
                 </View>
@@ -283,17 +280,17 @@ export default class FotosPedido extends Component {
                   selecionarItem={this.selecionarItem}
                   comp={this}></ListaDeEnderecos>
                 <TouchableOpacity
-                  style={this.fotosPedidoStyles.botaoContinuar}
+                  style={styles.botaoContinuar}
                   onPress={() => this.setState({ isSelectEndereco: false }, () => {
                     EnderecoFormService.getInstance().setAdicionarNovoEndServico(true);
                     this.props.navigation.navigate('FormAddEndereco');
                   })}>
-                  <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>ADICIONAR ENDEREÇO</Text>
+                  <Text style={styles.botaoContinuarTexto}>ADICIONAR ENDEREÇO</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={this.fotosPedidoStyles.botaoContinuar}
+                  style={styles.botaoContinuar}
                   onPress={() => this.setState({ isSelectEndereco: false })}>
-                  <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>VOLTAR</Text>
+                  <Text style={styles.botaoContinuarTexto}>VOLTAR</Text>
                 </TouchableOpacity>
               </View>
             </Modal>
@@ -306,7 +303,7 @@ export default class FotosPedido extends Component {
                 onConfirm={() => this.salvarAposPedidoConfirmado()}
                 onCancel={() => this.fecharDialogConfirmacaoSemConfirmarPedido()}></VisualizarPedido>
             </Modal>
-            <View style={this.fotosPedidoStyles.imagemCategoriaContainer}>
+            <View style={styles.imagemCategoriaContainer}>
               <NavigationEvents
                 onWillFocus={_ => {
                   this.setState({ isLoading: true }, () => {
@@ -319,8 +316,8 @@ export default class FotosPedido extends Component {
               />
               <Image source={this.state.imageServicoUrl}
                 style={{ width: '100%' }} />
-              <View style={this.fotosPedidoStyles.formPedidoContainer}>
-                <View style={this.fotosPedidoStyles.maisFotosContainer}>
+              <View style={styles.formPedidoContainer}>
+                <View style={styles.maisFotosContainer}>
                   <Text style={{ fontSize: 18, textAlign: 'center', marginTop: 10 }}>
                     Nos ajude com fotos do problema (opcional)
                   </Text>
@@ -331,7 +328,7 @@ export default class FotosPedido extends Component {
                       style={{ width: 120, height: 120 }}
                       source={this.state.foto1} />
                   </TouchableOpacity>
-                  <View style={this.fotosPedidoStyles.fotosProblemaContainer}>
+                  <View style={styles.fotosProblemaContainer}>
                     <TouchableOpacity onPress={() => {
                       this.baterFotoOuRemover(2);
                     }}>
@@ -359,56 +356,16 @@ export default class FotosPedido extends Component {
             </View>
           </ScrollView>
         </View>
-        <View style={this.fotosPedidoStyles.botaoContainer}>
+        <View style={styles.botaoContainer}>
           <TouchableOpacity
-            style={this.fotosPedidoStyles.botaoContinuar}
+            style={styles.botaoContinuar}
             onPress={() => this.confirmarPedido()}>
-            <Text style={this.fotosPedidoStyles.botaoContinuarTexto}>CONTINUAR</Text>
+            <Text style={styles.botaoContinuarTexto}>CONTINUAR</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
     );
   }
-
-  fotosPedidoStyles = StyleSheet.create({
-    loaderContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgba(255,255,255,0.5)'
-    },
-    imagemCategoriaContainer: {
-      height: 540,
-      alignItems: 'center',
-      justifyContent: 'flex-start'
-    },
-    formPedidoContainer: {
-      height: 300, paddingHorizontal: 20,
-      alignItems: 'center',
-      width: '100%', justifyContent: 'flex-start'
-    },
-    maisFotosContainer: {
-      marginTop: 8, height: 300,
-      backgroundColor: colors.branco,
-      width: '100%'
-    },
-    fotosProblemaContainer: {
-      flexDirection: 'row', justifyContent: 'space-evenly',
-      alignItems: 'center', marginTop: 30
-    },
-    botaoContainer: {
-      alignItems: 'center',
-      justifyContent: 'flex-end'
-    },
-    botaoContinuar: {
-      width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      marginBottom: 6, alignItems: 'center',
-      justifyContent: 'center'
-    },
-    botaoContinuarTexto: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
-    }
-  });
 }
+
+const fotoDefault = require('../../../img/add_foto_problema.png');

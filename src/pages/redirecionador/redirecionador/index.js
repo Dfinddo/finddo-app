@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { colors } from '../../colors';
-import TokenService from '../../services/token-service';
+import { colors } from '../../../colors';
+import TokenService from '../../../services/token-service';
 import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class RedirecionadorIndex extends Component {

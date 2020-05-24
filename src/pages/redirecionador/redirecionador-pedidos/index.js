@@ -4,8 +4,8 @@ import {
   TouchableOpacity, ImageBackground,
   Text
 } from 'react-native';
-import { colors } from '../../colors';
-import TokenService from '../../services/token-service';
+import { colors } from '../../../colors';
+import TokenService from '../../../services/token-service';
 import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class RedirecionadorPedidos extends Component {
@@ -58,7 +58,7 @@ export default class RedirecionadorPedidos extends Component {
       return (
         <ImageBackground
           style={{ width: '100%', height: '100%' }}
-          source={require('../../img/Ellipse.png')}>
+          source={require('../../../img/Ellipse.png')}>
           <View style={{ height: '90%' }}>
             <View style={{
               flex: 1, alignItems: 'center',

@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import {
   View, Text,
   ScrollView, ImageBackground,
-  TouchableOpacity, StyleSheet,
+  TouchableOpacity,
   ActivityIndicator, Modal, Alert
 } from 'react-native';
-import { colors } from '../../colors';
-import StatusPedidoStep from '../../components/status-pedido-step';
-import StatusPedidoDescricao from '../../components/status-pedido-descricao';
-import Accordian from '../../components/accordion-pedido';
+import { colors } from '../../../colors';
+import StatusPedidoStep from '../../../components/status-pedido-step';
+import StatusPedidoDescricao from '../../../components/status-pedido-descricao';
+import Accordian from '../../../components/accordion-pedido';
 import { StackActions, NavigationActions, NavigationEvents } from 'react-navigation';
-import TokenService from '../../services/token-service';
-import backendRails from '../../services/backend-rails-api';
+import TokenService from '../../../services/token-service';
+import backendRails from '../../../services/backend-rails-api';
+import { styles } from './styles';
 
 export default class AcompanhamentoPedido extends Component {
   static navigationOptions = {
@@ -39,9 +40,6 @@ export default class AcompanhamentoPedido extends Component {
     acaoBotao: 'PRÓXIMO',
     pedido: null,
     loadingData: false
-  };
-
-  componentDidMount() {
   };
 
   obterPedido = () => {
@@ -74,127 +72,6 @@ export default class AcompanhamentoPedido extends Component {
       }
     });
   };
-
-  render() {
-    if (this.state.pedido) {
-      return (
-        <ImageBackground
-          style={{ width: '100%', height: '100%' }}
-          source={require('../../img/Ellipse.png')}>
-          <View style={{ height: '90%' }}>
-            <NavigationEvents
-              onWillFocus={_ => this.obterPedido()}
-            //onDidFocus={payload => console.log('did focus', payload)}
-            //onWillBlur={payload => console.log('will blur', payload)}
-            //onDidBlur={payload => console.log('did blur', payload)}
-            />
-            <ScrollView style={{
-              flex: 1
-            }}>
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={this.state.loadingData}
-              >
-                <View style={{
-                  flex: 1, alignItems: 'center',
-                  justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
-                }}>
-                  <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
-                </View>
-              </Modal>
-              <View style={this.acompanhamentoStyles.acompanhamentoContainer}>
-                <View
-                  style={this.acompanhamentoStyles.acompanhamentoPontosContainer}>
-                  <StatusPedidoStep
-                    ref={this.pedidoEmAnalise}
-                    hasMarginTop={true}
-                    verticalBarVisibility='flex'>
-                  </StatusPedidoStep>
-                  <StatusPedidoStep
-                    ref={this.aCaminho}
-                    verticalBarVisibility='flex'>
-                  </StatusPedidoStep>
-                  <StatusPedidoStep
-                    ref={this.emServico}
-                    verticalBarVisibility='none'>
-                  </StatusPedidoStep>
-                </View>
-                <View
-                  style={this.acompanhamentoStyles.acompanhamentoConteudoContainer}>
-                  <StatusPedidoDescricao
-                    ref={this.pedidoEmAnaliseD}
-                    hasMarginTop={true}
-                    conteudo='Pedido em análise'
-                    estadoInicial='analise' />
-                  <View style={{ height: 80, width: 3 }} />
-                  <View
-                    style={{ height: 120, zIndex: 10 }}>
-                    <Accordian
-                      pedido={this.state.pedido}
-                      conteudo='A caminho'
-                      estadoInicial='a_caminho'
-                      ref={this.aCaminhoD} />
-                  </View>
-                  <StatusPedidoDescricao
-                    ref={this.emServicoD}
-                    conteudo='Serviço em Execução'
-                    estadoInicial='em_servico' />
-                </View>
-              </View>
-            </ScrollView>
-          </View>
-          {(() => {
-            const tokenService = TokenService.getInstance();
-            if (tokenService.getUser().user_type === 'professional') {
-              return (
-                <View style={this.acompanhamentoStyles.acompanhamentoBotaoContainer}>
-                  <TouchableOpacity style={this.acompanhamentoStyles.acompanhamentoBotao} onPress={() => this.atualizarStatus(this.state.pedido)}>
-                    <Text style={this.acompanhamentoStyles.corBotao}>{this.state.acaoBotao}</Text>
-                  </TouchableOpacity>
-                </View>);
-            } else {
-              return (null);
-            }
-          })()}
-        </ImageBackground>
-      );
-    }
-    else {
-      return (
-        <ImageBackground
-          style={{ width: '100%', height: '100%' }}
-          source={require('../../img/Ellipse.png')}>
-          <View style={{ height: '90%' }}>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={this.state.loadingData}
-            >
-              <View style={{
-                flex: 1, alignItems: 'center',
-                justifyContent: 'center', backgroundColor: 'rgba(255,255,255,1)'
-              }}>
-                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
-              </View>
-            </Modal>
-            <NavigationEvents
-              onWillFocus={_ => this.obterPedido()}
-            //onDidFocus={payload => console.log('did focus', payload)}
-            //onWillBlur={payload => console.log('will blur', payload)}
-            //onDidBlur={payload => console.log('did blur', payload)}
-            />
-            <View>
-              <Text style={{
-                paddingHorizontal: 20, fontSize: 18,
-                paddingTop: 20
-              }}>Não há pedido ativo, selecione um pedido em andamento na aba Pedidos para acompanhar seu estado.</Text>
-            </View>
-          </View>
-        </ImageBackground>
-      );
-    }
-  }
 
   atualizaStatus = () => {
     if (this.state.estadoAtual === 'analise') {
@@ -300,33 +177,124 @@ export default class AcompanhamentoPedido extends Component {
     }
   }
 
-  acompanhamentoStyles = StyleSheet.create({
-    acompanhamentoContainer: {
-      flex: 1, alignItems: 'center',
-      justifyContent: 'center', flexDirection: 'row',
-      height: 500
-    },
-    acompanhamentoPontosContainer: {
-      height: 500, width: '15%',
-      alignItems: 'center',
-      justifyContent: 'flex-start'
-    },
-    acompanhamentoConteudoContainer: {
-      height: 500, width: '85%'
-    },
-    acompanhamentoBotaoContainer: {
-      flex: 1, alignItems: 'center',
-      justifyContent: 'flex-end'
-    },
-    acompanhamentoBotao: {
-      width: 340, height: 45,
-      borderRadius: 20, backgroundColor: colors.verdeFinddo,
-      marginBottom: 6, alignItems: 'center',
-      justifyContent: 'center'
-    },
-    corBotao: {
-      fontSize: 18, color: colors.branco,
-      textAlign: 'center'
+  render() {
+    if (this.state.pedido) {
+      return (
+        <ImageBackground
+          style={{ width: '100%', height: '100%' }}
+          source={require('../../../img/Ellipse.png')}>
+          <View style={{ height: '90%' }}>
+            <NavigationEvents
+              onWillFocus={_ => this.obterPedido()}
+            //onDidFocus={payload => console.log('did focus', payload)}
+            //onWillBlur={payload => console.log('will blur', payload)}
+            //onDidBlur={payload => console.log('did blur', payload)}
+            />
+            <ScrollView style={{
+              flex: 1
+            }}>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={this.state.loadingData}
+              >
+                <View style={{
+                  flex: 1, alignItems: 'center',
+                  justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.5)'
+                }}>
+                  <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+                </View>
+              </Modal>
+              <View style={styles.acompanhamentoContainer}>
+                <View
+                  style={styles.acompanhamentoPontosContainer}>
+                  <StatusPedidoStep
+                    ref={this.pedidoEmAnalise}
+                    hasMarginTop={true}
+                    verticalBarVisibility='flex'>
+                  </StatusPedidoStep>
+                  <StatusPedidoStep
+                    ref={this.aCaminho}
+                    verticalBarVisibility='flex'>
+                  </StatusPedidoStep>
+                  <StatusPedidoStep
+                    ref={this.emServico}
+                    verticalBarVisibility='none'>
+                  </StatusPedidoStep>
+                </View>
+                <View
+                  style={styles.acompanhamentoConteudoContainer}>
+                  <StatusPedidoDescricao
+                    ref={this.pedidoEmAnaliseD}
+                    hasMarginTop={true}
+                    conteudo='Pedido em análise'
+                    estadoInicial='analise' />
+                  <View style={{ height: 80, width: 3 }} />
+                  <View
+                    style={{ height: 120, zIndex: 10 }}>
+                    <Accordian
+                      pedido={this.state.pedido}
+                      conteudo='A caminho'
+                      estadoInicial='a_caminho'
+                      ref={this.aCaminhoD} />
+                  </View>
+                  <StatusPedidoDescricao
+                    ref={this.emServicoD}
+                    conteudo='Serviço em Execução'
+                    estadoInicial='em_servico' />
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+          {(() => {
+            const tokenService = TokenService.getInstance();
+            if (tokenService.getUser().user_type === 'professional') {
+              return (
+                <View style={styles.acompanhamentoBotaoContainer}>
+                  <TouchableOpacity style={styles.acompanhamentoBotao} onPress={() => this.atualizarStatus(this.state.pedido)}>
+                    <Text style={styles.corBotao}>{this.state.acaoBotao}</Text>
+                  </TouchableOpacity>
+                </View>);
+            } else {
+              return (null);
+            }
+          })()}
+        </ImageBackground>
+      );
     }
-  });
+    else {
+      return (
+        <ImageBackground
+          style={{ width: '100%', height: '100%' }}
+          source={require('../../../img/Ellipse.png')}>
+          <View style={{ height: '90%' }}>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={this.state.loadingData}
+            >
+              <View style={{
+                flex: 1, alignItems: 'center',
+                justifyContent: 'center', backgroundColor: 'rgba(255,255,255,1)'
+              }}>
+                <ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
+              </View>
+            </Modal>
+            <NavigationEvents
+              onWillFocus={_ => this.obterPedido()}
+            //onDidFocus={payload => console.log('did focus', payload)}
+            //onWillBlur={payload => console.log('will blur', payload)}
+            //onDidBlur={payload => console.log('did blur', payload)}
+            />
+            <View>
+              <Text style={{
+                paddingHorizontal: 20, fontSize: 18,
+                paddingTop: 20
+              }}>Não há pedido ativo, selecione um pedido em andamento na aba Pedidos para acompanhar seu estado.</Text>
+            </View>
+          </View>
+        </ImageBackground>
+      );
+    }
+  }
 }
