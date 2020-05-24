@@ -1,39 +1,20 @@
 import React, { Component } from 'react';
 import {
   Text, FlatList,
-  StyleSheet, TouchableOpacity,
+  TouchableOpacity,
   View, ImageBackground,
   ActivityIndicator,
   Modal, Alert,
   RefreshControl
 } from 'react-native';
-import backendRails from '../../services/backend-rails-api';
-import TokenService from '../../services/token-service';
+import backendRails from '../../../services/backend-rails-api';
+import TokenService from '../../../services/token-service';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { colors } from '../../colors';
+import { colors } from '../../../colors';
 import { NavigationEvents } from 'react-navigation';
-import VisualizarPedidoProfissional from '../../components/modal-visualizar-pedido-profissional';
-import CustomPicker from '../../components/custom-picker';
-
-const estadoPedidoValues = [
-  { content: 'Selecione um status', value: 'none', id: '0' },
-  { content: 'Pedido em Análise', value: 'analise', id: '1' },
-  { content: 'Agendando Visita', value: 'agendando_visita', id: '2' },
-  { content: 'Profissional à Caminho', value: 'a_caminho', id: '3' },
-  { content: 'Serviço em Execução', value: 'em_servico', id: '4' },
-  { content: 'Concluído', value: 'finalizado', id: '5' },
-  { content: 'Cancelado', value: 'cancelado', id: '6' },
-];
-
-const enumEstadoPedidoMap = {
-  analise: 'Pedido em Análise',
-  agendando_visita: 'Agendando Visita',
-  a_caminho: 'Profissional à Caminho',
-  em_servico: 'Serviço em Execução',
-  finalizado: 'Concluído',
-  cancelado: 'Cancelado',
-  none: 'Selecione um status'
-}
+import VisualizarPedidoProfissional from '../../../components/modal-visualizar-pedido-profissional';
+import CustomPicker from '../../../components/custom-picker';
+import { styles } from './styles';
 
 export default class MeusPedidosProfissional extends Component {
   static navigationOptions = {
@@ -172,8 +153,8 @@ export default class MeusPedidosProfissional extends Component {
     return (
       <ImageBackground
         style={{ width: '100%', height: '100%' }}
-        source={require('../../img/Ellipse.png')}>
-        <View style={meusPedidosStyles.container}>
+        source={require('../../../img/Ellipse.png')}>
+        <View style={styles.container}>
           <NavigationEvents
             onWillFocus={_ => this.obterPedidos()}
           //onDidFocus={payload => console.log('did focus', payload)}
@@ -209,7 +190,7 @@ export default class MeusPedidosProfissional extends Component {
             marginBottom: 10
           }}>
             <CustomPicker
-              style={meusPedidosStyles.selecionaStatus}
+              style={styles.selecionaStatus}
               items={estadoPedidoValues}
               onSelect={({ value }) => this.setState({ tipoPedidoSelecionado: value })}
             />
@@ -268,7 +249,7 @@ export default class MeusPedidosProfissional extends Component {
             })()
             }
           </View>
-          <NovoPedido botaoStyle={meusPedidosStyles.novoPedidoButton}
+          <NovoPedido botaoStyle={styles.novoPedidoButton}
             onPress={() => {
               this.props.navigation.navigate('Services');
             }} user={user}
@@ -278,44 +259,6 @@ export default class MeusPedidosProfissional extends Component {
     );
   }
 }
-
-const meusPedidosStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 10,
-    alignItems: 'center'
-  },
-  item: {
-    padding: 10,
-    fontSize: 35,
-    height: 70,
-  },
-  pedidoLabel: {
-    borderRadius: 12, backgroundColor: colors.branco,
-    marginBottom: 10, width: 340,
-    alignItems: 'center', justifyContent: 'flex-start',
-    flexDirection: 'row'
-  },
-  pedidoIndicador: {
-    width: 20, height: 20,
-    borderRadius: 40, borderColor: colors.bordaIconeStatus,
-    backgroundColor: colors.verdeEscuroStatus, borderWidth: 1
-  },
-  pedidoSetaDireita: {
-    width: 40, height: 40,
-    flex: 1, alignItems: 'flex-end',
-    justifyContent: 'center'
-  },
-  novoPedidoButton: {
-    backgroundColor: colors.verdeFinddo, height: 45,
-    width: 340, borderRadius: 20,
-    color: colors.branco, marginTop: 10,
-    alignItems: 'center', justifyContent: 'center'
-  },
-  selecionaStatus: {
-    height: 50, width: 320,
-  }
-});
 
 function NovoPedido(props) {
   user = props.user;
@@ -349,15 +292,15 @@ function ListaPedidos(props) {
           ({ item }) =>
             <TouchableOpacity
               onPress={() => props.onPressItem(item)}
-              style={[meusPedidosStyles.item, meusPedidosStyles.pedidoLabel]}>
+              style={[styles.item, styles.pedidoLabel]}>
               <View style={{ width: 260 }}>
                 <Text style={{ fontSize: 20, marginBottom: 5 }}>{item.category.name}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                  <View style={meusPedidosStyles.pedidoIndicador}></View>
+                  <View style={styles.pedidoIndicador}></View>
                   <Text style={{ fontSize: 18, color: colors.cinza }}>    {enumEstadoPedidoMap[item.order_status]}</Text>
                 </View>
               </View>
-              <View style={meusPedidosStyles.pedidoSetaDireita}>
+              <View style={styles.pedidoSetaDireita}>
                 <Icon
                   style={{ width: 40 }}
                   name={'keyboard-arrow-right'}
@@ -367,4 +310,24 @@ function ListaPedidos(props) {
       />
     </View>
   );
+}
+
+const estadoPedidoValues = [
+  { content: 'Selecione um status', value: 'none', id: '0' },
+  { content: 'Pedido em Análise', value: 'analise', id: '1' },
+  { content: 'Agendando Visita', value: 'agendando_visita', id: '2' },
+  { content: 'Profissional à Caminho', value: 'a_caminho', id: '3' },
+  { content: 'Serviço em Execução', value: 'em_servico', id: '4' },
+  { content: 'Concluído', value: 'finalizado', id: '5' },
+  { content: 'Cancelado', value: 'cancelado', id: '6' },
+];
+
+const enumEstadoPedidoMap = {
+  analise: 'Pedido em Análise',
+  agendando_visita: 'Agendando Visita',
+  a_caminho: 'Profissional à Caminho',
+  em_servico: 'Serviço em Execução',
+  finalizado: 'Concluído',
+  cancelado: 'Cancelado',
+  none: 'Selecione um status'
 }
