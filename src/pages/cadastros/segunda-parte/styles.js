@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { colors } from '../../../colors';
 
-export const style = StyleSheet.create({
+export const styles = StyleSheet.create({
   backgroundImageContent: { width: '100%', height: '100%' },
   cadastroForm: {
     alignItems: 'center',
