@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Platform } from 'react-native';
-import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
+import { createSwitchNavigator, createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from "react-navigation-tabs";
+import { createStackNavigator } from "react-navigation-stack";
 import Servicos from './pages/servicos/servicos';
 import LoginScreen from './pages/login/login';
 import AuthLoadingScreen from './pages/login/auth-loading';
