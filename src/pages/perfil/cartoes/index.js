@@ -113,6 +113,8 @@ export default class CartoesScreen extends Component {
               height: 500, alignItems: 'center',
               justifyContent: 'space-around', width: '90%'
             }}>
+              {this.state.cartoes.length === 0 &&
+                 <Text style={{ fontSize: 20, marginTop: 10 }}>Nenhum cartão cadastrado</Text>}
               <NavigationEvents
                 onWillFocus={_ => this.obterCartoes()}
               //onDidFocus={payload => console.log('did focus', payload)}
