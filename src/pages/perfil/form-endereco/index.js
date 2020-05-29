@@ -17,7 +17,7 @@ import { styles } from './styles';
 export default class FormEnderecoScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: HeaderFundoTransparente
+    headerTitle: () => <HeaderFundoTransparente />,
   };
 
   state = {

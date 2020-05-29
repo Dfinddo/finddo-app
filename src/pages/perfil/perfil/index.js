@@ -23,7 +23,7 @@ const semPerfil = require('../../../img/sem-foto.png');
 export default class PerfilScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: <HeaderTransparenteSemHistorico />,
+    headerTitle: () => <HeaderTransparenteSemHistorico />,
     headerBackTitle: 'Voltar'
   };
 

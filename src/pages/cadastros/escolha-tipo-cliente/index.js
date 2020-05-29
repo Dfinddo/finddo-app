@@ -10,7 +10,7 @@ import { styles } from './styles';
 export default class EscolhaClienteScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: <HeaderFundoTransparente />,
+    headerTitle: () => <HeaderFundoTransparente />,
     headerBackTitle: 'Voltar'
   };
 

@@ -24,7 +24,7 @@ import { styles } from './styles';
 export default class SegundaParte extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: HeaderFundoTransparente
+    headerTitle: () => <HeaderFundoTransparente />,
   };
 
   state = {

@@ -15,8 +15,8 @@ import { styles } from './styles';
 export default class PrimeiraParte extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: HeaderFundoTransparente,
-    headerBackTitle: 'Voltar'
+    headerTitle: () => <HeaderFundoTransparente />,
+    headerBackTitle: 'Voltar',
   };
 
   state = {

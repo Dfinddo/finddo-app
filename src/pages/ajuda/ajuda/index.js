@@ -14,7 +14,7 @@ import AccordianInfoContato from '../../../components/accordian-info-contato';
 export default class AjudaScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: <HeaderTransparenteSemHistorico />
+    headerTitle: () => <HeaderTransparenteSemHistorico />
   };
 
   constructor(props) {

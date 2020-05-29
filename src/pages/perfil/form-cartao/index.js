@@ -18,7 +18,7 @@ import { FormInput } from "../../../components/form-components/form-input";
 export default class FormCartaoScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: HeaderFundoTransparente
+    headerTitle: () => <HeaderFundoTransparente />,
   };
 
   state = {
