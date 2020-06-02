@@ -13,11 +13,12 @@ import HeaderFundoTransparente from '../../../components/header-fundo-transparen
 import { StackActions } from 'react-navigation';
 import moipAPI, { headersOauth2 } from '../../../services/moip-api';
 import { styles } from './styles';
+import { FormInput } from "../../../components/form-components/form-input";
 
 export default class FormCartaoScreen extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: HeaderFundoTransparente
+    headerTitle: () => <HeaderFundoTransparente />,
   };
 
   state = {
@@ -321,70 +322,69 @@ export default class FormCartaoScreen extends Component {
             <View style={styles.cadastroMainForm}>
               <Text style={styles.fontTitle}>{this.state.tituloForm}</Text>
 
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
+              <FormInput
+                label="Expiração MM"
                 onChangeText={text => { this.atualizarDadosCartao('expirationMonth', text) }}
-                placeholder="Expiração MM" keyboardType={'number-pad'}
+                placeholder="MM" keyboardType={'number-pad'}
                 maxLength={2}
                 value={this.state.cardData.creditCard.expirationMonth}
               />
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
+              <FormInput
+                label="Expiração AA"
                 onChangeText={text => { this.atualizarDadosCartao('expirationYear', text) }}
-                placeholder="Expiração AA ou AAAA (igual ao seu cartão)" keyboardType={'number-pad'}
+                placeholder="AA ou AAAA (igual ao seu cartão)" keyboardType={'number-pad'}
                 maxLength={4}
                 value={this.state.cardData.creditCard.expirationYear}
               />
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
+              <FormInput
+                label="Número do Cartão"
                 onChangeText={text => { this.atualizarDadosCartao('number', text) }}
-                placeholder="Número" keyboardType={"number-pad"}
+                placeholder="XXXX XXXX XXXX XXXX" keyboardType={"number-pad"}
                 maxLength={50}
                 value={this.state.cardData.creditCard.number}
               />
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
+              <FormInput
+                label="Código de Verificação"
                 onChangeText={text => { this.atualizarDadosCartao('cvc', text) }}
-                placeholder="cvv" keyboardType={"number-pad"}
+                placeholder="CVV" keyboardType={"number-pad"}
                 maxLength={10}
                 value={this.state.cardData.creditCard.cvc}
               />
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
+              <FormInput
+                label="Titular"
                 onChangeText={text => { this.atualizarDadosHolder('fullname', text) }}
-                placeholder="Titular (Nome completo)"
+                placeholder="Como aparece no cartão"
                 value={this.state.cardData.creditCard.holder.fullname}
                 maxLength={150}
               />
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
+              <FormInput
+                label="Data de Nascimento"
                 onChangeText={text => { this.atualizarDadosHolder('birthdate', text) }}
-                placeholder="Data nascimento (dd/mm/aaaa)" keyboardType={"number-pad"}
+                placeholder="dd/mm/aaaa" keyboardType={"number-pad"}
                 value={this.state.cardData.creditCard.holder.birthdate}
                 maxLength={10}
               />
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
+              <FormInput
+                label="CPF"
                 onChangeText={text => { this.atualizarDadosHolderDocs('number', text) }}
-                placeholder="CPF (apenas números)" keyboardType={"number-pad"}
+                placeholder="Apenas números" keyboardType={"number-pad"}
                 maxLength={11}
                 value={this.state.cardData.creditCard.holder.taxDocument.number}
               />
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
-                onChangeText={text => { this.atualizarDadosHolderPhone('areaCode', text) }}
+              <FormInput
+                label="Código de Área"
                 placeholder="DDD" keyboardType={"number-pad"}
                 maxLength={2}
+                onChangeText={text => { this.atualizarDadosHolderPhone('areaCode', text) }}
                 value={this.state.cardData.creditCard.holder.phone.areaCode}
               />
-              <TextInput
-                style={styles.cadastroFormSizeAndFont}
+              <FormInput
+                label="Telefone"
+                placeholder="Apenas números" keyboardType={"number-pad"}
                 onChangeText={text => { this.atualizarDadosHolderPhone('number', text) }}
-                placeholder="Telefone" keyboardType={"number-pad"}
-                maxLength={11}
                 value={this.state.cardData.creditCard.holder.phone.number}
               />
-              <View style={{ height: 8 }}></View>
+              <View style={{ height: 8 }} />
             </View>
           </View>
         </ScrollView>

@@ -14,7 +14,7 @@ import { styles } from './styles';
 export default class EsqueciSenhaEmail extends Component {
   static navigationOptions = {
     headerTransparent: true,
-    headerTitle: <HeaderFundoTransparente />,
+    headerTitle: () => <HeaderFundoTransparente />,
     headerBackTitle: 'Voltar'
   };
 

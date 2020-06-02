@@ -5,11 +5,11 @@ export const styles = StyleSheet.create({
   backgroundImageContent: { width: '100%', height: '100%' },
   cadastroForm: {
     flex: 1, alignItems: 'center',
-    justifyContent: 'center', height: 550
+    justifyContent: 'center', height: 930
   },
   cadastroMainForm: {
     alignItems: 'center', justifyContent: 'center',
-    width: 340, height: 510,
+    width: 340, height: 870,
     backgroundColor: colors.branco
   },
   continuarButtonText: {
