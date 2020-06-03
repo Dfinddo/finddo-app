@@ -3,6 +3,9 @@ import { Platform } from 'react-native';
 import { createSwitchNavigator, createAppContainer } from 'react-navigation';
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { createStackNavigator } from "react-navigation-stack";
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
+import * as eva from '@eva-design/eva';
 import Servicos from './pages/servicos/servicos';
 import LoginScreen from './pages/login/login';
 import AuthLoadingScreen from './pages/login/auth-loading';
@@ -226,6 +229,13 @@ export default class App extends Component {
   }
 
   render() {
-    return <AppContainer />;
+    return (
+      <React.Fragment>
+        <IconRegistry icons={EvaIconsPack} />
+        <ApplicationProvider {...eva} theme={{ ...eva.light }}>
+          <AppContainer />
+        </ApplicationProvider>
+      </React.Fragment>
+    );
   }
 }

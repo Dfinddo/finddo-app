@@ -9,8 +9,11 @@
     "postinstall": "node ./android-release-fix.js"
   },
   "dependencies": {
+    "@eva-design/eva": "^2.0.0",
     "@react-native-community/async-storage": "^1.6.1",
     "@react-native-community/masked-view": "^0.1.10",
+    "@ui-kitten/components": "^5.0.0",
+    "@ui-kitten/eva-icons": "^5.0.0",
     "axios": "^0.19.0",
     "moment": "^2.24.0",
     "react": "16.9.0",
