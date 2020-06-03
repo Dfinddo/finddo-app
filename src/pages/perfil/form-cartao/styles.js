@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
   backgroundImageContent: { width: '100%', height: '100%' },
   cadastroForm: {
     flex: 1, alignItems: 'center',
-    justifyContent: 'center', height: 930
+    justifyContent: 'center', height: 620
   },
   cadastroMainForm: {
     alignItems: 'center', justifyContent: 'center',
@@ -16,8 +16,7 @@ export const styles = StyleSheet.create({
     fontSize: 18, color: colors.branco,
     textAlign: 'center'
   },
-  cadastroFormSizeAndFont:
-  {
+  cadastroFormSizeAndFont: {
     fontSize: 18,
     height: 45,
     borderBottomColor: colors.verdeFinddo,
@@ -28,7 +27,8 @@ export const styles = StyleSheet.create({
   fontTitle: {
     fontSize: 30,
     textAlign: 'center',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   modalBase: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   modalDialog: {
