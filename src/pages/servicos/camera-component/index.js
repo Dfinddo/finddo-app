@@ -7,7 +7,7 @@ import { styles } from './styles';
 
 export class CameraPedidoComponent extends Component {
   static navigationOptions = {
-    header: null,
+    headerShown: false,
   };
 
   constructor(props) {

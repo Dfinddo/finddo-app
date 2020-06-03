@@ -19,7 +19,7 @@ import { styles } from './styles';
 
 export default class ValorServicoScreen extends Component {
   static navigationOptions = {
-    header: null,
+    headerShown: false,
   };
 
   state = {

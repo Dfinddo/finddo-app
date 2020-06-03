@@ -18,7 +18,7 @@ import { styles } from './styles';
 
 export default class LoginScreen extends Component {
   static navigationOptions = {
-    header: null,
+    headerShown: false,
     headerBackTitle: 'Voltar'
   };
 
