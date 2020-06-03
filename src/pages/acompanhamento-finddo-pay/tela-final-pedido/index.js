@@ -628,8 +628,9 @@ export default class TelaFinalPedidoScreen extends Component {
                         }} onPress={() => {
                           Alert.alert(
                             'Confirma valor e classificação?',
-                            'Valor: R$' + String((this.state.pedido.price / 100).toFixed(2))
-                            + '\nClassificação: ' + this.state.classificacaoProfissional + ' estrelas',
+                            'Valor: R$' + String((this.state.pedido.price / 100).toFixed(2)) +
+                            '\nClassificação: ' + this.state.classificacaoProfissional + ' estrelas' +
+                            '\nATENÇÃO: Só pague se o profissional tiver realizado o serviço',
                             [
                               { text: 'Cancelar', onPress: () => { } },
                               {
