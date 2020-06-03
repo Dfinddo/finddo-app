@@ -224,4 +224,12 @@ const horariosParaAtendimento = [
   { content: '16:30', value: '16:30', id: '16' },
   { content: '17:00', value: '17:00', id: '17' },
   { content: '17:30', value: '17:30', id: '18' },
+  { content: '18:00', value: '18:00', id: '19' },
+  { content: '18:30', value: '18:30', id: '20' },
+  { content: '19:00', value: '19:00', id: '21' },
+  { content: '19:30', value: '19:30', id: '22' },
+  { content: '20:00', value: '20:00', id: '23' },
+  { content: '20:30', value: '20:30', id: '24' },
+  { content: '21:00', value: '21:00', id: '25' },
+  { content: '21:30', value: '21:30', id: '26' },
 ];
