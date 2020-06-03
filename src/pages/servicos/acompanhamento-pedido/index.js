@@ -17,7 +17,7 @@ import { styles } from './styles';
 export default class AcompanhamentoPedido extends Component {
   static navigationOptions = {
     title: 'Acompanhe seu pedido',
-    headerLeft: null,
+    headerLeft: () => null,
     headerBackTitle: 'Voltar'
   };
 

@@ -11,7 +11,7 @@ import { StackActions, NavigationActions } from 'react-navigation';
 export default class RedirecionadorPedidos extends Component {
   static navigationOptions = {
     title: 'Pedidos',
-    headerLeft: null,
+    headerLeft: () => null,
     headerBackTitle: 'Voltar'
   };
 
