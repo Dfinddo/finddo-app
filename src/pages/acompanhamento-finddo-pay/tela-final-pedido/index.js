@@ -223,6 +223,7 @@ export default class TelaFinalPedidoScreen extends Component {
   }
 
   render() {
+    const isProfessional = TokenService.getInstance().getUser().user_type === 'professional'
     if (!this.state.pedido) {
       return (
         <ImageBackground
@@ -344,7 +345,7 @@ export default class TelaFinalPedidoScreen extends Component {
                 <Image
                   style={{ width: 80, height: 80, borderRadius: 100 }}
                   source={{ uri: `${backendUrl}/${this.state.pedido.professional_photo}` }}></Image>
-              </View>
+              </View>{!isProfessional &&
               <View>
                 <Text style={{ fontSize: 18 }}>Avalie o Profissional</Text>
                 <View style={{
@@ -437,7 +438,7 @@ export default class TelaFinalPedidoScreen extends Component {
                     })()
                   }
                 </View>
-              </View>
+              </View>}
             </View>
             <View style={{
               height: 100, width: 300,
