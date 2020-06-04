@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitAny": true,
+		"jsx": "react",
+		"esModuleInterop": true
+	},
+	"include": [
+		"src"
+	]
+}
