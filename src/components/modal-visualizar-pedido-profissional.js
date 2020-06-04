@@ -113,8 +113,12 @@ export default class VisualizarPedidoProfissional extends Component {
                 <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.complement}, ${this.state.order.address.cep}`}</Text>
                 <Text style={this.visualizarPedidoStyle.textos}>{`${this.state.order.address.district}`}</Text>
                 <Text style={this.visualizarPedidoStyle.titulos}>Data:</Text>
+                <Text style={this.visualizarPedidoStyle.textos}>
+                  {diaInicio}, entre {horaInicio} e {horaFim} ({this.state.order.urgencia === 'definir-data' ? "Com" : "Sem"} urgência)
+                </Text>
                 {
                   (() => {
+                    return null;
                     switch (this.state.order.urgency) {
                       case 'not_urgent':
                         return <Text style={this.visualizarPedidoStyle.textos}>Entre {diaInicio} e {diaFim}, e entre os horários {this.state.order.hora_inicio} e {this.state.order.hora_fim} (Sem urgência)</Text>;
