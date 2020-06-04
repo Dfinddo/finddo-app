@@ -1,10 +1,10 @@
-import axios from 'axios';
-import { ambienteASerConstruido } from '../../credenciais-e-configuracoes';
+import axios from "axios";
+import {ambienteASerConstruido} from "../../credenciais-e-configuracoes";
 
-export const backendUrl = ambienteASerConstruido.backendUrl;
+export const {backendUrl} = ambienteASerConstruido;
 
 const backendRails = axios.create({
-  baseURL: backendUrl,
+	baseURL: backendUrl,
 });
 
 export default backendRails;

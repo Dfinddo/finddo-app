@@ -5,55 +5,77 @@
  *   - ID do device do usuário
  */
 export default class TokenService {
+
 	public myInstance: any;
-  static myInstance = null;
 
-  _tokenData = null;
-  _user = null;
-  _playerID = null;
+	static myInstance = null;
 
-  /**
+	_tokenData = null;
+
+	_user = null;
+
+	_playerID = null;
+
+	/**
    * @returns {TokenService}
    */
-  static getInstance() {
-    if (TokenService.myInstance == null) {
-      TokenService.myInstance = new TokenService();
-    }
+	static getInstance() {
 
-    return this.myInstance;
-  }
+		if (TokenService.myInstance == null)
+			TokenService.myInstance = new TokenService();
 
-  setToken(token) {
-    this._tokenData = token;
-  }
 
-  setUser(userDto) {
-    this._user = userDto;
-  }
+		return this.myInstance;
 
-  setPlayerIDOneSignal(playerID) {
-    this._playerID = playerID;
-  }
+	}
 
-  getToken() {
-    return this._tokenData;
-  }
+	setToken(token) {
 
-  getUser() {
-    return this._user;
-  }
+		this._tokenData = token;
 
-  getHeaders() {
-    const headers = {};
-    headers['access-token'] = this._tokenData['access-token'];
-    headers['client'] = this._tokenData['client'];
-    headers['uid'] = this._tokenData['uid'];
-    headers['Content-Type'] = 'application/json';
+	}
 
-    return headers;
-  }
+	setUser(userDto) {
 
-  getPlayerIDOneSignal() {
-    return this._playerID;
-  }
+		this._user = userDto;
+
+	}
+
+	setPlayerIDOneSignal(playerID) {
+
+		this._playerID = playerID;
+
+	}
+
+	getToken() {
+
+		return this._tokenData;
+
+	}
+
+	getUser() {
+
+		return this._user;
+
+	}
+
+	getHeaders() {
+
+		const headers = {};
+
+		headers["access-token"] = this._tokenData["access-token"];
+		headers.client = this._tokenData.client;
+		headers.uid = this._tokenData.uid;
+		headers["Content-Type"] = "application/json";
+
+		return headers;
+
+	}
+
+	getPlayerIDOneSignal() {
+
+		return this._playerID;
+
+	}
+
 }

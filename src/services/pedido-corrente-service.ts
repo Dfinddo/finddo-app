@@ -1,45 +1,61 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from "@react-native-community/async-storage";
 
 export default class PedidoCorrenteService {
-	public myInstance: any;
-  static myInstance = null;
 
-  _pedidoCorrente = null;
+	public myInstance: any;
+
+	static myInstance = null;
+
+	_pedidoCorrente = null;
 
 	/**
 	 * @returns {PedidoCorrenteService}
 	 */
-  static getInstance() {
-    if (PedidoCorrenteService.myInstance == null) {
-      PedidoCorrenteService.myInstance = new PedidoCorrenteService();
-    }
+	static getInstance() {
 
-    return this.myInstance;
-  }
+		if (PedidoCorrenteService.myInstance == null)
+			PedidoCorrenteService.myInstance = new PedidoCorrenteService();
 
-  setPedidoCorrente(pedidoCorrente) {
-    this._pedidoCorrente = pedidoCorrente;
-  }
 
-  getPedidoCorrente() {
-    return this._pedidoCorrente;
-  }
+		return this.myInstance;
 
-  salvarPedidoLocalStorage(pedido) {
-    if (!pedido) {
-      return AsyncStorage.removeItem('pedido-corrente');
-    }
-    return AsyncStorage.setItem('pedido-corrente', JSON.stringify(pedido));
-  }
+	}
 
-  setPedidoFromLocalStorage(pedido) {
-    const pedidoSalvo = JSON.parse(pedido);
-    pedidoSalvo.dataPedido = new Date(pedidoSalvo.dataPedido);
+	setPedidoCorrente(pedidoCorrente) {
 
-    this._pedidoCorrente = pedidoSalvo;
-  }
+		this._pedidoCorrente = pedidoCorrente;
 
-  getPedidoLocalStorage() {
-    return AsyncStorage.getItem('pedido-corrente');
-  }
+	}
+
+	getPedidoCorrente() {
+
+		return this._pedidoCorrente;
+
+	}
+
+	salvarPedidoLocalStorage(pedido) {
+
+		if (!pedido)
+			return AsyncStorage.removeItem("pedido-corrente");
+
+		return AsyncStorage.setItem("pedido-corrente", JSON.stringify(pedido));
+
+	}
+
+	setPedidoFromLocalStorage(pedido) {
+
+		const pedidoSalvo = JSON.parse(pedido);
+
+		pedidoSalvo.dataPedido = new Date(pedidoSalvo.dataPedido);
+
+		this._pedidoCorrente = pedidoSalvo;
+
+	}
+
+	getPedidoLocalStorage() {
+
+		return AsyncStorage.getItem("pedido-corrente");
+
+	}
+
 }

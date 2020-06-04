@@ -1,25 +1,34 @@
 export default class CartaoFormService {
+
 	public myInstance: any;
-  static myInstance = null;
 
-  _adicionarNovoCard = false;
+	static myInstance = null;
 
-  /**
+	_adicionarNovoCard = false;
+
+	/**
    * @returns {CartaoFormService}
    */
-  static getInstance() {
-    if (CartaoFormService.myInstance == null) {
-      CartaoFormService.myInstance = new CartaoFormService();
-    }
+	static getInstance() {
 
-    return this.myInstance;
-  }
+		if (CartaoFormService.myInstance == null)
+			CartaoFormService.myInstance = new CartaoFormService();
 
-  isAdicionarNovoCard() {
-    return this._adicionarNovoCard;
-  }
 
-  setAdicionarNovoCard(status) {
-    this._adicionarNovoCard = status;
-  }
+		return this.myInstance;
+
+	}
+
+	isAdicionarNovoCard() {
+
+		return this._adicionarNovoCard;
+
+	}
+
+	setAdicionarNovoCard(status) {
+
+		this._adicionarNovoCard = status;
+
+	}
+
 }

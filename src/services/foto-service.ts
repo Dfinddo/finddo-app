@@ -1,34 +1,48 @@
 export default class FotoService {
+
 	public myInstance: any;
-  static myInstance = null;
 
-  _fotoData = null;
-  _fotoId = null;
+	static myInstance = null;
 
-  /**
+	_fotoData = null;
+
+	_fotoId = null;
+
+	/**
    * @returns {FotoService}
    */
-  static getInstance() {
-    if (FotoService.myInstance == null) {
-      FotoService.myInstance = new FotoService();
-    }
+	static getInstance() {
 
-    return this.myInstance;
-  }
+		if (FotoService.myInstance == null)
+			FotoService.myInstance = new FotoService();
 
-  setFotoData(data) {
-    this._fotoData = data;
-  }
 
-  getFotoData() {
-    return this._fotoData;
-  }
+		return this.myInstance;
 
-  setFotoId(newId) {
-    this._fotoId = newId;
-  }
+	}
 
-  getFotoId() {
-    return this._fotoId;
-  }
+	setFotoData(data) {
+
+		this._fotoData = data;
+
+	}
+
+	getFotoData() {
+
+		return this._fotoData;
+
+	}
+
+	setFotoId(newId) {
+
+		this._fotoId = newId;
+
+	}
+
+	getFotoId() {
+
+		return this._fotoId;
+
+	}
+
 }
