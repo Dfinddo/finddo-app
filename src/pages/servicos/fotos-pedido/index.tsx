@@ -62,7 +62,7 @@ export default class FotosPedido extends Component {
 		enderecoSelecionado: null,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		this.obterDadosPrimeiraPartePedido();
 
@@ -322,7 +322,7 @@ export default class FotosPedido extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

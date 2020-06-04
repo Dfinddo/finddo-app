@@ -84,7 +84,7 @@ export default class EnderecosScreen extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

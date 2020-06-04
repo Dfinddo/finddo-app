@@ -83,7 +83,7 @@ export default class AjudaScreen extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

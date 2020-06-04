@@ -36,7 +36,7 @@ export default class EditarCampoPerfil extends Component {
 		isLoading: false,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const {navigation} = this.props;
 		const valor = navigation.getParam("valor", "sem valor");
@@ -237,7 +237,7 @@ export default class EditarCampoPerfil extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

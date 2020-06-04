@@ -49,7 +49,7 @@ export default class Servicos extends Component {
 		continuarPedidoFeito: false,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const pedidoService = PedidoCorrenteService.getInstance();
 		const tokenService = TokenService.getInstance();
@@ -152,7 +152,7 @@ export default class Servicos extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

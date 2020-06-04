@@ -229,7 +229,7 @@ export default class MeusPedidos extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		const user = TokenService.getInstance().getUser();
 

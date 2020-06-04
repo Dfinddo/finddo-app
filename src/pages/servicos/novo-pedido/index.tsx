@@ -47,7 +47,7 @@ export default class NovoPedido extends Component {
 		confirmarEmergencia: false,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const {navigation} = this.props;
 		const categoria = navigation.getParam("item", "NO-ID");
@@ -135,7 +135,7 @@ export default class NovoPedido extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

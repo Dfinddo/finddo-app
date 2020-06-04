@@ -26,7 +26,7 @@ export default class StatusPedidoStep extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		return (
 			<View style={{alignItems: "center"}}>

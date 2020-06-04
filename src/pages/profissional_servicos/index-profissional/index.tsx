@@ -253,7 +253,7 @@ export default class IndexProfissional extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		const user = TokenService.getInstance().getUser();
 

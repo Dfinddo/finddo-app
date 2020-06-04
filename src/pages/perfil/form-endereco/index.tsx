@@ -49,7 +49,7 @@ export default class FormEnderecoScreen extends Component {
 		isShowingKeyboard: false,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		this.keyboardDidShowListener = Keyboard.addListener(
 			"keyboardDidShow",
@@ -95,7 +95,7 @@ export default class FormEnderecoScreen extends Component {
 
 	}
 
-	componentWillUnmount() {
+	public componentWillUnmount() {
 
 		this.keyboardDidShowListener.remove();
 		this.keyboardDidHideListener.remove();
@@ -296,7 +296,7 @@ export default class FormEnderecoScreen extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

@@ -163,7 +163,7 @@ export default class MeusPedidosProfissional extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		const user = TokenService.getInstance().getUser();
 

@@ -70,7 +70,7 @@ export default class SegundaParte extends Component {
 		showPolitica: false,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		this.obterParametrosParteUm();
 		this.keyboardDidShowListener = Keyboard.addListener(
@@ -84,7 +84,7 @@ export default class SegundaParte extends Component {
 
 	}
 
-	componentWillUnmount() {
+	public componentWillUnmount() {
 
 		this.keyboardDidShowListener.remove();
 		this.keyboardDidHideListener.remove();
@@ -520,7 +520,7 @@ export default class SegundaParte extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

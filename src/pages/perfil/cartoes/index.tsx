@@ -112,7 +112,7 @@ export default class CartoesScreen extends Component {
 
 	creditCardFilter = data => data.method === "CREDIT_CARD";
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

@@ -8,7 +8,7 @@ export default class RedirecionadorIndex extends Component {
 
 	public props: any;
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const user = TokenService.getInstance().getUser();
 
@@ -49,7 +49,7 @@ export default class RedirecionadorIndex extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<View style={{

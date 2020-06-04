@@ -40,7 +40,7 @@ export default class PrimeiraParte extends Component {
 		isLoading: false,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const {navigation} = this.props;
 		const user_type = navigation.getParam("tipoCliente", "não há tipo");
@@ -209,7 +209,7 @@ export default class PrimeiraParte extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

@@ -13,7 +13,7 @@ export default class StatusPedidoDescricao extends Component {
 		estadoComponente: "analise",
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		this.setState({estadoComponente: this.props.estadoInicial});
 
@@ -25,7 +25,7 @@ export default class StatusPedidoDescricao extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<View>

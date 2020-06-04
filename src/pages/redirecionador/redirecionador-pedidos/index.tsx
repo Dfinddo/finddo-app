@@ -32,7 +32,7 @@ export default class RedirecionadorPedidos extends Component {
 
 	}
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const user = TokenService.getInstance().getUser();
 
@@ -63,7 +63,7 @@ export default class RedirecionadorPedidos extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		if (this.state.isLoading) {
 

@@ -114,7 +114,7 @@ export default class EsqueciSenhaEmail extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

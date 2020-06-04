@@ -19,7 +19,7 @@ export default class VisualizarPedidoProfissional extends Component {
 		order: null,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const order = {};
 
@@ -58,7 +58,7 @@ export default class VisualizarPedidoProfissional extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		let diaInicio = "";
 		let diaFim = "";

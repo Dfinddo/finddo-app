@@ -25,7 +25,7 @@ export default class Accordian extends Component {
 
 	}
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		this.setState({estadoComponente: this.props.estadoInicial});
 
@@ -44,7 +44,7 @@ export default class Accordian extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		if (this.state.estadoAtual !== this.state.estadoComponente) {
 

@@ -71,7 +71,7 @@ export default class AuthLoadingScreen extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		return (
 			<View style={this.authLoadingScreenStyle.spinner}>

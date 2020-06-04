@@ -19,7 +19,7 @@ export default class EscolhaClienteScreen extends Component {
 
 	_redirectCadastro = tipoCliente => this.props.navigation.navigate("ParteUm", {tipoCliente});
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

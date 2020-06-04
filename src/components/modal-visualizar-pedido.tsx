@@ -21,7 +21,7 @@ export default class VisualizarPedido extends Component {
 		order: null,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const order = {};
 		const tokenService = TokenService.getInstance();
@@ -56,7 +56,7 @@ export default class VisualizarPedido extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		let diaInicio = "";
 		let diaFim = "";

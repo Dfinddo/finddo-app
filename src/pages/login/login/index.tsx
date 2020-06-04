@@ -137,7 +137,7 @@ export default class LoginScreen extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

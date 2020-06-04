@@ -253,7 +253,7 @@ export default class AcompanhamentoPedido extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		if (this.state.pedido) {
 

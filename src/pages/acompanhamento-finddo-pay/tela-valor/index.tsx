@@ -135,7 +135,7 @@ export default class ValorServicoScreen extends Component {
 
 	}
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const {navigation} = this.props;
 		const pedido = navigation.getParam("pedido", null);
@@ -145,7 +145,7 @@ export default class ValorServicoScreen extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

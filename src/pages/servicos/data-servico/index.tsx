@@ -53,7 +53,7 @@ export default class DataServico extends Component {
 
 	}
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const {navigation} = this.props;
 		const necessidade = navigation.getParam("necessidade", "no necessidade");
@@ -149,7 +149,7 @@ export default class DataServico extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		const initialDate = new Date();
 		const finalDate = new Date();

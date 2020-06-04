@@ -5,7 +5,7 @@ import {finddoLogo} from "../../img/svg/finddo-logo";
 
 export default class HeaderTransparenteSemHistorico extends Component {
 
-	render() {
+	public render() {
 
 		return (
 			<View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>

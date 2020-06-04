@@ -312,7 +312,7 @@ export default class TelaFinalPedidoScreen extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		const isProfessional = TokenService.getInstance().getUser().user_type === "professional";
 

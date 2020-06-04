@@ -56,7 +56,7 @@ export default class FormCartaoScreen extends Component {
 		id: null,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		this.keyboardDidShowListener = Keyboard.addListener(
 			"keyboardDidShow",
@@ -74,7 +74,7 @@ export default class FormCartaoScreen extends Component {
 
 	}
 
-	componentWillUnmount() {
+	public componentWillUnmount() {
 
 		this.keyboardDidShowListener.remove();
 		this.keyboardDidHideListener.remove();
@@ -266,7 +266,7 @@ export default class FormCartaoScreen extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

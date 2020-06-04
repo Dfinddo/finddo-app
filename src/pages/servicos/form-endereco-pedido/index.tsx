@@ -79,7 +79,7 @@ export default class FormEnderecoPedidoScreen extends Component {
 		enderecoSelecionado: null,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		this.keyboardDidShowListener = Keyboard.addListener(
 			"keyboardDidShow",
@@ -134,7 +134,7 @@ export default class FormEnderecoPedidoScreen extends Component {
 
 	}
 
-	componentWillUnmount() {
+	public componentWillUnmount() {
 
 		this.keyboardDidShowListener.remove();
 		this.keyboardDidHideListener.remove();
@@ -369,7 +369,7 @@ export default class FormEnderecoPedidoScreen extends Component {
 
 	};
 
-	render() {
+	public render() {
 
 		return (
 			<ImageBackground

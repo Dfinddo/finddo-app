@@ -54,7 +54,7 @@ export class ConfirmarPedido extends Component {
 
 	}
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const pedidoService = PedidoCorrenteService.getInstance();
 		const pedidoCorrente = pedidoService.getPedidoCorrente();
@@ -243,7 +243,7 @@ export class ConfirmarPedido extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		if (this.state.isLoading) {
 

@@ -213,7 +213,7 @@ export default class App extends Component {
 
 	}
 
-	componentWillUnmount() {
+	public componentWillUnmount() {
 
 		OneSignal.removeEventListener("received", this.onReceived);
 		OneSignal.removeEventListener("opened", this.onOpened);
@@ -242,7 +242,7 @@ export default class App extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<React.Fragment>

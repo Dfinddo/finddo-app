@@ -47,7 +47,7 @@ export default class PerfilScreen extends Component {
 		profilePhoto: semPerfil,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		const userData = TokenService.getInstance().getUser();
 
@@ -56,7 +56,7 @@ export default class PerfilScreen extends Component {
 
 	}
 
-	componentWillUnmount() {
+	public componentWillUnmount() {
 
 		this.setState({isLoading: false});
 
@@ -281,7 +281,7 @@ export default class PerfilScreen extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		const IconComponent = Ionicons;
 		const iconName = "ios-create";

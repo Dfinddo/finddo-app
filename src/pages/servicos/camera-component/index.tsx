@@ -27,7 +27,7 @@ export class CameraPedidoComponent extends Component {
 		cameraDefault: RNCamera.Constants.Type.back,
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<View style={styles.container}>

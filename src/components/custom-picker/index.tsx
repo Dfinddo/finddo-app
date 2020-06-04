@@ -42,7 +42,7 @@ export default class CustomPicker extends Component {
 		isSelectingItem: false,
 	};
 
-	componentDidMount() {
+	public componentDidMount() {
 
 		this.setState({items: this.props.items}, () => {
 
@@ -65,7 +65,7 @@ export default class CustomPicker extends Component {
 
 	}
 
-	render() {
+	public render() {
 
 		return (
 			<View style={this.props.style}>
