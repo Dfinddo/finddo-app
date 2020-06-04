@@ -51,7 +51,7 @@ export class ConfirmarPedido extends Component {
 
     this.setState({
       necessidade: pedidoCorrente.necessidade,
-      categoriaPedido: { name: 'Teste' },
+      categoriaPedido: {name: pedidoCorrente.categoriaPedido.name},
       urgencia: pedidoCorrente.urgencia,
       dataPedido: pedidoCorrente.dataPedido,
       hora: pedidoCorrente.hora,
