@@ -34,7 +34,7 @@ export default class TelaFinalPedidoScreen extends Component {
 	state = {
 		pedido: null,
 		isLoading: false,
-		classificacaoProfissional: 0,
+		classificacao: 0,
 		isSelectingCard: false,
 		cartoes: [],
 		cartaoSelecionado: null,
@@ -146,7 +146,7 @@ export default class TelaFinalPedidoScreen extends Component {
 			const pedido = navigation.getParam("pedido", null);
 
 			if (pedido)
-				this.setState({pedido, classificacaoProfissional: Number(pedido.rate), isLoading: false}, () => this.obterCartoes());
+				this.setState({pedido, classificacao: Number(pedido.rate), isLoading: false}, () => this.obterCartoes());
 			else {
 
 				const resetAction = StackActions.reset({
@@ -162,22 +162,23 @@ export default class TelaFinalPedidoScreen extends Component {
 
 	}
 
-	setClassificacao = (classificacaoProfissional = 0) => {
+	setClassificacao = (classificacao = 0) => {
 
-		this.setState({classificacaoProfissional});
+		this.setState({classificacao});
 
 	};
 
-	efetuarPagamento = () => {
+	private efetuarPagamento = (): void => {
 
 		const tokenService = TokenService.getInstance();
+		const isProfessional = tokenService.getUser().user_type === "professional";
 
 		this.setState({isLoading: true}, () => {
 
 			const pedido = {};
 
 			pedido.id = this.state.pedido.id;
-			pedido.rate = this.state.classificacaoProfissional;
+			pedido[isProfessional ? "user_rate" : "rate"] = this.state.classificacao;
 
 			const orderWirecard = {};
 
@@ -457,121 +458,121 @@ export default class TelaFinalPedidoScreen extends Component {
 								<Image
 									style={{width: 80, height: 80, borderRadius: 100}}
 									source={{uri: `${backendUrl}/${this.state.pedido.professional_photo}`}}></Image>
-							</View>{!isProfessional &&
-              <View>
-              	<Text style={{fontSize: 18}}>Avalie o Profissional</Text>
-              	<View style={{
-              		flexDirection: "row",
-              		justifyContent: "space-between",
-              		marginTop: 10,
-              	}}>
-              		{
-              			(() => {
+							</View>
+							<View>
+								<Text style={{fontSize: 18}}>Avalie o {isProfessional ? "Profissional" : "Cliente"}</Text>
+								<View style={{
+									flexDirection: "row",
+									justifyContent: "space-between",
+									marginTop: 10,
+								}}>
+									{
+										(() => {
 
-              				if (this.state.classificacaoProfissional === 0) {
+											if (this.state.classificacao === 0) {
 
-              					return (
-              						<TouchableOpacity onPress={() => this.setClassificacao(1)}>
-              							<SvgXml xml={star} width={18} height={18}></SvgXml>
-              						</TouchableOpacity>
-              					);
+												return (
+													<TouchableOpacity onPress={() => this.setClassificacao(1)}>
+														<SvgXml xml={star} width={18} height={18}></SvgXml>
+													</TouchableOpacity>
+												);
 
-              				}
+											}
 
-              				return (
-              					<TouchableOpacity onPress={() => this.setClassificacao(0)}>
-              						<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-              					</TouchableOpacity>
-              				);
+											return (
+												<TouchableOpacity onPress={() => this.setClassificacao(0)}>
+													<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+												</TouchableOpacity>
+											);
 
-              			})()
-              		}
-              		{
-              			(() => {
+										})()
+									}
+									{
+										(() => {
 
-              				if (this.state.classificacaoProfissional <= 1) {
+											if (this.state.classificacao <= 1) {
 
-              					return (
-              						<TouchableOpacity onPress={() => this.setClassificacao(2)}>
-              							<SvgXml xml={star} width={18} height={18}></SvgXml>
-              						</TouchableOpacity>
-              					);
+												return (
+													<TouchableOpacity onPress={() => this.setClassificacao(2)}>
+														<SvgXml xml={star} width={18} height={18}></SvgXml>
+													</TouchableOpacity>
+												);
 
-              				}
+											}
 
-              				return (
-              					<TouchableOpacity onPress={() => this.setClassificacao(1)}>
-              						<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-              					</TouchableOpacity>
-              				);
+											return (
+												<TouchableOpacity onPress={() => this.setClassificacao(1)}>
+													<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+												</TouchableOpacity>
+											);
 
-              			})()
-              		}
-              		{
-              			(() => {
+										})()
+									}
+									{
+										(() => {
 
-              				if (this.state.classificacaoProfissional <= 2) {
+											if (this.state.classificacao <= 2) {
 
-              					return (
-              						<TouchableOpacity onPress={() => this.setClassificacao(3)}>
-              							<SvgXml xml={star} width={18} height={18}></SvgXml>
-              						</TouchableOpacity>
-              					);
+												return (
+													<TouchableOpacity onPress={() => this.setClassificacao(3)}>
+														<SvgXml xml={star} width={18} height={18}></SvgXml>
+													</TouchableOpacity>
+												);
 
-              				}
+											}
 
-              				return (
-              					<TouchableOpacity onPress={() => this.setClassificacao(2)}>
-              						<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-              					</TouchableOpacity>
-              				);
+											return (
+												<TouchableOpacity onPress={() => this.setClassificacao(2)}>
+													<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+												</TouchableOpacity>
+											);
 
-              			})()
-              		}
-              		{
-              			(() => {
+										})()
+									}
+									{
+										(() => {
 
-              				if (this.state.classificacaoProfissional <= 3) {
+											if (this.state.classificacao <= 3) {
 
-              					return (
-              						<TouchableOpacity onPress={() => this.setClassificacao(4)}>
-              							<SvgXml xml={star} width={18} height={18}></SvgXml>
-              						</TouchableOpacity>
-              					);
+												return (
+													<TouchableOpacity onPress={() => this.setClassificacao(4)}>
+														<SvgXml xml={star} width={18} height={18}></SvgXml>
+													</TouchableOpacity>
+												);
 
-              				}
+											}
 
-              				return (
-              					<TouchableOpacity onPress={() => this.setClassificacao(3)}>
-              						<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-              					</TouchableOpacity>
-              				);
+											return (
+												<TouchableOpacity onPress={() => this.setClassificacao(3)}>
+													<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+												</TouchableOpacity>
+											);
 
-              			})()
-              		}
-              		{
-              			(() => {
+										})()
+									}
+									{
+										(() => {
 
-              				if (this.state.classificacaoProfissional <= 4) {
+											if (this.state.classificacao <= 4) {
 
-              					return (
-              						<TouchableOpacity onPress={() => this.setClassificacao(5)}>
-              							<SvgXml xml={star} width={18} height={18}></SvgXml>
-              						</TouchableOpacity>
-              					);
+												return (
+													<TouchableOpacity onPress={() => this.setClassificacao(5)}>
+														<SvgXml xml={star} width={18} height={18}></SvgXml>
+													</TouchableOpacity>
+												);
 
-              				}
+											}
 
-              				return (
-              					<TouchableOpacity onPress={() => this.setClassificacao(4)}>
-              						<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
-              					</TouchableOpacity>
-              				);
+											return (
+												<TouchableOpacity onPress={() => this.setClassificacao(4)}>
+													<SvgXml xml={starSolid} width={18} height={18}></SvgXml>
+												</TouchableOpacity>
+											);
 
-              			})()
-              		}
-              	</View>
-              </View>}
+										})()
+									}
+								</View>
+							</View>
 						</View>
 						<View style={{
 							height: 100,
@@ -831,7 +832,7 @@ export default class TelaFinalPedidoScreen extends Component {
 												Alert.alert(
 													"Confirma valor e classificação?",
 													`Valor: R$${String((this.state.pedido.price / 100).toFixed(2))
-													}\nClassificação: ${this.state.classificacaoProfissional} estrelas` +
+													}\nClassificação: ${this.state.classificacao} estrelas` +
                             "\nATENÇÃO: Só pague se o profissional tiver realizado o serviço",
 													[
 														{text: "Cancelar", onPress: () => { }},
