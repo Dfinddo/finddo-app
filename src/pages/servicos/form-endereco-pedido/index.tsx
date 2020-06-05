@@ -58,7 +58,7 @@ export default class FormEnderecoPedidoScreen extends Component {
 		headerBackTitle: "Voltar",
 	};
 
-	state = {
+	public state = {
 		tituloForm: "",
 		id: null,
 		nome: "",
@@ -141,7 +141,7 @@ export default class FormEnderecoPedidoScreen extends Component {
 
 	}
 
-	obterEnderecos = () => {
+	private obterEnderecos = (): void => {
 
 		const tokenService = TokenService.getInstance();
 
@@ -162,9 +162,11 @@ export default class FormEnderecoPedidoScreen extends Component {
 
 						const addresses_select = addresses.map(add => ({content: add.name, value: add, id: add.id}));
 
-						addresses_select.unshift({content: "Selecione um endereço", value: {}, id: "0"});
+						addresses_select.push({content: "Novo endereço", value: {name: "Novo endereço"}, id: "0"});
 
 						this.setState({enderecos: [...addresses_select]});
+						this.setEndereco(addresses_select[0]);
+
 
 					}).catch(_ => {
 
@@ -346,7 +348,7 @@ export default class FormEnderecoPedidoScreen extends Component {
 
 	}
 
-	setEndereco = ({value}) => {
+	private setEndereco = ({value}) => {
 
 		const {id, name, cep, district, street, number, complement, selected} = value;
 
