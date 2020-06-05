@@ -335,7 +335,7 @@ export default class AcompanhamentoPedido extends Component {
 							return (
 								<View style={styles.acompanhamentoBotaoContainer}>
 									<TouchableOpacity style={styles.acompanhamentoBotao} onPress={() => this.atualizarStatus(this.state.pedido)}>
-										<Text style={styles.corBotao}>{this.state.acaoBotao}</Text>
+										<Text style={styles.corBotao}>{this.state.estadoAtual === "a_caminho" ? "Estou na casa do cliente" : this.state.acaoBotao}</Text>
 									</TouchableOpacity>
 								</View>);
 
