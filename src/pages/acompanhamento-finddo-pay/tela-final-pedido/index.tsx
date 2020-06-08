@@ -720,7 +720,7 @@ export default class TelaFinalPedidoScreen extends Component {
 												});
 
 											}}>
-											<Text style={{fontSize: 18, color: colors.branco}}>ATUALIZAR STATUS</Text>
+											<Text style={{fontSize: 18, color: colors.branco}}>CONCLUIR PEDIDO</Text>
 										</TouchableOpacity>
 									);
 
@@ -817,7 +817,7 @@ export default class TelaFinalPedidoScreen extends Component {
 												});
 
 											}}>
-											<Text style={{fontSize: 18, color: colors.branco}}>ATUALIZAR STATUS</Text>
+											<Text style={{fontSize: 18, color: colors.branco}}>CONCLUIR PEDIDO</Text>
 										</TouchableOpacity>
 										<TouchableOpacity
 											style={{
