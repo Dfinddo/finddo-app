@@ -40,7 +40,7 @@ export default class AcompanhamentoPedido extends Component {
 		headerBackTitle: "Voltar",
 	};
 
-	constructor(props) {
+	public constructor(props) {
 
 		super(props);
 
@@ -56,14 +56,14 @@ export default class AcompanhamentoPedido extends Component {
 
 	}
 
-	state = {
+	public state = {
 		estadoAtual: "analise",
 		acaoBotao: "PRÓXIMO",
 		pedido: null,
 		loadingData: false,
 	};
 
-	obterPedido = () => {
+	private obterPedido = () => {
 
 		this.setState({loadingData: false}, () => {
 
@@ -114,7 +114,7 @@ export default class AcompanhamentoPedido extends Component {
 
 	};
 
-	atualizaStatus = () => {
+	private atualizaStatus = () => {
 
 		if (this.state.estadoAtual === "analise") {
 
@@ -143,7 +143,7 @@ export default class AcompanhamentoPedido extends Component {
 
 			});
 
-		} else {
+		} else if (this.state.estadoAtual !== "cancelado") {
 
 			const resetAction = StackActions.reset({
 				index: 0,
@@ -167,12 +167,15 @@ export default class AcompanhamentoPedido extends Component {
 
 	}
 
-	atualizarStatus = async pedido => {
+	private atualizarStatus = async pedido => {
 
 		let novoStatus = "";
 
 		switch (pedido.order_status) {
 
+			case "cancelado":
+				novoStatus = "cancelado";
+				break;
 			case "analise":
 				novoStatus = "a_caminho";
 				break;
@@ -199,11 +202,11 @@ export default class AcompanhamentoPedido extends Component {
 
 				novoPedido.order_status = novoStatus;
 
-				response = await
-				backendRails
+				response = await backendRails
 					.put(`/orders/${novoPedido.id}`, {order: novoPedido},
 						{headers: tokenService.getHeaders()});
 
+				console.log(response)
 				this.setState({pedido: response.data, estadoAtual: response.data.order_status}, () => {
 
 					this.atualizaStatus();
@@ -218,10 +221,10 @@ export default class AcompanhamentoPedido extends Component {
 			if (error.response) {
 
 
-				/*
-         * The request was made and the server responded with a
-         * status code that falls out of the range of 2xx
-         */
+			/*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
 				Alert.alert(
 					"Erro",
 					"Verifique sua conexão e tente novamente",
@@ -232,11 +235,11 @@ export default class AcompanhamentoPedido extends Component {
 			} else if (error.request) {
 
 
-				/*
-         * The request was made but no response was received, `error.request`
-         * is an instance of XMLHttpRequest in the browser and an instance
-         * of http.ClientRequest in Node.js
-         */
+			/*
+          * The request was made but no response was received, `error.request`
+          * is an instance of XMLHttpRequest in the browser and an instance
+          * of http.ClientRequest in Node.js
+          */
 				Alert.alert(
 					"Falha ao se conectar",
 					"Verifique sua conexão e tente novamente",
@@ -284,46 +287,51 @@ export default class AcompanhamentoPedido extends Component {
 								}}>
 									<ActivityIndicator size="large" color={colors.verdeFinddo} animating={true} />
 								</View>
-							</Modal>
-							<View style={styles.acompanhamentoContainer}>
-								<View
-									style={styles.acompanhamentoPontosContainer}>
-									<StatusPedidoStep
-										ref={this.pedidoEmAnalise}
-										hasMarginTop={true}
-										verticalBarVisibility="flex">
-									</StatusPedidoStep>
-									<StatusPedidoStep
-										ref={this.aCaminho}
-										verticalBarVisibility="flex">
-									</StatusPedidoStep>
-									<StatusPedidoStep
-										ref={this.emServico}
-										verticalBarVisibility="none">
-									</StatusPedidoStep>
-								</View>
-								<View
-									style={styles.acompanhamentoConteudoContainer}>
-									<StatusPedidoDescricao
-										ref={this.pedidoEmAnaliseD}
-										hasMarginTop={true}
-										conteudo="Pedido em análise"
-										estadoInicial="analise" />
-									<View style={{height: 80, width: 3}} />
+							</Modal>{ this.state.pedido.order_status === "cancelado" ?
+								<Text style={{
+									paddingHorizontal: 20,
+									fontSize: 18,
+									paddingTop: 20,
+								}}>Pedido Cancelado</Text> :
+								<View style={styles.acompanhamentoContainer}>
 									<View
-										style={{height: 120, zIndex: 10}}>
-										<Accordian
-											pedido={this.state.pedido}
-											conteudo="A caminho"
-											estadoInicial="a_caminho"
-											ref={this.aCaminhoD} />
+										style={styles.acompanhamentoPontosContainer}>
+										<StatusPedidoStep
+											ref={this.pedidoEmAnalise}
+											hasMarginTop={true}
+											verticalBarVisibility="flex">
+										</StatusPedidoStep>
+										<StatusPedidoStep
+											ref={this.aCaminho}
+											verticalBarVisibility="flex">
+										</StatusPedidoStep>
+										<StatusPedidoStep
+											ref={this.emServico}
+											verticalBarVisibility="none">
+										</StatusPedidoStep>
 									</View>
-									<StatusPedidoDescricao
-										ref={this.emServicoD}
-										conteudo="Serviço em Execução"
-										estadoInicial="em_servico" />
-								</View>
-							</View>
+									<View
+										style={styles.acompanhamentoConteudoContainer}>
+										<StatusPedidoDescricao
+											ref={this.pedidoEmAnaliseD}
+											hasMarginTop={true}
+											conteudo="Pedido em análise"
+											estadoInicial="analise" />
+										<View style={{height: 80, width: 3}} />
+										<View
+											style={{height: 120, zIndex: 10}}>
+											<Accordian
+												pedido={this.state.pedido}
+												conteudo="A caminho"
+												estadoInicial="a_caminho"
+												ref={this.aCaminhoD} />
+										</View>
+										<StatusPedidoDescricao
+											ref={this.emServicoD}
+											conteudo="Serviço em Execução"
+											estadoInicial="em_servico" />
+									</View>
+								</View>}
 						</ScrollView>
 					</View>
 					{(() => {
@@ -338,6 +346,18 @@ export default class AcompanhamentoPedido extends Component {
 										<Text style={styles.corBotao}>{this.state.estadoAtual === "a_caminho" ? "Estou na casa do cliente" : this.state.acaoBotao}</Text>
 									</TouchableOpacity>
 								</View>);
+
+						}
+
+						if (["analise", "a_caminho"].includes(this.state.estadoAtual)) {
+
+							return (
+								<View style={styles.acompanhamentoBotaoContainer}>
+									<TouchableOpacity style={styles.acompanhamentoBotao} onPress={() => this.atualizarStatus({...this.state.pedido, order_status: "cancelado"})}>
+										<Text style={styles.corBotao}>Cancelar</Text>
+									</TouchableOpacity>
+								</View>);
+
 
 						}
 

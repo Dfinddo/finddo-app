@@ -210,7 +210,7 @@ module.exports = {
 		"object-shorthand": "error",
 		"one-var-declaration-per-line": "error",
 		"operator-assignment": "error",
-		"operator-linebreak": "error",
+		"operator-linebreak": ["error", "after"],
 		"padded-blocks": "warn",
 		"padding-line-between-statements": "error",
 		"prefer-arrow-callback": "error",

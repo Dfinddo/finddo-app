@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
 	rotuloSelecionado: {marginLeft: 10, fontSize: 18},
 	setaDropdown: {width: 35},
 	modalSelecaoContainer: {
-		flex: 1, backgroundColor: colors.transparenciaModais,
+		flex: 1, backgroundColor: colors.branco,
 	},
 	itemSelecionavelContainer: {
 		width: 320,
