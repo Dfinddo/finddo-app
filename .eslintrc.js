@@ -287,7 +287,12 @@ module.exports = {
 		],
 		"@typescript-eslint/consistent-type-assertions": "error",
 		"@typescript-eslint/consistent-type-definitions": ["error", "interface"],
-		"@typescript-eslint/explicit-function-return-type": ["warn", {"allowExpressions": true}],
+		"@typescript-eslint/explicit-function-return-type": [
+			"warn", {
+				"allowExpressions": true,
+				"allowConciseArrowFunctionExpressionsStartingWithVoid": true,
+			},
+		],
 		"@typescript-eslint/explicit-member-accessibility": "error",
 		"indent": "off",
 		"@typescript-eslint/indent": ["warn", "tab"],
