@@ -42,7 +42,7 @@ export default (): JSX.Element => {
 		() => void setCurrentTutorialStep(currentTutorialStep - 1);
 
 	return (
-		<Modal visible={true || !wasDisplayed}>
+		<Modal visible={!wasDisplayed}>
 			<View style={styles.modalStyle}>
 				<TouchableOpacity
 					onPress={markAsDisplayed}
