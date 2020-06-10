@@ -50,7 +50,6 @@ module.exports = {
 		"function-paren-newline": ["warn", "consistent"],
 		"generator-star-spacing": "error",
 		"getter-return": "error",
-		"global-require": "error",
 		"handle-callback-err": "error",
 		"id-blacklist": "error",
 		"id-length": ["warn", {"exceptions": ["e", "i", "j", "k"]}],
@@ -265,7 +264,7 @@ module.exports = {
 
 			{
 				"selector": "variable",
-				"format": ["camelCase", "UPPER_CASE"],
+				"format": ["camelCase", "UPPER_CASE", "PascalCase"],
 			},
 			{
 				"selector": "parameter",
