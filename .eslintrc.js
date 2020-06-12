@@ -12,6 +12,7 @@ module.exports = {
 	},
 	"plugins": [
 		"react",
+		"react-hooks",
 		"@typescript-eslint",
 	],
 	"parser": "@typescript-eslint/parser",
@@ -52,7 +53,7 @@ module.exports = {
 		"getter-return": "error",
 		"handle-callback-err": "error",
 		"id-blacklist": "error",
-		"id-length": ["warn", {"exceptions": ["e", "i", "j", "k"]}],
+		"id-length": ["warn", {"exceptions": ["e", "i", "j", "k", "_"]}],
 		"id-match": "error",
 		"jsx-quotes": "error",
 		"key-spacing": "error",
@@ -323,5 +324,8 @@ module.exports = {
 		"@typescript-eslint/prefer-namespace-keyword": "error",
 		"@typescript-eslint/type-annotation-spacing": "error",
 		"@typescript-eslint/triple-slash-reference": "error",
+
+		"react-hooks/rules-of-hooks": "error",
+		"react-hooks/exhaustive-deps": "warn",
 	},
 };
