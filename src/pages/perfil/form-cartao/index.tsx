@@ -392,7 +392,7 @@ export default class FormCartaoScreen extends Component {
 									onSelect={text =>
 										this.atualizarDadosHolder("birthdate", text)
 									}
-									maxLength={10}
+									min={new Date("01/01/1920")}
 								/>
 								{/*
                   value={this.state.cardData.creditCard.holder.birthdate}
