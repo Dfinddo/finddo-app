@@ -460,7 +460,7 @@ export default class TelaFinalPedidoScreen extends Component {
 									source={{uri: `${backendUrl}/${this.state.pedido.professional_photo}`}}></Image>
 							</View>
 							<View>
-								<Text style={{fontSize: 18}}>Avalie o {isProfessional ? "Profissional" : "Cliente"}</Text>
+								<Text style={{fontSize: 18}}>Avalie o {isProfessional ? "Cliente" : "Profissional"}</Text>
 								<View style={{
 									flexDirection: "row",
 									justifyContent: "space-between",
