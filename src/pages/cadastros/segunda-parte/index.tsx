@@ -325,28 +325,40 @@ export default class SegundaParte extends Component {
 
 			if (userDto.user_type === "professional") {
 
-				if (possuiContaMoip) {
+				Alert.alert(
+					"Cadastro concluído",
+					"Muito obrigado pelo interesse em se tornar nosso parceiro, " +
+					"em breve entraremos em contato por Whatsapp para " +
+					"verificarmos o seu cadastro",
+					[{text: "OK", onPress: () => { }}],
+					{cancelable: false},
+				);
 
-					Alert.alert(
-						"Aviso",
-						"Foi identificado que você já possui uma conta Wirecard, vá para a aba perfil e" +
-            " autorize o Finddo a executar transações para sua conta.",
-						[{text: "OK", onPress: () => { }}],
-						{cancelable: false},
-					);
+				this.props.navigation.navigate("App");
+				return;
 
-				} else {
-
-					Alert.alert(
-						"Aviso",
-						"Para que você comece a atender pedidos, vá pra a aba de perfil," +
-            " configure sua conta Wirecard e " +
-            " autorize o Finddo a executar transações para sua conta.",
-						[{text: "OK", onPress: () => { }}],
-						{cancelable: false},
-					);
-
-				}
+				// if (possuiContaMoip) {
+				//
+				// 	Alert.alert(
+				// 		"Aviso",
+				// 		"Foi identificado que você já possui uma conta Wirecard, vá para a aba perfil e" +
+            // " autorize o Finddo a executar transações para sua conta.",
+				// 		[{text: "OK", onPress: () => { }}],
+				// 		{cancelable: false},
+				// 	);
+				//
+				// } else {
+				//
+				// 	Alert.alert(
+				// 		"Aviso",
+				// 		"Para que você comece a atender pedidos, vá pra a aba de perfil," +
+            // " configure sua conta Wirecard e " +
+            // " autorize o Finddo a executar transações para sua conta.",
+				// 		[{text: "OK", onPress: () => { }}],
+				// 		{cancelable: false},
+				// 	);
+				//
+				// }
 
 			}
 

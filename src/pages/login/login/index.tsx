@@ -35,12 +35,29 @@ export default class LoginScreen extends Component {
 
 	}
 
-	login = async(user, password) => {
+	private login = async(user, password) => {
 
 		try {
 
 			this.setState({isLoading: true});
 			const response = await backendRails.post("/auth/sign_in", {email: user, password});
+
+			if (response.data.data.activated === false) {
+
+				this.setState({isLoading: false});
+
+				Alert.alert(
+					"Cadastro em validação",
+					"Muito obrigado pelo interesse em se tornar nosso parceiro, " +
+					"em breve entraremos em contato por Whatsapp para " +
+					"verificarmos o seu cadastro",
+					[{text: "OK", onPress: () => { }}],
+					{cancelable: false},
+				);
+
+				return;
+
+			}
 
 			const userData = {};
 
@@ -100,11 +117,10 @@ export default class LoginScreen extends Component {
 
 			if (error.response) {
 
-
-				/*
-         * The request was made and the server responded with a
-         * status code that falls out of the range of 2xx
-         */
+			/*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
 				Alert.alert(
 					"Falha ao se conectar",
 					"Email ou senha incorretos",
@@ -115,11 +131,11 @@ export default class LoginScreen extends Component {
 			} else if (error.request) {
 
 
-				/*
-         * The request was made but no response was received, `error.request`
-         * is an instance of XMLHttpRequest in the browser and an instance
-         * of http.ClientRequest in Node.js
-         */
+			/*
+          * The request was made but no response was received, `error.request`
+          * is an instance of XMLHttpRequest in the browser and an instance
+          * of http.ClientRequest in Node.js
+          */
 				Alert.alert(
 					"Falha ao se conectar",
 					"Verifique sua conexão e tente novamente",
