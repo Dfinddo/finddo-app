@@ -3,7 +3,7 @@ import {bolaCheia} from "../../../img/svg/bola-cheia";
 import {bolaApagada} from "../../../img/svg/bola-apagada";
 import tutorialImages from "../../../img/svg/tutorial-steps";
 import {fechar} from "../../../img/svg/fechar";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {View, TouchableOpacity, Text, StyleSheet} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {Button, Modal} from "@ui-kitten/components";
@@ -20,11 +20,11 @@ const useInitialDisplay = (): [boolean, () => void] => {
 		AsyncStorage.getItem("tutorial-realizado")
 			.then(query => setWasDisplayed(Boolean(query)));
 
-	});
+	}, []);
 
-	const markAsDisplayed = () => void AsyncStorage
+	const markAsDisplayed = useCallback(() => void AsyncStorage
 		.setItem("tutorial-realizado", "true")
-		.then(() => setWasDisplayed(true));
+		.then(() => setWasDisplayed(true)), []);
 
 	return [wasDisplayed, markAsDisplayed];
 
