@@ -600,7 +600,7 @@ export default class TelaFinalPedidoScreen extends Component {
 													const dataFormatadaInicio = `${dataInicio.getDate()}/${dataInicio.getMonth() + 1}/${dataInicio.getFullYear()}`;
 													const dataFormatadaFim = `${dataFim.getDate()}/${dataFim.getMonth() + 1}/${dataFim.getFullYear()}`;
 
-													return `Entre\n${dataFormatadaInicio}\ne\n${dataFormatadaFim}`;
+													return dataFormatadaInicio;
 
 												}
 												const dataInicio = new Date(this.state.pedido.start_order.split(".")[0]);
