@@ -5,7 +5,7 @@ import {
 	Text, Image,
 	Modal, ActivityIndicator,
 	Alert, TouchableOpacity,
-	FlatList, TextInput,
+	FlatList, TextInput, KeyboardAvoidingView, Platform,
 } from "react-native";
 import {colors} from "../../../colors";
 import backendRails, {backendUrl} from "../../../services/backend-rails-api";
@@ -364,7 +364,9 @@ export default class TelaFinalPedidoScreen extends Component {
 						transparent={true}
 						visible={this.state.isWritingSecureCode}
 					>
-						<View style={{flex: 1, backgroundColor: colors.branco, justifyContent: "center", alignItems: "center"}}>
+						<KeyboardAvoidingView
+							behavior={Platform.OS === "ios" ? "padding" : "height"}
+							style={{flex: 1, backgroundColor: colors.branco, justifyContent: "center", alignItems: "center"}}>
 							<View style={{height: 400, justifyContent: "center", alignItems: "center"}}>
 								<Text style={{fontSize: 18, fontWeight: "bold", marginTop: 20}}>Digite o código de segurança do cartão:</Text>
 								<View style={{height: 20}}></View>
@@ -394,7 +396,7 @@ export default class TelaFinalPedidoScreen extends Component {
 									<Text style={{fontSize: 18, color: colors.branco}}>CANCELAR</Text>
 								</View>
 							</TouchableOpacity>
-						</View>
+						</KeyboardAvoidingView>
 					</Modal>
 					<Modal
 						animationType="slide"

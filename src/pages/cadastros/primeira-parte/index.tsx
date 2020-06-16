@@ -6,6 +6,8 @@ import {
 	TouchableOpacity, ScrollView,
 	SectionList, Alert,
 	ActivityIndicator,
+	KeyboardAvoidingView,
+	Platform,
 } from "react-native";
 import {colors} from "../../../colors";
 import HeaderFundoTransparente from "../../../components/header-fundo-transparente";
@@ -259,10 +261,15 @@ export default class PrimeiraParte extends Component {
 							</View>
 						</View>
 					</Modal>
-					<View style={styles.cadastroForm}>
+					<KeyboardAvoidingView
+						behavior={Platform.OS === "ios" ? "padding" : "height"}
+						style={styles.cadastroForm}>
 						<View
 							style={styles.finddoLogoStyle}></View>
-						<View style={styles.cadastroMainForm}>
+						<KeyboardAvoidingView
+							behavior={Platform.OS === "ios" ? "padding" : "height"}
+							keyboardVerticalOffset={Platform.OS === "ios" ? 50 : void 0}
+							style={styles.cadastroMainForm}>
 							<Text style={styles.fontTitle}>Crie sua conta</Text>
 
 							<TextInput
@@ -358,13 +365,13 @@ export default class PrimeiraParte extends Component {
 								maxLength={10} numberOfLines={1}
 								value={this.updateBirthdate(this.state.birthdate)}
 							/>
-						</View>
+						</KeyboardAvoidingView>
 						<TouchableOpacity
 							style={styles.continuarButton}
 							onPress={() => this.validateFields()}>
 							<Text style={styles.continuarButtonText}>CONTINUAR</Text>
 						</TouchableOpacity>
-					</View>
+					</KeyboardAvoidingView>
 				</ScrollView>
 			</ImageBackground>
 		);

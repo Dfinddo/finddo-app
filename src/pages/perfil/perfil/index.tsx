@@ -5,7 +5,7 @@ import {
 	TextInput, Text,
 	Image,
 	Alert, Modal,
-	ActivityIndicator, Linking,
+	ActivityIndicator, Linking, KeyboardAvoidingView, Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import TokenService from "../../../services/token-service";
@@ -339,7 +339,9 @@ export default class PerfilScreen extends Component {
 									<Image style={{width: 150, height: 150, borderRadius: 100}}
 										source={this.state.profilePhoto} />
 								</TouchableOpacity>
-								<View style={{
+								<KeyboardAvoidingView
+									behavior={Platform.OS === "ios" ? "padding" : "height"}
+									style={{
 									width: "80%",
 									alignItems: "flex-start",
 								}}>
@@ -407,7 +409,7 @@ export default class PerfilScreen extends Component {
 										/>
 										<View style={{width: "20%", alignItems: "center", justifyContent: "center"}} />
 									</View>
-								</View>
+								</KeyboardAvoidingView>
 								{
 									(() => {
 

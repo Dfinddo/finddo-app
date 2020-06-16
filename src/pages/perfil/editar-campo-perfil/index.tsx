@@ -3,7 +3,7 @@ import {
 	ImageBackground, View,
 	Text,
 	TouchableOpacity,
-	TextInput, ScrollView, Modal, SectionList, Alert, ActivityIndicator,
+	TextInput, ScrollView, Modal, SectionList, Alert, ActivityIndicator, KeyboardAvoidingView, Platform,
 } from "react-native";
 import {colors} from "../../../colors";
 import HeaderFundoTransparente from "../../../components/header-fundo-transparente";
@@ -284,7 +284,9 @@ export default class EditarCampoPerfil extends Component {
 					</Modal>
 					<View style={{height: 220}}></View>
 					<View style={styles.fieldForm}>
-						<View style={styles.containerForm}>
+						<KeyboardAvoidingView
+							behavior={Platform.OS === "ios" ? "padding" : "height"}
+							style={styles.containerForm}>
 							<Text style={styles.fontTitle}>{this.state.titulo}</Text>
 							{
 								(() => {
@@ -323,7 +325,7 @@ export default class EditarCampoPerfil extends Component {
 
 								})()
 							}
-						</View>
+						</KeyboardAvoidingView>
 						<TouchableOpacity
 							style={styles.continuarButton}
 							onPress={() => this.validateFields()}>
