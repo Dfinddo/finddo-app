@@ -54,6 +54,7 @@ export class CameraPedidoComponent extends Component {
 					}}
 					onGoogleVisionBarcodesDetected={({barcodes}) => {
 					}}
+					captureAudio={false}
 				/>
 				<View style={{flex: 0, flexDirection: "row", justifyContent: "center"}}>
 					<TouchableOpacity onPress={() => {
