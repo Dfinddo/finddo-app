@@ -6,6 +6,8 @@ import {
 	TouchableOpacity, ScrollView,
 	SectionList, Alert, ActivityIndicator,
 	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
 } from "react-native";
 import {colors} from "../../../colors";
 import backendRails from "../../../services/backend-rails-api";
@@ -343,7 +345,10 @@ export default class FormEnderecoScreen extends Component {
 						</View>
 					</Modal>
 					<View style={styles.cadastroForm}>
-						<View style={styles.cadastroMainForm}>
+						<KeyboardAvoidingView
+							behavior={Platform.OS === "ios" ? "padding" : "height"}
+							keyboardVerticalOffset={Platform.OS === "ios" ? 150 : void 0}
+							style={styles.cadastroMainForm}>
 							<Text style={styles.fontTitle}>{this.state.tituloForm}</Text>
 
 							<TextInput
@@ -430,7 +435,7 @@ export default class FormEnderecoScreen extends Component {
 								value={this.state.complemento}
 							/>
 							<View style={{height: 8}}></View>
-						</View>
+						</KeyboardAvoidingView>
 					</View>
 				</ScrollView>
 				<BotaoCriar isShowingKeyboard={this.state.isShowingKeyboard} onPress={() => this.validateFields()}></BotaoCriar>

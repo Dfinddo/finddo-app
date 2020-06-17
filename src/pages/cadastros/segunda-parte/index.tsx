@@ -6,6 +6,8 @@ import {
 	TouchableOpacity, ScrollView,
 	SectionList, Alert, ActivityIndicator,
 	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
 } from "react-native";
 import axios from "axios";
 import {colors} from "../../../colors";
@@ -635,7 +637,9 @@ export default class SegundaParte extends Component {
 							</View>
 						</View>
 					</Modal>
-					<View style={styles.cadastroForm}>
+					<KeyboardAvoidingView
+						behavior={Platform.OS === "ios" ? "padding" : "height"}
+						style={styles.cadastroForm}>
 						<Text style={styles.fontTitle}>Crie sua conta</Text>
 						<View style={styles.cadastroMainForm}>
 							<TextInput
@@ -781,7 +785,7 @@ export default class SegundaParte extends Component {
 								<Text style={{fontSize: 18}}>e com nossa<Text onPress={() => this.setState({showPolitica: true})} style={{color: colors.verdeFinddo}}> Política de Privacidade.</Text></Text>
 							</View>
 						</View>
-					</View>
+					</KeyboardAvoidingView>
 				</ScrollView>
 				<BotaoCriar isShowingKeyboard={this.state.isShowingKeyboard} onPress={() => this.validateFields()}></BotaoCriar>
 			</ImageBackground>

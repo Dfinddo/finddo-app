@@ -3,6 +3,7 @@ import {
 	ImageBackground, View,
 	Text, TouchableOpacity,
 	TextInput, ScrollView, Alert, ActivityIndicator,
+	KeyboardAvoidingView, Platform,
 } from "react-native";
 import {colors} from "../../../colors";
 import HeaderFundoTransparente from "../../../components/header-fundo-transparente";
@@ -136,7 +137,9 @@ export default class EsqueciSenhaEmail extends Component {
 						<ScrollView>
 							<View style={{height: 220}}></View>
 							<View style={styles.emailForm}>
-								<View style={styles.containerForm}>
+								<KeyboardAvoidingView
+									behavior={Platform.OS === "ios" ? "padding" : "height"}
+									style={styles.containerForm}>
 									<Text style={styles.fontTitle}>Esqueci minha senha</Text>
 									<TextInput
 										style={styles.formSizeAndFont}
@@ -150,7 +153,7 @@ export default class EsqueciSenhaEmail extends Component {
 										maxLength={100}
 										value={this.state.email}
 									/>
-								</View>
+								</KeyboardAvoidingView>
 								<TouchableOpacity
 									style={styles.continuarButton}
 									onPress={() => {

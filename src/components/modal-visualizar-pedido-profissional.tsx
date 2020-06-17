@@ -63,9 +63,7 @@ export default class VisualizarPedidoProfissional extends Component {
 		let diaInicio = "";
 		let diaFim = "";
 		let horaInicio = "";
-		let minutosInicio = "";
 		let horaFim = "";
-		let minutosFim = "";
 
 		if (this.state.order) {
 
@@ -75,11 +73,8 @@ export default class VisualizarPedidoProfissional extends Component {
 			diaInicio = `${this.state.order.start_order.getDate()}/${Number(this.state.order.start_order.getMonth()) + 1}/${this.state.order.start_order.getFullYear()}`;
 			diaFim = `${this.state.order.end_order.getDate()}/${Number(this.state.order.end_order.getMonth()) + 1}/${this.state.order.end_order.getFullYear()}`;
 
-			horaInicio = data.getHours() < 10 ? `0${data.getHours()}` : data.getHours();
-			minutosInicio = data.getMinutes() < 10 ? `0${data.getMinutes()}` : data.getMinutes();
-
-			horaFim = dataF.getHours() < 10 ? `0${dataF.getHours()}` : dataF.getHours();
-			minutosFim = dataF.getMinutes() < 10 ? `0${dataF.getMinutes()}` : dataF.getMinutes();
+			horaInicio = this.state.order.hora_inicio;
+			horaFim = this.state.order.hora_fim;
 
 			return (
 				<View style={{

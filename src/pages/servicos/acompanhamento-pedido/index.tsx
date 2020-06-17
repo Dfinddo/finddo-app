@@ -3,7 +3,7 @@ import {
 	View, Text,
 	ScrollView, ImageBackground,
 	TouchableOpacity,
-	ActivityIndicator, Modal, Alert,
+	ActivityIndicator, Modal, Alert, Linking,
 } from "react-native";
 import {colors} from "../../../colors";
 import StatusPedidoStep from "../../../components/status-pedido-step";
@@ -343,13 +343,18 @@ export default class AcompanhamentoPedido extends Component {
 							return (
 								<View style={styles.acompanhamentoBotaoContainer}>
 									<TouchableOpacity style={styles.acompanhamentoBotao} onPress={() => this.atualizarStatus(this.state.pedido)}>
-										<Text style={styles.corBotao}>{this.state.estadoAtual === "a_caminho" ? "Estou na casa do cliente" : this.state.acaoBotao}</Text>
+										<Text style={styles.corBotao}>{
+											this.state.estadoAtual === "a_caminho" ?
+												"Estou na casa do cliente" :
+												this.state.estadoAtual === "em_servico" ?
+													"Fazer orçamento" :
+													this.state.acaoBotao}</Text>
 									</TouchableOpacity>
 								</View>);
 
 						}
 
-						if (["analise", "a_caminho"].includes(this.state.estadoAtual)) {
+						if ("analise" === this.state.estadoAtual) {
 
 							return (
 								<View style={styles.acompanhamentoBotaoContainer}>
@@ -358,6 +363,16 @@ export default class AcompanhamentoPedido extends Component {
 									</TouchableOpacity>
 								</View>);
 
+						}
+
+						if ("a_caminho" === this.state.estadoAtual) {
+
+							return (
+								<View style={styles.acompanhamentoBotaoContainer}>
+									<TouchableOpacity style={styles.acompanhamentoBotao} onPress={openChat}>
+										<Text style={styles.corBotao}>Solicitar Cancelamento</Text>
+									</TouchableOpacity>
+								</View>);
 
 						}
 
@@ -408,3 +423,22 @@ export default class AcompanhamentoPedido extends Component {
 	}
 
 }
+
+const openChat = (): void => {
+
+	// TODO: remover esse telefone e colocar nos environments
+	const PHONE = 5521980503130;
+	const url = `whatsapp://send?text=&phone=${PHONE}`;
+
+	Linking.openURL(url).catch(() => {
+
+		Alert.alert(
+			"Erro",
+			"Whatsapp não instalado no seu dispositivo",
+			[{text: "OK", onPress: () => void 0}],
+			{cancelable: false},
+		);
+
+	});
+
+};

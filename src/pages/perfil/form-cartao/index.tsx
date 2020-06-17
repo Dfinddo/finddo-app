@@ -10,6 +10,8 @@ import {
 	Alert,
 	ActivityIndicator,
 	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
 } from "react-native";
 import {colors} from "../../../colors";
 import TokenService from "../../../services/token-service";
@@ -315,7 +317,11 @@ export default class FormCartaoScreen extends Component {
 						</View>
 					</Modal>
 					<View style={styles.cadastroForm}>
-						<View style={styles.cadastroMainForm}>
+						<KeyboardAvoidingView
+							behavior={Platform.OS === "ios" ? "padding" : "height"}
+							keyboardVerticalOffset={Platform.OS === "ios" ? 100 : void 0}
+							style={styles.cadastroMainForm}
+						>
 							<Text style={styles.fontTitle}>{this.state.tituloForm}</Text>
 							<Layout style={styles.form} level="1">
 								<Input
@@ -392,7 +398,7 @@ export default class FormCartaoScreen extends Component {
 									onSelect={text =>
 										this.atualizarDadosHolder("birthdate", text)
 									}
-									maxLength={10}
+									min={new Date("01/01/1920")}
 								/>
 								{/*
                   value={this.state.cardData.creditCard.holder.birthdate}
@@ -434,7 +440,7 @@ export default class FormCartaoScreen extends Component {
 									/>
 								</View>
 							</Layout>
-						</View>
+						</KeyboardAvoidingView>
 					</View>
 				</ScrollView>
 				<BotaoCriar

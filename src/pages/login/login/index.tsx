@@ -5,6 +5,8 @@ import {
 	TouchableOpacity, ScrollView,
 	Alert, ActivityIndicator,
 	Modal,
+	Platform,
+	KeyboardAvoidingView,
 } from "react-native";
 import backendRails from "../../../services/backend-rails-api";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -171,7 +173,9 @@ export default class LoginScreen extends Component {
 							</View>
 						</View>
 					</Modal>
-					<View style={styles.loginForm}>
+					<KeyboardAvoidingView
+						behavior={Platform.OS === "ios" ? "padding" : "height"}
+						style={styles.loginForm}>
 						<View style={{
 							width: "100%",
 							height: 50,
@@ -235,7 +239,7 @@ export default class LoginScreen extends Component {
 								style={styles.cadastreSe}
 								onPress={() => this.props.navigation.navigate("EscolhaTipo")}>Cadastre-se</Text>
 						</Text>
-					</View>
+					</KeyboardAvoidingView>
 				</ScrollView>
 			</ImageBackground>
 		);

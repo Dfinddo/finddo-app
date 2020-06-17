@@ -6,6 +6,8 @@ import {
 	Modal,
 	ScrollView, SectionList,
 	ImageBackground,
+	Platform,
+	KeyboardAvoidingView,
 } from "react-native";
 import CustomPicker from "../../../components/custom-picker";
 import PedidoCorrenteService from "../../../services/pedido-corrente-service";
@@ -200,7 +202,9 @@ export default class NovoPedido extends Component {
 							</View>
 						</View>
 					</Modal>
-					<View style={styles.pedidoForm}>
+					<KeyboardAvoidingView
+						behavior={Platform.OS === "ios" ? "padding" : "height"}
+						style={styles.pedidoForm}>
 						<Image
 							style={{width: "100%"}}
 							source={this.state.imageServicoUrl} />
@@ -222,7 +226,7 @@ export default class NovoPedido extends Component {
 							/>
 
 						</View>
-					</View>
+					</KeyboardAvoidingView>
 				</ScrollView>
 				<View style={styles.continuarButtonContainer}>
 					<TouchableOpacity

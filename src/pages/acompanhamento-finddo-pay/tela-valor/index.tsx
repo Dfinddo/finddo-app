@@ -5,6 +5,8 @@ import {
 	TouchableOpacity, ScrollView,
 	Alert, ActivityIndicator,
 	Modal,
+	KeyboardAvoidingView,
+	Platform,
 } from "react-native";
 import backendRails from "../../../services/backend-rails-api";
 import TokenService from "../../../services/token-service";
@@ -165,7 +167,9 @@ export default class ValorServicoScreen extends Component {
 					</Modal>
 					<View style={styles.loginForm}>
 						<SvgXml xml={finddoLogo} width={126} height={30} style={styles.finddoLogoStyle}></SvgXml>
-						<View style={styles.loginMainForm}>
+						<KeyboardAvoidingView
+							behavior={Platform.OS === "ios" ? "padding" : "height"}
+							style={styles.loginMainForm}>
 							<Text style={styles.fontTitle}>Cobrança</Text>
 							<TextInput
 								style={styles.loginFormSizeAndFont}
@@ -193,7 +197,7 @@ export default class ValorServicoScreen extends Component {
 								value={this.formatarValorServico(this.state.valorComTaxa)}
 								editable={false}
 							/>
-						</View>
+						</KeyboardAvoidingView>
 						<TouchableOpacity
 							style={styles.loginButton}
 							onPress={() => {
