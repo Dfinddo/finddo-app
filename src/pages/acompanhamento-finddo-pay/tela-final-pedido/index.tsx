@@ -456,11 +456,13 @@ export default class TelaFinalPedidoScreen extends Component {
 							<Text style={{fontSize: 25, fontWeight: "bold", color: colors.verdeFinddo}}>R$ {(this.state.pedido.price / 100).toFixed(2)}</Text>
 						</View>
 						<View style={[styles.linha, styles.avaliacaoFuncionario]}>
-							<View>
-								<Image
-									style={{width: 80, height: 80, borderRadius: 100}}
-									source={{uri: `${backendUrl}/${this.state.pedido.professional_photo}`}}></Image>
-							</View>
+							{!isProfessional &&
+								<View>
+									<Image
+										style={{width: 80, height: 80, borderRadius: 100}}
+										source={{uri: `${backendUrl}/${this.state.pedido.professional_photo}`}} />
+								</View>
+							}
 							<View>
 								<Text style={{fontSize: 18}}>Avalie o {isProfessional ? "Cliente" : "Profissional"}</Text>
 								<View style={{

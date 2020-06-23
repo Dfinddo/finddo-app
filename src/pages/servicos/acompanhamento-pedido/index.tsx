@@ -206,7 +206,7 @@ export default class AcompanhamentoPedido extends Component {
 					.put(`/orders/${novoPedido.id}`, {order: novoPedido},
 						{headers: tokenService.getHeaders()});
 
-				console.log(response)
+				console.log(response);
 				this.setState({pedido: response.data, estadoAtual: response.data.order_status}, () => {
 
 					this.atualizaStatus();
@@ -221,7 +221,7 @@ export default class AcompanhamentoPedido extends Component {
 			if (error.response) {
 
 
-			/*
+				/*
           * The request was made and the server responded with a
           * status code that falls out of the range of 2xx
           */
@@ -235,7 +235,7 @@ export default class AcompanhamentoPedido extends Component {
 			} else if (error.request) {
 
 
-			/*
+				/*
           * The request was made but no response was received, `error.request`
           * is an instance of XMLHttpRequest in the browser and an instance
           * of http.ClientRequest in Node.js
@@ -257,6 +257,8 @@ export default class AcompanhamentoPedido extends Component {
 	}
 
 	public render() {
+
+		const isProfessional = TokenService.getInstance().getUser().user_type === "professional";
 
 		if (this.state.pedido) {
 
@@ -317,14 +319,22 @@ export default class AcompanhamentoPedido extends Component {
 											hasMarginTop={true}
 											conteudo="Pedido em análise"
 											estadoInicial="analise" />
-										<View style={{height: 80, width: 3}} />
-										<View
-											style={{height: 120, zIndex: 10}}>
-											<Accordian
-												pedido={this.state.pedido}
-												conteudo="A caminho"
-												estadoInicial="a_caminho"
-												ref={this.aCaminhoD} />
+										<View style={{height: isProfessional ? 68 : 80, width: 3}} />
+										<View style={{height: isProfessional ? 130 : 115, zIndex: 10}}>
+											{isProfessional ?
+
+												<StatusPedidoDescricao
+													ref={this.aCaminhoD}
+													hasMarginTop={true}
+													conteudo="A caminho"
+													estadoInicial="a_caminho" /> :
+
+												<Accordian
+													pedido={this.state.pedido}
+													conteudo="A caminho"
+													estadoInicial="a_caminho"
+													ref={this.aCaminhoD} />
+											}
 										</View>
 										<StatusPedidoDescricao
 											ref={this.emServicoD}
@@ -336,9 +346,7 @@ export default class AcompanhamentoPedido extends Component {
 					</View>
 					{(() => {
 
-						const tokenService = TokenService.getInstance();
-
-						if (tokenService.getUser().user_type === "professional") {
+						if (isProfessional) {
 
 							return (
 								<View style={styles.acompanhamentoBotaoContainer}>
@@ -354,7 +362,7 @@ export default class AcompanhamentoPedido extends Component {
 
 						}
 
-						if ("analise" === this.state.estadoAtual) {
+						if (this.state.estadoAtual === "analise") {
 
 							return (
 								<View style={styles.acompanhamentoBotaoContainer}>
@@ -365,7 +373,7 @@ export default class AcompanhamentoPedido extends Component {
 
 						}
 
-						if ("a_caminho" === this.state.estadoAtual) {
+						if (this.state.estadoAtual === "a_caminho") {
 
 							return (
 								<View style={styles.acompanhamentoBotaoContainer}>
