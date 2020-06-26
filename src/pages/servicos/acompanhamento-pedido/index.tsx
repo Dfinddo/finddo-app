@@ -435,7 +435,7 @@ export default class AcompanhamentoPedido extends Component {
 const openChat = (): void => {
 
 	// TODO: remover esse telefone e colocar nos environments
-	const PHONE = 5521980503130;
+	const PHONE = 5521968649388;
 	const url = `whatsapp://send?text=&phone=${PHONE}`;
 
 	Linking.openURL(url).catch(() => {
