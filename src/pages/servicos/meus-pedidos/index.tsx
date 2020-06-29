@@ -41,7 +41,7 @@ export default class MeusPedidos extends Component {
 		enderecoSelecionado: null,
 	};
 
-	obterPedidos = async(page = 1) => {
+	private obterPedidos = async() => {
 
 		this.setState({loadingData: true});
 		const user = TokenService.getInstance().getUser();
@@ -67,6 +67,8 @@ export default class MeusPedidos extends Component {
 						{headers: tokenService.getHeaders()});
 
 			}
+
+			console.log(response)
 
 			const orders = response.data;
 
@@ -94,6 +96,22 @@ export default class MeusPedidos extends Component {
 				pedidosFinalizado: [...pedidosFinalizado],
 				pedidosCancelado: [...pedidosCancelado],
 			});
+
+			// const receivedOrderID = this.props.navigation.getParam("id");
+			//
+			// if (receivedOrderID) {
+			//
+			// 	const orderToOpen = orders.find(order => order.id == receivedOrderID);
+			// 	// console.log(orderToOpen)
+			// 	this.props.navigation.setParams({id: null});
+			// 	orderToOpen && this.setState({
+			// 		pedidoCorrente: orderToOpen,
+			// 		enderecoSelecionado: orderToOpen.address,
+			// 		isShowingPedido: true,
+			// 	});
+			//
+			// }
+			//
 
 		} catch (error) {
 			// console.log(error);
@@ -233,7 +251,6 @@ export default class MeusPedidos extends Component {
 
 		const user = TokenService.getInstance().getUser();
 
-
 		return (
 			<ImageBackground
 				style={{width: "100%", height: "100%"}}
@@ -253,7 +270,8 @@ export default class MeusPedidos extends Component {
 						<VisualizarPedido
 							pedido={this.state}
 							onConfirm={() => this.setState({isShowingPedido: false})}
-							onCancel={() => this.setState({isShowingPedido: false})}></VisualizarPedido>
+							onCancel={() => this.setState({isShowingPedido: false})}
+						/>
 					</Modal>
 					<Modal
 						animationType="slide"

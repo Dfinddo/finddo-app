@@ -1,9 +1,9 @@
-import React, {Component} from "react";
+import React, {Component, useState} from "react";
 import {
 	View, Text,
 	ScrollView, ImageBackground,
 	TouchableOpacity,
-	ActivityIndicator, Modal, Alert, Linking,
+	ActivityIndicator, Modal, Alert, Linking, Platform, KeyboardAvoidingView, TextInput,
 } from "react-native";
 import {colors} from "../../../colors";
 import StatusPedidoStep from "../../../components/status-pedido-step";
@@ -61,6 +61,7 @@ export default class AcompanhamentoPedido extends Component {
 		acaoBotao: "PRÓXIMO",
 		pedido: null,
 		loadingData: false,
+		isMakingBudget: false,
 	};
 
 	private obterPedido = () => {
@@ -167,6 +168,8 @@ export default class AcompanhamentoPedido extends Component {
 
 	}
 
+	private closeModal = () => this.setState({isMakingBudget: false});
+
 	private atualizarStatus = async pedido => {
 
 		let novoStatus = "";
@@ -264,8 +267,13 @@ export default class AcompanhamentoPedido extends Component {
 
 			return (
 				<ImageBackground
-					style={{width: "100%", height: "100%"}}
+					style={{width: "100%", height: "100%", justifyContent: "center"}}
 					source={require("../../../img/Ellipse.png")}>
+					<ProporValorModal
+						isMakingBudget={this.state.isMakingBudget}
+						pedido={this.state.pedido}
+						closeModal={this.closeModal}
+					/>
 					<View style={{height: "90%"}}>
 						<NavigationEvents
 							onWillFocus={_ => this.obterPedido()}
@@ -350,6 +358,12 @@ export default class AcompanhamentoPedido extends Component {
 
 							return (
 								<View style={styles.acompanhamentoBotaoContainer}>
+									{
+										this.state.estadoAtual === "a_caminho" &&
+										<TouchableOpacity style={styles.acompanhamentoBotao} onPress={() => this.setState({isMakingBudget: true})}>
+											<Text style={styles.corBotao}>Orçar previamente</Text>
+										</TouchableOpacity>
+									}
 									<TouchableOpacity style={styles.acompanhamentoBotao} onPress={() => this.atualizarStatus(this.state.pedido)}>
 										<Text style={styles.corBotao}>{
 											this.state.estadoAtual === "a_caminho" ?
@@ -450,3 +464,154 @@ const openChat = (): void => {
 	});
 
 };
+
+
+const formatarValorServico = valor => `R$ ${String((Math.round((valor + Number.EPSILON) * 100) / 100).toFixed(2))}`;
+const ProporValorModal = props => {
+
+	const [valor, setValor] = useState("0");
+	const [valorComTaxa, setValorComTaxa] = useState("0");
+	const [valorTaxa, setValorTaxa] = useState("0");
+
+	const calcularValorServico = valor => {
+
+		const valorServico = Number(valor);
+		const valorComTaxa = valorServico * (valorServico < 80 ? 1.25 : valorServico < 500 ? 1.2 : 1.15);
+
+		setValor(valor);
+		setValorComTaxa(valorComTaxa);
+		setValorTaxa(valorComTaxa - valorServico);
+
+		return valorComTaxa;
+
+	};
+
+
+	return (
+		<Modal visible={props.isMakingBudget} style={{width: "100%"}}>
+			<View
+				style={{alignItems: "center", justifyContent: "center", paddingTop: 120}}>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === "ios" ? "padding" : "height"}>
+					<Text style={styles.fontTitle}>Orçar</Text>
+					<TextInput
+						style={styles.loginFormSizeAndFont}
+						placeholder="Valor do serviço"
+						keyboardType="number-pad"
+						onChangeText={calcularValorServico}
+						value={valor}
+					/>
+					<TextInput
+						style={styles.loginFormSizeAndFont}
+						placeholder="Total a ser cobrado"
+						value={formatarValorServico(valorComTaxa)}
+						editable={false}
+					/>
+				</KeyboardAvoidingView>
+				<TouchableOpacity
+					style={styles.loginButton}
+					onPress={() => {
+
+						if (!valor || valorComTaxa < 0) {
+
+							Alert.alert(
+								"Finddo",
+								"Por favor defina um valor para o pedido",
+								[{text: "OK", onPress: () => void 0}],
+								{cancelable: false},
+							);
+
+						} else {
+
+							const order = props.pedido;
+
+							Alert.alert(
+								"Finddo",
+								`Confirma o valor ${formatarValorServico(valorComTaxa)}?`,
+								[
+									{text: "Cancelar", onPress: () => void 0},
+									{text: "OK",
+										onPress: async() => {
+
+											props.closeModal();
+
+											try {
+
+												await backendRails
+													.post("/orders/propose_budget",
+														{id: props.pedido.id, budget: valorComTaxa},
+														{headers: TokenService.getInstance().getHeaders()});
+
+												Alert.alert("Proposta enviada");
+
+											} catch (error) {
+
+												console.log({error, payload: {id: props.pedido.id, budget: valorComTaxa}, headers: TokenService.getInstance().getHeaders()})
+												Alert.alert("Erro ao enviar proposta");
+
+											}
+
+
+										}},
+								],
+								{cancelable: false},
+							);
+
+						}
+
+					}}>
+					<Text style={styles.loginButtonText}>Propor Orçamento</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={styles.loginButton}
+					onPress={props.closeModal}>
+					<Text style={styles.loginButtonText}>Voltar</Text>
+				</TouchableOpacity>
+			</View>
+		</Modal>);
+
+};
+
+Object.assign(styles, {
+	modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
+	backgroundImageContent: {width: "100%", height: "100%"},
+	finddoLogoStyle: {marginTop: 60, marginBottom: 120},
+	loginForm: {flex: 1, alignItems: "center", justifyContent: "center"},
+	loginMainForm: {flex: 1, alignItems: "center", justifyContent: "center", width: 340, height: 250, backgroundColor: colors.branco},
+	loginButton: {
+		marginTop: 10,
+		width: 340,
+		height: 45,
+		borderRadius: 20,
+		backgroundColor: colors.verdeFinddo,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	loginButtonText: {
+		fontSize: 18, color: colors.branco, textAlign: "center",
+	},
+	loginFormSizeAndFont:
+	{
+		fontSize: 18,
+		height: 45,
+		borderBottomColor: colors.verdeFinddo,
+		borderBottomWidth: 2,
+		textAlign: "left",
+		width: 300,
+	},
+	loginEsqueciSenha:
+	{
+		fontSize: 18,
+		height: 45,
+		textAlign: "center",
+		width: 300,
+		textDecorationLine: "underline",
+		textAlignVertical: "bottom",
+	},
+	fontTitle: {
+		fontSize: 30,
+		textAlign: "center",
+		fontWeight: "bold",
+	},
+	cadastreSe: {fontWeight: "bold", textDecorationLine: "underline"},
+});

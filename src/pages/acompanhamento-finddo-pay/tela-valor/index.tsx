@@ -42,6 +42,20 @@ export default class ValorServicoScreen extends Component {
 	constructor(props) {
 
 		super(props);
+		const order = this.props.navigation.getParam("pedido");
+		console.log(order)
+
+		if (order.budget) {
+
+			const budget = Number(order.budget.budget);
+			const ratio = budget < 100 ? 1.25 : budget < 600 ? 1.2 : 1.15;
+			const valorServico = budget / ratio;
+
+			this.state.valorComTaxa = budget;
+			this.state.valorTaxa = budget - valorServico;	
+			this.state.valorServico = String(valorServico);
+
+		}
 
 	}
 
@@ -142,8 +156,7 @@ export default class ValorServicoScreen extends Component {
 		const {navigation} = this.props;
 		const pedido = navigation.getParam("pedido", null);
 
-		if (pedido)
-			this.setState({pedido});
+		if (pedido) this.setState({pedido});
 
 	}
 

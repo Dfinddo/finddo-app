@@ -1,9 +1,11 @@
 import React, {Component} from "react";
-import {View, Text, TouchableOpacity, ScrollView, StyleSheet, FlatList, Image} from "react-native";
+import {View, Text, TouchableOpacity, ScrollView, StyleSheet, FlatList, Image, Alert} from "react-native";
 import {colors} from "../colors";
 import TokenService from "../services/token-service";
-import {backendUrl} from "../services/backend-rails-api";
+import backendRails, {backendUrl} from "../services/backend-rails-api";
 import PedidoCorrenteService from "../services/pedido-corrente-service";
+import {SvgXml} from "react-native-svg";
+import {fechar} from "../img/svg/fechar";
 
 export default class VisualizarPedido extends Component {
 
@@ -28,6 +30,10 @@ export default class VisualizarPedido extends Component {
 
 		if (this.props.pedido.isShowingPedido) {
 
+			order.id = this.props.pedido.pedidoCorrente.id;
+			order.budget = this.props.pedido.pedidoCorrente.budget;
+			order.accepted = this.props.pedido.pedidoCorrente.accepted;
+			order.order_status = this.props.pedido.pedidoCorrente.order_status;
 			order.description = this.props.pedido.pedidoCorrente.description;
 			order.category = this.props.pedido.pedidoCorrente.category.name;
 			order.urgencia = this.props.pedido.pedidoCorrente.urgency === "urgent" ? "definir-data" : "semana";
@@ -38,6 +44,10 @@ export default class VisualizarPedido extends Component {
 
 		} else {
 
+			order.id = this.props.pedido.id;
+			order.budget = this.props.pedido.budget;
+			order.accepted = this.props.pedido.accepted;
+			order.order_status = this.props.pedido.order_status;
 			order.description = this.props.pedido.necessidade;
 			order.category = this.props.pedido.categoriaPedido.name;
 			order.urgencia = this.props.pedido.urgencia;
@@ -51,10 +61,65 @@ export default class VisualizarPedido extends Component {
 			order.hora_fim = this.props.pedido.horaFim;
 
 		}
+		console.log(order)
 
 		this.setState({order});
 
 	}
+
+	private aceitarOrcamento = () => this.responderProposta(true)
+
+	private cancelarPedido = () => this.responderProposta(false)
+
+	private responderProposta = async isApproved => {
+
+		this.props.onCancel();
+
+		try {
+
+			const tokenService = TokenService.getInstance();
+
+			await backendRails
+				.post("/orders/budget_approve",
+					{id: this.state.order.id, accepted: isApproved},
+					{headers: tokenService.getHeaders()});
+
+			Alert.alert(
+				isApproved ?
+					"A proposta foi aceita" :
+					"O pedido foi cancelado com sucesso", void 0,
+				[{text: "OK", onPress: this.props.onCancel}],
+				{cancelable: false},
+			);
+
+		} catch (error) {
+
+			console.log({error});
+			if (error.response) {
+
+				Alert.alert(
+					"Erro",
+					"Verifique sua conexão e tente novamente",
+					[{text: "OK", onPress: () => void 0}],
+					{cancelable: false},
+				);
+
+			} else if (error.request) {
+
+				Alert.alert(
+					"Falha ao se conectar",
+					"Verifique sua conexão e tente novamente",
+					[{text: "OK", onPress: () => void 0}],
+					{cancelable: false},
+				);
+
+			}
+
+		}
+
+	}
+
+	private formatarValorServico = valor => `R$ ${String((Math.round((valor + Number.EPSILON) * 100) / 100).toFixed(2))}`;
 
 	public render() {
 
@@ -122,6 +187,11 @@ export default class VisualizarPedido extends Component {
 					alignItems: "center",
 					justifyContent: "center",
 				}}>
+					<TouchableOpacity
+						onPress={this.props.onCancel}
+						style={{marginHorizontal: 10, top: 40, left: 330, zIndex: 1000, position: "absolute"}}>
+						<SvgXml xml={fechar} width={20} height={20} />
+					</TouchableOpacity>
 					<View style={{
 						width: 320,
 						height: "90%",
@@ -131,6 +201,15 @@ export default class VisualizarPedido extends Component {
 						<ScrollView>
 							<View style={{alignItems: "center", justifyContent: "flex-start", paddingVertical: 13}}>
 								<Text style={{fontSize: 30, fontWeight: "bold"}}>Detalhes do Pedido</Text>
+								{
+									this.state.order.budget &&
+									<>
+										<Text style={this.visualizarPedidoStyle.titulos}>O profissional já estabeleceu o valor do serviço, confirme para darmos sequência</Text>
+										<Text style={[this.visualizarPedidoStyle.textos, {color: colors.verdeFinddo, fontWeight: "bold"}]}>{
+											this.formatarValorServico(Number(this.state.order.budget.budget))
+										}</Text>
+									</>
+								}
 								<Text style={this.visualizarPedidoStyle.titulos}>Tipo:</Text>
 								<Text style={this.visualizarPedidoStyle.textos}>{this.state.order.category}</Text>
 								<Text style={this.visualizarPedidoStyle.titulos}>Descrição:</Text>
@@ -226,19 +305,39 @@ export default class VisualizarPedido extends Component {
 								</TouchableOpacity>;
 
 							})()}
-							<TouchableOpacity
-								onPress={this.props.onCancel}
-								style={{
-									width: 300,
-									backgroundColor: colors.verdeFinddo,
-									justifyContent: "center",
-									alignItems: "center",
-									borderRadius: 20,
-									height: 45,
-									marginBottom: 10,
-								}}>
-								<Text style={{color: colors.branco, fontSize: 18}}>VOLTAR</Text>
-							</TouchableOpacity>
+							{
+								this.state.order.budget &&
+								!this.state.order.budget.accepted &&
+								this.state.order.order_status === "a_caminho" &&
+								<>
+									<TouchableOpacity
+										onPress={this.aceitarOrcamento}
+										style={{
+											width: 300,
+											backgroundColor: colors.verdeFinddo,
+											justifyContent: "center",
+											alignItems: "center",
+											borderRadius: 20,
+											height: 45,
+											marginBottom: 10,
+										}}>
+										<Text style={{color: colors.branco, fontSize: 18}}>ACEITAR ORÇAMENTO</Text>
+									</TouchableOpacity>
+									<TouchableOpacity
+										onPress={this.cancelarPedido}
+										style={{
+											width: 300,
+											backgroundColor: colors.verdeFinddo,
+											justifyContent: "center",
+											alignItems: "center",
+											borderRadius: 20,
+											height: 45,
+											marginBottom: 10,
+										}}>
+										<Text style={{color: colors.branco, fontSize: 18}}>CANCELAR PEDIDO</Text>
+									</TouchableOpacity>
+								</>
+							}
 						</View>
 					</View>
 				</View>
