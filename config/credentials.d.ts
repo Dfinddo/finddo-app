@@ -14,3 +14,5 @@ export const MOIP_CREDS_DATA: {
 	redirectUrl: string;
 	connectWirecardUrl: string;
 };
+
+export const PHONE: string;
