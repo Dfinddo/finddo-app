@@ -37,7 +37,10 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
+	<key>NSCameraUsageDescription</key>
+	<string>Precisamos usar sua câmera para obter fotos dos problemas.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Precisamos acessar sua galeria para obter fotos dos problemas.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
