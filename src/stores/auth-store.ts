@@ -143,6 +143,19 @@ class AuthStore {
 		}
 	};
 
+	public restoreSession = async () => {
+		const [userData, headers] = (
+			await AsyncStorage.multiGet(["user", "userToken"])
+		).map(([, value]) => value && JSON.parse(value));
+
+		if (!userData || !headers) return;
+
+		finddoApi.defaults.headers["access-token"] = headers["access-token"];
+		finddoApi.defaults.headers.client = headers.client;
+		finddoApi.defaults.headers.uid = headers.uid;
+		Object.assign(this, userData);
+	};
+
 	public getProfilePicture = async () => {
 		try {
 			const data = await finddoApi.get(`/users/profile_photo/${this.id}`);
