@@ -1,5 +1,5 @@
 import {observable, computed, action, runInAction} from "mobx";
-import {validations, validateInput, pick} from "utils";
+import {validations, validateInput, pick, checkFieldsForErrors} from "utils";
 import finddoApi, {CardApiResponse} from "finddo-api";
 
 const numberTests = [validations.required(), validations.definedLength(16)];
@@ -14,6 +14,16 @@ const taxDocumentTests = [
 	validations.definedLength(11),
 ];
 const phoneTests = [validations.required(), validations.definedLength(11)];
+
+const cardApiFields = [
+	"number",
+	"expirationDate",
+	"cvv",
+	"holderName",
+	"holderBirthdate",
+	"taxDocument",
+	"phone",
+] as const;
 
 class CardStore {
 	@observable public number = "";
@@ -49,6 +59,10 @@ class CardStore {
 	@observable public phone = "";
 	@computed public get phoneError(): string | undefined {
 		return validateInput(this.phone, phoneTests);
+	}
+
+	@computed public get hasErrors(): boolean {
+		return checkFieldsForErrors(this, cardApiFields);
 	}
 
 	@action

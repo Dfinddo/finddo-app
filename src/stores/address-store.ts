@@ -1,11 +1,12 @@
 import {observable, computed, action, runInAction} from "mobx";
-import {validations, validateInput, pick} from "utils";
+import {validations, validateInput, pick, checkFieldsForErrors} from "utils";
 import finddoApi, {AddressApiResponse} from "finddo-api";
 
 const defaultTests = [validations.required(), validations.maxLength(128)];
 const cepTests = [validations.required(), validations.definedLength(8)];
 const numberTests = [validations.required(), validations.maxLength(10)];
 const stateTests = [validations.required(), validations.maxLength(2)];
+const complementTests = [validations.maxLength(128)];
 
 const addressApiFields = [
 	"cep",
@@ -58,7 +59,11 @@ class AddressStore {
 
 	@observable public complement = "";
 	@computed public get complementError(): string | undefined {
-		return validateInput(this.complement, defaultTests);
+		return validateInput(this.complement, complementTests);
+	}
+
+	@computed public get hasErrors(): boolean {
+		return checkFieldsForErrors(this, addressApiFields);
 	}
 
 	@action
