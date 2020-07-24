@@ -15,6 +15,18 @@ export type ServiceStatus =
 	| "finalizado"
 	| "cancelado";
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
+export const serviceStatusDescription = {
+	"": "Todos os status",
+	"analise": "Pedido em Análise",
+	"agendando_visita": "Agendando Visita",
+	"a_caminho": "Profissional à Caminho",
+	"em_servico": "Serviço em Execução",
+	"finalizado": "Concluído",
+	"cancelado": "Cancelado",
+} as const;
+
 export const serviceCategories = {
 	1: {
 		name: "Hidráulica",
@@ -42,8 +54,6 @@ export const serviceCategories = {
 		imageUrl: require("assets/consertos.png"),
 	},
 } as const;
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 interface UserApiResponse {
 	bairro: string;
@@ -97,7 +107,7 @@ interface AddressApiResponse {
 interface ServiceApiResponse {
 	address: AddressApiResponse;
 	budget: null;
-	category: {id: number; name: string};
+	category: {id: keyof typeof serviceCategories | null; name: string};
 	description: string;
 	end_order: string;
 	hora_fim: string;

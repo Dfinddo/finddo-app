@@ -1,7 +1,11 @@
 import {observable, computed, action} from "mobx";
 import {validations, validateInput} from "utils";
 import AddressStore from "stores/address-store";
-import finddoApi, {ServiceApiResponse, ServiceStatus} from "finddo-api";
+import finddoApi, {
+	ServiceApiResponse,
+	ServiceStatus,
+	serviceCategories,
+} from "finddo-api";
 import AuthStore from "./auth-store";
 
 const descriptionTests = [
@@ -10,43 +14,48 @@ const descriptionTests = [
 	validations.maxLength(10000),
 ];
 
+const defaultTests = [validations.required()];
+
 class ServiceStore {
 	@observable
 	public id: number | null = null;
 
 	@observable
-	public categoryID: number | null = null;
+	public userID: number | null = null;
 
 	@observable
-	public description = "";
-
-	@computed public get descriptionError(): string | undefined {
-		return validateInput(this.description, descriptionTests);
-	}
-
-	@observable
-	public urgency: "urgent" | "not urgent" = "not urgent";
+	public categoryID: keyof typeof serviceCategories | null = null;
 
 	@observable
 	public status: ServiceStatus = "" as ServiceStatus;
 
-	@observable
-	public serviceDate: Date = new Date();
+	@observable public description = "";
+	@computed public get descriptionError(): string | undefined {
+		return validateInput(this.description, descriptionTests);
+	}
+
+	@observable public urgency: "urgent" | "not urgent" = "not urgent";
+	@computed public get urgencyError(): string | undefined {
+		return validateInput(this.urgency, defaultTests);
+	}
+
+	@observable public serviceDate: Date = new Date();
+	// @computed public get serviceDateError(): string | undefined {
+	// 	return validateInput(this.serviceDate, defaultTests);
+	// }
+
+	@observable public startTime = "";
+	@computed public get startTimeError(): string | undefined {
+		return validateInput(this.startTime, defaultTests);
+	}
+
+	@observable public endTime = "";
+	@computed public get endTimeError(): string | undefined {
+		return validateInput(this.endTime, defaultTests);
+	}
 
 	@observable
-	public userID: number | null = null;
-
-	@observable
-	public addressID: number | null = null;
-
-	@observable
-	public startTime = "";
-
-	@observable
-	public endTime = "";
-
-	@observable
-	public images = [];
+	public images: {data: string; mime: string}[] = [];
 
 	public address = new AddressStore();
 
