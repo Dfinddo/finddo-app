@@ -38,6 +38,9 @@ android/app/bin/
 # credentials
 config/*.js
 
+# auto generated files
+src/assets/licenses.json
+
 # node.js
 #
 node_modules/

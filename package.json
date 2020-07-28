@@ -6,9 +6,11 @@
 		"android": "react-native run-android",
 		"ios": "react-native run-ios",
 		"start": "react-native start",
+		"postinstall": "npm run compile-license",
 		"test": "jest",
 		"lint": "eslint './src/**'",
-		"fix": "eslint --fix './src/**'"
+		"fix": "eslint --fix './src/**'",
+		"compile-license": "scripts/compile-license"
 	},
 	"dependencies": {
 		"@eva-design/eva": "^2.0.0",
