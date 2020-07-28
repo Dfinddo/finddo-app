@@ -13,12 +13,13 @@ import {
 	ServiceAddress,
 	ConfirmService,
 } from "pages/app/services/new-service";
-import {useTheme, Drawer, DrawerItem, IndexPath} from "@ui-kitten/components";
+import {Drawer, DrawerItem, IndexPath} from "@ui-kitten/components";
 import {Help} from "pages/app";
 import {Profile} from "pages/app/profile";
 import {MyAddresses, ManageAddress} from "pages/app/addresses";
 import Chat from "pages/app/chat/Chat";
 import {Cards, AddCard} from "pages/app/payment-methods";
+import {useThemedHeaderConfig} from "hooks";
 
 const PaymentMethodsStack = createStackNavigator<PaymentMethodsStackParams>();
 const AddressStack = createStackNavigator<AddressStackParams>();
@@ -26,45 +27,52 @@ const ServicesStack = createStackNavigator<ServicesStackParams>();
 const NewServiceStack = createStackNavigator<NewServiceStackParams>();
 const AppDrawer = createDrawerNavigator<AppDrawerParams>();
 
-const PaymentMethodsRoute: FC = () => (
-	<PaymentMethodsStack.Navigator initialRouteName="Cards">
-		<PaymentMethodsStack.Screen
-			name="Cards"
-			component={Cards}
-			options={{title: "Métodos de Pagamento"}}
-		/>
-		<PaymentMethodsStack.Screen
-			name="AddCard"
-			component={AddCard}
-			options={{title: "Adicionar Cartão"}}
-		/>
-	</PaymentMethodsStack.Navigator>
-);
+const PaymentMethodsRoute: FC = () => {
+	const screenOptions = useThemedHeaderConfig();
 
-const AddressRoute: FC = () => (
-	<AddressStack.Navigator initialRouteName="MyAddresses">
-		<AddressStack.Screen
-			name="MyAddresses"
-			component={MyAddresses}
-			options={{title: "Endereços Cadastrados"}}
-		/>
-		<AddressStack.Screen
-			name="ManageAddress"
-			component={ManageAddress}
-			options={{title: "Gerenciar Endereço"}}
-		/>
-	</AddressStack.Navigator>
-);
+	return (
+		<PaymentMethodsStack.Navigator
+			screenOptions={screenOptions}
+			initialRouteName="Cards"
+		>
+			<PaymentMethodsStack.Screen
+				name="Cards"
+				component={Cards}
+				options={{title: "Métodos de Pagamento"}}
+			/>
+			<PaymentMethodsStack.Screen
+				name="AddCard"
+				component={AddCard}
+				options={{title: "Adicionar Cartão"}}
+			/>
+		</PaymentMethodsStack.Navigator>
+	);
+};
+
+const AddressRoute: FC = () => {
+	const screenOptions = useThemedHeaderConfig();
+
+	return (
+		<AddressStack.Navigator
+			screenOptions={screenOptions}
+			initialRouteName="MyAddresses"
+		>
+			<AddressStack.Screen
+				name="MyAddresses"
+				component={MyAddresses}
+				options={{title: "Endereços Cadastrados"}}
+			/>
+			<AddressStack.Screen
+				name="ManageAddress"
+				component={ManageAddress}
+				options={{title: "Gerenciar Endereço"}}
+			/>
+		</AddressStack.Navigator>
+	);
+};
 
 const NewServiceRoute: FC = () => {
-	const theme = useTheme();
-
-	const screenOptions = {
-		headerStyle: {
-			backgroundColor: theme["background-basic-color-1"],
-		},
-		headerTintColor: theme["text-basic-color"],
-	};
+	const screenOptions = useThemedHeaderConfig();
 
 	return (
 		<NewServiceStack.Navigator
@@ -106,14 +114,7 @@ const NewServiceRoute: FC = () => {
 };
 
 const ServicesRoute: FC = () => {
-	const theme = useTheme();
-
-	const screenOptions = {
-		headerStyle: {
-			backgroundColor: theme["background-basic-color-1"],
-		},
-		headerTintColor: theme["text-basic-color"],
-	};
+	const screenOptions = useThemedHeaderConfig();
 
 	return (
 		<ServicesStack.Navigator

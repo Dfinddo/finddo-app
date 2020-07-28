@@ -7,32 +7,35 @@ import {
 	LoginDataForm,
 	SelectUserType,
 } from "pages/auth/register";
-import {useTheme} from "@ui-kitten/components";
+import {useThemedHeaderConfig} from "hooks";
 
 const AuthStack = createStackNavigator<AuthStackParams>();
 const RegisterStack = createStackNavigator<RegisterStackParams>();
 
-const RegisterRoute = (): JSX.Element => (
-	<RegisterStack.Navigator initialRouteName="SelectUserType">
-		<RegisterStack.Screen name="SelectUserType" component={SelectUserType} />
-		<RegisterStack.Screen name="UserDataForm" component={UserDataForm} />
-		<RegisterStack.Screen
-			name="BillingAddressForm"
-			component={BillingAddressForm}
-		/>
-		<RegisterStack.Screen name="LoginDataForm" component={LoginDataForm} />
-	</RegisterStack.Navigator>
-);
+const RegisterRoute = (): JSX.Element => {
+	const screenOptions = useThemedHeaderConfig();
+
+	return (
+		<RegisterStack.Navigator
+			screenOptions={screenOptions}
+			initialRouteName="SelectUserType"
+		>
+			<RegisterStack.Screen
+				name="SelectUserType"
+				component={SelectUserType}
+			/>
+			<RegisterStack.Screen name="UserDataForm" component={UserDataForm} />
+			<RegisterStack.Screen
+				name="BillingAddressForm"
+				component={BillingAddressForm}
+			/>
+			<RegisterStack.Screen name="LoginDataForm" component={LoginDataForm} />
+		</RegisterStack.Navigator>
+	);
+};
 
 const AuthRoute = (): JSX.Element => {
-	const theme = useTheme();
-
-	const screenOptions = {
-		headerStyle: {
-			backgroundColor: theme["background-basic-color-1"],
-		},
-		headerTintColor: theme["text-basic-color"],
-	};
+	const screenOptions = useThemedHeaderConfig();
 
 	return (
 		<AuthStack.Navigator
