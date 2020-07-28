@@ -1,7 +1,7 @@
 import React from "react";
 import {observer} from "mobx-react-lite";
 import AddressForm from "components/AddressForm";
-import {useAuth, useSwitch} from "hooks";
+import {useUser, useSwitch} from "hooks";
 import {Layout, Button} from "@ui-kitten/components";
 import {ScrollView, StyleSheet} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -13,8 +13,8 @@ type BillingAddressFormScreenProps = StackScreenProps<
 >;
 
 const BillingAddressForm = observer<BillingAddressFormScreenProps>(props => {
-	const authStore = useAuth();
-	const {billingAddress: addressStore} = authStore;
+	const userStore = useUser();
+	const {billingAddress: addressStore} = userStore;
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 
 	const onAdvanceAttempt = (): void => {

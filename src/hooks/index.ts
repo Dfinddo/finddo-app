@@ -1,8 +1,8 @@
 import {useState, useContext} from "react";
-import {AuthContext} from "components/providers/auth-provider";
+import {UserContext} from "components/providers/user-provider";
 import {ServiceContext} from "components/providers/service-provider";
 import {AddressListContext} from "components/providers/address-list-store";
-import AuthStore from "stores/auth-store";
+import UserStore from "stores/user-store";
 import ServiceStore from "stores/service-store";
 import AddressListStore from "stores/address-list-store";
 import {ServiceListContext} from "components/providers/service-list-provider";
@@ -19,7 +19,7 @@ const useSwitch = (initialSwitchState: boolean): [boolean, () => void] => {
 // Context hooks
 const useService = (): ServiceStore => useContext(ServiceContext);
 const useServiceList = (): ServiceListStore => useContext(ServiceListContext);
-const useAuth = (): AuthStore => useContext(AuthContext);
+const useUser = (): UserStore => useContext(UserContext);
 const useAddressList = (): AddressListStore => useContext(AddressListContext);
 
-export {useSwitch, useService, useServiceList, useAuth, useAddressList};
+export {useSwitch, useService, useServiceList, useUser, useAddressList};

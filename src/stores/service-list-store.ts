@@ -1,6 +1,6 @@
 import {observable, action, runInAction} from "mobx";
 import ServiceStore from "stores/service-store";
-import AuthStore from "stores/auth-store";
+import UserStore from "stores/user-store";
 import finddoApi from "finddo-api";
 
 class ServiceListStore {
@@ -8,11 +8,11 @@ class ServiceListStore {
 	public list: ServiceStore[] = [];
 
 	@action
-	public async fetchServices(authStore: AuthStore): Promise<void> {
+	public async fetchServices(userStore: UserStore): Promise<void> {
 		try {
 			const endpoint =
-				authStore.userType === "user"
-					? `/orders/user/${authStore.id}/active`
+				userStore.userType === "user"
+					? `/orders/user/${userStore.id}/active`
 					: "/orders/available";
 
 			const response = await finddoApi.get(endpoint);

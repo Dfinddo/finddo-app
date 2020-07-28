@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Alert, KeyboardAvoidingView, Platform, StyleSheet} from "react-native";
 import {Datepicker, Text, Button, Layout} from "@ui-kitten/components";
-import {useAuth, useSwitch} from "hooks";
+import {useUser, useSwitch} from "hooks";
 import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import ValidatedInput from "components/ValidatedInput";
@@ -31,17 +31,17 @@ const formFields = [
 const UserDataForm = observer<UserDataFormScreenProps>(props => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
-	const authStore = useAuth();
+	const userStore = useUser();
 
 	const onAdvanceAttempt = async (): Promise<void> => {
 		setIsLoading(true);
 		let isRegistered = false;
 
-		if (checkFieldsForErrors(authStore, formFields))
+		if (checkFieldsForErrors(userStore, formFields))
 			return setFillAttemptAsFailed();
 
 		try {
-			isRegistered = await authStore.isRegistered();
+			isRegistered = await userStore.isRegistered();
 		} catch (error) {
 			if (error.message === "Connection error")
 				Alert.alert("Falha ao conectar");
@@ -65,58 +65,58 @@ const UserDataForm = observer<UserDataFormScreenProps>(props => {
 				<Text style={styles.fontTitle}>Crie sua conta</Text>
 
 				<ValidatedInput
-					onChangeText={input => (authStore.name = input)}
+					onChangeText={input => (userStore.name = input)}
 					label="Nome"
 					maxLength={70}
-					value={authStore.name}
-					error={authStore.nameError}
+					value={userStore.name}
+					error={userStore.nameError}
 					forceErrorDisplay={hasFailedToFillForm}
 				/>
 				<ValidatedInput
-					onChangeText={input => (authStore.surname = input)}
+					onChangeText={input => (userStore.surname = input)}
 					label="Sobrenome"
 					maxLength={255}
-					value={authStore.surname}
-					error={authStore.surnameError}
+					value={userStore.surname}
+					error={userStore.surnameError}
 					forceErrorDisplay={hasFailedToFillForm}
 				/>
-				{authStore.userType === "professional" && (
+				{userStore.userType === "professional" && (
 					<ValidatedInput
-						onChangeText={input => (authStore.mothersName = input)}
+						onChangeText={input => (userStore.mothersName = input)}
 						label="Nome da Mãe (Completo)"
 						maxLength={255}
-						value={authStore.mothersName}
-						error={authStore.mothersNameError}
+						value={userStore.mothersName}
+						error={userStore.mothersNameError}
 						forceErrorDisplay={hasFailedToFillForm}
 					/>
 				)}
 				<ValidatedMaskedInput
 					formatter={phoneFormatter}
 					formattingFilter={numericFormattingFilter}
-					onChangeText={input => (authStore.cellphone = input)}
+					onChangeText={input => (userStore.cellphone = input)}
 					label="Telefone"
 					keyboardType="numeric"
 					maxLength={15}
-					value={authStore.cellphone}
-					error={authStore.cellphoneError}
+					value={userStore.cellphone}
+					error={userStore.cellphoneError}
 					forceErrorDisplay={hasFailedToFillForm}
 				/>
 				<ValidatedMaskedInput
 					formatter={cpfFormatter}
 					formattingFilter={numericFormattingFilter}
-					onChangeText={input => (authStore.cpf = input)}
+					onChangeText={input => (userStore.cpf = input)}
 					label="CPF"
 					keyboardType="numeric"
 					maxLength={14}
-					value={authStore.cpf}
-					error={authStore.cpfError}
+					value={userStore.cpf}
+					error={userStore.cpfError}
 					forceErrorDisplay={hasFailedToFillForm}
 				/>
 				<Datepicker
 					min={new Date("01/01/1920")}
-					onSelect={input => (authStore.birthdate = input)}
+					onSelect={input => (userStore.birthdate = input)}
 					label="Data de Nascimento"
-					date={authStore.birthdate}
+					date={userStore.birthdate}
 					style={styles.input}
 				/>
 				<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>

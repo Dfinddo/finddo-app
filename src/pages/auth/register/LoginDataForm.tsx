@@ -12,7 +12,7 @@ import {observer} from "mobx-react-lite";
 import {Input, Modal, Text, Button, Layout, Card} from "@ui-kitten/components";
 import ValidatedInput from "components/ValidatedInput";
 import {validations, validateInput} from "utils";
-import {useAuth} from "hooks";
+import {useUser} from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RegisterStackParams} from "src/routes/auth";
@@ -29,7 +29,7 @@ type LoginDataFormScreenProps = StackScreenProps<
 >;
 
 const LoginDataForm = observer<LoginDataFormScreenProps>(props => {
-	const authStore = useAuth();
+	const userStore = useUser();
 	const [isLoading, setIsLoading] = useState(false);
 	const [password, setPassword] = useState("");
 	const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -87,12 +87,12 @@ const LoginDataForm = observer<LoginDataFormScreenProps>(props => {
 			>
 				<Text style={styles.fontTitle}>Crie sua conta</Text>
 				<Input
-					onChangeText={input => (authStore.email = input)}
+					onChangeText={input => (userStore.email = input)}
 					label="Email"
 					keyboardType="email-address"
 					autoCapitalize="none"
 					maxLength={128}
-					value={authStore.email}
+					value={userStore.email}
 				/>
 				<Input
 					onChangeText={setPassword}

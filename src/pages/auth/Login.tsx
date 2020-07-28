@@ -10,7 +10,7 @@ import {SvgXml} from "react-native-svg";
 import {finddoLogo} from "../../assets/svg/finddo-logo";
 import {Input, Button, Text, Layout} from "@ui-kitten/components";
 import {observer} from "mobx-react-lite";
-import {useAuth} from "hooks";
+import {useUser} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AuthStackParams} from "src/routes/auth";
@@ -18,7 +18,7 @@ import {AuthStackParams} from "src/routes/auth";
 type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
 
 const Login = observer<LoginScreenProps>(props => {
-	const authStore = useAuth();
+	const userStore = useUser();
 	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -26,7 +26,7 @@ const Login = observer<LoginScreenProps>(props => {
 	const login = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			await authStore.signIn(email, password);
+			await userStore.signIn(email, password);
 		} catch (error) {
 			if (error.message === "Invalid credentials")
 				Alert.alert("Email ou senha incorretos");

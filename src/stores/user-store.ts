@@ -15,7 +15,7 @@ const emailTests = [
 const cellphoneTests = [validations.required(), validations.definedLength(11)];
 const cpfTests = [validations.required(), validations.definedLength(11)];
 
-class AuthStore {
+class UserStore {
 	@observable public userType: "user" | "professional" = "user";
 
 	@observable public id = "";
@@ -187,4 +187,4 @@ class AuthStore {
 	};
 }
 
-export default AuthStore;
+export default UserStore;

@@ -6,7 +6,7 @@ import finddoApi, {
 	ServiceStatus,
 	serviceCategories,
 } from "finddo-api";
-import AuthStore from "./auth-store";
+import UserStore from "./user-store";
 
 const descriptionTests = [
 	validations.required(),
@@ -96,12 +96,12 @@ class ServiceStore {
 		this.address = new AddressStore();
 	}
 
-	public saveService = async (authStore: AuthStore): Promise<void> => {
+	public saveService = async (userStore: UserStore): Promise<void> => {
 		const order: any = {};
 
 		order.category_id = this.categoryID;
 		order.description = this.description;
-		order.user_id = authStore.id;
+		order.user_id = userStore.id;
 		order.urgency = this.urgency;
 		order.start_order = `${this.serviceDate.toDateString()} ${
 			this.startTime

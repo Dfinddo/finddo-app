@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import {StyleSheet} from "react-native";
 import {Button, Text, Layout} from "@ui-kitten/components";
-import {useAuth} from "hooks";
+import {useUser} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RegisterStackParams} from "src/routes/auth";
 
@@ -11,9 +11,9 @@ type SelectUserTypeScreenProps = StackScreenProps<
 >;
 
 const SelectUserType: FC<SelectUserTypeScreenProps> = ({navigation}) => {
-	const authStore = useAuth();
+	const userStore = useUser();
 	const advance = (userType: "user" | "professional") => () => {
-		authStore.userType = userType;
+		userStore.userType = userType;
 		navigation.navigate("UserDataForm");
 	};
 

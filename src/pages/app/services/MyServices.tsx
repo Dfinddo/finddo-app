@@ -11,7 +11,7 @@ import {
 	Layout,
 	useTheme,
 } from "@ui-kitten/components";
-import {useAuth, useServiceList} from "hooks";
+import {useUser, useServiceList} from "hooks";
 import {observer} from "mobx-react-lite";
 import {serviceCategories, serviceStatusDescription} from "finddo-api";
 import ServiceStore from "stores/service-store";
@@ -39,14 +39,14 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const serviceListStore = useServiceList();
 	const [selectValue, setSelectValue] = useState(0);
-	const authStore = useAuth();
+	const userStore = useUser();
 	const theme = useTheme();
 
 	const obterPedidos = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 
 		try {
-			await serviceListStore.fetchServices(authStore);
+			await serviceListStore.fetchServices(userStore);
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -59,7 +59,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [authStore, serviceListStore]);
+	}, [userStore, serviceListStore]);
 
 	useEffect(() => void obterPedidos(), [obterPedidos]);
 
@@ -110,7 +110,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 					)}
 				/>
 			</View>
-			{authStore.userType === "user" && (
+			{userStore.userType === "user" && (
 				<Button onPress={() => navigation.navigate("NewService")}>
 					NOVO PEDIDO
 				</Button>
