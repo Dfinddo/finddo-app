@@ -75,30 +75,22 @@ class AuthStore {
 
 	public signIn = async (email: string, password: string): Promise<void> => {
 		try {
-			const response = await finddoApi.post("/auth/sign_in", {
-				email,
-				password,
-			});
-			const {
-				headers,
-				data: {data},
-			} = response;
-			const {user_type: userType, ...userData} = data;
+			const response = await finddoApi.post("/login", {email, password});
+			const {user, jwt} = response.data;
+			const {user_type: userType, ...userData} = user;
 
-			if (data.activated === false) throw new Error("Account not validated");
+			if (user.activated === false) throw new Error("Account not validated");
 
-			finddoApi.defaults.headers["access-token"] = headers["access-token"];
-			finddoApi.defaults.headers.client = headers.client;
-			finddoApi.defaults.headers.uid = headers.uid;
+			finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
 
 			Object.assign(this, userData, {userType});
-			AsyncStorage.setItem("userToken", JSON.stringify(headers));
-			AsyncStorage.setItem("user", JSON.stringify(this));
 
 			// await finddoApi.put(`users/player_id_notifications/${this.id}`,
 			// 	{player_id: this.oneSignalID});
+
+			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
+			AsyncStorage.setItem("user", JSON.stringify(this));
 		} catch (error) {
-			console.log({error});
 			if (error.response) throw new Error("Invalid credentials");
 			else if (error.request) throw new Error("Connection error");
 			else throw error;
@@ -106,19 +98,18 @@ class AuthStore {
 	};
 
 	public signOut = async (): Promise<void> => {
-		await AsyncStorage.multiRemove(["user", "userToken"]);
+		await AsyncStorage.multiRemove(["user", "access-token"]);
 
-		this.id = this.email = this.cellphone = this.name = this.surname = this.cpf =
-			"";
+		(["id", "email", "cellphone", "name", "surname", "cpf"] as const).forEach(
+			field => (this[field] = ""),
+		);
 		this.userType = "user";
 
 		// finddoApi.delete(
 		// 	`users/remove_player_id_notifications/${this.id}/${tokenService.getPlayerIDOneSignal()}`,
 		// );
 
-		delete finddoApi.defaults.headers["access-token"];
-		delete finddoApi.defaults.headers.client;
-		delete finddoApi.defaults.headers.uid;
+		delete finddoApi.defaults.headers.Authorization;
 	};
 
 	public signUp = async () => {
@@ -144,15 +135,13 @@ class AuthStore {
 	};
 
 	public restoreSession = async () => {
-		const [userData, headers] = (
-			await AsyncStorage.multiGet(["user", "userToken"])
+		const [userData, jwt] = (
+			await AsyncStorage.multiGet(["user", "access-token"])
 		).map(([, value]) => value && JSON.parse(value));
 
-		if (!userData || !headers) return;
+		if (!userData || !jwt) return;
 
-		finddoApi.defaults.headers["access-token"] = headers["access-token"];
-		finddoApi.defaults.headers.client = headers.client;
-		finddoApi.defaults.headers.uid = headers.uid;
+		finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
 		Object.assign(this, userData);
 	};
 
