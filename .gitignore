@@ -41,6 +41,11 @@ config/*.js
 # auto generated files
 src/assets/licenses.json
 
+# packaged applications
+*.apk
+*.aab
+*.ipa
+
 # node.js
 #
 node_modules/
