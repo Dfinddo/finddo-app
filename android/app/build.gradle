@@ -163,6 +163,14 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (project.hasProperty('FINDDOAPP_UPLOAD_STORE_FILE')) {
+                storeFile file(FINDDOAPP_UPLOAD_STORE_FILE)
+                storePassword FINDDOAPP_UPLOAD_STORE_PASSWORD
+                keyAlias FINDDOAPP_UPLOAD_KEY_ALIAS
+                keyPassword FINDDOAPP_UPLOAD_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
