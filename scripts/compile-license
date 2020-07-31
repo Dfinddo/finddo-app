@@ -77,7 +77,11 @@ async function main() {
 		JSON.stringify(compiledLicenses, null, "\t"),
 	);
 
-	console.info(`Compiled the licenses of ${compiledLicenses.length} packages`);
+	console.info(
+		`Compiled the licenses of ${
+			Object.keys(compiledLicenses).length
+		} packages`,
+	);
 }
 
 main();
