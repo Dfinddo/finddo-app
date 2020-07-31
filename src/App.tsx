@@ -10,14 +10,14 @@ import {EvaIconsPack} from "@ui-kitten/eva-icons";
 import * as eva from "@eva-design/eva";
 import {finddoLightTheme, finddoDarkTheme} from "themes";
 import Routes from "routes";
-import {useAuth} from "hooks";
+import {useUser} from "hooks";
 
 const App: FC = () => {
-	const authStore = useAuth();
+	const userStore = useUser();
 
 	useEffect(() => {
-		authStore.restoreSession();
-	}, [authStore]);
+		userStore.restoreSession();
+	}, [userStore]);
 
 	return (
 		<NavigationContainer>
