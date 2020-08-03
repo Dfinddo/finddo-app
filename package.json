@@ -10,7 +10,9 @@
 		"test": "jest",
 		"lint": "eslint './src/**'",
 		"fix": "eslint --fix './src/**'",
-		"compile-license": "scripts/compile-license"
+		"build-android": "scripts/build-android",
+		"compile-license": "scripts/compile-license",
+		"update-app-version": "scripts/update-app-version"
 	},
 	"dependencies": {
 		"@eva-design/eva": "^2.0.0",
