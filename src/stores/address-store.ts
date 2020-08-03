@@ -88,7 +88,7 @@ class AddressStore {
 		const address = pick(this, addressApiFields);
 
 		try {
-			const response = (await this.id)
+			const response = this.id
 				? finddoApi.put(`/addresses/${this.id}`, {address})
 				: finddoApi.post("/addresses", {address});
 
