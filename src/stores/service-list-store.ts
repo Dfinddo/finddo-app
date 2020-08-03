@@ -16,7 +16,7 @@ class ServiceListStore {
 					: "/orders/available";
 
 			const response = await finddoApi.get(endpoint);
-			const services = response.data;
+			const services = response.data.items;
 			const serviceList = services.map(service =>
 				ServiceStore.createFromApiResponse(service),
 			);
