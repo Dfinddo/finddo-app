@@ -1,0 +1,25 @@
+#!/bin/bash
+
+help_message="Usage: $(basename $BASH_SOURCE) <version>
+
+Update app version by raising the current build number. Optionally takes a
+string with a new marketing version to be set.
+"
+
+if echo "$@" | grep -qE "(-h|--help)$"; then
+	echo "$help_message"
+	exit 0
+fi
+
+
+# If a new version is given, update files with it
+if [[ -n $1 ]]; then
+	sed -Ei "s/(\"version\"[: ]+\").*\"/\1$1\"/" package.json
+	sed -Ei "s/(versionName +\").*\"/\1$1\"/" android/app/build.gradle
+	sed -Ei "s/(MARKETING_VERSION[= ]+).*;/\1$1;/" ios/Finddo.xcodeproj/project.pbxproj
+fi
+
+# Update the build number by raising the current build number.
+let build=$(sed -En 's/\s*versionCode +([0-9]+)/\1/p' android/app/build.gradle)+1
+sed -Ei "s/(versionCode +).*/\1$build/" android/app/build.gradle
+sed -Ei "s/(CURRENT_PROJECT_VERSION[= ]+).*;/\1$build;/" ios/Finddo.xcodeproj/project.pbxproj

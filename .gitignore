@@ -29,12 +29,22 @@ build/
 local.properties
 *.iml
 
-# bundle por questões de segurança
+# bundle
 android/app/src/main/assets/index.android.bundle
 android/app/release/
+android/app/res/
+android/app/bin/
 
-# arquivo de credenciais
-credenciais-e-configuracoes.js
+# credentials
+config/*.js
+
+# auto generated files
+src/assets/licenses.json
+
+# packaged applications
+*.apk
+*.aab
+*.ipa
 
 # node.js
 #

@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+const axios = require("axios");
+const fs = require("fs").promises;
+const checker = require("license-checker");
+
+async function tryToRetrieveLicenseFromGithub(repositoryUrl) {
+	const rawUrl = repositoryUrl
+		.replace("github", "raw.githubusercontent")
+		.concat("/master/");
+
+	const possibleLicenseFiles = [
+		"LICENSE",
+		"LICENSE.txt",
+		"license",
+		"license.txt",
+		"LICENSE.md",
+		"license.md",
+	];
+
+	for (const licenseFile of possibleLicenseFiles) {
+		try {
+			return (await axios.get(rawUrl + licenseFile)).data;
+		} catch (e) {}
+	}
+
+	throw new Error("License not found");
+}
+
+async function main() {
+	const licenses = await new Promise(resolve =>
+		checker.init(
+			{
+				start: "./",
+				production: true,
+				relativeLicensePath: true,
+				customPath: {
+					licenseText: true,
+				},
+			},
+			(error, result) => resolve(result),
+		),
+	);
+
+	console.info("Compiling licenses");
+	const compiledLicenses = {};
+
+	await Promise.all(
+		Object.entries(licenses).map(([package, licenseData]) => {
+			const [, packageName] = package.match(/(.+)@[0-9.]+/);
+			const {licenseUrl, licenseText, repository} = licenseData;
+
+			if (licenseText)
+				return void (compiledLicenses[packageName] = licenseText);
+
+			if (/github/.test(repository)) {
+				console.info(
+					`Trying to fetch license of ${packageName} from github`,
+				);
+
+				return tryToRetrieveLicenseFromGithub(repository)
+					.then(license => void (compiledLicenses[packageName] = license))
+					.catch(() =>
+						console.warn(
+							`Failed to retrieve${packageName} license from github`,
+						),
+					);
+			}
+
+			console.warn(`${packageName} license not found`);
+
+			return null;
+		}),
+	);
+
+	fs.writeFile(
+		"src/assets/licenses.json",
+		JSON.stringify(compiledLicenses, null, "\t"),
+	);
+
+	console.info(
+		`Compiled the licenses of ${
+			Object.keys(compiledLicenses).length
+		} packages`,
+	);
+}
+
+main();

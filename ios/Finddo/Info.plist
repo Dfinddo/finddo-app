@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>br.com.Finddotec</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -41,10 +41,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Precisamos usar sua câmera para obter fotos dos problemas.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Precisamos de sua localização para direcionar os profissionais.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Precisamos de sua localização para informar aos nossos clientes onde o profissional se encontra para atendê-lo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Precisamos acessar sua galeria para obter fotos dos problemas.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
@@ -62,6 +60,7 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Octicons.ttf</string>
 		<string>Zocial.ttf</string>
+		<string>Fontisto.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

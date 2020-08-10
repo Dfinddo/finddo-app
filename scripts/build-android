@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -e
+usage_description="Usage: $(basename $BASH_SOURCE) <keystore> <credentials>"
+
+if echo "$@" | grep -qE "(-h|--help)$"; then
+	echo $usage_description
+	exit 0
+fi
+
+if [[ $# -ne 2 ]]; then
+	cat <<-ERR
+	Error: wrong number of arguments
+	$usage_description
+	ERR
+	exit 1
+fi
+
+keystore=$1
+credentials=$(<$2)
+
+if [[ $(git status -s | grep android\/) ]]; then
+	echo Error: There are uncommitted changes in android directory, please \
+		commit then and run the script again
+	exit 1
+fi
+
+# Make sure that there are no js bundles from older compilations
+mkdir -p android/app/src/main/assets
+rm -f android/app/src/main/assets/index.android.bundle{,.meta}
+
+# Inject the app credentials into the project
+cp $keystore android/app/finddo-key.keystore
+cat >> android/gradle.properties <<< $credentials
+cat >> android/gradle.properties <<< "FINDDOAPP_UPLOAD_STORE_FILE=finddo-key.keystore"
+
+set +e
+
+# Build the apk
+cd android
+./gradlew clean && ./gradlew bundleRelease
+cd ..
+
+# Remove files generated duritng the build phase
+rm -r $(git status -s | grep android\/ | sed -E 's/.* //')
+
+# Remove crendentials from project
+git checkout -- android/gradle.properties
+rm android/app/finddo-key.keystore
