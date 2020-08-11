@@ -76,14 +76,15 @@ class UserStore {
 	public signIn = async (email: string, password: string): Promise<void> => {
 		try {
 			const response = await finddoApi.post("/login", {email, password});
-			const {user, jwt} = response.data;
+			const {jwt} = response.data;
+			const {id, attributes: user} = response.data.user.data;
 			const {user_type: userType, ...userData} = user;
 
 			if (user.activated === false) throw new Error("Account not validated");
 
 			finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
 
-			Object.assign(this, userData, {userType});
+			Object.assign(this, userData, {id, userType});
 
 			// await finddoApi.put(`users/player_id_notifications/${this.id}`,
 			// 	{player_id: this.oneSignalID});
@@ -91,6 +92,7 @@ class UserStore {
 			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
 			AsyncStorage.setItem("user", JSON.stringify(this));
 		} catch (error) {
+			console.log({error});
 			if (error.response) throw new Error("Invalid credentials");
 			else if (error.request) throw new Error("Connection error");
 			else throw error;
@@ -161,12 +163,15 @@ class UserStore {
 	@action
 	public setProfilePicture = async profilePicture => {
 		try {
-			const response = await finddoApi.put(`/users/profile_photo/${this.id}`, {
-				profile_photo: {
-					base64: profilePicture.base64,
-					file_name: `profile-${this.id}`,
+			const response = await finddoApi.put(
+				`/users/profile_photo/${this.id}`,
+				{
+					profile_photo: {
+						base64: profilePicture.base64,
+						file_name: `profile-${this.id}`,
+					},
 				},
-			});
+			);
 
 			runInAction(() => (this.profilePicture = response.data.photo));
 		} catch (error) {
