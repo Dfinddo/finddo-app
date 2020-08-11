@@ -1,8 +1,12 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-console */
+
 const axios = require("axios");
 const fs = require("fs").promises;
 const checker = require("license-checker");
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 async function tryToRetrieveLicenseFromGithub(repositoryUrl) {
 	const rawUrl = repositoryUrl
 		.replace("github", "raw.githubusercontent")
@@ -20,12 +24,14 @@ async function tryToRetrieveLicenseFromGithub(repositoryUrl) {
 	for (const licenseFile of possibleLicenseFiles) {
 		try {
 			return (await axios.get(rawUrl + licenseFile)).data;
+		// eslint-disable-next-line no-empty
 		} catch (e) {}
 	}
 
 	throw new Error("License not found");
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 async function main() {
 	const licenses = await new Promise(resolve =>
 		checker.init(
@@ -37,7 +43,7 @@ async function main() {
 					licenseText: true,
 				},
 			},
-			(error, result) => resolve(result),
+			(_error, result) => resolve(result),
 		),
 	);
 

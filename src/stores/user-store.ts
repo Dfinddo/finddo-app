@@ -1,4 +1,4 @@
-import {observable, computed, action} from "mobx";
+import {observable, computed, action, runInAction} from "mobx";
 import {validations, validateInput, pick} from "utils";
 import AsyncStorage from "@react-native-community/async-storage";
 import finddoApi from "finddo-api";
@@ -158,14 +158,17 @@ class UserStore {
 		}
 	};
 
+	@action
 	public setProfilePicture = async profilePicture => {
 		try {
-			finddoApi.put(`/users/profile_photo/${this.id}`, {
+			const response = await finddoApi.put(`/users/profile_photo/${this.id}`, {
 				profile_photo: {
 					base64: profilePicture.base64,
 					file_name: `profile-${this.id}`,
 				},
 			});
+
+			runInAction(() => (this.profilePicture = response.data.photo));
 		} catch (error) {
 			if (error.response) throw new Error("Invalid user data");
 			else if (error.request) throw new Error("Connection error");

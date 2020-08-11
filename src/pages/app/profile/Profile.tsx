@@ -22,7 +22,7 @@ import ValidatedMaskedInput from "components/ValidatedMaskedInput";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Profile">;
 
-const Profile = observer<ProfileScreenProps>(props => {
+const Profile = observer<ProfileScreenProps>(_props => {
 	const userStore = useUser();
 	const [isEditing, setIsEditing] = useState(false);
 	const [fieldToEdit, setFieldToEdit] = useState<keyof UserStore>("email");
