@@ -49,14 +49,14 @@ const Profile = observer<ProfileScreenProps>(_props => {
 					text: "Tirar uma nova foto",
 					onPress: () =>
 						ImagePicker.openCamera({includeBase64: true}).then(image => {
-							userStore.profilePicture = image;
+							userStore.setProfilePicture(image);
 						}),
 				},
 				{
 					text: "Adicionar foto da galeria",
 					onPress: () =>
 						ImagePicker.openPicker({includeBase64: true}).then(image => {
-							userStore.profilePicture = image;
+							userStore.setProfilePicture(image);
 						}),
 				},
 			],
