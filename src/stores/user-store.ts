@@ -145,6 +145,7 @@ class UserStore {
 		Object.assign(this, userData);
 	};
 
+	@action
 	public getProfilePicture = async () => {
 		try {
 			const data = await finddoApi.get(`/users/profile_photo/${this.id}`);

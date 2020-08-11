@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import {Pressable, View, Alert, StyleSheet, Modal} from "react-native";
 import {useUser} from "hooks";
 import {
@@ -26,6 +26,7 @@ const Profile = observer<ProfileScreenProps>(_props => {
 	const userStore = useUser();
 	const [isEditing, setIsEditing] = useState(false);
 	const [fieldToEdit, setFieldToEdit] = useState<keyof UserStore>("email");
+
 
 	const editProfile = (field: keyof UserStore) => () => {
 		setFieldToEdit(field);
@@ -73,9 +74,7 @@ const Profile = observer<ProfileScreenProps>(_props => {
 			<Pressable onPress={changeProfilePicture}>
 				<Avatar
 					style={styles.avatar}
-					source={{
-						uri: `data:${userStore.profilePicture.mime};base64,${userStore.profilePicture.data}`,
-					}}
+					source={userStore.profilePicture}
 				/>
 			</Pressable>
 			<View style={styles.userDataContainer}>
