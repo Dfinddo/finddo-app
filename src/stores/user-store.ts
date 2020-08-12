@@ -2,7 +2,7 @@ import {observable, computed, action, runInAction} from "mobx";
 import {validations, validateInput, pick} from "utils";
 import AsyncStorage from "@react-native-community/async-storage";
 import finddoApi from "finddo-api";
-import {BACKEND_URL} from "config";
+import {BACKEND_URL, BACKEND_URL_STORAGE} from "config";
 import AddressStore from "./address-store";
 
 const firstNameTests = [validations.required(), validations.maxLength(70)];
@@ -152,8 +152,12 @@ class UserStore {
 		try {
 			const data = await finddoApi.get(`/users/profile_photo/${this.id}`);
 
+			console.log(data.data.photo)
+
 			if (data.data.photo)
-				this.profilePicture = {uri: `${backendUrl}/${data.data.photo}`};
+				{
+					this.profilePicture = {uri: `${BACKEND_URL_STORAGE}/${data.data.photo}`};
+				}
 		} catch (error) {
 			if (error.response) throw new Error("Invalid user data");
 			else if (error.request) throw new Error("Connection error");
@@ -168,13 +172,13 @@ class UserStore {
 				`/users/profile_photo/${this.id}`,
 				{
 					profile_photo: {
-						base64: profilePicture.base64,
+						base64: profilePicture.data,
 						file_name: `profile-${this.id}`,
 					},
 				},
 			);
 
-			runInAction(() => (this.profilePicture = response.data.photo));
+			runInAction(() => (this.profilePicture = `${BACKEND_URL_STORAGE }/${ response.data.photo}`));
 		} catch (error) {
 			if (error.response) throw new Error("Invalid user data");
 			else if (error.request) throw new Error("Connection error");

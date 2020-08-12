@@ -1,5 +1,6 @@
 // Backend Config
 export const BACKEND_URL: string;
+export const BACKEND_URL_STORAGE: string;
 
 // OneSignal Config
 export const ONE_SIGNAL_API_KEY: string;

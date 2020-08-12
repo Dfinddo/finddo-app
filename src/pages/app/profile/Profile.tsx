@@ -27,6 +27,9 @@ const Profile = observer<ProfileScreenProps>(_props => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [fieldToEdit, setFieldToEdit] = useState<keyof UserStore>("email");
 
+	useEffect(() => {
+		userStore.getProfilePicture();
+	}, [userStore])
 
 	const editProfile = (field: keyof UserStore) => () => {
 		setFieldToEdit(field);
