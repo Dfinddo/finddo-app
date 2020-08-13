@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import finddoApi from "finddo-api";
 import {BACKEND_URL, BACKEND_URL_STORAGE} from "config";
 import AddressStore from "./address-store";
-import {Alert} from "react-native";
+// import {Alert} from "react-native";
 
 const firstNameTests = [validations.required(), validations.maxLength(70)];
 const nameTests = [validations.required(), validations.maxLength(255)];

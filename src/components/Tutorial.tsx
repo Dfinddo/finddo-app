@@ -4,9 +4,15 @@ import {bolaApagada} from "assets/svg/bola-apagada";
 import tutorialImages from "assets/svg/tutorial-steps";
 import {fechar} from "assets/svg/fechar";
 import React, {useState, useEffect, useCallback, FC} from "react";
-import {View, TouchableOpacity, StyleSheet} from "react-native";
+import {View, TouchableOpacity} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import {Button, Modal, Text} from "@ui-kitten/components";
+import {
+	Button,
+	Modal,
+	Text,
+	StyleService,
+	useStyleSheet,
+} from "@ui-kitten/components";
 import AsyncStorage from "@react-native-community/async-storage";
 
 const useInitialDisplay = (): [boolean, () => void] => {
@@ -30,6 +36,7 @@ const useInitialDisplay = (): [boolean, () => void] => {
 };
 
 const Tutorial: FC = () => {
+	const styles = useStyleSheet(themedStyles);
 	const [wasDisplayed, markAsDisplayed] = useInitialDisplay();
 	const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
 
@@ -39,8 +46,8 @@ const Tutorial: FC = () => {
 		void setCurrentTutorialStep(currentTutorialStep - 1);
 
 	return (
-		<Modal visible={!wasDisplayed}>
-			<View style={styles.modalStyle}>
+		<Modal style={styles.modalStyle} visible={!wasDisplayed}>
+			<View style={styles.modalContentStyle}>
 				<TouchableOpacity
 					onPress={markAsDisplayed}
 					style={styles.closeIcon}
@@ -152,19 +159,25 @@ const Tutorial: FC = () => {
 
 export default Tutorial;
 
-const styles = StyleSheet.create({
+const themedStyles = StyleService.create({
 	modalStyle: {
-		width: 320,
-		height: 520,
-		borderRadius: 10,
+		position: "absolute",
+		width: "100%",
+		height: "100%",
+		top: 0,
+		backgroundColor: "background-basic-color-1",
+	},
+	modalContentStyle: {
 		alignItems: "center",
 		justifyContent: "center",
+		marginTop: "15%",
 	},
 	topWrapper: {
 		height: 140,
 		width: "100%",
 		alignItems: "center",
 		justifyContent: "center",
+		marginTop: 36,
 	},
 	middleWrapper: {
 		height: 310,
@@ -195,14 +208,14 @@ const styles = StyleSheet.create({
 	},
 	arrowIcon: {
 		height: "100%",
-		width: 40,
+		width: 55,
 		alignItems: "center",
 		justifyContent: "center",
 	},
 	closeIcon: {
 		marginHorizontal: 10,
 		top: 10,
-		left: 280,
+		left: "85%",
 		position: "absolute",
 	},
 	pageIndicator: {marginHorizontal: 10},
