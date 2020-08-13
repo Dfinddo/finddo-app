@@ -59,7 +59,14 @@ const Tutorial: FC = () => {
 						[
 							// First Page
 							<Text key={0} style={styles.tutorialPagesTitles}>
-								Bem-vindo(a) à Fin<Text status="primary">dd</Text>o!
+								Bem-vindo(a) à Fin
+								<Text
+									style={styles.tutorialPagesTitles}
+									status="primary"
+								>
+									dd
+								</Text>
+								o!
 							</Text>,
 
 							// Second Page
@@ -76,8 +83,13 @@ const Tutorial: FC = () => {
 							// Fourth Page
 							<Text key={3} style={styles.tutorialPagesTitles}>
 								Todos os nossos profissionais parceiros são{" "}
-								<Text status="primary">qualificados</Text> e
-								verificados.
+								<Text
+									style={styles.tutorialPagesTitles}
+									status="primary"
+								>
+									qualificados
+								</Text>{" "}
+								e verificados.
 							</Text>,
 						][currentTutorialStep]
 					}
@@ -103,7 +115,13 @@ const Tutorial: FC = () => {
 							[
 								// First Page
 								<Text key={0} style={styles.tutorialPagesContent}>
-									Nunca foi tão <Text status="primary">fácil </Text>
+									Nunca foi tão{" "}
+									<Text
+										style={styles.tutorialPagesContent}
+										status="primary"
+									>
+										fácil{" "}
+									</Text>
 									realizar uma manutenção em sua residência.
 								</Text>,
 
@@ -116,7 +134,13 @@ const Tutorial: FC = () => {
 								// Third Page
 								<Text key={2} style={styles.tutorialPagesContent}>
 									O pagamento será feito no{" "}
-									<Text status="primary">cartão</Text>.
+									<Text
+										style={styles.tutorialPagesTitles}
+										status="primary"
+									>
+										cartão
+									</Text>
+									.
 								</Text>,
 
 								// Fourth Page
