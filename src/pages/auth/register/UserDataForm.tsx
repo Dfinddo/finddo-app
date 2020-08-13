@@ -23,7 +23,7 @@ type UserDataFormScreenProps = StackScreenProps<
 const formFields = [
 	"name",
 	"surname",
-	"mothersName",
+	"email",
 	"cellphone",
 	"cpf",
 ] as const;
@@ -80,16 +80,14 @@ const UserDataForm = observer<UserDataFormScreenProps>(props => {
 					error={userStore.surnameError}
 					forceErrorDisplay={hasFailedToFillForm}
 				/>
-				{userStore.userType === "professional" && (
-					<ValidatedInput
-						onChangeText={input => (userStore.mothersName = input)}
-						label="Nome da Mãe (Completo)"
-						maxLength={255}
-						value={userStore.mothersName}
-						error={userStore.mothersNameError}
-						forceErrorDisplay={hasFailedToFillForm}
-					/>
-				)}
+				<ValidatedInput
+					onChangeText={input => (userStore.email = input)}
+					label="Email"
+					maxLength={255}
+					value={userStore.email}
+					error={userStore.emailError}
+					forceErrorDisplay={hasFailedToFillForm}
+				/>
 				<ValidatedMaskedInput
 					formatter={phoneFormatter}
 					formattingFilter={numericFormattingFilter}

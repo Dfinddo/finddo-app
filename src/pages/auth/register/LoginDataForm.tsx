@@ -42,18 +42,29 @@ const LoginDataForm = observer<LoginDataFormScreenProps>(props => {
 
 	const submit = (): void => {
 		setIsLoading(true);
-		if (passwordErrors || error.response) {
+		if (passwordErrors) {
 			Alert.alert(
 				"Erro ao se cadastrar",
-				"Verifique seus dados e tente novamente",
+				"As senhas devem ser iguais",
 			);
-		} else if (error.request) {
-			Alert.alert(
-				"Falha ao se conectar",
-				"Verifique sua conexão e tente novamente",
-			);
+
+			setIsLoading(false);
+
+			return;
 		}
-		setIsLoading(false);
+		try {
+			userStore.signUp(password, passwordConfirmation);
+		} catch (error) {
+			if (error.message === "Invalid credentials")
+				Alert.alert("Email ou senha incorretos");
+			else if (error.message === "Connection error")
+				Alert.alert("Falha ao conectar");
+			else throw error;
+			setIsLoading(false);
+		}finally {
+			setIsLoading(false);
+		} 
+		
 	};
 
 	return (

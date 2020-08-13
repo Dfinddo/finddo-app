@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {observable, computed, action, runInAction} from "mobx";
+import {format} from "date-fns";
 import {validations, validateInput, pick} from "utils";
 import AsyncStorage from "@react-native-community/async-storage";
 import finddoApi from "finddo-api";
 import {BACKEND_URL, BACKEND_URL_STORAGE} from "config";
 import AddressStore from "./address-store";
+import {Alert} from "react-native";
 
 const firstNameTests = [validations.required(), validations.maxLength(70)];
 const nameTests = [validations.required(), validations.maxLength(255)];
@@ -86,6 +89,7 @@ class UserStore {
 
 			Object.assign(this, userData, {id, userType});
 
+			// TODO: descomentar ao começar a fazer parte de notificações
 			// await finddoApi.put(`users/player_id_notifications/${this.id}`,
 			// 	{player_id: this.oneSignalID});
 
@@ -114,21 +118,59 @@ class UserStore {
 		delete finddoApi.defaults.headers.Authorization;
 	};
 
-	public signUp = async () => {
+	public signUp = async (password: string, password_confirmation: string) => {
+		const {name, surname, cellphone, email, cpf, userType, birthdate} = this;
+		const {
+			city,
+			state,
+			cep,
+			district,
+			number,
+			street,
+			complement,
+		} = this.billingAddress;
+
+		if (!birthdate) {
+			throw new Error("Invalid birthdate date");
+		}
+
 		try {
-			const response = await finddoApi.post("/users", user);
+			await finddoApi.post("/users", {
+				user: {
+					name,
+					surname,
+					cellphone,
+					email,
+					cpf,
+					user_type: userType,
+					birthdate: format(birthdate, "MM/dd/yyyy"),
+					password,
+					password_confirmation,
+				},
+				address: {
+					city,
+					state,
+					cep,
+					district,
+					number,
+					street,
+					complement,
+				},
+			});
 
 			// Professional accounts must be approved for use
-			if (user.user_type === "professional") return;
+			if (userType === "professional") return;
 
-			finddoApi.defaults.headers["access-token"] =
-				response.headers["access-token"];
-			finddoApi.defaults.headers.client = response.headers.client;
-			finddoApi.defaults.headers.uid = response.headers.uid;
+			this.signIn(email, password);
 
-			this.id = data.id;
+			// finddoApi.defaults.headers["access-token"] =
+			// 	response.headers["access-token"];
+			// finddoApi.defaults.headers.client = response.headers.client;
+			// finddoApi.defaults.headers.uid = response.headers.uid;
 
-			AsyncStorage.setItem("user", JSON.stringify(user));
+			// this.id = response.data.id;
+
+			// AsyncStorage.setItem("user", JSON.stringify(response.data.));
 		} catch (error) {
 			if (error.response) throw new Error("Invalid user data");
 			else if (error.request) throw new Error("Connection error");
@@ -152,12 +194,13 @@ class UserStore {
 		try {
 			const data = await finddoApi.get(`/users/profile_photo/${this.id}`);
 
-			console.log(data.data.photo)
+			console.log(data.data.photo);
 
-			if (data.data.photo)
-				{
-					this.profilePicture = {uri: `${BACKEND_URL_STORAGE}/${data.data.photo}`};
-				}
+			if (data.data.photo) {
+				this.profilePicture = {
+					uri: `${BACKEND_URL_STORAGE}${data.data.photo}`,
+				};
+			}
 		} catch (error) {
 			if (error.response) throw new Error("Invalid user data");
 			else if (error.request) throw new Error("Connection error");
@@ -178,7 +221,12 @@ class UserStore {
 				},
 			);
 
-			runInAction(() => (this.profilePicture = `${BACKEND_URL_STORAGE }/${ response.data.photo}`));
+			runInAction(
+				() =>
+					(this.profilePicture = {
+						uri: `${BACKEND_URL_STORAGE}${response.data.photo}`,
+					}),
+			);
 		} catch (error) {
 			if (error.response) throw new Error("Invalid user data");
 			else if (error.request) throw new Error("Connection error");
