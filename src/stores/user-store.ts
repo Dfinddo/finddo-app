@@ -55,7 +55,7 @@ class UserStore {
 		return validateInput(this.cpf, cpfTests);
 	}
 
-	@observable public birthdate: Date | null = new Date();
+	@observable public birthdate: Date = new Date();
 	@computed public get birthdateError(): string | undefined {
 		if (!this.birthdate) return "Required";
 	}
@@ -111,6 +111,8 @@ class UserStore {
 		);
 		this.userType = "user";
 
+		this.birthdate = new Date();
+
 		// finddoApi.delete(
 		// 	`users/remove_player_id_notifications/${this.id}/${tokenService.getPlayerIDOneSignal()}`,
 		// );
@@ -143,7 +145,7 @@ class UserStore {
 					email,
 					cpf,
 					user_type: userType,
-					birthdate: format(birthdate, "MM/dd/yyyy"),
+					birthdate: format(birthdate, "dd/MM/yyyy"),
 					password,
 					password_confirmation,
 				},
