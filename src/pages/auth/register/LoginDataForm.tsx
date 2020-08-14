@@ -59,7 +59,7 @@ const LoginDataForm = observer<[LoginDataFormScreenProps, LoginScreenProps]>(
 					Alert.alert(
 						"Profissional cadastrado com sucesso. Aguardando aprovação",
 					);
-					props[1].navigation.navigate("Login");
+					// props[1].navigation.navigate("Login");
 				}
 			} catch (error) {
 				if (error.message === "Invalid credentials")

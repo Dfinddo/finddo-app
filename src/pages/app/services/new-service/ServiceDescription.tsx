@@ -45,7 +45,7 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 	};
 
 	const setUrgency = ({row}: {row: number}) =>
-		void (serviceStore.urgency = (["not urgent", "urgent"] as const)[row]);
+		void (serviceStore.urgency = (["delayable", "urgent"] as const)[row]);
 
 	const urgencies = ["Sem urgência", "Com urgência"] as const;
 
@@ -76,13 +76,13 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 							label="Urgência"
 							selectedIndex={
 								new IndexPath(
-									{"not urgent": 0, "urgent": 1}[serviceStore.urgency],
+									{delayable: 0, urgent: 1}[serviceStore.urgency],
 								)
 							}
 							onSelect={setUrgency}
 							value={
 								urgencies[
-									{"not urgent": 0, "urgent": 1}[serviceStore.urgency]
+									{delayable: 0, urgent: 1}[serviceStore.urgency]
 								]
 							}
 						>

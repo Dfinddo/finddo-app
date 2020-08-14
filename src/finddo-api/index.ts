@@ -124,7 +124,7 @@ interface ServiceApiResponse {
 	professional_photo: string;
 	rate: string;
 	start_order: string;
-	urgency: "urgent" | "not urgent";
+	urgency: "urgent" | "delayable";
 	user: UserApiResponse;
 	user_photo: string;
 	user_rate: string;

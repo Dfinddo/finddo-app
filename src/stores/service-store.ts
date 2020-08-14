@@ -34,7 +34,7 @@ class ServiceStore {
 		return validateInput(this.description, descriptionTests);
 	}
 
-	@observable public urgency: "urgent" | "not urgent" = "not urgent";
+	@observable public urgency: "urgent" | "delayable" = "delayable";
 	@computed public get urgencyError(): string | undefined {
 		return validateInput(this.urgency, defaultTests);
 	}
@@ -87,7 +87,7 @@ class ServiceStore {
 		this.categoryID = null;
 		this.description = "";
 		this.userID = null;
-		this.urgency = "not urgent";
+		this.urgency = "delayable";
 		this.serviceDate = new Date();
 		this.addressID = null;
 		this.startTime = "";
@@ -96,6 +96,7 @@ class ServiceStore {
 		this.address = new AddressStore();
 	}
 
+	@action
 	public saveService = async (userStore: UserStore): Promise<void> => {
 		const order: any = {};
 
@@ -106,18 +107,29 @@ class ServiceStore {
 		order.start_order = `${this.serviceDate.toDateString()} ${
 			this.startTime
 		}`;
-		order.address_id = this.address.id;
+		// order.address_id = this.address.id;
 		order.hora_inicio = this.startTime;
 		order.hora_fim = this.endTime;
 
-		const images = [];
+		const address: any = {};
+
+		address.cep = this.address.cep;
+		address.complement = this.address.complement;
+		address.district = this.address.district;
+		address.name = this.address.addressAlias;
+		address.number = this.address.number;
+		address.street = this.address.street;
+
+		const images: any[] = [];
 
 		try {
 			const response = await finddoApi.post("/orders", {
 				order,
+				address,
 				images,
 			});
 		} catch (error) {
+			console.log({error});
 			if (error.response) throw new Error("Invalid service data");
 			else if (error.request) throw new Error("Connection error");
 			else throw error;
