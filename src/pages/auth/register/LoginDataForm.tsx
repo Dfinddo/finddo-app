@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {
 	ScrollView,
 	Alert,
@@ -15,7 +15,7 @@ import {validations, validateInput} from "utils";
 import {useUser} from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
-import {RegisterStackParams, AuthStackParams} from "src/routes/auth";
+import {AuthStackParams} from "src/routes/auth";
 
 const passwordTests = [
 	validations.required(),
@@ -23,133 +23,126 @@ const passwordTests = [
 	validations.maxLength(12),
 ];
 
-type LoginDataFormScreenProps = StackScreenProps<
-	RegisterStackParams,
-	"LoginDataForm"
->;
+type LoginDataFormScreenProps = StackScreenProps<AuthStackParams, "Register">;
 
-type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
+const LoginDataForm = observer<LoginDataFormScreenProps>(props => {
+	const userStore = useUser();
+	const [isLoading, setIsLoading] = useState(false);
+	const [password, setPassword] = useState("");
+	const [passwordConfirmation, setPasswordConfirmation] = useState("");
+	const [isShowingPolitics, setIsShowingPolitics] = useState(false);
+	const [isShowingTermsOfUse, setIsShowingTermsOfUse] = useState(false);
+	const passwordErrors =
+		password === passwordConfirmation
+			? validateInput(password, passwordTests)
+			: "As senhas devem ser iguais";
 
-const LoginDataForm = observer<[LoginDataFormScreenProps, LoginScreenProps]>(
-	props => {
-		const userStore = useUser();
-		const [isLoading, setIsLoading] = useState(false);
-		const [password, setPassword] = useState("");
-		const [passwordConfirmation, setPasswordConfirmation] = useState("");
-		const [isShowingPolitics, setIsShowingPolitics] = useState(false);
-		const [isShowingTermsOfUse, setIsShowingTermsOfUse] = useState(false);
-		const passwordErrors =
-			password === passwordConfirmation
-				? validateInput(password, passwordTests)
-				: "As senhas devem ser iguais";
+	const submit = useCallback(async (): Promise<void> => {
+		setIsLoading(true);
+		if (passwordErrors) {
+			Alert.alert("Erro ao se cadastrar", "As senhas devem ser iguais");
 
-		const submit = async (): Promise<void> => {
-			setIsLoading(true);
-			if (passwordErrors) {
-				Alert.alert("Erro ao se cadastrar", "As senhas devem ser iguais");
+			setIsLoading(false);
 
-				setIsLoading(false);
+			return;
+		}
+		try {
+			await userStore.signUp(password, passwordConfirmation);
 
-				return;
+			if (userStore.userType === "professional") {
+				Alert.alert(
+					"Profissional cadastrado com sucesso. Aguardando aprovação",
+				);
+				props.navigation.navigate("Login");
 			}
-			try {
-				await userStore.signUp(password, passwordConfirmation);
+		} catch (error) {
+			if (error.message === "Invalid credentials")
+				Alert.alert("Email ou senha incorretos");
+			else if (error.message === "Connection error")
+				Alert.alert("Falha ao conectar");
+			else throw error;
+			setIsLoading(false);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [password, passwordConfirmation, passwordErrors, props, userStore]);
 
-				if (userStore.userType === "professional") {
-					Alert.alert(
-						"Profissional cadastrado com sucesso. Aguardando aprovação",
-					);
-					// props[1].navigation.navigate("Login");
-				}
-			} catch (error) {
-				if (error.message === "Invalid credentials")
-					Alert.alert("Email ou senha incorretos");
-				else if (error.message === "Connection error")
-					Alert.alert("Falha ao conectar");
-				else throw error;
-				setIsLoading(false);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		return (
-			<Layout level="1" style={styles.container}>
-				<TaskAwaitIndicator isAwaiting={isLoading} />
-				<Modal visible={isShowingPolitics} style={styles.modal}>
-					<Card>
-						<Text category="h3">Política:</Text>
-						<ScrollView style={styles.modalContent}>
-							<Text>{politica}</Text>
-						</ScrollView>
-						<Button onPress={() => setIsShowingPolitics(false)}>
-							VOLTAR
-						</Button>
-					</Card>
-				</Modal>
-				<Modal visible={isShowingTermsOfUse} style={styles.modal}>
-					<Card>
-						<Text category="h3">Termos:</Text>
-						<ScrollView style={styles.modalContent}>
-							<Text>{termos}</Text>
-						</ScrollView>
-						<Button onPress={() => setIsShowingTermsOfUse(false)}>
-							VOLTAR
-						</Button>
-					</Card>
-				</Modal>
-				<KeyboardAvoidingView
-					behavior={Platform.OS === "ios" ? "padding" : "height"}
-					style={styles.contentWrapper}
-				>
-					<Text style={styles.fontTitle}>Crie sua conta</Text>
-					<Input
-						onChangeText={input => (userStore.email = input)}
-						label="Email"
-						keyboardType="email-address"
-						autoCapitalize="none"
-						maxLength={128}
-						value={userStore.email}
-					/>
-					<Input
-						onChangeText={setPassword}
-						label="Senha"
-						value={password}
-						secureTextEntry={true}
-						maxLength={12}
-					/>
-					<ValidatedInput
-						onChangeText={setPasswordConfirmation}
-						label="Confirmar Senha"
-						value={passwordConfirmation}
-						secureTextEntry={true}
-						maxLength={12}
-						error={passwordErrors}
-					/>
-					<Text style={styles.text}>
-						Ao criar sua conta, você está concordando com os nossos
-						<Text
-							onPress={() => setIsShowingTermsOfUse(true)}
-							status="primary"
-						>
-							{" "}
-							Termos e Condições de Uso
-						</Text>{" "}
-						e com nossa
-						<Text
-							onPress={() => setIsShowingPolitics(true)}
-							status="primary"
-						>
-							{" "}
-							Política de Privacidade.
-						</Text>
+	return (
+		<Layout level="1" style={styles.container}>
+			<TaskAwaitIndicator isAwaiting={isLoading} />
+			<Modal visible={isShowingPolitics} style={styles.modal}>
+				<Card>
+					<Text category="h3">Política:</Text>
+					<ScrollView style={styles.modalContent}>
+						<Text>{politica}</Text>
+					</ScrollView>
+					<Button onPress={() => setIsShowingPolitics(false)}>
+						VOLTAR
+					</Button>
+				</Card>
+			</Modal>
+			<Modal visible={isShowingTermsOfUse} style={styles.modal}>
+				<Card>
+					<Text category="h3">Termos:</Text>
+					<ScrollView style={styles.modalContent}>
+						<Text>{termos}</Text>
+					</ScrollView>
+					<Button onPress={() => setIsShowingTermsOfUse(false)}>
+						VOLTAR
+					</Button>
+				</Card>
+			</Modal>
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.contentWrapper}
+			>
+				<Text style={styles.fontTitle}>Crie sua conta</Text>
+				<Input
+					onChangeText={input => (userStore.email = input)}
+					label="Email"
+					keyboardType="email-address"
+					autoCapitalize="none"
+					maxLength={128}
+					value={userStore.email}
+				/>
+				<Input
+					onChangeText={setPassword}
+					label="Senha"
+					value={password}
+					secureTextEntry={true}
+					maxLength={12}
+				/>
+				<ValidatedInput
+					onChangeText={setPasswordConfirmation}
+					label="Confirmar Senha"
+					value={passwordConfirmation}
+					secureTextEntry={true}
+					maxLength={12}
+					error={passwordErrors}
+				/>
+				<Text style={styles.text}>
+					Ao criar sua conta, você está concordando com os nossos
+					<Text
+						onPress={() => setIsShowingTermsOfUse(true)}
+						status="primary"
+					>
+						{" "}
+						Termos e Condições de Uso
+					</Text>{" "}
+					e com nossa
+					<Text
+						onPress={() => setIsShowingPolitics(true)}
+						status="primary"
+					>
+						{" "}
+						Política de Privacidade.
 					</Text>
-				</KeyboardAvoidingView>
-				<Button onPress={submit}>CRIAR</Button>
-			</Layout>
-		);
-	},
-);
+				</Text>
+			</KeyboardAvoidingView>
+			<Button onPress={submit}>CRIAR</Button>
+		</Layout>
+	);
+});
 
 export default LoginDataForm;
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {Pressable, View, Alert, StyleSheet, Modal} from "react-native";
 import {useUser} from "hooks";
 import {
@@ -29,7 +29,7 @@ const Profile = observer<ProfileScreenProps>(_props => {
 
 	useEffect(() => {
 		userStore.getProfilePicture();
-	}, [userStore])
+	}, [userStore]);
 
 	const editProfile = (field: keyof UserStore) => () => {
 		setFieldToEdit(field);
@@ -53,14 +53,14 @@ const Profile = observer<ProfileScreenProps>(_props => {
 					text: "Tirar uma nova foto",
 					onPress: () =>
 						ImagePicker.openCamera({includeBase64: true}).then(image => {
-							userStore.setProfilePicture(image);
+							userStore.setProfilePicture(image as {data: string});
 						}),
 				},
 				{
 					text: "Adicionar foto da galeria",
 					onPress: () =>
 						ImagePicker.openPicker({includeBase64: true}).then(image => {
-							userStore.setProfilePicture(image);
+							userStore.setProfilePicture(image as {data: string});
 						}),
 				},
 			],
@@ -75,10 +75,7 @@ const Profile = observer<ProfileScreenProps>(_props => {
 				onClose={() => setIsEditing(false)}
 			/>
 			<Pressable onPress={changeProfilePicture}>
-				<Avatar
-					style={styles.avatar}
-					source={userStore.profilePicture}
-				/>
+				<Avatar style={styles.avatar} source={userStore.profilePicture} />
 			</Pressable>
 			<View style={styles.userDataContainer}>
 				<DataPieceDisplay hint="Nome" value={userStore.name} />

@@ -78,6 +78,3 @@ export type AuthStackParams = {
 	ForgotPassword: undefined;
 	Register: undefined;
 };
-
-/* eslint-enable @typescript-eslint/consistent-type-definitions */
-/* eslint-enable @typescript-eslint/naming-convention */

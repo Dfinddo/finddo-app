@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {observable, computed, action, runInAction} from "mobx";
 import {format} from "date-fns";
-import {validations, validateInput, pick} from "utils";
+import {validations, validateInput} from "utils";
 import AsyncStorage from "@react-native-community/async-storage";
 import finddoApi from "finddo-api";
 import {BACKEND_URL, BACKEND_URL_STORAGE} from "config";
@@ -96,6 +96,7 @@ class UserStore {
 			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
 			AsyncStorage.setItem("user", JSON.stringify(this));
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.log({error});
 			if (error.response) throw new Error("Invalid credentials");
 			else if (error.request) throw new Error("Connection error");
@@ -120,7 +121,10 @@ class UserStore {
 		delete finddoApi.defaults.headers.Authorization;
 	};
 
-	public signUp = async (password: string, password_confirmation: string) => {
+	public signUp = async (
+		password: string,
+		password_confirmation: string,
+	): Promise<void> => {
 		const {name, surname, cellphone, email, cpf, userType, birthdate} = this;
 		const {
 			city,
@@ -180,7 +184,7 @@ class UserStore {
 		}
 	};
 
-	public restoreSession = async () => {
+	public restoreSession = async (): Promise<void> => {
 		const [userData, jwt] = (
 			await AsyncStorage.multiGet(["user", "access-token"])
 		).map(([, value]) => value && JSON.parse(value));
@@ -192,7 +196,7 @@ class UserStore {
 	};
 
 	@action
-	public getProfilePicture = async () => {
+	public getProfilePicture = async (): Promise<void> => {
 		try {
 			const data = await finddoApi.get(`/users/profile_photo/${this.id}`);
 
@@ -209,7 +213,9 @@ class UserStore {
 	};
 
 	@action
-	public setProfilePicture = async profilePicture => {
+	public setProfilePicture = async (profilePicture: {
+		data: string;
+	}): Promise<void> => {
 		try {
 			const response = await finddoApi.put(
 				`/users/profile_photo/${this.id}`,

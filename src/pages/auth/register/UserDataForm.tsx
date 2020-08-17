@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {Alert, KeyboardAvoidingView, Platform, StyleSheet} from "react-native";
 import {Datepicker, Text, Button, Layout} from "@ui-kitten/components";
 import {useUser, useSwitch} from "hooks";
@@ -20,20 +20,14 @@ type UserDataFormScreenProps = StackScreenProps<
 	"UserDataForm"
 >;
 
-const formFields = [
-	"name",
-	"surname",
-	"email",
-	"cellphone",
-	"cpf",
-] as const;
+const formFields = ["name", "surname", "email", "cellphone", "cpf"] as const;
 
 const UserDataForm = observer<UserDataFormScreenProps>(props => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 	const userStore = useUser();
 
-	const onAdvanceAttempt = async (): Promise<void> => {
+	const onAdvanceAttempt = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 		let isRegistered = false;
 
@@ -52,7 +46,7 @@ const UserDataForm = observer<UserDataFormScreenProps>(props => {
 
 		if (isRegistered) return Alert.alert("Erro", "Usuário já cadastrado.");
 		props.navigation.navigate("BillingAddressForm");
-	};
+	}, [props, setIsLoading, setFillAttemptAsFailed, userStore]);
 
 	return (
 		<Layout level="1" style={styles.container}>

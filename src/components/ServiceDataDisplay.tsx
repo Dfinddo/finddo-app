@@ -46,7 +46,7 @@ const ServiceDataDisplay = observer<{serviceStore: ServiceStore}>(props => {
 			<ScrollView>
 				{
 					// console.log(images) ||
-					serviceStore.images.length && (
+					serviceStore.images.length > 0 && (
 						<>
 							<ImageView
 								images={images}

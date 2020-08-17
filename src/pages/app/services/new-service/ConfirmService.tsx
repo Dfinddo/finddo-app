@@ -35,9 +35,9 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
 		} finally {
 			setIsLoading(false);
 			Alert.alert("Serviço cadastrado com sucesso");
-			// props.navigation.navigate();
+			props.navigation.navigate("Services", {screen: "MyServices"});
 		}
-	}, [serviceStore, userStore]);
+	}, [serviceStore, userStore, props]);
 
 	return (
 		<Layout level="3">
