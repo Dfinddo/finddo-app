@@ -14,6 +14,7 @@ import {observer} from "mobx-react-lite";
 import ImageView from "react-native-image-viewing";
 import Carousel from "react-native-snap-carousel";
 import ServiceStore from "stores/service-store";
+import {BACKEND_URL_STORAGE} from "config";
 
 interface ServiceImageRenderer {
 	(image: {item: ImageSourcePropType; index: number}): JSX.Element;
@@ -24,9 +25,15 @@ const ServiceDataDisplay = observer<{serviceStore: ServiceStore}>(props => {
 	const windowWidth = useWindowDimensions().width;
 	const [displayedImage, setDisplayedImage] = useState<number | null>(null);
 
-	const images = serviceStore.images.map(image => ({
-		uri: `data:${image.mime};base64,${image.data}`,
-	}));
+	const images = serviceStore.images.map(image => {
+		if (image.mime) {
+			return {
+				uri: `data:${image.mime};base64,${image.data}`,
+			};
+		}
+
+		return {uri: BACKEND_URL_STORAGE + image};
+	});
 
 	const renderServiceImage: ServiceImageRenderer = ({item, index}) => (
 		<Pressable onPress={() => setDisplayedImage(index)}>
@@ -37,23 +44,26 @@ const ServiceDataDisplay = observer<{serviceStore: ServiceStore}>(props => {
 	return (
 		<Layout level="2" style={styles.container}>
 			<ScrollView>
-				{!serviceStore.images.length && (
-					<>
-						<ImageView
-							images={images}
-							imageIndex={displayedImage ?? 0}
-							visible={displayedImage !== null}
-							onRequestClose={() => setDisplayedImage(null)}
-						/>
-						<Carousel
-							containerCustomStyle={styles.blockStart}
-							data={images}
-							renderItem={renderServiceImage}
-							sliderWidth={windowWidth}
-							itemWidth={(windowWidth * 3) / 4}
-						/>
-					</>
-				)}
+				{
+					// console.log(images) ||
+					serviceStore.images.length && (
+						<>
+							<ImageView
+								images={images}
+								imageIndex={displayedImage ?? 0}
+								visible={displayedImage !== null}
+								onRequestClose={() => setDisplayedImage(null)}
+							/>
+							<Carousel
+								containerCustomStyle={styles.blockStart}
+								data={images}
+								renderItem={renderServiceImage}
+								sliderWidth={windowWidth}
+								itemWidth={(windowWidth * 3) / 4}
+							/>
+						</>
+					)
+				}
 
 				<Layout style={styles.descriptionWrapper} level="1">
 					<Text style={styles.description} appearance="hint">

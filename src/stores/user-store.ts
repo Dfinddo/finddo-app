@@ -196,8 +196,6 @@ class UserStore {
 		try {
 			const data = await finddoApi.get(`/users/profile_photo/${this.id}`);
 
-			console.log(data.data.photo);
-
 			if (data.data.photo) {
 				this.profilePicture = {
 					uri: `${BACKEND_URL_STORAGE}${data.data.photo}`,

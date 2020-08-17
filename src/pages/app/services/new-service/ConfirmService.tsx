@@ -34,6 +34,7 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
 			setIsLoading(false);
 		} finally {
 			setIsLoading(false);
+			Alert.alert("Serviço cadastrado com sucesso");
 			// props.navigation.navigate();
 		}
 	}, [serviceStore, userStore]);
@@ -41,9 +42,10 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
 	return (
 		<Layout level="3">
 			<TaskAwaitIndicator isAwaiting={isLoading} />
-			<ScrollView>
+			<ScrollView style={styles.serviceView}>
 				<ServiceDataDisplay serviceStore={serviceStore} />
 			</ScrollView>
+
 			<Button style={styles.button} onPress={handleSubmitService}>
 				CONFIRMAR
 			</Button>
@@ -52,8 +54,12 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
 });
 
 const styles = StyleSheet.create({
+	serviceView: {
+		height: "85%",
+	},
 	button: {
 		marginTop: "5%",
+		marginHorizontal: 16,
 	},
 });
 

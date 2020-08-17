@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {observable, computed, action} from "mobx";
 import {validations, validateInput} from "utils";
 import AddressStore from "stores/address-store";
@@ -74,7 +75,7 @@ class ServiceStore {
 		serviceStore.serviceDate = new Date(apiResponse.start_order);
 		serviceStore.startTime = apiResponse.hora_inicio;
 		serviceStore.endTime = apiResponse.hora_fim;
-		serviceStore.images = [];
+		serviceStore.images = apiResponse.images;
 		serviceStore.address = AddressStore.createFromApiResponse(
 			apiResponse.address,
 		);
@@ -89,7 +90,6 @@ class ServiceStore {
 		this.userID = null;
 		this.urgency = "delayable";
 		this.serviceDate = new Date();
-		this.addressID = null;
 		this.startTime = "";
 		this.endTime = "";
 		this.images = [];
@@ -122,8 +122,15 @@ class ServiceStore {
 
 		const images: any[] = [];
 
+		this.images.map((image, i) =>
+			images.push({
+				base64: `data:${image.mime};base64,${image.data}`,
+				file_name: `${userStore.id}_${this.startTime}_photo${i + 1}`,
+			}),
+		);
+
 		try {
-			const response = await finddoApi.post("/orders", {
+			await finddoApi.post("/orders", {
 				order,
 				address,
 				images,
