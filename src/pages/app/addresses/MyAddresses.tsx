@@ -1,11 +1,12 @@
-import React, {useState, useEffect} from "react";
-import {View, StyleSheet} from "react-native";
+import React, {useState, useEffect, useCallback} from "react";
+import {View, StyleSheet, Alert} from "react-native";
 import {Button, List, ListItem, Icon, Layout} from "@ui-kitten/components";
 import {observer} from "mobx-react-lite";
 import {useAddressList, useUser} from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AddressStackParams} from "src/routes/app";
 import {StackScreenProps} from "@react-navigation/stack";
+import AddressStore from "stores/address-store";
 
 type MyAddressesScreenProps = StackScreenProps<
 	AddressStackParams,
@@ -13,6 +14,9 @@ type MyAddressesScreenProps = StackScreenProps<
 >;
 
 const MyAddresses = observer<MyAddressesScreenProps>(({navigation}) => {
+	const [addressStore, setAddressStore] = useState<AddressStore | undefined>(
+		new AddressStore(),
+	);
 	const [isLoading, setIsLoading] = useState(false);
 	const addressListStore = useAddressList();
 	const userStore = useUser();
@@ -22,10 +26,32 @@ const MyAddresses = observer<MyAddressesScreenProps>(({navigation}) => {
 		try {
 			addressListStore.fetchAddresses(userStore);
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.log({error});
 		}
 		setIsLoading(false);
 	}, [addressListStore, userStore]);
+
+	const handleDeleteAddress = useCallback(
+		(id: string): void => {
+			try {
+				Alert.alert("Finddo", "Deseja excluir o endereço selecionado?", [
+					{text: "Não"},
+					{
+						text: "Sim",
+						onPress: () => addressStore?.deleteAddressById(id),
+					},
+				]);
+			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.log({error});
+				Alert.alert(
+					"Erro ao tentar remover o endereço. Endereço está em uso.",
+				);
+			}
+		},
+		[addressStore],
+	);
 
 	return (
 		<Layout level="2" style={styles.container}>
@@ -54,7 +80,9 @@ const MyAddresses = observer<MyAddressesScreenProps>(({navigation}) => {
 										)}
 									/>
 									<Button
-										onPress={() => void 0}
+										onPress={() => {
+											handleDeleteAddress(item.id);
+										}}
 										size="small"
 										appearance="ghost"
 										status="danger"

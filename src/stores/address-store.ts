@@ -89,10 +89,32 @@ class AddressStore {
 
 		try {
 			const response = this.id
-				? finddoApi.put(`/addresses/${this.id}`, {address})
-				: finddoApi.post("/addresses", {address});
+				? await finddoApi.put(`/addresses/${this.id}`, {address})
+				: await finddoApi.post("/addresses", {address});
 
 			runInAction(() => (this.id = response.data.id));
+		} catch (error) {
+			if (error.response) throw new Error("Invalid address data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	};
+
+	@action
+	public deleteAddress = async (): Promise<void> => {
+		try {
+			await finddoApi.delete(`/addresses/${this.id}`);
+		} catch (error) {
+			if (error.response) throw new Error("Invalid address data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	};
+
+	@action
+	public deleteAddressById = async (id: string): Promise<void> => {
+		try {
+			await finddoApi.delete(`/addresses/${id}`);
 		} catch (error) {
 			if (error.response) throw new Error("Invalid address data");
 			else if (error.request) throw new Error("Connection error");

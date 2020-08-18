@@ -1,7 +1,7 @@
 import {observable, action, runInAction} from "mobx";
 import AddressStore from "stores/address-store";
 import UserStore from "stores/user-store";
-import finddoApi from "finddo-api";
+import finddoApi, {AddressApiResponse} from "finddo-api";
 
 class AddressListStore {
 	@observable
@@ -11,7 +11,7 @@ class AddressListStore {
 	public async fetchAddresses(userStore: UserStore): Promise<void> {
 		try {
 			const data = await finddoApi.get(`/addresses/user/${userStore.id}`);
-			const addresses = data.data;
+			const addresses: AddressApiResponse[] = data.data;
 			const addressList = addresses.map(address =>
 				AddressStore.createFromApiResponse(address),
 			);

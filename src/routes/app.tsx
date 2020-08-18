@@ -192,7 +192,7 @@ export type PaymentMethodsStackParams = {
 
 export type AddressStackParams = {
 	MyAddresses: undefined;
-	ManageAddress: {id: string};
+	ManageAddress: undefined | {id: string};
 };
 
 export type NewServiceStackParams = {
