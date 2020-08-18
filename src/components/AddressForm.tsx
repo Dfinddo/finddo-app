@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {KeyboardAvoidingView, Platform, StyleSheet} from "react-native";
 import ValidatedInput from "components/ValidatedInput";
 import {observer} from "mobx-react-lite";
@@ -16,15 +16,22 @@ const AddressForm = observer<AddressFormProps>(props => {
 	const [isLoading, setIsLoading] = useState(false);
 	const {addressStore, forceErrorDisplay} = props;
 
+	// Função temporária enquanto serviço só ser utilizado no Rio e Brasil
+	useEffect(() => {
+		addressStore.state = "RJ";
+		addressStore.city = "Rio de Janeiro";
+	}, [addressStore]);
+
 	const getAddressData = async (): Promise<void> => {
 		if (addressStore.cep.length === 8) {
 			setIsLoading(true);
-			const {bairro, logradouro, uf} = await fetch(
+			const {bairro, logradouro, uf, localidade} = await fetch(
 				`https://viacep.com.br/ws/${addressStore.cep}/json`,
 			).then(response => response.json());
 
 			addressStore.street = logradouro ?? "";
 			addressStore.state = uf ?? "";
+			addressStore.city = localidade ?? "";
 			addressStore.district = bairro ?? "";
 
 			setIsLoading(false);
@@ -60,6 +67,8 @@ const AddressForm = observer<AddressFormProps>(props => {
 			<ValidatedInput
 				onChangeText={input => (addressStore.state = input)}
 				label="Estado"
+				// retirar quando atender mais estados
+				editable={false}
 				value={addressStore.state}
 				error={addressStore.stateError}
 				forceErrorDisplay={forceErrorDisplay}
@@ -67,6 +76,8 @@ const AddressForm = observer<AddressFormProps>(props => {
 			<ValidatedInput
 				onChangeText={input => (addressStore.city = input)}
 				label="Cidade"
+				// retirar quando atender mais cidades
+				editable={false}
 				value={addressStore.city}
 				error={addressStore.cityError}
 				forceErrorDisplay={forceErrorDisplay}

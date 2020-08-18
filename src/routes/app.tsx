@@ -202,6 +202,7 @@ export type NewServiceStackParams = {
 	ServicePhotos: undefined;
 	ServiceAddress: undefined;
 	ConfirmService: undefined;
+	Services: {screen: string};
 };
 
 export type ServicesStackParams = {

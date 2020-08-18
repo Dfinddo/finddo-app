@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {
 	ScrollView,
 	Platform,
@@ -23,7 +23,7 @@ const Login = observer<LoginScreenProps>(props => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	const login = async (): Promise<void> => {
+	const login = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 		try {
 			await userStore.signIn(email, password);
@@ -35,7 +35,7 @@ const Login = observer<LoginScreenProps>(props => {
 			else throw error;
 			setIsLoading(false);
 		}
-	};
+	}, [email, password, userStore]);
 
 	return (
 		<Layout level="1" style={styles.container}>

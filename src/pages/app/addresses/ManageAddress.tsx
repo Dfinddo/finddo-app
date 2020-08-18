@@ -38,7 +38,6 @@ const ManageAddress: FC<ManageAddressScreenProps> = ({navigation, route}) => {
 			// eslint-disable-next-line no-console
 			console.log({error});
 			Alert.alert("Erro ao tentar atualizar endereço, tente novamente");
-			setIsLoading(false);
 		} finally {
 			setIsLoading(false);
 		}

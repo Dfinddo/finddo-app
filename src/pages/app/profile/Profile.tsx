@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {Pressable, View, Alert, StyleSheet, Modal} from "react-native";
 import {useUser} from "hooks";
 import {
@@ -31,19 +31,22 @@ const Profile = observer<ProfileScreenProps>(_props => {
 		userStore.getProfilePicture();
 	}, [userStore]);
 
-	const editProfile = (field: keyof UserStore) => () => {
-		setFieldToEdit(field);
-		setIsEditing(true);
-	};
+	const editProfile = useCallback(
+		(field: keyof UserStore) => () => {
+			setFieldToEdit(field);
+			setIsEditing(true);
+		},
+		[],
+	);
 
-	const logout = (): void => {
+	const logout = useCallback((): void => {
 		Alert.alert("Finddo", "Deseja sair?", [
 			{text: "Não"},
 			{text: "Sim", onPress: userStore.signOut},
 		]);
-	};
+	}, [userStore.signOut]);
 
-	const changeProfilePicture = (): void => {
+	const changeProfilePicture = useCallback((): void => {
 		Alert.alert(
 			"Alterar foto de perfil",
 			"Deseja tirar uma nova foto ou escolher da galeria?",
@@ -65,7 +68,7 @@ const Profile = observer<ProfileScreenProps>(_props => {
 				},
 			],
 		);
-	};
+	}, [userStore]);
 
 	return (
 		<Layout level="1" style={styles.container}>
