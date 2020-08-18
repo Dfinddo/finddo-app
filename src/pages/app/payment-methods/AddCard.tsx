@@ -84,15 +84,15 @@ const AddCard = observer<CardsScreenProps>(props => {
 									}
 								/>
 								<ValidatedInput
-									style={styles.cvv}
-									label="CVV"
+									style={styles.cvc}
+									label="CVC"
 									keyboardType="number-pad"
 									maxLength={3}
 									placeholder="123"
-									error={cardStore.cvvError}
+									error={cardStore.cvcError}
 									forceErrorDisplay={hasFailedToFillForm}
-									value={cardStore.cvv}
-									onChangeText={text => (cardStore.cvv = text)}
+									value={cardStore.cvc}
+									onChangeText={text => (cardStore.cvc = text)}
 								/>
 								<Datepicker
 									style={styles.rowLastItem}
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
 		flex: 4,
 		marginRight: 15,
 	},
-	cvv: {
+	cvc: {
 		flex: 3,
 		marginRight: 15,
 	},

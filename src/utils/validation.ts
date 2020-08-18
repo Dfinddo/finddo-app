@@ -1,3 +1,4 @@
+import {MoipValidator} from "moip-sdk-js";
 type InputTest = (input: string) => string | undefined;
 
 const NUMBER_REGEX = /^[0-9]*$/;
@@ -49,6 +50,16 @@ const validations = {
 
 	validEmail: (): InputTest => input =>
 		!EMAIL_REGEX.test(input) ? "Precisa ser um email válido." : void 0,
+
+	validCreditCardNumber: (): InputTest => input =>
+		!MoipValidator.isValidNumber(input)
+			? "Precisa digitar um número de cartão válido."
+			: void 0,
+
+	validCreditCardDate: (): InputTest => input =>
+		!MoipValidator.isExpiryDateValid(input.substr(0, 2), input.substr(2, 2))
+			? "Precisa digitar uma data de expiração válida."
+			: void 0,
 };
 
 export type {InputTest};

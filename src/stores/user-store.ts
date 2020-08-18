@@ -89,7 +89,7 @@ class UserStore {
 
 			Object.assign(this, userData, {id, userType});
 
-			// TODO: descomentar ao começar a fazer parte de notificações
+			// TODO: utilizar começar a fazer parte de notificações
 			// await finddoApi.put(`users/player_id_notifications/${this.id}`,
 			// 	{player_id: this.oneSignalID});
 

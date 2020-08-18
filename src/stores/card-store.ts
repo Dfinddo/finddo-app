@@ -2,12 +2,17 @@ import {observable, computed, action, runInAction} from "mobx";
 import {validations, validateInput, pick, checkFieldsForErrors} from "utils";
 import finddoApi, {CardApiResponse} from "finddo-api";
 
-const numberTests = [validations.required(), validations.definedLength(16)];
+const numberTests = [
+	validations.required(),
+	validations.definedLength(16),
+	validations.validCreditCardNumber(),
+];
 const expirationDateTests = [
 	validations.required(),
 	validations.definedLength(4),
+	validations.validCreditCardDate(),
 ];
-const cvvTests = [validations.required(), validations.definedLength(3)];
+const cvcTests = [validations.required(), validations.definedLength(3)];
 const holderNameTests = [validations.required()];
 const taxDocumentTests = [
 	validations.required(),
@@ -18,7 +23,7 @@ const phoneTests = [validations.required(), validations.definedLength(11)];
 const cardApiFields = [
 	"number",
 	"expirationDate",
-	"cvv",
+	"cvc",
 	"holderName",
 	"holderBirthdate",
 	"taxDocument",
@@ -36,9 +41,9 @@ class CardStore {
 		return validateInput(this.expirationDate, expirationDateTests);
 	}
 
-	@observable public cvv = "";
-	@computed public get cvvError(): string | undefined {
-		return validateInput(this.cvv, cvvTests);
+	@observable public cvc = "";
+	@computed public get cvcError(): string | undefined {
+		return validateInput(this.cvc, cvcTests);
 	}
 
 	@observable public holderName = "";
@@ -80,7 +85,7 @@ class CardStore {
 	@action
 	public saveCard = async (): Promise<void> => {
 		try {
-			const response = await finddoApi.post("/addresses", {card});
+			const response = await finddoApi.post("/add_credit_card", {card});
 		} catch (error) {
 			if (error.response) throw new Error("Invalid address data");
 			else if (error.request) throw new Error("Connection error");
