@@ -71,7 +71,9 @@ const Login = observer<LoginScreenProps>(props => {
 					>
 						Esqueci minha senha
 					</Text>
-					<Button onPress={login}>ENTRAR</Button>
+					<Button style={styles.buttonConfirm} onPress={login}>
+						ENTRAR
+					</Button>
 					<Text>
 						Ainda não é cadastrado?{" "}
 						<Text
@@ -112,6 +114,9 @@ const styles = StyleSheet.create({
 		fontSize: 30,
 		textAlign: "center",
 		fontWeight: "bold",
+	},
+	buttonConfirm: {
+		margin: 16,
 	},
 	cadastreSe: {fontWeight: "bold", textDecorationLine: "underline"},
 });

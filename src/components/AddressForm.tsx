@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {KeyboardAvoidingView, Platform, StyleSheet} from "react-native";
 import ValidatedInput from "components/ValidatedInput";
 import {observer} from "mobx-react-lite";
@@ -22,7 +22,7 @@ const AddressForm = observer<AddressFormProps>(props => {
 		addressStore.city = "Rio de Janeiro";
 	}, [addressStore]);
 
-	const getAddressData = async (): Promise<void> => {
+	const getAddressData = useCallback(async (): Promise<void> => {
 		if (addressStore.cep.length === 8) {
 			setIsLoading(true);
 			const {bairro, logradouro, uf, localidade} = await fetch(
@@ -36,7 +36,7 @@ const AddressForm = observer<AddressFormProps>(props => {
 
 			setIsLoading(false);
 		}
-	};
+	}, [addressStore]);
 
 	return (
 		<KeyboardAvoidingView

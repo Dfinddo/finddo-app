@@ -39,7 +39,10 @@ const UserDataForm = observer<UserDataFormScreenProps>(props => {
 		} catch (error) {
 			if (error.message === "Connection error")
 				Alert.alert("Falha ao conectar");
-			else throw error;
+			else {
+				setIsLoading(false);
+				throw error;
+			}
 		} finally {
 			setIsLoading(false);
 		}

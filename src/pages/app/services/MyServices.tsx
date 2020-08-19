@@ -109,12 +109,16 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 						/>
 					)}
 				/>
+
+				{userStore.userType === "user" && (
+					<Button
+						style={styles.button}
+						onPress={() => navigation.navigate("NewService")}
+					>
+						NOVO PEDIDO
+					</Button>
+				)}
 			</View>
-			{userStore.userType === "user" && (
-				<Button onPress={() => navigation.navigate("NewService")}>
-					NOVO PEDIDO
-				</Button>
-			)}
 		</Layout>
 	);
 });
@@ -124,10 +128,14 @@ export default MyServices;
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingTop: 10,
+		paddingTop: 30,
 		alignItems: "center",
 	},
-	select: {width: "90%"},
+	select: {width: "85%"},
 	icon: {width: 24, height: 24},
-	listWrapper: {height: "80%", width: "100%"},
+	listWrapper: {height: "85%", width: "100%"},
+	button: {
+		marginTop: "2%",
+		marginHorizontal: "12%",
+	},
 });
