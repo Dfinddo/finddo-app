@@ -23,6 +23,7 @@ import {
 import {useSwitch} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import {PaymentMethodsStackParams} from "src/routes/app";
+import {localeDateService} from "src/utils/calendarLocale";
 
 type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "AddCard">;
 
@@ -106,6 +107,7 @@ const AddCard = observer<CardsScreenProps>(props => {
 									onChangeText={text => (cardStore.cvc = text)}
 								/>
 								<Datepicker
+									dateService={localeDateService}
 									style={styles.rowLastItem}
 									label="Data de Nascimento"
 									placeholder="dd/mm/aaaa"

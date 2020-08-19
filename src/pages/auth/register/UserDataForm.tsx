@@ -14,6 +14,7 @@ import {
 } from "utils";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RegisterStackParams} from "src/routes/auth";
+import {localeDateService} from "src/utils/calendarLocale";
 
 type UserDataFormScreenProps = StackScreenProps<
 	RegisterStackParams,
@@ -108,6 +109,7 @@ const UserDataForm = observer<UserDataFormScreenProps>(props => {
 					forceErrorDisplay={hasFailedToFillForm}
 				/>
 				<Datepicker
+					dateService={localeDateService}
 					min={new Date("01/01/1920")}
 					onSelect={input => (userStore.birthdate = input)}
 					label="Data de Nascimento"

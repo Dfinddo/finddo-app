@@ -1,8 +1,7 @@
-import React, {useState} from "react";
+import React from "react";
 import {View, StyleSheet} from "react-native";
 import {
 	Text,
-	Modal,
 	Button,
 	SelectItem,
 	Calendar,
@@ -14,6 +13,7 @@ import {range} from "utils";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import ValidatedSelect from "components/ValidatedSelect";
+import {localeDateService} from "src/utils/calendarLocale";
 
 type ServiceDateScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -54,6 +54,7 @@ const ServiceDate = observer<ServiceDateScreenProps>(props => {
 					Escolha a melhor data e faixa de horário para seu atendimento:
 				</Text>
 				<Calendar
+					dateService={localeDateService}
 					date={serviceStore.serviceDate}
 					onSelect={date => (serviceStore.serviceDate = date)}
 					min={initialDate}
