@@ -1,7 +1,7 @@
 import {observable, action, runInAction} from "mobx";
 import ServiceStore from "stores/service-store";
 import UserStore from "stores/user-store";
-import finddoApi from "finddo-api";
+import finddoApi, {ServiceApiResponse} from "finddo-api";
 
 class ServiceListStore {
 	@observable
@@ -16,7 +16,7 @@ class ServiceListStore {
 					: "/orders/available";
 
 			const response = await finddoApi.get(endpoint);
-			const services = response.data.items;
+			const services: ServiceApiResponse[] = response.data.items;
 			const serviceList = services.map(service =>
 				ServiceStore.createFromApiResponse(service),
 			);

@@ -42,7 +42,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 	const userStore = useUser();
 	const theme = useTheme();
 
-	const obterPedidos = useCallback(async (): Promise<void> => {
+	const getServices = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 
 		try {
@@ -61,7 +61,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 		}
 	}, [userStore, serviceListStore]);
 
-	useEffect(() => void obterPedidos(), [obterPedidos]);
+	useEffect(() => void getServices(), [getServices]);
 
 	return (
 		<Layout level="2" style={styles.container}>
@@ -88,7 +88,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 						<RefreshControl
 							colors={[theme["color-primary-active"]]}
 							refreshing={isLoading}
-							onRefresh={obterPedidos}
+							onRefresh={getServices}
 						/>
 					}
 					renderItem={({item}: {item: ServiceStore}) => (
