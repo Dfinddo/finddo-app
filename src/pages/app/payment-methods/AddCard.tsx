@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {
 	View,
 	ScrollView,
@@ -29,6 +29,7 @@ type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "AddCard">;
 const AddCard = observer<CardsScreenProps>(props => {
 	const [cardStore] = useState(new CardStore());
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(
 		() =>
@@ -40,15 +41,25 @@ const AddCard = observer<CardsScreenProps>(props => {
 		[],
 	);
 
-	const onSaveAttempt = (): void => {
-		if (cardStore.hasErrors) return setFillAttemptAsFailed();
-		props.navigation.navigate("Cards");
-	};
+	const onSaveAttempt = useCallback(async (): Promise<void> => {
+		try {
+			setIsLoading(true);
+			if (cardStore.hasErrors) return setFillAttemptAsFailed();
+			await cardStore.saveCard();
+			props.navigation.navigate("Cards");
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			Alert.alert("Erro ao tentar adicionar o cartão, tente novamente");
+		} finally {
+			setIsLoading(false);
+		}
+	}, [cardStore, props, setFillAttemptAsFailed]);
 
 	return (
 		<Layout level="2" style={styles.container}>
 			<ScrollView>
-				<TaskAwaitIndicator isAwaiting={false} />
+				<TaskAwaitIndicator isAwaiting={isLoading} />
 				<View>
 					<KeyboardAvoidingView
 						behavior={Platform.OS === "ios" ? "padding" : "height"}

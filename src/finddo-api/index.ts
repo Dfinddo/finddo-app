@@ -130,6 +130,33 @@ interface ServiceApiResponse {
 	user_rate: string;
 }
 
+interface CardApiResponse {
+	creditCard: {
+		expirationMonth: string;
+		expirationYear: string;
+		number: string;
+		cvc: string;
+		holder: {
+			fullname: string;
+			birthdate: string;
+			taxDocument: {
+				type: string;
+				number: string;
+			};
+			phone: {
+				countryCode: string;
+				areaCode: string;
+				number: string;
+			};
+		};
+	};
+}
+
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export type {UserApiResponse, AddressApiResponse, ServiceApiResponse};
+export type {
+	UserApiResponse,
+	AddressApiResponse,
+	ServiceApiResponse,
+	CardApiResponse,
+};

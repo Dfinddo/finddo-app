@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {observable, computed, action, runInAction} from "mobx";
 import {validations, validateInput, pick, checkFieldsForErrors} from "utils";
 import finddoApi, {CardApiResponse} from "finddo-api";
+import {format} from "date-fns";
 
 const numberTests = [
 	validations.required(),
@@ -74,20 +76,48 @@ class CardStore {
 	public static createFromApiResponse(
 		apiResponse: CardApiResponse,
 	): CardStore {
-		const addressStore = new CardStore();
-		const {name: addressAlias, ...address} = apiResponse;
+		const cardStore = new CardStore();
+		const {name: cardAlias, ...card} = apiResponse;
 
-		Object.assign(addressStore, address, {addressAlias});
+		Object.assign(cardStore, card, {cardAlias});
 
-		return addressStore;
+		return cardStore;
 	}
 
 	@action
 	public saveCard = async (): Promise<void> => {
+		const creditCard = pick(this, cardApiFields);
+
 		try {
-			const response = await finddoApi.post("/add_credit_card", {card});
+			await finddoApi.post("/users/add_credit_card", {
+				credit_card: {
+					method: "CREDIT_CARD",
+					creditCard: {
+						expirationMonth: creditCard.expirationDate.substr(0, 2),
+						expirationYear: creditCard.expirationDate.substr(2, 2),
+						number: creditCard.number,
+						cvc: creditCard.cvc,
+						holder: {
+							fullname: creditCard.holderName,
+							birthdate: format(
+								creditCard.holderBirthdate,
+								"yyyy-MM-dd",
+							),
+							taxDocument: {
+								type: "CPF",
+								number: creditCard.taxDocument,
+							},
+							phone: {
+								countryCode: "55",
+								areaCode: creditCard.phone.substr(0, 2),
+								number: creditCard.phone.substr(2, 9),
+							},
+						},
+					},
+				},
+			});
 		} catch (error) {
-			if (error.response) throw new Error("Invalid address data");
+			if (error.response) throw new Error("Invalid credit card data");
 			else if (error.request) throw new Error("Connection error");
 			else throw error;
 		}
