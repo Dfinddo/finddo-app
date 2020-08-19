@@ -72,17 +72,17 @@ class CardStore {
 		return checkFieldsForErrors(this, cardApiFields);
 	}
 
-	@action
-	public static createFromApiResponse(
-		apiResponse: CardApiResponse,
-	): CardStore {
-		const cardStore = new CardStore();
-		const {name: cardAlias, ...card} = apiResponse;
+	// @action
+	// public static createFromApiResponse(
+	// 	apiResponse: CardApiResponse,
+	// ): CardStore {
+	// 	const cardStore = new CardStore();
+	// 	const {name: cardAlias, ...card} = apiResponse;
 
-		Object.assign(cardStore, card, {cardAlias});
+	// 	Object.assign(cardStore, card, {cardAlias});
 
-		return cardStore;
-	}
+	// 	return cardStore;
+	// }
 
 	@action
 	public saveCard = async (): Promise<void> => {

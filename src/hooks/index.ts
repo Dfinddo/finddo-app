@@ -1,14 +1,18 @@
 import {useState, useContext} from "react";
-import {UserContext} from "components/providers/user-provider";
-import {ServiceContext} from "components/providers/service-provider";
-import {AddressListContext} from "components/providers/address-list-store";
-import UserStore from "stores/user-store";
-import ServiceStore from "stores/service-store";
-import AddressListStore from "stores/address-list-store";
-import {ServiceListContext} from "components/providers/service-list-provider";
-import ServiceListStore from "stores/service-list-store";
 import {useTheme} from "@ui-kitten/components";
 import {StackNavigationOptions} from "@react-navigation/stack";
+
+import {UserContext} from "components/providers/user-provider";
+import {ServiceContext} from "components/providers/service-provider";
+import {CardListContext} from "components/providers/card-list-provider";
+import {AddressListContext} from "components/providers/address-list-provider";
+import {ServiceListContext} from "components/providers/service-list-provider";
+
+import UserStore from "stores/user-store";
+import ServiceStore from "stores/service-store";
+import CardListStore from "stores/card-list-store";
+import AddressListStore from "stores/address-list-store";
+import ServiceListStore from "stores/service-list-store";
 
 const useSwitch = (initialSwitchState: boolean): [boolean, () => void] => {
 	const [switchState, setSwitchState] = useState(initialSwitchState);
@@ -19,10 +23,11 @@ const useSwitch = (initialSwitchState: boolean): [boolean, () => void] => {
 };
 
 // Context Hooks
-const useService = (): ServiceStore => useContext(ServiceContext);
-const useServiceList = (): ServiceListStore => useContext(ServiceListContext);
 const useUser = (): UserStore => useContext(UserContext);
+const useService = (): ServiceStore => useContext(ServiceContext);
+const useCardList = (): CardListStore => useContext(CardListContext);
 const useAddressList = (): AddressListStore => useContext(AddressListContext);
+const useServiceList = (): ServiceListStore => useContext(ServiceListContext);
 
 // Theme Hooks
 const useThemedHeaderConfig = (): StackNavigationOptions => {
@@ -39,10 +44,11 @@ const useThemedHeaderConfig = (): StackNavigationOptions => {
 };
 
 export {
+	useUser,
 	useSwitch,
 	useService,
+	useCardList,
 	useServiceList,
-	useUser,
 	useAddressList,
 	useThemedHeaderConfig,
 };

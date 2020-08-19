@@ -1,4 +1,4 @@
-import React, {useState, FC} from "react";
+import React, {useState, FC, useEffect} from "react";
 import {View, ActivityIndicator, Image, ListRenderItemInfo} from "react-native";
 import {
 	List,
@@ -12,31 +12,45 @@ import {
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {PaymentMethodsStackParams} from "src/routes/app";
+import {useCardList} from "hooks";
 
-const creditCard = {
-	id: "CRC-7YWS1UJRTMYW",
-	brand: "VISA",
-	first6: "401200",
-	last4: "1112",
-	store: true,
-};
+interface ICreditCard {
+	creditCard: {
+		id: string;
+		brand: string;
+		first6: string;
+		last4: string;
+		store: boolean;
+	};
+}
 
 type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "Cards">;
 
 const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 	const styles = useStyleSheet(themedStyles);
 	const [isLoading, setIsLoading] = useState(false);
-	const [cards, setCards] = useState<typeof creditCard[]>([creditCard]);
+	const cardListStore = useCardList();
+
+	useEffect(() => {
+		setIsLoading(true);
+		try {
+			cardListStore.fetchCards();
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+		}
+		setIsLoading(false);
+	}, [cardListStore]);
 
 	const renderCardItem = (
-		info: ListRenderItemInfo<typeof creditCard>,
+		info: ListRenderItemInfo<ICreditCard>,
 	): JSX.Element => (
 		<View style={styles.cardItem}>
 			<Text category="h5" status="control">
-				{info.item.brand}
+				{info.item.creditCard.brand}
 			</Text>
 			<Text category="h6" status="control">
-				**** **** **** {info.item.last4}
+				**** **** **** {info.item.creditCard.last4}
 			</Text>
 		</View>
 	);
@@ -47,7 +61,7 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 			<List
 				style={styles.list}
 				contentContainerStyle={styles.listContent}
-				data={cards}
+				data={cardListStore.list}
 				renderItem={renderCardItem}
 			/>
 			<Button onPress={() => navigation.navigate("AddCard")}>
