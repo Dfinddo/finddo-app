@@ -12,6 +12,7 @@ import {
 	Layout,
 	Autocomplete,
 	AutocompleteItem,
+	Icon,
 } from "@ui-kitten/components";
 import {useService, useAddressList, useSwitch, useUser} from "hooks";
 import {observer} from "mobx-react-lite";
@@ -20,6 +21,7 @@ import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import AddressStore from "stores/address-store";
+import {TouchableWithoutFeedback} from "@ui-kitten/components/devsupport";
 
 type ServiceAddressScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -71,6 +73,17 @@ const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
 		<AutocompleteItem key={index} title={item.addressAlias} />
 	);
 
+	const clearInput = (): void => {
+		setValue("");
+		setData(addressListStore.list);
+	};
+
+	const renderCloseIcon = (props: any): JSX.Element => (
+		<TouchableWithoutFeedback onPress={clearInput}>
+			<Icon {...props} name="close" />
+		</TouchableWithoutFeedback>
+	);
+
 	const handleAutoCompleteForm = (): void => {
 		Object.assign(
 			addressStore,
@@ -95,6 +108,7 @@ const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
 							value={value}
 							onSelect={onSelect}
 							onChangeText={onChangeText}
+							accessoryRight={renderCloseIcon}
 							style={styles.searchAddress}
 						>
 							{data.map(renderOption)}
@@ -103,7 +117,7 @@ const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
 							onPress={handleAutoCompleteForm}
 							style={styles.searchAddressButton}
 						>
-							Preencher
+							OK
 						</Button>
 					</View>
 
@@ -130,17 +144,21 @@ const styles = StyleSheet.create({
 	},
 	pickUpAddress: {
 		alignItems: "center",
-		justifyContent: "space-between",
+		justifyContent: "flex-start",
 		flexDirection: "row",
 		margin: 16,
 	},
 	searchAddress: {
 		height: 24,
-		marginRight: 16,
+		flex: 60,
+		borderBottomRightRadius: 0,
+		borderTopRightRadius: 0,
 	},
 	searchAddressButton: {
 		height: 24,
-		marginTop: 16,
+		flex: 40,
+		borderBottomLeftRadius: 0,
+		borderTopLeftRadius: 0,
 	},
 	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 });
