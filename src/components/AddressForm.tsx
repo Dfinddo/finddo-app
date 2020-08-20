@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from "react";
-import {KeyboardAvoidingView, Platform, StyleSheet} from "react-native";
+import {KeyboardAvoidingView, Platform, StyleSheet, View} from "react-native";
 import ValidatedInput from "components/ValidatedInput";
 import {observer} from "mobx-react-lite";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
@@ -39,9 +39,9 @@ const AddressForm = observer<AddressFormProps>(props => {
 	}, [addressStore]);
 
 	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			keyboardVerticalOffset={Platform.OS === "ios" ? 200 : void 0}
+		<View
+			// behavior={Platform.OS === "ios" ? "padding" : "height"}
+			// keyboardVerticalOffset={Platform.OS === "ios" ? 200 : void 0}
 			style={styles.cadastroForm}
 		>
 			<TaskAwaitIndicator isAwaiting={isLoading} />
@@ -68,7 +68,7 @@ const AddressForm = observer<AddressFormProps>(props => {
 				onChangeText={input => (addressStore.state = input)}
 				label="Estado"
 				// retirar quando atender mais estados
-				editable={false}
+				disabled={true}
 				value={addressStore.state}
 				error={addressStore.stateError}
 				forceErrorDisplay={forceErrorDisplay}
@@ -77,7 +77,7 @@ const AddressForm = observer<AddressFormProps>(props => {
 				onChangeText={input => (addressStore.city = input)}
 				label="Cidade"
 				// retirar quando atender mais cidades
-				editable={false}
+				disabled={true}
 				value={addressStore.city}
 				error={addressStore.cityError}
 				forceErrorDisplay={forceErrorDisplay}
@@ -111,7 +111,7 @@ const AddressForm = observer<AddressFormProps>(props => {
 				error={addressStore.complementError}
 				forceErrorDisplay={forceErrorDisplay}
 			/>
-		</KeyboardAvoidingView>
+		</View>
 	);
 });
 
