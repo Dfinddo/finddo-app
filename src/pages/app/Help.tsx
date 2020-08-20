@@ -1,4 +1,4 @@
-import React, {useState, FC} from "react";
+import React, {useState, FC, useMemo} from "react";
 import {
 	ImageBackground,
 	ScrollView,
@@ -10,7 +10,15 @@ import {
 import {termos} from "../auth/termos";
 import {sobre} from "./sobre-o-app";
 import {politica} from "../auth/politica";
-import {Layout, TabView, Tab, Text, Card} from "@ui-kitten/components";
+import {
+	Layout,
+	TabView,
+	Tab,
+	Text,
+	Card,
+	List,
+	ListItem,
+} from "@ui-kitten/components";
 import {PHONE} from "config";
 import licenses from "assets/licenses.json";
 
@@ -30,6 +38,12 @@ const openChat = (): void => {
 // TODO: Add contact button
 const Help: FC = () => {
 	const [selectedIndex, setSelectedIndex] = useState(0);
+
+	const licensesList = useMemo(() => {
+		const list = Object.entries(licenses);
+
+		return list;
+	}, []);
 
 	return (
 		<Layout level="2" style={styles.container}>
@@ -60,23 +74,27 @@ const Help: FC = () => {
 				</Tab>
 				<Tab title="Software de Terceiros">
 					<Layout>
-						<ScrollView>
-							{Object.entries(licenses).map(
-								([packageName, license], i) => (
-									<Card
-										key={i}
-										style={styles.licenseContainer}
-										header={props => (
-											<View {...props}>
-												<Text category="h6">{packageName}</Text>
-											</View>
-										)}
-									>
-										<Text category="p1">{license}</Text>
-									</Card>
-								),
-							)}
-						</ScrollView>
+						<List
+							data={licensesList}
+							renderItem={({item}) => {
+								const [packageName, license] = item;
+
+								return (
+									<ListItem>
+										<Card
+											style={styles.licenseContainer}
+											header={props => (
+												<View {...props}>
+													<Text category="h6">{packageName}</Text>
+												</View>
+											)}
+										>
+											<Text category="p1">{license}</Text>
+										</Card>
+									</ListItem>
+								);
+							}}
+						/>
 					</Layout>
 				</Tab>
 			</TabView>

@@ -114,7 +114,6 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 
 	return (
 		<Layout level="2" style={styles.container}>
-			<TaskAwaitIndicator isAwaiting={isLoading} />
 			<List
 				style={styles.list}
 				contentContainerStyle={styles.listContent}
