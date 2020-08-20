@@ -15,6 +15,8 @@ import ImageView from "react-native-image-viewing";
 import Carousel from "react-native-snap-carousel";
 import ServiceStore from "stores/service-store";
 import {BACKEND_URL_STORAGE} from "config";
+import {format} from "date-fns";
+import ptBR from "date-fns/locale/pt-BR";
 
 interface ServiceImageRenderer {
 	(image: {item: ImageSourcePropType; index: number}): JSX.Element;
@@ -83,9 +85,11 @@ const ServiceDataDisplay = observer<{serviceStore: ServiceStore}>(props => {
 				)}
 				<DataPieceDisplay
 					hint="Data"
-					value={`${serviceStore.serviceDate.toString()}, entre ${
-						serviceStore.startTime
-					} e ${serviceStore.endTime}`}
+					value={`${format(
+						serviceStore.serviceDate,
+						"EEEE', dia' dd 'de' MMMM 'de' yyyy",
+						{locale: ptBR},
+					)},\nentre ${serviceStore.startTime} e ${serviceStore.endTime}`}
 				/>
 				<DataPieceDisplay
 					style={styles.blockStart}
