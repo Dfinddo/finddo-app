@@ -150,7 +150,9 @@ const AddCard = observer<CardsScreenProps>(props => {
 							/>
 						</Layout>
 					</KeyboardAvoidingView>
-					<Button onPress={onSaveAttempt}>SALVAR</Button>
+					<Button style={styles.button} onPress={onSaveAttempt}>
+						SALVAR
+					</Button>
 				</View>
 			</ScrollView>
 		</Layout>
@@ -186,5 +188,8 @@ const styles = StyleSheet.create({
 	},
 	rowLastItem: {
 		flex: 5,
+	},
+	button: {
+		margin: 16,
 	},
 });

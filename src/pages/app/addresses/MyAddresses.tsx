@@ -96,7 +96,10 @@ const MyAddresses = observer<MyAddressesScreenProps>(({navigation}) => {
 					/>
 				)}
 			/>
-			<Button onPress={() => navigation.navigate("ManageAddress")}>
+			<Button
+				style={styles.button}
+				onPress={() => navigation.navigate("ManageAddress")}
+			>
 				ADICIONAR ENDEREÇO
 			</Button>
 		</Layout>
@@ -109,4 +112,5 @@ const styles = StyleSheet.create({
 	container: {flex: 1},
 	addressListContainer: {marginTop: 10},
 	address: {flexDirection: "row"},
+	button: {margin: 16},
 });

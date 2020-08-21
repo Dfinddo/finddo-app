@@ -53,7 +53,9 @@ const ManageAddress: FC<ManageAddressScreenProps> = ({navigation, route}) => {
 					addressStore={addressStore}
 					forceErrorDisplay={hasFailedToFillForm}
 				/>
-				<Button onPress={onSaveAttempt}>CONTINUAR</Button>
+				<Button style={styles.button} onPress={onSaveAttempt}>
+					CONTINUAR
+				</Button>
 			</ScrollView>
 		</Layout>
 	);
@@ -63,4 +65,5 @@ export default ManageAddress;
 
 const styles = StyleSheet.create({
 	container: {flex: 1},
+	button: {margin: 16},
 });

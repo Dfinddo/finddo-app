@@ -1,5 +1,11 @@
 import React, {useState, useEffect, useCallback} from "react";
-import {View, RefreshControl, Alert, StyleSheet} from "react-native";
+import {
+	View,
+	RefreshControl,
+	Alert,
+	StyleSheet,
+	TouchableOpacity,
+} from "react-native";
 // import Icon from "react-native-vector-icons/MaterialIcons";
 import {
 	Button,
@@ -10,6 +16,7 @@ import {
 	SelectItem,
 	Layout,
 	useTheme,
+	Text,
 } from "@ui-kitten/components";
 import {useUser, useServiceList} from "hooks";
 import {observer} from "mobx-react-lite";
@@ -19,6 +26,8 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import Tutorial from "components/Tutorial";
 import ValidatedSelect from "components/ValidatedSelect";
+
+import {DrawerActions} from "@react-navigation/native";
 
 const serviceStatus = [
 	"",
@@ -66,16 +75,31 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 	return (
 		<Layout level="2" style={styles.container}>
 			<Tutorial />
-			<ValidatedSelect
-				style={styles.select}
-				label="Filtrar por status"
-				value={serviceStatusDescription[serviceStatus[selectValue]]}
-				onSelect={setSelectValue}
-			>
-				{serviceStatus.map((status, i) => (
-					<SelectItem key={i} title={serviceStatusDescription[status]} />
-				))}
-			</ValidatedSelect>
+			<View style={styles.optionsContainer}>
+				<TouchableOpacity
+					onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+					style={styles.menu}
+				>
+					<View style={styles.menuContainer}>
+						<Icon style={styles.icon} name="menu-outline" fill={"#AAA"} />
+						<Text>Menu</Text>
+					</View>
+				</TouchableOpacity>
+				<ValidatedSelect
+					style={styles.select}
+					label="Filtrar por status"
+					value={serviceStatusDescription[serviceStatus[selectValue]]}
+					onSelect={setSelectValue}
+				>
+					{serviceStatus.map((status, i) => (
+						<SelectItem
+							key={i}
+							title={serviceStatusDescription[status]}
+						/>
+					))}
+				</ValidatedSelect>
+			</View>
+
 			<View style={styles.listWrapper}>
 				<List
 					data={serviceListStore.list.filter(service =>
@@ -131,11 +155,18 @@ const styles = StyleSheet.create({
 		paddingTop: 30,
 		alignItems: "center",
 	},
-	select: {width: "85%"},
+	optionsContainer: {
+		flexDirection: "row-reverse",
+		alignItems: "center",
+		justifyContent: "space-between",
+	},
+	select: {width: "80%"},
 	icon: {width: 24, height: 24},
 	listWrapper: {height: "85%", width: "100%"},
 	button: {
-		marginTop: "2%",
+		marginVertical: "5%",
 		marginHorizontal: "12%",
 	},
+	menu: {marginLeft: "4%"},
+	menuContainer: {alignItems: "center"},
 });

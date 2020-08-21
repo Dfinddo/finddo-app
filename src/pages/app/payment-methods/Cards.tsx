@@ -127,7 +127,10 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 				}
 				renderItem={renderCardItem}
 			/>
-			<Button onPress={() => navigation.navigate("AddCard")}>
+			<Button
+				style={styles.button}
+				onPress={() => navigation.navigate("AddCard")}
+			>
 				ADICIONAR CARTÃO
 			</Button>
 		</Layout>
@@ -154,5 +157,8 @@ const themedStyles = StyleService.create({
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
+	},
+	button: {
+		margin: 16,
 	},
 });
