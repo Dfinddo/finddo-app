@@ -124,7 +124,7 @@ class ServiceStore {
 
 		this.images.map((image, i) =>
 			images.push({
-				base64: `data:${image.mime};base64,${image.data}`,
+				base64: image.data,
 				file_name: `${userStore.id}_${this.startTime}_photo${i + 1}`,
 			}),
 		);
@@ -136,6 +136,7 @@ class ServiceStore {
 				images,
 			});
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.log({error});
 			if (error.response) throw new Error("Invalid service data");
 			else if (error.request) throw new Error("Connection error");

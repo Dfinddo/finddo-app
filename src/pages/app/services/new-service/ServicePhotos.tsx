@@ -23,6 +23,11 @@ type ServicePhotosScreenProps = StackScreenProps<
 	"ServicePhotos"
 >;
 
+interface ImageProps {
+	data: string;
+	mime: string;
+}
+
 const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
 	const [isLoading, setIsLoading] = useState(false);
 	const windowWidth = useWindowDimensions().width;
@@ -41,7 +46,7 @@ const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
 	const onAdvance = () => void props.navigation.navigate("ServiceAddress");
 
 	const servicePhotos = serviceStore.images.map((image, i) => (
-		<Pressable key={image.path} onPress={removePhoto(i)}>
+		<Pressable key={image.data} onPress={removePhoto(i)}>
 			<Image
 				style={styles.serviceImage}
 				source={{uri: `data:${image.mime};base64,${image.data}`}}
@@ -68,7 +73,9 @@ const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
 					itemWidth={(windowWidth * 3) / 4}
 				/>
 			</View>
-			<Button onPress={onAdvance}>CONTINUAR</Button>
+			<Button style={styles.button} onPress={onAdvance}>
+				CONTINUAR
+			</Button>
 		</Layout>
 	);
 });
@@ -84,7 +91,9 @@ const AddPhotoButton = observer(() => {
 				text: "Tirar uma nova foto",
 				onPress: () =>
 					ImagePicker.openCamera({includeBase64: true}).then(image => {
-						serviceStore.images = serviceStore.images.concat(image);
+						serviceStore.images = serviceStore.images.concat(
+							image as ImageProps,
+						);
 					}),
 			},
 			{
@@ -94,7 +103,9 @@ const AddPhotoButton = observer(() => {
 						includeBase64: true,
 						multiple: true,
 					}).then(image => {
-						serviceStore.images = serviceStore.images.concat(image);
+						serviceStore.images = serviceStore.images.concat(
+							image as ImageProps,
+						);
 					}),
 			},
 		]);
@@ -119,8 +130,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingVertical: 24,
 		alignItems: "center",
+		justifyContent: "space-between",
 	},
-	categoryImage: {width: "100%"},
+	categoryImage: {width: "100%", maxHeight: "35%"},
 	descriptionText: {
 		fontSize: 18,
 		textAlign: "center",
@@ -128,11 +140,11 @@ const styles = StyleSheet.create({
 	},
 	serviceImagesContainer: {
 		width: "100%",
-		flex: 1,
+		height: "50%",
 		flexDirection: "row",
 		justifyContent: "space-evenly",
 		alignItems: "center",
-		marginTop: 30,
+		marginTop: 10,
 		flexWrap: "wrap",
 	},
 	serviceImage: {
@@ -142,4 +154,5 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
+	button: {marginTop: 0.4},
 });
