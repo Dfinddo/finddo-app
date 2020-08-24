@@ -8,6 +8,7 @@ import {MyServices, ViewService} from "pages/app/services";
 import {
 	ServiceCategories,
 	ServiceDescription,
+	ServiceEstimate,
 	ServiceDate,
 	ServicePhotos,
 	ServiceAddress,
@@ -88,6 +89,11 @@ const NewServiceRoute: FC = () => {
 				name="ServiceDescription"
 				component={ServiceDescription}
 				options={{title: "Descrição do Serviço"}}
+			/>
+			<NewServiceStack.Screen
+				name="ServiceEstimate"
+				component={ServiceEstimate}
+				options={{title: "Tipo de Orçamento do Serviço"}}
 			/>
 			<NewServiceStack.Screen
 				name="ServiceDate"
@@ -198,6 +204,7 @@ export type AddressStackParams = {
 export type NewServiceStackParams = {
 	ServiceCategories: undefined;
 	ServiceDescription: undefined;
+	ServiceEstimate: undefined;
 	ServiceDate: undefined;
 	ServicePhotos: undefined;
 	ServiceAddress: undefined;

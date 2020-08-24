@@ -117,7 +117,7 @@ export default ServiceFotos;
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingTop: 10,
+		paddingVertical: 24,
 		alignItems: "center",
 	},
 	categoryImage: {width: "100%"},

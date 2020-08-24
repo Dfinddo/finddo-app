@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
 	backgroundImageContent: {width: "100%", height: "100%"},
 	container: {
 		flex: 1,
-		paddingTop: 10,
+		paddingVertical: 24,
 		alignItems: "center",
 	},
 	modalDialogContainer: {

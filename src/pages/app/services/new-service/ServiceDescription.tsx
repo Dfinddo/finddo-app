@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useState} from "react";
 import {
 	View,
 	Image,
@@ -41,10 +41,10 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 			return setIsConfirmingUrgency(true);
 
 		setIsConfirmingUrgency(false);
-		props.navigation.navigate("ServiceDate");
+		props.navigation.navigate("ServiceEstimate");
 	};
 
-	const setUrgency = ({row}: {row: number}) =>
+	const setUrgency = ({row}: {row: number}): void =>
 		void (serviceStore.urgency = (["delayable", "urgent"] as const)[row]);
 
 	const urgencies = ["Sem urgência", "Com urgência"] as const;
@@ -79,7 +79,9 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 									{delayable: 0, urgent: 1}[serviceStore.urgency],
 								)
 							}
-							onSelect={setUrgency}
+							onSelect={
+								setUrgency as (index: IndexPath | IndexPath[]) => void
+							}
 							value={
 								urgencies[
 									{delayable: 0, urgent: 1}[serviceStore.urgency]
@@ -115,7 +117,7 @@ export default NewService;
 const styles = StyleSheet.create({
 	background: {width: "100%", height: "100%"},
 	categoryImage: {width: "100%"},
-	contentWrapper: {width: "100%", paddingHorizontal: 10},
+	contentWrapper: {width: "100%", paddingHorizontal: 10, marginTop: 8},
 	continueButtonContainer: {
 		marginVertical: 10,
 		width: "100%",
