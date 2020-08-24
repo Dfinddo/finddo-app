@@ -11,6 +11,7 @@ import * as eva from "@eva-design/eva";
 import {finddoLightTheme, finddoDarkTheme} from "themes";
 import Routes from "routes";
 import {useUser} from "hooks";
+import {navigationRef} from "./routes/rootNavigation";
 
 const App: FC = () => {
 	const userStore = useUser();
@@ -20,7 +21,7 @@ const App: FC = () => {
 	}, [userStore]);
 
 	return (
-		<NavigationContainer>
+		<NavigationContainer ref={navigationRef}>
 			<IconRegistry icons={EvaIconsPack} />
 			<ThemeProvider {...eva} theme={finddoLightTheme}>
 				<Routes />

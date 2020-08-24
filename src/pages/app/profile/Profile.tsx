@@ -1,12 +1,5 @@
 import React, {useState, useEffect, useCallback} from "react";
-import {
-	Pressable,
-	View,
-	Alert,
-	StyleSheet,
-	Modal,
-	TouchableOpacity,
-} from "react-native";
+import {Pressable, View, Alert, StyleSheet, Modal} from "react-native";
 import {useUser} from "hooks";
 import {
 	Button,
@@ -79,19 +72,6 @@ const Profile = observer<ProfileScreenProps>(props => {
 
 	return (
 		<Layout level="1" style={styles.container}>
-			<TouchableOpacity
-				onPress={() => props.navigation.navigate("Services")}
-				style={styles.header}
-			>
-				<View style={styles.backButton}>
-					<Icon
-						style={styles.icon}
-						name="arrow-left-outline"
-						fill={"#AAA"}
-					/>
-					<Text>Voltar</Text>
-				</View>
-			</TouchableOpacity>
 			<ProfileEditModal
 				visible={isEditing}
 				field={fieldToEdit}
@@ -181,20 +161,10 @@ const mutableFields = {email: "E-mail", cellphone: "Telefone"} as const;
 type MutableFields = keyof typeof mutableFields;
 
 const styles = StyleSheet.create({
-	header: {
-		alignSelf: "flex-start",
-		marginLeft: "5%",
-		marginTop: "5%",
-	},
-	backButton: {alignItems: "center"},
 	container: {
 		flex: 1,
 		alignItems: "center",
 		justifyContent: "space-around",
-	},
-	icon: {
-		width: 50,
-		height: 50,
 	},
 	modalContainer: {flex: 1, padding: 15, justifyContent: "space-around"},
 	userDataContainer: {width: "80%", marginBottom: "16%"},

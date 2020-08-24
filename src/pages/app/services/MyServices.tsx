@@ -1,11 +1,5 @@
 import React, {useState, useEffect, useCallback} from "react";
-import {
-	View,
-	RefreshControl,
-	Alert,
-	StyleSheet,
-	TouchableOpacity,
-} from "react-native";
+import {View, RefreshControl, Alert, StyleSheet} from "react-native";
 // import Icon from "react-native-vector-icons/MaterialIcons";
 import {
 	Button,
@@ -16,7 +10,6 @@ import {
 	SelectItem,
 	Layout,
 	useTheme,
-	Text,
 } from "@ui-kitten/components";
 import {useUser, useServiceList} from "hooks";
 import {observer} from "mobx-react-lite";
@@ -26,8 +19,6 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import Tutorial from "components/Tutorial";
 import ValidatedSelect from "components/ValidatedSelect";
-
-import {DrawerActions} from "@react-navigation/native";
 
 const serviceStatus = [
 	"",
@@ -76,15 +67,6 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 		<Layout level="2" style={styles.container}>
 			<Tutorial />
 			<View style={styles.optionsContainer}>
-				<TouchableOpacity
-					onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-					style={styles.menu}
-				>
-					<View style={styles.menuContainer}>
-						<Icon style={styles.icon} name="menu-outline" fill={"#AAA"} />
-						<Text>Menu</Text>
-					</View>
-				</TouchableOpacity>
 				<ValidatedSelect
 					style={styles.select}
 					label="Filtrar por status"
@@ -167,6 +149,4 @@ const styles = StyleSheet.create({
 		marginVertical: "5%",
 		marginHorizontal: "12%",
 	},
-	menu: {marginLeft: "4%"},
-	menuContainer: {alignItems: "center"},
 });
