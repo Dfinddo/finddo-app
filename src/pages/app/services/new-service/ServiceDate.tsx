@@ -21,6 +21,8 @@ type ServiceDateScreenProps = StackScreenProps<
 	"ServiceDate"
 >;
 
+// const screenWidth = Math.round(Dimensions.get("window").width);
+
 const ServiceDate = observer<ServiceDateScreenProps>(props => {
 	const serviceStore = useService();
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
@@ -59,6 +61,7 @@ const ServiceDate = observer<ServiceDateScreenProps>(props => {
 					style={styles.calendarContainer}
 				>
 					<Calendar
+						style={styles.calendar}
 						dateService={localeDateService}
 						date={serviceStore.serviceDate}
 						onSelect={date => (serviceStore.serviceDate = date)}
@@ -85,7 +88,7 @@ const ServiceDate = observer<ServiceDateScreenProps>(props => {
 						</View>
 						<View style={styles.row}>
 							<Text style={styles.timeLabel} category="h6">
-								{"         "}E:
+								{"        "}E:{" "}
 							</Text>
 							<ValidatedSelect
 								style={styles.timeSelect}
@@ -118,7 +121,8 @@ const avaliableTimes = range(9, 22)
 const styles = StyleSheet.create({
 	backgroundImageContent: {width: "100%", height: "100%"},
 	container: {
-		flex: 1,
+		width: "100%",
+		height: "100%",
 		paddingVertical: 24,
 		alignItems: "center",
 	},
@@ -133,33 +137,28 @@ const styles = StyleSheet.create({
 		opacity: 1,
 		alignItems: "center",
 	},
-	calendarContainer: {padding: "5%", marginTop: 12},
+	calendarContainer: {width: "100%", padding: "5%"},
+	calendar: {alignSelf: "center"},
 	modalErrosTitulo: {fontWeight: "bold", textAlign: "center", fontSize: 24},
 	modalErrosContent: {
 		fontSize: 18,
 		marginVertical: 10,
 	},
-	textContainer: {flex: 1},
-	intervalWrapper: {
-		flexDirection: "column",
-		alignItems: "center",
-		justifyContent: "space-between",
-	},
-	timeSelect: {width: "85%"},
+	timeSelect: {width: "35%"},
+	timeLabel: {textAlign: "right", marginBottom: 15},
 	contentWrapper: {
 		height: "95%",
-		justifyContent: "space-around",
+		justifyContent: "flex-start",
 		alignItems: "center",
 		paddingHorizontal: 15,
 	},
 	rowContainer: {
 		flex: 1,
-		width: "55%",
+		width: "100%",
 		flexDirection: "column",
 		alignItems: "center",
 		justifyContent: "space-between",
 		paddingVertical: 16,
-		marginLeft: 80,
 	},
 	row: {
 		flex: 1,
@@ -167,5 +166,4 @@ const styles = StyleSheet.create({
 		justifyContent: "flex-start",
 		flexDirection: "row",
 	},
-	timeLabel: {textAlign: "right", marginBottom: 15},
 });

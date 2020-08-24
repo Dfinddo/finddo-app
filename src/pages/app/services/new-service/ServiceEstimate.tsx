@@ -111,5 +111,10 @@ const styles = StyleSheet.create({
 		paddingHorizontal: "15%",
 	},
 	radio: {fontSize: 20, marginLeft: 8},
-	estimateContainer: {flex: 1, marginTop: 32, paddingHorizontal: 12},
+	estimateContainer: {
+		flex: 1,
+		width: "100%",
+		marginTop: 32,
+		paddingHorizontal: 12,
+	},
 });
