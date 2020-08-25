@@ -100,7 +100,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 					renderItem={({item}: {item: ServiceStore}) => (
 						<ListItem
 							onPress={() =>
-								navigation.navigate("ViewService", {id: item.id!})
+								navigation.navigate("ServiceStatus", {id: item.id!})
 							}
 							title={serviceCategories[item.categoryID!].name}
 							description={serviceStatusDescription[item.status]}

@@ -4,7 +4,7 @@ import {
 	createDrawerNavigator,
 	DrawerContentComponentProps,
 } from "@react-navigation/drawer";
-import {MyServices, ViewService} from "pages/app/services";
+import {MyServices, ViewService, ServiceStatus} from "pages/app/services";
 import {
 	ServiceCategories,
 	ServiceDescription,
@@ -133,6 +133,11 @@ const ServicesRoute: FC = () => {
 				options={{title: "Serviços"}}
 			/>
 			<ServicesStack.Screen
+				name="ServiceStatus"
+				component={ServiceStatus}
+				options={{title: "Detalhes do Serviço"}}
+			/>
+			<ServicesStack.Screen
 				name="ViewService"
 				component={ViewService}
 				options={{title: "Detalhes do Serviço"}}
@@ -214,6 +219,7 @@ export type NewServiceStackParams = {
 
 export type ServicesStackParams = {
 	MyServices: undefined;
+	ServiceStatus: {id: number};
 	ViewService: {id: number};
 	NewService: undefined;
 };

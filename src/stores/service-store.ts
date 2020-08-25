@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import {observable, computed, action} from "mobx";
+import {observable, computed, action, runInAction} from "mobx";
 import {validations, validateInput} from "utils";
 import AddressStore from "stores/address-store";
 import finddoApi, {
@@ -81,6 +81,25 @@ class ServiceStore {
 		);
 
 		return serviceStore;
+	}
+
+	@action
+	public async refreshServiceData(): Promise<void> {
+		try {
+			const response = await finddoApi.get(`/orders/${this.id}`);
+
+			const newServiceStore = ServiceStore.createFromApiResponse(
+				response.data,
+			);
+
+			runInAction(() => Object.assign(this, newServiceStore));
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
 	}
 
 	@action
