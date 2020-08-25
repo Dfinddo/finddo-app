@@ -41,7 +41,8 @@ const NewService = observer<ServiceEstimateScreenProps>(props => {
 					/>
 					<View style={styles.contentWrapper}>
 						<Text style={styles.title}>
-							Deseja fazer orçamento prévio?
+							Quer receber um orçamento prévio ou prefere que o
+							profissional faça presencialmente?
 						</Text>
 						<RadioGroup
 							selectedIndex={isPrevious}
@@ -67,9 +68,12 @@ const NewService = observer<ServiceEstimateScreenProps>(props => {
 						{isPrevious === 0 && (
 							<View style={styles.estimateContainer}>
 								<Text style={styles.text}>
-									Já possui um orçamento? Nos informe o valor.
+									Você já recebeu um orçamento? Nos informe o valor.
 								</Text>
-								<ValidatedInput placeholder="(opcional)" />
+								<ValidatedInput
+									style={styles.input}
+									placeholder="(opcional)"
+								/>
 							</View>
 						)}
 					</View>
@@ -102,6 +106,7 @@ const styles = StyleSheet.create({
 	},
 	title: {fontSize: 24, width: "90%", textAlign: "center"},
 	text: {fontSize: 18, width: "90%", textAlign: "center"},
+	input: {marginTop: 8},
 	radioGroup: {
 		width: "90%",
 		alignItems: "center",

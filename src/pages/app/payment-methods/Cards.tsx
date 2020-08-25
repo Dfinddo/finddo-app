@@ -127,12 +127,12 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 				}
 				renderItem={renderCardItem}
 			/>
-			<Button
+			{/* <Button
 				style={styles.button}
 				onPress={() => navigation.navigate("AddCard")}
 			>
 				ADICIONAR CARTÃO
-			</Button>
+			</Button> */}
 		</Layout>
 	);
 };
