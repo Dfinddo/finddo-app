@@ -26,6 +26,7 @@ const NewService = observer<ServiceEstimateScreenProps>(props => {
 	const [isPrevious, setIsPrevious] = useState(1);
 
 	const onAdvanceAttempt = (): void => {
+		serviceStore.is_previous = isPrevious === 0;
 		props.navigation.navigate("ServiceDate");
 	};
 

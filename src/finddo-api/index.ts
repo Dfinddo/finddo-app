@@ -10,6 +10,8 @@ export default finddoApi;
 export type ServiceStatus =
 	| "analise"
 	| "agendando_visita"
+	| "orcamento_previo"
+	| "aguardando_profissional"
 	| "a_caminho"
 	| "em_servico"
 	| "finalizado"
@@ -114,6 +116,7 @@ interface ServiceApiResponse {
 	hora_inicio: string;
 	id: number;
 	images: [];
+	is_previous: boolean;
 	order_status: ServiceStatus;
 	order_wirecard_id: null;
 	order_wirecard_own_id: null;
