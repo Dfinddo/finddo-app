@@ -52,14 +52,14 @@ const NewService = observer<ServiceEstimateScreenProps>(props => {
 							<Radio>
 								{evaProps => (
 									<Text {...evaProps} style={styles.radio}>
-										Sim
+										Orçamento prévio
 									</Text>
 								)}
 							</Radio>
 							<Radio>
 								{evaProps => (
 									<Text {...evaProps} style={styles.radio}>
-										Não
+										Orçamento presencial
 									</Text>
 								)}
 							</Radio>
@@ -104,22 +104,22 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	title: {fontSize: 24, width: "90%", textAlign: "center"},
-	text: {fontSize: 18, width: "90%", textAlign: "center"},
+	title: {fontSize: 18, width: "90%", textAlign: "center"},
+	text: {fontSize: 16, width: "90%"},
 	input: {marginTop: 8},
 	radioGroup: {
 		width: "90%",
-		alignItems: "center",
-		flexDirection: "row",
+		alignItems: "flex-start",
+		flexDirection: "column",
 		justifyContent: "space-around",
-		paddingVertical: 16,
+		paddingVertical: 8,
 		paddingHorizontal: "15%",
 	},
-	radio: {fontSize: 20, marginLeft: 8},
+	radio: {fontSize: 18, marginLeft: 8},
 	estimateContainer: {
 		flex: 1,
 		width: "100%",
-		marginTop: 32,
-		paddingHorizontal: 12,
+		marginTop: "0.8%",
+		paddingHorizontal: "5%",
 	},
 });
