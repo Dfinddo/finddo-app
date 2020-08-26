@@ -11,11 +11,15 @@ import {
 } from "react-native";
 import {Text, useTheme, Button, Layout} from "@ui-kitten/components";
 import {useServiceList} from "hooks";
+import {SvgXml} from "react-native-svg";
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import ServiceStore from "stores/service-store";
 import TimeLine from "react-native-timeline-flatlist";
+
+import {bolaCheia} from "../../../assets/svg/bola-cheia";
+import {bolaApagada} from "../../../assets/svg/bola-apagada";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -74,6 +78,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							Detalhes do pedido
 						</Button>
 					),
+					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
 				},
 				{
 					title: "Orçamento prévio?",
@@ -82,9 +87,11 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							<Text>O cliente solicitou orçamento presencial</Text>
 						</Layout>
 					),
+					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
 				},
 				{
 					title: "Aguardando data do serviço",
+					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
 				},
 				{
 					title: "Profissional a caminho",
@@ -93,12 +100,15 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							Reagendar
 						</Button>
 					),
+					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
 				},
 				{
 					title: "Serviço em execução",
+					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
 				},
 				{
 					title: "Concluído",
+					icon: <SvgXml xml={bolaApagada} width={16} height={16} />,
 				},
 			],
 			[serviceStore, navigation],
@@ -131,6 +141,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				<TimeLine
 					circleColor={theme["color-primary-default"]}
 					lineColor={theme["color-primary-default"]}
+					innerCircle="icon"
 					data={data}
 					style={styles.timeLineContainer}
 					renderDetail={renderDetail}
@@ -163,7 +174,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		padding: "5%",
 	},
-	timeLineView: {width: "80%"},
+	timeLineView: {width: "80%", marginTop: "-4%"},
 	timeLineTitle: {fontSize: 18, color: "grey"},
 	timeLineLayout: {
 		minHeight: 48,
