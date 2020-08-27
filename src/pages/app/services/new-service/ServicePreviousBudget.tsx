@@ -77,6 +77,7 @@ const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
 							placeholder="(opcional)"
 							formatter={priceFormatter}
 							formattingFilter={numericFormattingFilter}
+							keyboardType={"number-pad"}
 							onChangeText={input => {
 								serviceStore.previous_budget_value = parseInt(
 									input,
