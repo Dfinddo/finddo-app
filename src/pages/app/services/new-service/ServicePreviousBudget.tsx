@@ -15,18 +15,18 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import ValidatedInput from "components/ValidatedInput";
 
-type ServiceEstimateScreenProps = StackScreenProps<
+type ServicePreviousBudgetScreenProps = StackScreenProps<
 	NewServiceStackParams,
-	"ServiceEstimate"
+	"ServicePreviousBudget"
 >;
 
-const NewService = observer<ServiceEstimateScreenProps>(props => {
+const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
 	const serviceStore = useService();
 	const selectedCategory = serviceCategories[serviceStore.categoryID!];
 	const [isPrevious, setIsPrevious] = useState(1);
 
 	const onAdvanceAttempt = (): void => {
-		serviceStore.is_previous = isPrevious === 0;
+		serviceStore.previous_budget = isPrevious === 0;
 		props.navigation.navigate("ServiceDate");
 	};
 
@@ -67,7 +67,7 @@ const NewService = observer<ServiceEstimateScreenProps>(props => {
 					</View>
 				</KeyboardAvoidingView>
 				{isPrevious === 0 && (
-					<View style={styles.estimateContainer}>
+					<View style={styles.budgetContainer}>
 						<Text style={styles.text}>
 							Você já recebeu um orçamento? Nos informe o valor.
 						</Text>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
 		paddingHorizontal: "15%",
 	},
 	radio: {fontSize: 18, marginLeft: 8},
-	estimateContainer: {
+	budgetContainer: {
 		flex: 1,
 		width: "100%",
 		marginTop: "0.8%",

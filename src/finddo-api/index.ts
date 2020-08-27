@@ -129,7 +129,8 @@ interface ServiceApiResponse {
 	hora_inicio: string;
 	id: number;
 	images: [];
-	is_previous: boolean;
+	previous_budget: boolean;
+	previous_budget_value: null | number;
 	order_status: ServiceStatus;
 	order_wirecard_id: null;
 	order_wirecard_own_id: null;

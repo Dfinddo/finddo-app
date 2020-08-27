@@ -41,7 +41,7 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 			return setIsConfirmingUrgency(true);
 
 		setIsConfirmingUrgency(false);
-		props.navigation.navigate("ServiceEstimate");
+		props.navigation.navigate("ServicePreviousBudget");
 	};
 
 	const setUrgency = ({row}: {row: number}): void =>

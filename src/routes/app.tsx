@@ -4,11 +4,16 @@ import {
 	createDrawerNavigator,
 	DrawerContentComponentProps,
 } from "@react-navigation/drawer";
-import {MyServices, ViewService, ServiceStatus} from "pages/app/services";
+import {
+	MyServices,
+	ViewService,
+	ServiceStatus,
+	ServiceBudget,
+} from "pages/app/services";
 import {
 	ServiceCategories,
 	ServiceDescription,
-	ServiceEstimate,
+	ServicePreviousBudget,
 	ServiceDate,
 	ServicePhotos,
 	ServiceAddress,
@@ -91,8 +96,8 @@ const NewServiceRoute: FC = () => {
 				options={{title: "Descrição do Serviço"}}
 			/>
 			<NewServiceStack.Screen
-				name="ServiceEstimate"
-				component={ServiceEstimate}
+				name="ServicePreviousBudget"
+				component={ServicePreviousBudget}
 				options={{title: "Tipo de Orçamento do Serviço"}}
 			/>
 			<NewServiceStack.Screen
@@ -141,6 +146,11 @@ const ServicesRoute: FC = () => {
 				name="ViewService"
 				component={ViewService}
 				options={{title: "Detalhes do Serviço"}}
+			/>
+			<ServicesStack.Screen
+				name="ServiceBudget"
+				component={ServiceBudget}
+				options={{title: "Orçamento do Serviço"}}
 			/>
 			<ServicesStack.Screen
 				name="NewService"
@@ -242,7 +252,7 @@ export type AddressStackParams = {
 export type NewServiceStackParams = {
 	ServiceCategories: undefined;
 	ServiceDescription: undefined;
-	ServiceEstimate: undefined;
+	ServicePreviousBudget: undefined;
 	ServiceDate: undefined;
 	ServicePhotos: undefined;
 	ServiceAddress: undefined;
@@ -254,6 +264,7 @@ export type ServicesStackParams = {
 	MyServices: undefined;
 	ServiceStatus: {id: number};
 	ViewService: {id: number};
+	ServiceBudget: {id: number};
 	NewService: undefined;
 };
 

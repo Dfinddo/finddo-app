@@ -31,7 +31,10 @@ class ServiceStore {
 	public status: ServiceStatus = "" as ServiceStatus;
 
 	@observable
-	public is_previous = false;
+	public previous_budget = false;
+
+	@observable
+	public previous_budget_value = null;
 
 	@observable public description = "";
 	@computed public get descriptionError(): string | undefined {
@@ -116,7 +119,8 @@ class ServiceStore {
 		this.endTime = "";
 		this.images = [];
 		this.address = new AddressStore();
-		this.is_previous = false;
+		this.previous_budget = false;
+		this.previous_budget_value = null;
 	}
 
 	@action
@@ -131,7 +135,8 @@ class ServiceStore {
 			this.startTime
 		}`;
 		// order.address_id = this.address.id;
-		order.is_previous = this.is_previous;
+		order.previous_budget = this.previous_budget;
+		order.previous_budget_value = this.previous_budget_value;
 		order.hora_inicio = this.startTime;
 		order.hora_fim = this.endTime;
 

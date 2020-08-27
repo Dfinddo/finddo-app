@@ -23,6 +23,7 @@ class ServiceListStore {
 
 			runInAction(() => (this.list = serviceList));
 		} catch (error) {
+			console.log({error});
 			if (error.response) throw new Error("Invalid service request");
 			else if (error.request) throw new Error("Connection error");
 			else throw error;

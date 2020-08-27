@@ -79,7 +79,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 								}
 							}}
 						>
-							Detalhes do pedido
+							DETALHES
 						</Button>
 					),
 					icon: (
@@ -95,6 +95,17 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					body: (
 						<Layout style={styles.timeLineLayout} level="3">
 							<Text>O cliente solicitou orçamento presencial</Text>
+							<Button
+								onPress={() => {
+									if (serviceStore && serviceStore.id) {
+										navigation.navigate("ServiceBudget", {
+											id: serviceStore.id,
+										});
+									}
+								}}
+							>
+								ORÇAR
+							</Button>
 						</Layout>
 					),
 					icon: (
@@ -109,7 +120,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					title: "Aguardando data do serviço",
 					body: (
 						<Button style={styles.timeLineButton} onPress={() => {}}>
-							Reagendar
+							REAGENDAR
 						</Button>
 					),
 					icon: (

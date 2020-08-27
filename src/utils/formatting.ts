@@ -16,6 +16,13 @@ export const cpfFormatter: Formatter = text =>
 export const cepFormatter: Formatter = text =>
 	text.replace(/([0-9]{5})([0-9])/, "$1-$2");
 
+export const priceFormatter: Formatter = text => {
+	if (text.length === 1) return text.replace(/([0-9]{1})/, "R$  , $1");
+	else if (text.length === 2) return text.replace(/([0-9]{2})/, "R$  ,$1");
+
+	return text.replace(/([0-9]{0,5})([0-9]{2})/, "R$ $1,$2");
+};
+
 export const phoneFormatter: Formatter = text =>
 	text
 		.replace(/([0-9]{2})([0-9])/, "($1) $2")
