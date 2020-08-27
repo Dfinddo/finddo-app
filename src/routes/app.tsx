@@ -20,7 +20,7 @@ import {Profile} from "pages/app/profile";
 import {MyAddresses, ManageAddress} from "pages/app/addresses";
 import Chat from "pages/app/chat/Chat";
 import {Cards, AddCard} from "pages/app/payment-methods";
-import {useThemedHeaderConfig} from "hooks";
+import {useThemedHeaderConfig, useUser} from "hooks";
 
 const PaymentMethodsStack = createStackNavigator<PaymentMethodsStackParams>();
 const AddressStack = createStackNavigator<AddressStackParams>();
@@ -151,23 +151,34 @@ const ServicesRoute: FC = () => {
 	);
 };
 
-const AppRoute: FC = () => (
-	<AppDrawer.Navigator
-		initialRouteName="Services"
-		drawerContent={DrawerContent}
-	>
-		<AppDrawer.Screen name="Services" component={ServicesRoute} />
-		<AppDrawer.Screen name="Profile" component={Profile} />
-		<AppDrawer.Screen name="Addresses" component={AddressRoute} />
-		<AppDrawer.Screen name="PaymentMethods" component={PaymentMethodsRoute} />
-		<AppDrawer.Screen name="Help" component={Help} />
-		<AppDrawer.Screen name="Chat" component={Chat} />
-	</AppDrawer.Navigator>
-);
+const AppRoute: FC = () => {
+	const userStore = useUser();
+
+	return (
+		<AppDrawer.Navigator
+			initialRouteName="Services"
+			drawerContent={
+				userStore.userType === "user"
+					? DrawerContentUser
+					: DrawerContentProfessional
+			}
+		>
+			<AppDrawer.Screen name="Services" component={ServicesRoute} />
+			<AppDrawer.Screen name="Profile" component={Profile} />
+			<AppDrawer.Screen name="Addresses" component={AddressRoute} />
+			<AppDrawer.Screen
+				name="PaymentMethods"
+				component={PaymentMethodsRoute}
+			/>
+			<AppDrawer.Screen name="Help" component={Help} />
+			<AppDrawer.Screen name="Chat" component={Chat} />
+		</AppDrawer.Navigator>
+	);
+};
 
 export default AppRoute;
 
-const DrawerContent: FC<DrawerContentComponentProps> = ({
+const DrawerContentUser: FC<DrawerContentComponentProps> = ({
 	navigation,
 	state,
 }) => (
@@ -187,6 +198,28 @@ const DrawerContent: FC<DrawerContentComponentProps> = ({
 		<DrawerItem
 			title="Pagamentos"
 			onPress={() => navigation.navigate("PaymentMethods")}
+		/>
+		<DrawerItem title="Sobre" onPress={() => navigation.navigate("Help")} />
+		<DrawerItem title="Chat" onPress={() => navigation.navigate("Chat")} />
+	</Drawer>
+);
+
+const DrawerContentProfessional: FC<DrawerContentComponentProps> = ({
+	navigation,
+	state,
+}) => (
+	<Drawer selectedIndex={new IndexPath(state.index)}>
+		<DrawerItem
+			title="Meus Serviços"
+			onPress={() => navigation.navigate("Services")}
+		/>
+		<DrawerItem
+			title="Perfil"
+			onPress={() => navigation.navigate("Profile")}
+		/>
+		<DrawerItem
+			title="Endereços Cadastrados"
+			onPress={() => navigation.navigate("Addresses")}
 		/>
 		<DrawerItem title="Sobre" onPress={() => navigation.navigate("Help")} />
 		<DrawerItem title="Chat" onPress={() => navigation.navigate("Chat")} />
