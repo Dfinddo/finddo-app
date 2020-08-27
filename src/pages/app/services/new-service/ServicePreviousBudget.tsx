@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {
 	View,
 	Image,
@@ -13,7 +13,8 @@ import {observer} from "mobx-react-lite";
 import {serviceCategories} from "finddo-api";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
-import ValidatedInput from "components/ValidatedInput";
+import ValidatedMaskedInput from "components/ValidatedMaskedInput";
+import {priceFormatter, numericFormattingFilter} from "utils";
 
 type ServicePreviousBudgetScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -23,10 +24,8 @@ type ServicePreviousBudgetScreenProps = StackScreenProps<
 const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
 	const serviceStore = useService();
 	const selectedCategory = serviceCategories[serviceStore.categoryID!];
-	const [isPrevious, setIsPrevious] = useState(1);
 
 	const onAdvanceAttempt = (): void => {
-		serviceStore.previous_budget = isPrevious === 0;
 		props.navigation.navigate("ServiceDate");
 	};
 
@@ -45,8 +44,10 @@ const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
 							Como deseja receber o orçamento?
 						</Text>
 						<RadioGroup
-							selectedIndex={isPrevious}
-							onChange={index => setIsPrevious(index)}
+							selectedIndex={serviceStore.previous_budget ? 0 : 1}
+							onChange={index =>
+								(serviceStore.previous_budget = index === 0)
+							}
 							style={styles.radioGroup}
 						>
 							<Radio>
@@ -66,14 +67,26 @@ const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
 						</RadioGroup>
 					</View>
 				</KeyboardAvoidingView>
-				{isPrevious === 0 && (
+				{serviceStore.previous_budget && (
 					<View style={styles.budgetContainer}>
 						<Text style={styles.text}>
 							Você já recebeu um orçamento? Nos informe o valor.
 						</Text>
-						<ValidatedInput
+						<ValidatedMaskedInput
 							style={styles.input}
 							placeholder="(opcional)"
+							formatter={priceFormatter}
+							formattingFilter={numericFormattingFilter}
+							onChangeText={input => {
+								serviceStore.previous_budget_value = parseInt(
+									input,
+									10,
+								);
+							}}
+							value={
+								serviceStore.previous_budget_value?.toString() || ""
+							}
+							maxLength={11}
 						/>
 					</View>
 				)}

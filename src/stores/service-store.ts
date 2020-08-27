@@ -34,7 +34,7 @@ class ServiceStore {
 	public previous_budget = false;
 
 	@observable
-	public previous_budget_value = null;
+	public previous_budget_value: number | null = null;
 
 	@observable public description = "";
 	@computed public get descriptionError(): string | undefined {
