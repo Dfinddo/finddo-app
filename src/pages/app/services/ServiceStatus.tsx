@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 	},
 	timeLineButton: {
-		width: "50%",
+		width: "60%",
 		height: 24,
 		alignSelf: "center",
 		margin: 16,

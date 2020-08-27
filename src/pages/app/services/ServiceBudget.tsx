@@ -88,7 +88,6 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 							keyboardType={"number-pad"}
 							value={price}
 							maxLength={11}
-							showSoftInputOnFocus={false}
 						/>
 						<Text style={styles.text}>(Serviço)</Text>
 					</View>
