@@ -109,6 +109,24 @@ class ServiceStore {
 	}
 
 	@action
+	public async doServiceBudget(budget: string): Promise<void> {
+		try {
+			await finddoApi.post("/orders/propose_budget", {
+				id: this.id,
+				budget,
+			});
+
+			runInAction(() => this.refreshServiceData());
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	}
+
+	@action
 	public clearServiceData(): void {
 		this.categoryID = null;
 		this.description = "";
