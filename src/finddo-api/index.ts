@@ -19,10 +19,23 @@ export type ServiceStatus =
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
+export enum ServiceStatusEnum {
+	"analise",
+	"orcamento_previo",
+	"agendando_visita",
+	"aguardando_profissional",
+	"a_caminho",
+	"em_servico",
+	"finalizado",
+	"cancelado",
+}
+
 export const serviceStatusDescription = {
 	"": "Todos os status",
 	"analise": "Pedido em Análise",
+	"orcamento_previo": "Orçamento Prévio",
 	"agendando_visita": "Agendando Visita",
+	"aguardando_profissional": "Aguardando Profissional",
 	"a_caminho": "Profissional à Caminho",
 	"em_servico": "Serviço em Execução",
 	"finalizado": "Concluído",

@@ -20,6 +20,7 @@ import TimeLine from "react-native-timeline-flatlist";
 
 import {bolaCheia} from "../../../assets/svg/bola-cheia";
 import {bolaApagada} from "../../../assets/svg/bola-apagada";
+import {ServiceStatusEnum} from "finddo-api";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -60,8 +61,11 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				);
 		}, [route.params?.id, serviceListStore.list]);
 
-		const data = useMemo(
-			() => [
+		const data = useMemo(() => {
+			const status: ServiceStatusEnum =
+				ServiceStatusEnum[serviceStore?.status || "analise"];
+
+			return [
 				{
 					title: "Pedido em análise",
 					body: (
@@ -78,7 +82,13 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							Detalhes do pedido
 						</Button>
 					),
-					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
+					icon: (
+						<SvgXml
+							xml={status >= 0 ? bolaCheia : bolaApagada}
+							width={16}
+							height={16}
+						/>
+					),
 				},
 				{
 					title: "Orçamento prévio?",
@@ -87,32 +97,61 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							<Text>O cliente solicitou orçamento presencial</Text>
 						</Layout>
 					),
-					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
+					icon: (
+						<SvgXml
+							xml={status >= 1 ? bolaCheia : bolaApagada}
+							width={16}
+							height={16}
+						/>
+					),
 				},
 				{
 					title: "Aguardando data do serviço",
-					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
-				},
-				{
-					title: "Profissional a caminho",
 					body: (
 						<Button style={styles.timeLineButton} onPress={() => {}}>
 							Reagendar
 						</Button>
 					),
-					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
+					icon: (
+						<SvgXml
+							xml={status >= 2 ? bolaCheia : bolaApagada}
+							width={16}
+							height={16}
+						/>
+					),
+				},
+				{
+					title: "Profissional a caminho",
+					icon: (
+						<SvgXml
+							xml={status >= 3 ? bolaCheia : bolaApagada}
+							width={16}
+							height={16}
+						/>
+					),
 				},
 				{
 					title: "Serviço em execução",
-					icon: <SvgXml xml={bolaCheia} width={16} height={16} />,
+					icon: (
+						<SvgXml
+							xml={status >= 4 ? bolaCheia : bolaApagada}
+							width={16}
+							height={16}
+						/>
+					),
 				},
 				{
 					title: "Concluído",
-					icon: <SvgXml xml={bolaApagada} width={16} height={16} />,
+					icon: (
+						<SvgXml
+							xml={status >= 5 ? bolaCheia : bolaApagada}
+							width={16}
+							height={16}
+						/>
+					),
 				},
-			],
-			[serviceStore, navigation],
-		);
+			];
+		}, [serviceStore, navigation]);
 
 		const renderDetail = (
 			rowData: typeof data[0],
