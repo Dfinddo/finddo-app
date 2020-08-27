@@ -48,6 +48,7 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 
 				return;
 			}
+			setPrice(price);
 
 			const value: number = parseInt(price, 10);
 
@@ -82,7 +83,6 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 							formatter={priceFormatter}
 							formattingFilter={numericFormattingFilter}
 							onChangeText={input => {
-								setPrice(input);
 								updateBudget(input);
 							}}
 							keyboardType={"number-pad"}

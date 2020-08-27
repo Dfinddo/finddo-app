@@ -96,6 +96,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 						<Layout style={styles.timeLineLayout} level="3">
 							<Text>O cliente solicitou orçamento presencial</Text>
 							<Button
+								style={styles.timeLineButton}
 								onPress={() => {
 									if (serviceStore && serviceStore.id) {
 										navigation.navigate("ServiceBudget", {
@@ -234,9 +235,10 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 	},
 	timeLineButton: {
-		width: "70%",
+		width: "50%",
+		height: 24,
 		alignSelf: "center",
-		marginTop: 8,
+		margin: 16,
 		borderRadius: 30,
 	},
 });

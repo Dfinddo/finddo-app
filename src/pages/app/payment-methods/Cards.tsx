@@ -10,7 +10,6 @@ import {
 	Layout,
 	useTheme,
 } from "@ui-kitten/components";
-import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {PaymentMethodsStackParams} from "src/routes/app";
 import {useCardList} from "hooks";
@@ -73,13 +72,17 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 			}
 
 			try {
-				Alert.alert("Finddo", "Deseja excluir o cartão selecionado?", [
-					{text: "Não"},
-					{
-						text: "Sim",
-						onPress: () => cardListStore.removeCard(id),
-					},
-				]);
+				Alert.alert(
+					"Finddo",
+					"O cartão selecionado não poderá ser recadastrado nessa conta novamente. Deseja mesmo remover?",
+					[
+						{text: "Não"},
+						{
+							text: "Sim",
+							onPress: () => cardListStore.removeCard(id),
+						},
+					],
+				);
 			} catch (error) {
 				// eslint-disable-next-line no-console
 				console.log({error});
