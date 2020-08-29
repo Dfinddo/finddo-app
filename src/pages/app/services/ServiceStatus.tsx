@@ -1,5 +1,3 @@
-/* eslint-disable no-empty-function */
-/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable react-native/no-color-literals */
 import React, {useEffect, useState, useMemo} from "react";
 import {
@@ -9,18 +7,20 @@ import {
 	StyleSheet,
 	ImageBackground,
 } from "react-native";
-import {Text, useTheme, Button, Layout} from "@ui-kitten/components";
-import {useServiceList} from "hooks";
+import {Text, useTheme, Button, Layout, Modal} from "@ui-kitten/components";
 import {SvgXml} from "react-native-svg";
 import {observer} from "mobx-react-lite";
+import TimeLine from "react-native-timeline-flatlist";
 import {StackScreenProps} from "@react-navigation/stack";
+
+import {useServiceList, useUser} from "hooks";
 import {ServicesStackParams} from "src/routes/app";
 import ServiceStore from "stores/service-store";
-import TimeLine from "react-native-timeline-flatlist";
+import {ServiceStatusEnum} from "finddo-api";
+import DataForm from "components/DataForm";
 
 import {bolaCheia} from "../../../assets/svg/bola-cheia";
 import {bolaApagada} from "../../../assets/svg/bola-apagada";
-import {ServiceStatusEnum} from "finddo-api";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -33,7 +33,10 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 			ServiceStore | undefined
 		>();
 		const [isLoading, setIsLoading] = useState(false);
+		const [isReschedule, setIsReschedule] = useState(false);
+
 		const serviceListStore = useServiceList();
+		const userStore = useUser();
 		const theme = useTheme();
 
 		const loadingService = async (): Promise<void> => {
@@ -120,7 +123,10 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				{
 					title: "Aguardando data do serviço",
 					body: (
-						<Button style={styles.timeLineButton} onPress={() => {}}>
+						<Button
+							style={styles.timeLineButton}
+							onPress={() => setIsReschedule(true)}
+						>
 							REAGENDAR
 						</Button>
 					),
@@ -182,6 +188,24 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 			);
 		};
 
+		const handleUpdateSchedule = async (): Promise<void> => {
+			setIsLoading(true);
+			setIsReschedule(false);
+			try {
+				await serviceStore?.updateService(userStore);
+			} catch (error) {
+				if (error.message === "Invalid service data")
+					Alert.alert("Erro no envio do serviço, tente novamente");
+				else if (error.message === "Connection error")
+					Alert.alert("Falha ao conectar");
+				else throw error;
+				setIsLoading(false);
+			} finally {
+				setIsLoading(false);
+				Alert.alert("Serviço alterado com sucesso");
+			}
+		};
+
 		if (serviceStore === void 0) return null;
 
 		return (
@@ -208,6 +232,17 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 						removeClippedSubviews: false,
 					}}
 				/>
+				<Modal
+					visible={isReschedule}
+					backdropStyle={styles.backdrop}
+					style={styles.modalContainer}
+					onBackdropPress={() => setIsReschedule(false)}
+				>
+					<Layout level="2" style={styles.modalContent}>
+						<DataForm serviceStore={serviceStore} />
+					</Layout>
+					<Button onPress={handleUpdateSchedule}>REAGENDAR</Button>
+				</Modal>
 			</ImageBackground>
 		);
 	},
@@ -240,5 +275,21 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		margin: 16,
 		borderRadius: 30,
+	},
+	modalContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+		alignSelf: "center",
+		height: "90%",
+		width: "40%",
+	},
+	modalContent: {
+		flex: 1,
+		padding: "2%",
+		marginBottom: "5%",
+		borderRadius: 8,
+	},
+	backdrop: {
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
 	},
 });

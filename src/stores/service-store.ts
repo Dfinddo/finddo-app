@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {observable, computed, action, runInAction} from "mobx";
-import {validations, validateInput} from "utils";
+import {validations, validateInput, pick} from "utils";
 import AddressStore from "stores/address-store";
 import finddoApi, {
 	ServiceApiResponse,
@@ -16,6 +16,27 @@ const descriptionTests = [
 ];
 
 const defaultTests = [validations.required()];
+
+const orderApiFields = [
+	"category_id",
+	"description",
+	"user_id",
+	"urgency",
+	"start_order",
+	"previous_budget",
+	"previous_budget_value",
+	"hora_inicio",
+	"hora_fim",
+] as const;
+
+const addressApiFields = [
+	"cep",
+	"name",
+	"district",
+	"street",
+	"number",
+	"complement",
+] as const;
 
 class ServiceStore {
 	@observable
@@ -143,29 +164,20 @@ class ServiceStore {
 
 	@action
 	public saveService = async (userStore: UserStore): Promise<void> => {
-		const order: any = {};
+		const data = {
+			category_id: this.categoryID,
+			user_id: userStore.id,
+			start_order: `${this.serviceDate.toDateString()} ${this.startTime}`,
+			hora_inicio: this.startTime,
+			hora_fim: this.endTime,
+		};
 
-		order.category_id = this.categoryID;
-		order.description = this.description;
-		order.user_id = userStore.id;
-		order.urgency = this.urgency;
-		order.start_order = `${this.serviceDate.toDateString()} ${
-			this.startTime
-		}`;
-		// order.address_id = this.address.id;
-		order.previous_budget = this.previous_budget;
-		order.previous_budget_value = this.previous_budget_value;
-		order.hora_inicio = this.startTime;
-		order.hora_fim = this.endTime;
+		const order = pick({...this, ...data}, orderApiFields);
 
-		const address: any = {};
-
-		address.cep = this.address.cep;
-		address.complement = this.address.complement;
-		address.district = this.address.district;
-		address.name = this.address.addressAlias;
-		address.number = this.address.number;
-		address.street = this.address.street;
+		const address = pick(
+			{...this.address, name: this.address.addressAlias},
+			addressApiFields,
+		);
 
 		const images: any[] = [];
 
@@ -181,6 +193,31 @@ class ServiceStore {
 				order,
 				address,
 				images,
+			});
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	};
+
+	@action
+	public updateService = async (userStore: UserStore): Promise<void> => {
+		const data = {
+			category_id: this.categoryID,
+			user_id: userStore.id,
+			start_order: `${this.serviceDate.toDateString()} ${this.startTime}`,
+			hora_inicio: this.startTime,
+			hora_fim: this.endTime,
+		};
+
+		const order = pick({...this, ...data}, orderApiFields);
+
+		try {
+			await finddoApi.put(`/orders/${this.id}`, {
+				order,
 			});
 		} catch (error) {
 			// eslint-disable-next-line no-console
