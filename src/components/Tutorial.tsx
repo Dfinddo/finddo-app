@@ -1,11 +1,7 @@
-import {SvgXml} from "react-native-svg";
-import {bolaCheia} from "assets/svg/bola-cheia";
-import {bolaApagada} from "assets/svg/bola-apagada";
-import tutorialImages from "assets/svg/tutorial-steps";
-import {fechar} from "assets/svg/fechar";
 import React, {useState, useEffect, useCallback, FC} from "react";
 import {View, TouchableOpacity} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import {SvgXml} from "react-native-svg";
 import {
 	Button,
 	Modal,
@@ -14,6 +10,11 @@ import {
 	useStyleSheet,
 } from "@ui-kitten/components";
 import AsyncStorage from "@react-native-community/async-storage";
+
+import {fechar} from "assets/svg/fechar";
+import {bolaCheia} from "assets/svg/bola-cheia";
+import {bolaApagada} from "assets/svg/bola-apagada";
+import tutorialImages from "assets/svg/tutorial-steps";
 
 const useInitialDisplay = (): [boolean, () => void] => {
 	const [wasDisplayed, setWasDisplayed] = useState(true);

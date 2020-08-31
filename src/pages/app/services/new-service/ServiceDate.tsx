@@ -1,20 +1,11 @@
 import React from "react";
-import {View, StyleSheet} from "react-native";
-import {
-	Text,
-	Button,
-	SelectItem,
-	Calendar,
-	Layout,
-} from "@ui-kitten/components";
+import {StyleSheet} from "react-native";
+import {Button, Layout} from "@ui-kitten/components";
 import {useService, useSwitch} from "hooks";
 import {observer} from "mobx-react-lite";
-import {range} from "utils";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
-import ValidatedSelect from "components/ValidatedSelect";
-import {localeDateService} from "src/utils/calendarLocale";
-import {ScrollView} from "react-native-gesture-handler";
+import DataForm from "components/DataForm";
 
 type ServiceDateScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -26,86 +17,18 @@ type ServiceDateScreenProps = StackScreenProps<
 const ServiceDate = observer<ServiceDateScreenProps>(props => {
 	const serviceStore = useService();
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
-	const initialDate = new Date();
-	const finalDate = new Date();
-
-	finalDate.setDate(finalDate.getDate() + 6);
-
-	const endTimes = avaliableTimes.filter(
-		time => time > serviceStore.startTime,
-	);
-
 	const onAdvanceAttempt = (): void => {
 		if (!(serviceStore.startTime && serviceStore.endTime))
 			setFillAttemptAsFailed();
 		else props.navigation.navigate("ServicePhotos");
 	};
 
-	const onStartSelect = (index: number): void => {
-		serviceStore.startTime = avaliableTimes[index];
-		if (serviceStore.startTime >= serviceStore.endTime)
-			serviceStore.endTime = "";
-	};
-
-	const onEndSelect = (index: number) =>
-		void (serviceStore.endTime = endTimes[index]);
-
 	return (
 		<Layout level="2" style={styles.container}>
-			<Layout level="1" style={styles.contentWrapper}>
-				<Text category="h5">
-					Escolha a melhor data e faixa de horário para seu atendimento:
-				</Text>
-				<ScrollView
-					showsVerticalScrollIndicator={false}
-					style={styles.calendarContainer}
-				>
-					<Calendar
-						style={styles.calendar}
-						dateService={localeDateService}
-						date={serviceStore.serviceDate}
-						onSelect={date => (serviceStore.serviceDate = date)}
-						min={initialDate}
-						max={finalDate}
-					/>
-					<View style={styles.rowContainer}>
-						<View style={styles.row}>
-							<Text style={styles.timeLabel} category="h6">
-								Entre:{" "}
-							</Text>
-							<ValidatedSelect
-								style={styles.timeSelect}
-								value={serviceStore.startTime}
-								error={serviceStore.startTimeError}
-								forceErrorDisplay={hasFailedToFillForm}
-								placeholder={"--:--"}
-								onSelect={onStartSelect}
-							>
-								{avaliableTimes.map(time => (
-									<SelectItem key={time} title={time} />
-								))}
-							</ValidatedSelect>
-						</View>
-						<View style={styles.row}>
-							<Text style={styles.timeLabel} category="h6">
-								{"        "}E:{" "}
-							</Text>
-							<ValidatedSelect
-								style={styles.timeSelect}
-								value={serviceStore.endTime}
-								error={serviceStore.endTimeError}
-								forceErrorDisplay={hasFailedToFillForm}
-								placeholder={"--:--"}
-								onSelect={onEndSelect}
-							>
-								{endTimes.map(time => (
-									<SelectItem key={time} title={time} />
-								))}
-							</ValidatedSelect>
-						</View>
-					</View>
-				</ScrollView>
-			</Layout>
+			<DataForm
+				serviceStore={serviceStore}
+				forceErrorDisplay={hasFailedToFillForm}
+			/>
 
 			<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>
 		</Layout>
@@ -114,12 +37,7 @@ const ServiceDate = observer<ServiceDateScreenProps>(props => {
 
 export default ServiceDate;
 
-const avaliableTimes = range(9, 22)
-	.map(hour => String(hour).padStart(2, "0"))
-	.flatMap(hour => [`${hour}:00`, `${hour}:30`]);
-
 const styles = StyleSheet.create({
-	backgroundImageContent: {width: "100%", height: "100%"},
 	container: {
 		width: "100%",
 		height: "100%",
@@ -136,34 +54,5 @@ const styles = StyleSheet.create({
 		borderRadius: 18,
 		opacity: 1,
 		alignItems: "center",
-	},
-	calendarContainer: {width: "100%", padding: "5%"},
-	calendar: {alignSelf: "center"},
-	modalErrosTitulo: {fontWeight: "bold", textAlign: "center", fontSize: 24},
-	modalErrosContent: {
-		fontSize: 18,
-		marginVertical: 10,
-	},
-	timeSelect: {width: "35%"},
-	timeLabel: {textAlign: "right", marginBottom: 15},
-	contentWrapper: {
-		height: "95%",
-		justifyContent: "flex-start",
-		alignItems: "center",
-		paddingHorizontal: 15,
-	},
-	rowContainer: {
-		flex: 1,
-		width: "100%",
-		flexDirection: "column",
-		alignItems: "center",
-		justifyContent: "space-between",
-		paddingVertical: 16,
-	},
-	row: {
-		flex: 1,
-		alignItems: "center",
-		justifyContent: "flex-start",
-		flexDirection: "row",
 	},
 });
