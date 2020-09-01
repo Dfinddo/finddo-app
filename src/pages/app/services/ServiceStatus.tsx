@@ -97,19 +97,22 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					title: "Orçamento prévio?",
 					body: (
 						<Layout style={styles.timeLineLayout} level="3">
-							<Text>O cliente solicitou orçamento presencial</Text>
-							<Button
-								style={styles.timeLineButton}
-								onPress={() => {
-									if (serviceStore && serviceStore.id) {
-										navigation.navigate("ServiceBudget", {
-											id: serviceStore.id,
-										});
-									}
-								}}
-							>
-								ORÇAR
-							</Button>
+							{!serviceStore?.previous_budget ? (
+								<Text>O cliente solicitou orçamento presencial</Text>
+							) : (
+								<Button
+									style={styles.timeLineButton}
+									onPress={() => {
+										if (serviceStore && serviceStore.id) {
+											navigation.navigate("ServiceBudget", {
+												id: serviceStore.id,
+											});
+										}
+									}}
+								>
+									ORÇAR
+								</Button>
+							)}
 						</Layout>
 					),
 					icon: (

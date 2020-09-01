@@ -93,6 +93,7 @@ class ServiceStore {
 	): ServiceStore {
 		const serviceStore = new ServiceStore();
 
+		console.log(apiResponse);
 		serviceStore.id = apiResponse.id;
 		serviceStore.categoryID = apiResponse.category.id;
 		serviceStore.description = apiResponse.description;
@@ -202,6 +203,22 @@ class ServiceStore {
 			else throw error;
 		}
 	};
+
+	@action
+	public async associateProfessionalOrder(user: UserStore): Promise<void> {
+		if (user.userType === "user" || !user.isRegistered)
+			throw new Error("Unauthorized user");
+
+		try {
+			await finddoApi.put(`/orders/associate/${this.id}/${user}`);
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	}
 
 	@action
 	public updateService = async (userStore: UserStore): Promise<void> => {

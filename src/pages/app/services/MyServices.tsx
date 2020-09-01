@@ -35,7 +35,7 @@ type MyServicesScreenProps = StackScreenProps<
 	"MyServices"
 >;
 
-const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
+const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const serviceListStore = useServiceList();
 	const [selectValue, setSelectValue] = useState(0);
@@ -99,9 +99,16 @@ const MyServices = observer<MyServicesScreenProps>(({navigation, route}) => {
 					}
 					renderItem={({item}: {item: ServiceStore}) => (
 						<ListItem
-							onPress={() =>
-								navigation.navigate("ServiceStatus", {id: item.id!})
-							}
+							onPress={() => {
+								if (
+									userStore.userType === "professional" &&
+									item.status === "analise"
+								) {
+									navigation.navigate("ViewService", {id: item.id!});
+								} else {
+									navigation.navigate("ServiceStatus", {id: item.id!});
+								}
+							}}
 							title={serviceCategories[item.categoryID!].name}
 							description={serviceStatusDescription[item.status]}
 							accessoryRight={props => (
