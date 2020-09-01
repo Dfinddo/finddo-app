@@ -32,7 +32,10 @@ const Login = observer<LoginScreenProps>(props => {
 				Alert.alert("Email ou senha incorretos");
 			else if (error.message === "Connection error")
 				Alert.alert("Falha ao conectar");
+			else if (error.message === "Account not validated")
+				Alert.alert("Sua conta ainda não foi validada.");
 			else throw error;
+		} finally {
 			setIsLoading(false);
 		}
 	}, [email, password, userStore]);
