@@ -210,7 +210,7 @@ class ServiceStore {
 			throw new Error("Unauthorized user");
 
 		try {
-			await finddoApi.put(`/orders/associate/${this.id}/${user}`);
+			await finddoApi.put(`/orders/associate/${this.id}/${user.id}`);
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});

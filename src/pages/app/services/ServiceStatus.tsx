@@ -196,6 +196,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 			setIsReschedule(false);
 			try {
 				await serviceStore?.updateService(userStore);
+				Alert.alert("Serviço alterado com sucesso");
 			} catch (error) {
 				if (error.message === "Invalid service data")
 					Alert.alert("Erro no envio do serviço, tente novamente");
@@ -205,7 +206,6 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				setIsLoading(false);
 			} finally {
 				setIsLoading(false);
-				Alert.alert("Serviço alterado com sucesso");
 			}
 		};
 

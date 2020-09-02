@@ -39,11 +39,13 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const serviceListStore = useServiceList();
 	const [selectValue, setSelectValue] = useState(0);
+	const [nextPage, setNextPage] = useState(2);
 	const userStore = useUser();
 	const theme = useTheme();
 
 	const getServices = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
+		setNextPage(2);
 
 		try {
 			await serviceListStore.fetchServices(userStore);
@@ -62,6 +64,26 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 	}, [userStore, serviceListStore]);
 
 	useEffect(() => void getServices(), [getServices]);
+
+	const handleExpandList = useCallback(async (): Promise<void> => {
+		setIsLoading(true);
+
+		try {
+			await serviceListStore.expandListServices(userStore, nextPage);
+		} catch (error) {
+			if (error.response) {
+				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+			} else if (error.request) {
+				Alert.alert(
+					"Falha ao se conectar",
+					"Verifique sua conexão e tente novamente",
+				);
+			} else throw error;
+		} finally {
+			setIsLoading(false);
+			setNextPage(state => state + 1);
+		}
+	}, [userStore, serviceListStore, nextPage]);
 
 	return (
 		<Layout level="2" style={styles.container}>
@@ -90,6 +112,8 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 							: service.status === serviceStatus[selectValue],
 					)}
 					ItemSeparatorComponent={Divider}
+					onEndReached={handleExpandList}
+					onEndReachedThreshold={0.2}
 					refreshControl={
 						<RefreshControl
 							colors={[theme["color-primary-active"]]}

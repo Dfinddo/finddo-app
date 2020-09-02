@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {StyleSheet, View, Alert} from "react-native";
-import {Button} from "@ui-kitten/components";
+import {StyleSheet, Alert, View} from "react-native";
+import {Button, Layout} from "@ui-kitten/components";
 import {useServiceList, useUser} from "hooks";
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -8,7 +8,7 @@ import {ServicesStackParams} from "src/routes/app";
 import ServiceDataDisplay from "components/ServiceDataDisplay";
 import ServiceStore from "stores/service-store";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
-import {navigate} from "src/routes/rootNavigation";
+import {StackActions} from "@react-navigation/native";
 
 type ViewServiceScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -34,7 +34,9 @@ const ViewService = observer<ViewServiceScreenProps>(({route, navigation}) => {
 		setIsLoading(true);
 		try {
 			await serviceStore.associateProfessionalOrder(userStore);
+			navigation.dispatch(StackActions.pop(1));
 			navigation.navigate("ServiceStatus", {id: serviceStore.id as number});
+			Alert.alert("Serviço associado com sucesso");
 		} catch (error) {
 			if (error.message === "Invalid service data")
 				Alert.alert("Erro na associação do serviço, tente novamente");
@@ -44,7 +46,6 @@ const ViewService = observer<ViewServiceScreenProps>(({route, navigation}) => {
 			setIsLoading(false);
 		} finally {
 			setIsLoading(false);
-			Alert.alert("Serviço associado com sucesso");
 		}
 	};
 
@@ -53,11 +54,13 @@ const ViewService = observer<ViewServiceScreenProps>(({route, navigation}) => {
 		serviceStore.status === "analise"
 	) {
 		return (
-			<View style={styles.container}>
+			<Layout level="1" style={styles.container}>
 				<TaskAwaitIndicator isAwaiting={isLoading} />
-				<ServiceDataDisplay serviceStore={serviceStore} />
+				<View style={styles.containerDetails}>
+					<ServiceDataDisplay serviceStore={serviceStore} />
+				</View>
 				<Button onPress={handleAssociateService}>ASSOCIAR AO PEDIDO</Button>
-			</View>
+			</Layout>
 		);
 	}
 
@@ -68,8 +71,14 @@ export default ViewService;
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		width: "100%",
+		height: "100%",
 		paddingTop: 30,
+		alignItems: "center",
+	},
+	containerDetails: {
+		width: "100%",
+		height: "85%",
 		alignItems: "center",
 	},
 });
