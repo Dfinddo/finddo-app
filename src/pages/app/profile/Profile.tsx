@@ -42,9 +42,15 @@ const Profile = observer<ProfileScreenProps>(props => {
 	const logout = useCallback((): void => {
 		Alert.alert("Finddo", "Deseja sair?", [
 			{text: "Não"},
-			{text: "Sim", onPress: userStore.signOut},
+			{
+				text: "Sim",
+				onPress: () => {
+					props.navigation.navigate("Services");
+					userStore.signOut();
+				},
+			},
 		]);
-	}, [userStore.signOut]);
+	}, [userStore, props]);
 
 	const changeProfilePicture = useCallback((): void => {
 		Alert.alert(

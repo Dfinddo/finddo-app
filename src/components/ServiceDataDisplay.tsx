@@ -17,6 +17,7 @@ import ServiceStore from "stores/service-store";
 import {BACKEND_URL_STORAGE} from "config";
 import {format} from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
+import {priceFormatter} from "utils";
 
 interface ServiceImageRenderer {
 	(image: {item: ImageSourcePropType; index: number}): JSX.Element;
@@ -77,6 +78,14 @@ const ServiceDataDisplay = observer<{serviceStore: ServiceStore}>(props => {
 					hint="Categoria"
 					value={serviceCategories[serviceStore.categoryID!].name}
 				/>
+				{serviceStore.previous_budget_value && (
+					<DataPieceDisplay
+						hint="Valor estimado pelo cliente"
+						value={priceFormatter(
+							serviceStore.previous_budget_value.toString(),
+						)}
+					/>
+				)}
 				{Boolean(serviceStore.status) && (
 					<DataPieceDisplay
 						hint="Status"

@@ -57,6 +57,9 @@ class ServiceStore {
 	@observable
 	public previous_budget_value: number | null = null;
 
+	@observable
+	public budget: number | null = null;
+
 	@observable public description = "";
 	@computed public get descriptionError(): string | undefined {
 		return validateInput(this.description, descriptionTests);
@@ -93,12 +96,15 @@ class ServiceStore {
 	): ServiceStore {
 		const serviceStore = new ServiceStore();
 
-		console.log(apiResponse);
+		// console.log(apiResponse);
 		serviceStore.id = apiResponse.id;
 		serviceStore.categoryID = apiResponse.category.id;
 		serviceStore.description = apiResponse.description;
 		serviceStore.userID = apiResponse.id;
 		serviceStore.urgency = apiResponse.urgency;
+		serviceStore.budget = apiResponse.budget;
+		serviceStore.previous_budget = apiResponse.previous_budget;
+		serviceStore.previous_budget_value = apiResponse.previous_budget_value;
 		serviceStore.status = apiResponse.order_status;
 		serviceStore.serviceDate = new Date(apiResponse.start_order);
 		serviceStore.startTime = apiResponse.hora_inicio;

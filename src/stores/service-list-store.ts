@@ -8,12 +8,18 @@ class ServiceListStore {
 	public list: ServiceStore[] = [];
 
 	@action
-	public async fetchServices(userStore: UserStore): Promise<void> {
+	public async fetchServices(
+		userStore: UserStore,
+		isProfessionalListService?: boolean,
+	): Promise<void> {
 		try {
 			const endpoint =
+				// eslint-disable-next-line no-nested-ternary
 				userStore.userType === "user"
 					? `/orders/user/${userStore.id}/active`
-					: "/orders/available";
+					: !isProfessionalListService
+					? "/orders/available"
+					: `orders/active_orders_professional/${userStore.id}`;
 
 			const response = await finddoApi.get(endpoint);
 			const services: ServiceApiResponse[] = response.data.items;
@@ -34,12 +40,16 @@ class ServiceListStore {
 	public async expandListServices(
 		userStore: UserStore,
 		page: number,
+		isProfessionalListService?: boolean,
 	): Promise<void> {
 		try {
 			const endpoint =
+				// eslint-disable-next-line no-nested-ternary
 				userStore.userType === "user"
 					? `/orders/user/${userStore.id}/active/?page=${page}`
-					: `/orders/available/?page=${page}`;
+					: !isProfessionalListService
+					? `/orders/available/?page=${page}`
+					: `orders/active_orders_professional/${userStore.id}/?page=${page}`;
 
 			const response = await finddoApi.get(endpoint);
 			const services: ServiceApiResponse[] = response.data.items;

@@ -10,6 +10,8 @@ import {
 	SelectItem,
 	Layout,
 	useTheme,
+	TabBar,
+	Tab,
 } from "@ui-kitten/components";
 import {useUser, useServiceList} from "hooks";
 import {observer} from "mobx-react-lite";
@@ -37,9 +39,10 @@ type MyServicesScreenProps = StackScreenProps<
 
 const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 	const [isLoading, setIsLoading] = useState(false);
-	const serviceListStore = useServiceList();
+	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [selectValue, setSelectValue] = useState(0);
 	const [nextPage, setNextPage] = useState(2);
+	const serviceListStore = useServiceList();
 	const userStore = useUser();
 	const theme = useTheme();
 
@@ -48,7 +51,10 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		setNextPage(2);
 
 		try {
-			await serviceListStore.fetchServices(userStore);
+			await serviceListStore.fetchServices(
+				userStore,
+				userStore.userType === "professional" && selectedIndex === 1,
+			);
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -61,7 +67,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [userStore, serviceListStore]);
+	}, [userStore, serviceListStore, selectedIndex]);
 
 	useEffect(() => void getServices(), [getServices]);
 
@@ -69,7 +75,11 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		setIsLoading(true);
 
 		try {
-			await serviceListStore.expandListServices(userStore, nextPage);
+			await serviceListStore.expandListServices(
+				userStore,
+				nextPage,
+				userStore.userType === "professional" && selectedIndex === 1,
+			);
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -83,26 +93,41 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 			setIsLoading(false);
 			setNextPage(state => state + 1);
 		}
-	}, [userStore, serviceListStore, nextPage]);
+	}, [userStore, serviceListStore, nextPage, selectedIndex]);
 
 	return (
 		<Layout level="2" style={styles.container}>
 			<Tutorial />
-			<View style={styles.optionsContainer}>
-				<ValidatedSelect
-					style={styles.select}
-					label="Filtrar por status"
-					value={serviceStatusDescription[serviceStatus[selectValue]]}
-					onSelect={setSelectValue}
+			{userStore.userType === "professional" && (
+				<TabBar
+					style={styles.tab}
+					selectedIndex={selectedIndex}
+					onSelect={index => {
+						getServices();
+						setSelectedIndex(index);
+					}}
 				>
-					{serviceStatus.map((status, i) => (
-						<SelectItem
-							key={i}
-							title={serviceStatusDescription[status]}
-						/>
-					))}
-				</ValidatedSelect>
-			</View>
+					<Tab title="Novos serviços" />
+					<Tab title="Meus serviços" />
+				</TabBar>
+			)}
+			{!(userStore.userType === "professional" && selectedIndex !== 1) ? (
+				<View style={styles.optionsContainer}>
+					<ValidatedSelect
+						style={styles.select}
+						label="Filtrar por status"
+						value={serviceStatusDescription[serviceStatus[selectValue]]}
+						onSelect={setSelectValue}
+					>
+						{serviceStatus.map((status, i) => (
+							<SelectItem
+								key={i}
+								title={serviceStatusDescription[status]}
+							/>
+						))}
+					</ValidatedSelect>
+				</View>
+			) : null}
 
 			<View style={styles.listWrapper}>
 				<List
@@ -165,10 +190,14 @@ export default MyServices;
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingTop: 30,
 		alignItems: "center",
 	},
+	tab: {
+		width: "100%",
+		height: 58,
+	},
 	optionsContainer: {
+		marginTop: 24,
 		flexDirection: "row-reverse",
 		alignItems: "center",
 		justifyContent: "space-between",

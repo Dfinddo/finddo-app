@@ -21,11 +21,18 @@ import DataForm from "components/DataForm";
 
 import {bolaCheia} from "../../../assets/svg/bola-cheia";
 import {bolaApagada} from "../../../assets/svg/bola-apagada";
+import {priceFormatter} from "utils";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
 	"ServiceStatus"
 >;
+
+interface ITimeLineDataRender {
+	title: string;
+	body?: JSX.Element | undefined;
+	icon: JSX.Element;
+}
 
 const ServiceStatus = observer<ServiceStatusScreenProps>(
 	({route, navigation}) => {
@@ -39,24 +46,6 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 		const userStore = useUser();
 		const theme = useTheme();
 
-		const loadingService = async (): Promise<void> => {
-			setIsLoading(true);
-			try {
-				await serviceStore?.refreshServiceData();
-			} catch (error) {
-				if (error.response) {
-					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
-				} else if (error.request) {
-					Alert.alert(
-						"Falha ao se conectar",
-						"Verifique sua conexão e tente novamente",
-					);
-				} else throw error;
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
 		useEffect(() => {
 			if (route.params?.id)
 				setServiceStore(
@@ -64,7 +53,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				);
 		}, [route.params?.id, serviceListStore.list]);
 
-		const data = useMemo(() => {
+		const data = useMemo((): ITimeLineDataRender[] => {
 			const status: ServiceStatusEnum =
 				ServiceStatusEnum[serviceStore?.status || "analise"];
 
@@ -98,20 +87,43 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					body: (
 						<Layout style={styles.timeLineLayout} level="3">
 							{!serviceStore?.previous_budget ? (
-								<Text>O cliente solicitou orçamento presencial</Text>
+								<Text>
+									{userStore.userType === "professional"
+										? "O cliente"
+										: "Você"}{" "}
+									solicitou orçamento presencial.
+								</Text>
 							) : (
-								<Button
-									style={styles.timeLineButton}
-									onPress={() => {
-										if (serviceStore && serviceStore.id) {
-											navigation.navigate("ServiceBudget", {
-												id: serviceStore.id,
-											});
-										}
-									}}
-								>
-									ORÇAR
-								</Button>
+								<>
+									<Text>
+										{serviceStore.budget
+											? priceFormatter(
+													serviceStore.budget.toString(),
+											  )
+											: "Aguardando orçamento do profissional"}
+									</Text>
+									{userStore.userType === "professional" ? (
+										<Button
+											style={styles.timeLineButton}
+											onPress={() => {
+												if (serviceStore && serviceStore.id) {
+													navigation.navigate("ServiceBudget", {
+														id: serviceStore.id,
+													});
+												}
+											}}
+										>
+											ORÇAR
+										</Button>
+									) : (
+										serviceStore.budget && (
+											<>
+												<Button>ACEITAR</Button>
+												<Button>RECUSAR</Button>
+											</>
+										)
+									)}
+								</>
 							)}
 						</Layout>
 					),
@@ -145,7 +157,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					title: "Profissional a caminho",
 					icon: (
 						<SvgXml
-							xml={status >= 3 ? bolaCheia : bolaApagada}
+							xml={status >= 4 ? bolaCheia : bolaApagada}
 							width={16}
 							height={16}
 						/>
@@ -155,7 +167,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					title: "Serviço em execução",
 					icon: (
 						<SvgXml
-							xml={status >= 4 ? bolaCheia : bolaApagada}
+							xml={status >= 5 ? bolaCheia : bolaApagada}
 							width={16}
 							height={16}
 						/>
@@ -165,17 +177,35 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					title: "Concluído",
 					icon: (
 						<SvgXml
-							xml={status >= 5 ? bolaCheia : bolaApagada}
+							xml={status >= 6 ? bolaCheia : bolaApagada}
 							width={16}
 							height={16}
 						/>
 					),
 				},
 			];
-		}, [serviceStore, navigation]);
+		}, [serviceStore, navigation, userStore]);
+
+		const loadingService = async (): Promise<void> => {
+			setIsLoading(true);
+			try {
+				await serviceStore?.refreshServiceData();
+			} catch (error) {
+				if (error.response) {
+					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+				} else if (error.request) {
+					Alert.alert(
+						"Falha ao se conectar",
+						"Verifique sua conexão e tente novamente",
+					);
+				} else throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
 		const renderDetail = (
-			rowData: typeof data[0],
+			rowData: ITimeLineDataRender,
 			_sectionID: number,
 			_rowID: number,
 		): JSX.Element => {
