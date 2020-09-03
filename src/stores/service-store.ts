@@ -58,7 +58,7 @@ class ServiceStore {
 	public previous_budget_value: number | null = null;
 
 	@observable
-	public budget: number | null = null;
+	public budget: number | null | undefined = null;
 
 	@observable public description = "";
 	@computed public get descriptionError(): string | undefined {
@@ -102,7 +102,7 @@ class ServiceStore {
 		serviceStore.description = apiResponse.description;
 		serviceStore.userID = apiResponse.id;
 		serviceStore.urgency = apiResponse.urgency;
-		serviceStore.budget = apiResponse.budget;
+		serviceStore.budget = apiResponse.budget?.budget;
 		serviceStore.previous_budget = apiResponse.previous_budget;
 		serviceStore.previous_budget_value = apiResponse.previous_budget_value;
 		serviceStore.status = apiResponse.order_status;

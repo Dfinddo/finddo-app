@@ -7,7 +7,14 @@ import {
 	StyleSheet,
 	ImageBackground,
 } from "react-native";
-import {Text, useTheme, Button, Layout, Modal} from "@ui-kitten/components";
+import {
+	Text,
+	useTheme,
+	Button,
+	Layout,
+	Modal,
+	ButtonGroup,
+} from "@ui-kitten/components";
 import {SvgXml} from "react-native-svg";
 import {observer} from "mobx-react-lite";
 import TimeLine from "react-native-timeline-flatlist";
@@ -95,7 +102,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 								</Text>
 							) : (
 								<>
-									<Text>
+									<Text style={styles.price}>
 										{serviceStore.budget
 											? priceFormatter(
 													serviceStore.budget.toString(),
@@ -117,10 +124,17 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 										</Button>
 									) : (
 										serviceStore.budget && (
-											<>
-												<Button>ACEITAR</Button>
-												<Button>RECUSAR</Button>
-											</>
+											<View style={styles.buttonGroup}>
+												<Button style={styles.button}>
+													ACEITAR
+												</Button>
+												<Button
+													style={styles.button}
+													status="danger"
+												>
+													RECUSAR
+												</Button>
+											</View>
 										)
 									)}
 								</>
@@ -298,7 +312,7 @@ const styles = StyleSheet.create({
 	timeLineLayout: {
 		minHeight: 48,
 		borderRadius: 8,
-		padding: "5%",
+		padding: "2%",
 		borderColor: "grey",
 		borderWidth: 1,
 	},
@@ -321,6 +335,23 @@ const styles = StyleSheet.create({
 		padding: "2%",
 		marginBottom: "5%",
 		borderRadius: 8,
+	},
+	buttonGroup: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-around",
+	},
+	button: {
+		height: 24,
+		alignSelf: "center",
+		margin: 16,
+	},
+	price: {
+		width: "100%",
+		fontSize: 24,
+		fontWeight: "bold",
+		paddingHorizontal: 8,
+		paddingTop: 4,
 	},
 	backdrop: {
 		backgroundColor: "rgba(0, 0, 0, 0.5)",

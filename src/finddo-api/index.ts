@@ -121,7 +121,12 @@ interface AddressApiResponse {
 
 interface ServiceApiResponse {
 	address: AddressApiResponse;
-	budget: null;
+	budget: {
+		accepted: string;
+		budget: number;
+		id: number;
+		is_previous: boolean;
+	} | null;
 	category: {id: keyof typeof serviceCategories | null; name: string};
 	description: string;
 	end_order: string;
