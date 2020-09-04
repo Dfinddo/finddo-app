@@ -15,7 +15,11 @@ import {
 } from "@ui-kitten/components";
 import {useUser, useServiceList} from "hooks";
 import {observer} from "mobx-react-lite";
-import {serviceCategories, serviceStatusDescription} from "finddo-api";
+import {
+	serviceCategories,
+	serviceStatusDescription,
+	ServiceStatus,
+} from "finddo-api";
 import ServiceStore from "stores/service-store";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
@@ -40,15 +44,12 @@ type MyServicesScreenProps = StackScreenProps<
 const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
-	const [selectValue, setSelectValue] = useState(0);
-	const [nextPage, setNextPage] = useState(2);
 	const serviceListStore = useServiceList();
 	const userStore = useUser();
 	const theme = useTheme();
 
 	const getServices = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
-		setNextPage(2);
 
 		try {
 			await serviceListStore.fetchServices(
@@ -75,11 +76,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		setIsLoading(true);
 
 		try {
-			await serviceListStore.expandListServices(
-				userStore,
-				nextPage,
-				userStore.userType === "professional" && selectedIndex === 1,
-			);
+			await serviceListStore.expandServiceList();
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -91,9 +88,30 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 			} else throw error;
 		} finally {
 			setIsLoading(false);
-			setNextPage(state => state + 1);
 		}
-	}, [userStore, serviceListStore, nextPage, selectedIndex]);
+	}, [serviceListStore]);
+
+	const handleChangeFilter = useCallback(
+		async (status: "" | ServiceStatus) => {
+			setIsLoading(true);
+
+			try {
+				await serviceListStore.setStatusFilter(status);
+			} catch (error) {
+				if (error.response) {
+					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+				} else if (error.request) {
+					Alert.alert(
+						"Falha ao se conectar",
+						"Verifique sua conexão e tente novamente",
+					);
+				} else throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[serviceListStore],
+	);
 
 	return (
 		<Layout level="2" style={styles.container}>
@@ -102,10 +120,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 				<TabBar
 					style={styles.tab}
 					selectedIndex={selectedIndex}
-					onSelect={index => {
-						getServices();
-						setSelectedIndex(index);
-					}}
+					onSelect={index => setSelectedIndex(index)}
 				>
 					<Tab title="Novos serviços" />
 					<Tab title="Meus serviços" />
@@ -116,8 +131,8 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 					<ValidatedSelect
 						style={styles.select}
 						label="Filtrar por status"
-						value={serviceStatusDescription[serviceStatus[selectValue]]}
-						onSelect={setSelectValue}
+						value={serviceStatusDescription[serviceListStore.status]}
+						onSelect={index => handleChangeFilter(serviceStatus[index])}
 					>
 						{serviceStatus.map((status, i) => (
 							<SelectItem
@@ -131,11 +146,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 
 			<View style={styles.listWrapper}>
 				<List
-					data={serviceListStore.list.filter(service =>
-						serviceStatus[selectValue] === ""
-							? true
-							: service.status === serviceStatus[selectValue],
-					)}
+					data={serviceListStore.list}
 					ItemSeparatorComponent={Divider}
 					onEndReached={handleExpandList}
 					onEndReachedThreshold={0.2}

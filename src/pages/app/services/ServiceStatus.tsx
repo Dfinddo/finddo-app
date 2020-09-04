@@ -96,11 +96,13 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							) : (
 								<>
 									<Text style={styles.price}>
-										{serviceStore.budget
-											? priceFormatter(
-													serviceStore.budget.toString(),
-											  )
-											: "Aguardando orçamento do profissional"}
+										{serviceStore.budget ? (
+											priceFormatter(serviceStore.budget.toString())
+										) : (
+											<Text>
+												Aguardando orçamento do profissional
+											</Text>
+										)}
 									</Text>
 									{userStore.userType === "professional" ? (
 										<Button
