@@ -7,14 +7,7 @@ import {
 	StyleSheet,
 	ImageBackground,
 } from "react-native";
-import {
-	Text,
-	useTheme,
-	Button,
-	Layout,
-	Modal,
-	ButtonGroup,
-} from "@ui-kitten/components";
+import {Text, useTheme, Button, Layout, Modal} from "@ui-kitten/components";
 import {SvgXml} from "react-native-svg";
 import {observer} from "mobx-react-lite";
 import TimeLine from "react-native-timeline-flatlist";
