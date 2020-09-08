@@ -119,14 +119,16 @@ interface AddressApiResponse {
 	street: string;
 }
 
+interface BudgetApiResponse {
+	accepted: string;
+	budget: number;
+	id: number;
+	is_previous: boolean;
+}
+
 interface ServiceApiResponse {
 	address: AddressApiResponse;
-	budget: {
-		accepted: string;
-		budget: number;
-		id: number;
-		is_previous: boolean;
-	} | null;
+	budget: BudgetApiResponse | null;
 	category: {id: keyof typeof serviceCategories | null; name: string};
 	description: string;
 	end_order: string;
@@ -167,6 +169,7 @@ interface CardApiResponse {
 export type {
 	UserApiResponse,
 	AddressApiResponse,
+	BudgetApiResponse,
 	ServiceApiResponse,
 	CardApiResponse,
 };

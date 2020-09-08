@@ -97,7 +97,9 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 								<>
 									<Text style={styles.price}>
 										{serviceStore.budget ? (
-											priceFormatter(serviceStore.budget.toString())
+											priceFormatter(
+												serviceStore.budget.budget.toString(),
+											)
 										) : (
 											<Text>
 												Aguardando orçamento do profissional

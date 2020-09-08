@@ -4,6 +4,7 @@ import {validations, validateInput, pick} from "utils";
 import AddressStore from "stores/address-store";
 import finddoApi, {
 	ServiceApiResponse,
+	BudgetApiResponse,
 	ServiceStatus,
 	serviceCategories,
 } from "finddo-api";
@@ -58,7 +59,7 @@ class ServiceStore {
 	public previous_budget_value: number | null = null;
 
 	@observable
-	public budget: number | null | undefined = null;
+	public budget: BudgetApiResponse | null = null;
 
 	@observable public description = "";
 	@computed public get descriptionError(): string | undefined {
@@ -100,9 +101,9 @@ class ServiceStore {
 		serviceStore.id = apiResponse.id;
 		serviceStore.categoryID = apiResponse.category.id;
 		serviceStore.description = apiResponse.description;
-		serviceStore.userID = apiResponse.id;
+		serviceStore.userID = apiResponse.user.id;
 		serviceStore.urgency = apiResponse.urgency;
-		serviceStore.budget = apiResponse.budget?.budget;
+		serviceStore.budget = apiResponse.budget;
 		serviceStore.previous_budget = apiResponse.previous_budget;
 		serviceStore.previous_budget_value = apiResponse.previous_budget_value;
 		serviceStore.status = apiResponse.order_status;
@@ -142,6 +143,24 @@ class ServiceStore {
 			await finddoApi.post("/orders/propose_budget", {
 				id: this.id,
 				budget,
+			});
+
+			runInAction(() => this.refreshServiceData());
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	}
+
+	@action
+	public async budgetApprove(accepted: boolean): Promise<void> {
+		try {
+			await finddoApi.post("/orders/propose_budget", {
+				id: this.budget?.id,
+				accepted,
 			});
 
 			runInAction(() => this.refreshServiceData());
@@ -217,6 +236,19 @@ class ServiceStore {
 
 		try {
 			await finddoApi.put(`/orders/associate/${this.id}/${user.id}`);
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	}
+
+	@action
+	public async disassociateProfessionalOrder(): Promise<void> {
+		try {
+			await finddoApi.put(`/orders/disassociate/${this.id}`);
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
