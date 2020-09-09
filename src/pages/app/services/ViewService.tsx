@@ -1,3 +1,5 @@
+/* eslint-disable no-empty-function */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, {useEffect, useState} from "react";
 import {StyleSheet, Alert, View} from "react-native";
 import {Button, Layout} from "@ui-kitten/components";
@@ -60,6 +62,10 @@ const ViewService = observer<ViewServiceScreenProps>(({route, navigation}) => {
 					<ServiceDataDisplay serviceStore={serviceStore} />
 				</View>
 				<Button onPress={handleAssociateService}>ASSOCIAR AO PEDIDO</Button>
+				{/* TODO: Adicionar ação ao botão */}
+				{serviceStore.previous_budget && (
+					<Button onPress={() => {}}>EXIGE ORÇAMENTO PRESENCIAL</Button>
+				)}
 			</Layout>
 		);
 	}
@@ -78,7 +84,7 @@ const styles = StyleSheet.create({
 	},
 	containerDetails: {
 		width: "100%",
-		height: "85%",
+		height: "75%",
 		alignItems: "center",
 	},
 });

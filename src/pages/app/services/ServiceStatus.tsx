@@ -24,6 +24,8 @@ import {bolaCheia} from "../../../assets/svg/bola-cheia";
 import {bolaApagada} from "../../../assets/svg/bola-apagada";
 import {priceFormatter} from "utils";
 import {ScrollView} from "react-native-gesture-handler";
+import {format} from "date-fns";
+import {ptBR} from "date-fns/locale";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -265,12 +267,26 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				{
 					title: "Aguardando data do serviço",
 					body: (
-						<Button
-							style={styles.timeLineButton}
-							onPress={() => setIsReschedule(true)}
-						>
-							REAGENDAR
-						</Button>
+						<Layout style={styles.timeLineLayout} level="3">
+							{serviceStore?.startTime && (
+								<Text>
+									Data do agendamento:{" "}
+									{`${format(
+										serviceStore?.serviceDate,
+										"EEEE', dia' dd 'de' MMMM 'de' yyyy",
+										{locale: ptBR},
+									)},entre ${serviceStore?.startTime} e ${
+										serviceStore?.endTime
+									}`}
+								</Text>
+							)}
+							<Button
+								style={styles.timeLineButton}
+								onPress={() => setIsReschedule(true)}
+							>
+								REAGENDAR
+							</Button>
+						</Layout>
 					),
 					icon: (
 						<SvgXml
