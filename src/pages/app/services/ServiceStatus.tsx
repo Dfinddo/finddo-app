@@ -1,5 +1,6 @@
+/* eslint-disable max-lines */
 /* eslint-disable react-native/no-color-literals */
-import React, {useEffect, useState, useMemo} from "react";
+import React, {useEffect, useState, useMemo, useCallback} from "react";
 import {
 	View,
 	RefreshControl,
@@ -22,6 +23,7 @@ import DataForm from "components/DataForm";
 import {bolaCheia} from "../../../assets/svg/bola-cheia";
 import {bolaApagada} from "../../../assets/svg/bola-apagada";
 import {priceFormatter} from "utils";
+import {ScrollView} from "react-native-gesture-handler";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -52,6 +54,114 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					serviceListStore.list.find(({id}) => route.params.id === id),
 				);
 		}, [route.params?.id, serviceListStore.list]);
+
+		const handleBudgetApprove = useCallback(
+			async (approve: boolean) => {
+				setIsLoading(true);
+
+				try {
+					await serviceStore?.budgetApprove(approve);
+
+					if (!approve) {
+						Alert.alert(
+							"Finddo",
+							"Deseja renegociar com o profissional ou buscar por um novo?",
+							[
+								{text: "Renegociar"},
+								{
+									text: "Buscar um novo",
+									onPress: () =>
+										serviceStore?.disassociateProfessionalOrder(),
+								},
+							],
+						);
+					}
+
+					await serviceStore?.refreshServiceData();
+				} catch (error) {
+					if (error.response) {
+						Alert.alert(
+							"Erro",
+							"Verifique sua conexão e tente novamente",
+						);
+					} else if (error.request) {
+						Alert.alert(
+							"Falha ao se conectar",
+							"Verifique sua conexão e tente novamente",
+						);
+					} else throw error;
+				} finally {
+					setIsLoading(false);
+				}
+			},
+			[serviceStore],
+		);
+
+		const handleDisassociateProfessional = useCallback(async () => {
+			setIsLoading(true);
+			const message =
+				userStore.userType === "user"
+					? "Deseja buscar outro profissional para o atendimento?"
+					: "Deseja realmente abandonar o serviço?";
+
+			try {
+				Alert.alert("Finddo", message, [
+					{text: "Sim"},
+					{
+						text: "Não",
+						onPress: () =>
+							serviceStore?.disassociateProfessionalOrder().then(() => {
+								if (userStore.userType === "professional") {
+									navigation.goBack();
+								}
+							}),
+					},
+				]);
+
+				await serviceStore?.refreshServiceData();
+			} catch (error) {
+				if (error.response) {
+					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+				} else if (error.request) {
+					Alert.alert(
+						"Falha ao se conectar",
+						"Verifique sua conexão e tente novamente",
+					);
+				} else throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		}, [serviceStore, userStore, navigation]);
+
+		const handleCancelOrder = useCallback(async () => {
+			setIsLoading(true);
+
+			try {
+				Alert.alert("Finddo", "Deseja cancelar o pedido?", [
+					{text: "Sim"},
+					{
+						text: "Não",
+						onPress: () =>
+							serviceStore?.cancelOrder().then(() => {
+								navigation.goBack();
+							}),
+					},
+				]);
+
+				await serviceStore?.refreshServiceData();
+			} catch (error) {
+				if (error.response) {
+					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+				} else if (error.request) {
+					Alert.alert(
+						"Falha ao se conectar",
+						"Verifique sua conexão e tente novamente",
+					);
+				} else throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		}, [serviceStore, navigation]);
 
 		const data = useMemo((): ITimeLineDataRender[] => {
 			const status: ServiceStatusEnum =
@@ -122,10 +232,16 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 									) : (
 										serviceStore.budget && (
 											<View style={styles.buttonGroup}>
-												<Button style={styles.button}>
+												<Button
+													onPress={() => handleBudgetApprove(true)}
+													style={styles.button}
+												>
 													ACEITAR
 												</Button>
 												<Button
+													onPress={() =>
+														handleBudgetApprove(false)
+													}
 													style={styles.button}
 													status="danger"
 												>
@@ -195,7 +311,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					),
 				},
 			];
-		}, [serviceStore, navigation, userStore]);
+		}, [serviceStore, navigation, userStore, handleBudgetApprove]);
 
 		const loadingService = async (): Promise<void> => {
 			setIsLoading(true);
@@ -257,25 +373,48 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				style={styles.backgroundImageContent}
 				source={require("assets/Ellipse.png")}
 			>
-				<TimeLine
-					circleColor={theme["color-primary-default"]}
-					lineColor={theme["color-primary-default"]}
-					innerCircle="icon"
-					data={data}
-					style={styles.timeLineContainer}
-					renderDetail={renderDetail}
-					showTime={false}
-					options={{
-						refreshControl: (
-							<RefreshControl
-								colors={[theme["color-primary-active"]]}
-								refreshing={isLoading}
-								onRefresh={loadingService}
-							/>
-						),
-						removeClippedSubviews: false,
-					}}
-				/>
+				<ScrollView style={styles.scrollViewContent}>
+					<TimeLine
+						circleColor={theme["color-primary-default"]}
+						lineColor={theme["color-primary-default"]}
+						innerCircle="icon"
+						data={data}
+						style={styles.timeLineContainer}
+						renderDetail={renderDetail}
+						showTime={false}
+						options={{
+							refreshControl: (
+								<RefreshControl
+									colors={[theme["color-primary-active"]]}
+									refreshing={isLoading}
+									onRefresh={loadingService}
+								/>
+							),
+							removeClippedSubviews: false,
+						}}
+					/>
+					{ServiceStatusEnum[serviceStore?.status || "analise"] > 0 && (
+						<Button
+							status="danger"
+							style={styles.buttonOptionsService}
+							onPress={handleDisassociateProfessional}
+						>
+							{userStore.userType === "professional"
+								? "DESASSOCIAR"
+								: "BUSCAR OUTRO PROFISSIONAL"}
+						</Button>
+					)}
+					{userStore.userType === "user" && (
+						<Button
+							status="danger"
+							style={styles.buttonOptionsService}
+							onPress={handleCancelOrder}
+						>
+							CANCELAR PEDIDO
+						</Button>
+					)}
+				</ScrollView>
+
 				<Modal
 					visible={isReschedule}
 					backdropStyle={styles.backdrop}
@@ -296,6 +435,10 @@ export default ServiceStatus;
 
 const styles = StyleSheet.create({
 	backgroundImageContent: {
+		width: "100%",
+		height: "100%",
+	},
+	scrollViewContent: {
 		width: "100%",
 		height: "100%",
 	},
@@ -342,6 +485,11 @@ const styles = StyleSheet.create({
 		height: 24,
 		alignSelf: "center",
 		margin: 16,
+	},
+	buttonOptionsService: {
+		width: "70%",
+		alignSelf: "center",
+		margin: 8,
 	},
 	price: {
 		width: "100%",

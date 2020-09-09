@@ -259,6 +259,19 @@ class ServiceStore {
 	}
 
 	@action
+	public async cancelOrder(): Promise<void> {
+		try {
+			await finddoApi.put(`/orders/cancel/${this.id}`);
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	}
+
+	@action
 	public updateService = async (userStore: UserStore): Promise<void> => {
 		const data = {
 			category_id: this.categoryID,
