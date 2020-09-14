@@ -38,6 +38,14 @@ interface ITimeLineDataRender {
 	icon: JSX.Element;
 }
 
+const statusIcon = (current: number, status: number): JSX.Element => (
+	<SvgXml
+		xml={status >= current ? bolaCheia : bolaApagada}
+		width={16}
+		height={16}
+	/>
+);
+
 const ServiceStatus = observer<ServiceStatusScreenProps>(
 	({route, navigation}) => {
 		const [serviceStore, setServiceStore] = useState<
@@ -186,13 +194,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							DETALHES
 						</Button>
 					),
-					icon: (
-						<SvgXml
-							xml={status >= 0 ? bolaCheia : bolaApagada}
-							width={16}
-							height={16}
-						/>
-					),
+					icon: statusIcon(0, status),
 				},
 				{
 					title: "Orçamento prévio?",
@@ -256,13 +258,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							)}
 						</Layout>
 					),
-					icon: (
-						<SvgXml
-							xml={status >= 1 ? bolaCheia : bolaApagada}
-							width={16}
-							height={16}
-						/>
-					),
+					icon: statusIcon(1, status),
 				},
 				{
 					title: "Aguardando data do serviço",
@@ -288,43 +284,19 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							</Button>
 						</Layout>
 					),
-					icon: (
-						<SvgXml
-							xml={status >= 2 ? bolaCheia : bolaApagada}
-							width={16}
-							height={16}
-						/>
-					),
+					icon: statusIcon(2, status),
 				},
 				{
 					title: "Profissional a caminho",
-					icon: (
-						<SvgXml
-							xml={status >= 4 ? bolaCheia : bolaApagada}
-							width={16}
-							height={16}
-						/>
-					),
+					icon: statusIcon(4, status),
 				},
 				{
 					title: "Serviço em execução",
-					icon: (
-						<SvgXml
-							xml={status >= 5 ? bolaCheia : bolaApagada}
-							width={16}
-							height={16}
-						/>
-					),
+					icon: statusIcon(5, status),
 				},
 				{
 					title: "Concluído",
-					icon: (
-						<SvgXml
-							xml={status >= 6 ? bolaCheia : bolaApagada}
-							width={16}
-							height={16}
-						/>
-					),
+					icon: statusIcon(6, status),
 				},
 			];
 		}, [serviceStore, navigation, userStore, handleBudgetApprove]);

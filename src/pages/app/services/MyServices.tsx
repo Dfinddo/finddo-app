@@ -1,6 +1,6 @@
+/* eslint-disable no-nested-ternary */
 import React, {useState, useEffect, useCallback} from "react";
 import {View, RefreshControl, Alert, StyleSheet} from "react-native";
-// import Icon from "react-native-vector-icons/MaterialIcons";
 import {
 	Button,
 	List,
@@ -12,13 +12,14 @@ import {
 	useTheme,
 	TabBar,
 	Tab,
+	Text,
 } from "@ui-kitten/components";
 import {useUser, useServiceList} from "hooks";
 import {observer} from "mobx-react-lite";
 import {
-	serviceCategories,
 	serviceStatusDescription,
 	ServiceStatus,
+	serviceCategories,
 } from "finddo-api";
 import ServiceStore from "stores/service-store";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -169,7 +170,19 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 									navigation.navigate("ServiceStatus", {id: item.id!});
 								}
 							}}
-							title={serviceCategories[item.categoryID!].name}
+							title={_evaProps => (
+								<Text
+									status={
+										item.status === "analise"
+											? "basic"
+											: item.status === "cancelado"
+											? "danger"
+											: "primary"
+									}
+								>
+									{serviceCategories[item.categoryID!].name}
+								</Text>
+							)}
 							description={serviceStatusDescription[item.status]}
 							accessoryRight={props => (
 								<Icon

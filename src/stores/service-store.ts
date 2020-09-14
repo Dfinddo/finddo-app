@@ -7,8 +7,10 @@ import finddoApi, {
 	BudgetApiResponse,
 	ServiceStatus,
 	serviceCategories,
+	ReschedulingApiResponse,
 } from "finddo-api";
 import UserStore from "./user-store";
+import {format} from "date-fns";
 
 const descriptionTests = [
 	validations.required(),
@@ -61,6 +63,9 @@ class ServiceStore {
 	@observable
 	public budget: BudgetApiResponse | null = null;
 
+	@observable
+	public rescheduling: ReschedulingApiResponse | null = null;
+
 	@observable public description = "";
 	@computed public get descriptionError(): string | undefined {
 		return validateInput(this.description, descriptionTests);
@@ -104,6 +109,7 @@ class ServiceStore {
 		serviceStore.userID = apiResponse.user.id;
 		serviceStore.urgency = apiResponse.urgency;
 		serviceStore.budget = apiResponse.budget;
+		serviceStore.rescheduling = apiResponse.rescheduling;
 		serviceStore.previous_budget = apiResponse.previous_budget;
 		serviceStore.previous_budget_value = apiResponse.previous_budget_value;
 		serviceStore.status = apiResponse.order_status;
@@ -186,6 +192,8 @@ class ServiceStore {
 		this.address = new AddressStore();
 		this.previous_budget = false;
 		this.previous_budget_value = null;
+		this.budget = null;
+		this.rescheduling = null;
 	}
 
 	@action
@@ -287,6 +295,49 @@ class ServiceStore {
 			await finddoApi.put(`/orders/${this.id}`, {
 				order,
 			});
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	};
+
+	@action
+	public reschedulingCreateService = async (
+		userStore: UserStore,
+	): Promise<void> => {
+		const rescheduling = {
+			date_order: format(this.serviceDate, "dd/MM/yyyy"),
+			hora_inicio: this.startTime,
+			hora_fim: this.endTime,
+			professional_accepted:
+				userStore.userType === "professional" ? true : null,
+			user_accepted: userStore.userType === "user" ? true : null,
+		};
+
+		try {
+			await finddoApi.put(`/orders/${this.id}/reschedulings`, {
+				rescheduling,
+			});
+			await this.refreshServiceData();
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+			if (error.response) throw new Error("Invalid service data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	};
+
+	@action
+	public reschedulingAcceptedService = async (
+		accepted: boolean,
+	): Promise<void> => {
+		try {
+			await finddoApi.put(`/orders/${this.id}/reschedulings/${accepted}`);
+			await this.refreshServiceData();
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});

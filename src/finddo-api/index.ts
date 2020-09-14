@@ -126,9 +126,18 @@ interface BudgetApiResponse {
 	is_previous: boolean;
 }
 
+interface ReschedulingApiResponse {
+	date_order: string;
+	hora_inicio: string;
+	hora_fim: string;
+	user_accepted: boolean | null;
+	professional_accepted: boolean | null;
+}
+
 interface ServiceApiResponse {
 	address: AddressApiResponse;
 	budget: BudgetApiResponse | null;
+	rescheduling: ReschedulingApiResponse | null;
 	category: {id: keyof typeof serviceCategories | null; name: string};
 	description: string;
 	end_order: string;
@@ -170,6 +179,7 @@ export type {
 	UserApiResponse,
 	AddressApiResponse,
 	BudgetApiResponse,
+	ReschedulingApiResponse,
 	ServiceApiResponse,
 	CardApiResponse,
 };
