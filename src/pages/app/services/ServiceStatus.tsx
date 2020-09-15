@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 /* eslint-disable react-native/no-color-literals */
 import React, {useEffect, useState, useMemo, useCallback} from "react";
 import {
@@ -22,10 +21,9 @@ import DataForm from "components/DataForm";
 
 import {bolaCheia} from "../../../assets/svg/bola-cheia";
 import {bolaApagada} from "../../../assets/svg/bola-apagada";
-import {priceFormatter} from "utils";
 import {ScrollView} from "react-native-gesture-handler";
 import {format} from "date-fns";
-import {ptBR} from "date-fns/locale";
+import PreviousBudgetView from "components/TimelineStatusComponents/PreviousBudgetView";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -64,48 +62,6 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					serviceListStore.list.find(({id}) => route.params.id === id),
 				);
 		}, [route.params?.id, serviceListStore.list]);
-
-		const handleBudgetApprove = useCallback(
-			async (approve: boolean) => {
-				setIsLoading(true);
-
-				try {
-					await serviceStore?.budgetApprove(approve);
-
-					if (!approve) {
-						Alert.alert(
-							"Finddo",
-							"Deseja renegociar com o profissional ou buscar por um novo?",
-							[
-								{text: "Renegociar"},
-								{
-									text: "Buscar um novo",
-									onPress: () =>
-										serviceStore?.disassociateProfessionalOrder(),
-								},
-							],
-						);
-					}
-
-					await serviceStore?.refreshServiceData();
-				} catch (error) {
-					if (error.response) {
-						Alert.alert(
-							"Erro",
-							"Verifique sua conexão e tente novamente",
-						);
-					} else if (error.request) {
-						Alert.alert(
-							"Falha ao se conectar",
-							"Verifique sua conexão e tente novamente",
-						);
-					} else throw error;
-				} finally {
-					setIsLoading(false);
-				}
-			},
-			[serviceStore],
-		);
 
 		const handleDisassociateProfessional = useCallback(async () => {
 			setIsLoading(true);
@@ -200,61 +156,13 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					title: "Orçamento prévio?",
 					body: (
 						<Layout style={styles.timeLineLayout} level="3">
-							{!serviceStore?.previous_budget ? (
-								<Text>
-									{userStore.userType === "professional"
-										? "O cliente"
-										: "Você"}{" "}
-									solicitou orçamento presencial.
-								</Text>
-							) : (
-								<>
-									<Text style={styles.price}>
-										{serviceStore.budget ? (
-											priceFormatter(
-												serviceStore.budget.budget.toString(),
-											)
-										) : (
-											<Text>
-												Aguardando orçamento do profissional
-											</Text>
-										)}
-									</Text>
-									{userStore.userType === "professional" ? (
-										<Button
-											style={styles.timeLineButton}
-											onPress={() => {
-												if (serviceStore && serviceStore.id) {
-													navigation.navigate("ServiceBudget", {
-														id: serviceStore.id,
-													});
-												}
-											}}
-										>
-											ORÇAR
-										</Button>
-									) : (
-										serviceStore.budget && (
-											<View style={styles.buttonGroup}>
-												<Button
-													onPress={() => handleBudgetApprove(true)}
-													style={styles.button}
-												>
-													ACEITAR
-												</Button>
-												<Button
-													onPress={() =>
-														handleBudgetApprove(false)
-													}
-													style={styles.button}
-													status="danger"
-												>
-													RECUSAR
-												</Button>
-											</View>
-										)
-									)}
-								</>
+							{serviceStore && (
+								<PreviousBudgetView
+									userStore={userStore}
+									serviceStore={serviceStore}
+									setIsLoading={setIsLoading}
+									navigation={navigation}
+								/>
 							)}
 						</Layout>
 					),
@@ -266,14 +174,9 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 						<Layout style={styles.timeLineLayout} level="3">
 							{serviceStore?.startTime && (
 								<Text>
-									Data do agendamento:{" "}
-									{`${format(
-										serviceStore?.serviceDate,
-										"EEEE', dia' dd 'de' MMMM 'de' yyyy",
-										{locale: ptBR},
-									)},entre ${serviceStore?.startTime} e ${
-										serviceStore?.endTime
-									}`}
+									{serviceStore.rescheduling
+										? serviceStore.rescheduling.date_order
+										: format(serviceStore.serviceDate, "dd/MM/yyyy")}
 								</Text>
 							)}
 							<Button
@@ -299,7 +202,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					icon: statusIcon(6, status),
 				},
 			];
-		}, [serviceStore, navigation, userStore, handleBudgetApprove]);
+		}, [serviceStore, navigation, userStore]);
 
 		const loadingService = async (): Promise<void> => {
 			setIsLoading(true);
@@ -340,7 +243,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 			setIsLoading(true);
 			setIsReschedule(false);
 			try {
-				await serviceStore?.updateService(userStore);
+				await serviceStore?.reschedulingCreateService(userStore);
 				Alert.alert("Serviço alterado com sucesso");
 			} catch (error) {
 				if (error.message === "Invalid service data")
@@ -464,27 +367,10 @@ const styles = StyleSheet.create({
 		marginBottom: "5%",
 		borderRadius: 8,
 	},
-	buttonGroup: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-around",
-	},
-	button: {
-		height: 24,
-		alignSelf: "center",
-		margin: 16,
-	},
 	buttonOptionsService: {
 		width: "70%",
 		alignSelf: "center",
 		margin: 8,
-	},
-	price: {
-		width: "100%",
-		fontSize: 24,
-		fontWeight: "bold",
-		paddingHorizontal: 8,
-		paddingTop: 4,
 	},
 	backdrop: {
 		backgroundColor: "rgba(0, 0, 0, 0.5)",

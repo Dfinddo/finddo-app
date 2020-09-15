@@ -7,7 +7,7 @@ import {
 	StyleService,
 	useStyleSheet,
 } from "@ui-kitten/components";
-import {useServiceList} from "hooks";
+import {useServiceList, useUser} from "hooks";
 import {SvgXml} from "react-native-svg";
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -35,7 +35,9 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 		const [productPrice, setProductPrice] = useState(0);
 		const [total, setTotal] = useState("");
 		const [isLoading, setIsLoading] = useState(false);
+
 		const serviceListStore = useServiceList();
+		const userStore = useUser();
 
 		useEffect(() => {
 			if (route.params?.id)
@@ -63,7 +65,12 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 		const handleSubmitBudget = useCallback(async () => {
 			setIsLoading(true);
 			try {
-				await serviceStore?.doServiceBudget(total);
+				await serviceStore?.doServiceBudget(
+					price + finddoTax,
+					productPrice,
+					true,
+				);
+				await serviceStore?.updateService(userStore);
 			} catch (error) {
 				if (error.message === "Invalid service data")
 					Alert.alert("Erro no envio do orçamento, tente novamente");
@@ -76,7 +83,7 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 				Alert.alert("Orçamento realizado com sucesso");
 				navigation.goBack();
 			}
-		}, [serviceStore, navigation, total]);
+		}, [serviceStore, navigation, price, finddoTax, productPrice, userStore]);
 
 		const updateBudget = (
 			data: string,

@@ -144,11 +144,17 @@ class ServiceStore {
 	}
 
 	@action
-	public async doServiceBudget(budget: string): Promise<void> {
+	public async doServiceBudget(
+		budget: number,
+		material_value: number,
+		is_previous: boolean,
+	): Promise<void> {
 		try {
 			await finddoApi.post("/orders/propose_budget", {
 				id: this.id,
 				budget,
+				material_value,
+				is_previous,
 			});
 
 			runInAction(() => this.refreshServiceData());
@@ -318,7 +324,7 @@ class ServiceStore {
 		};
 
 		try {
-			await finddoApi.put(`/orders/${this.id}/reschedulings`, {
+			await finddoApi.post(`/orders/${this.id}/reschedulings`, {
 				rescheduling,
 			});
 			await this.refreshServiceData();
