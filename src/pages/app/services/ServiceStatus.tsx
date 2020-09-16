@@ -21,8 +21,10 @@ import DataForm from "components/DataForm";
 
 import {bolaCheia} from "../../../assets/svg/bola-cheia";
 import {bolaApagada} from "../../../assets/svg/bola-apagada";
+
 import {ScrollView} from "react-native-gesture-handler";
 import {format} from "date-fns";
+
 import PreviousBudgetView from "components/TimelineStatusComponents/PreviousBudgetView";
 
 type ServiceStatusScreenProps = StackScreenProps<
@@ -285,24 +287,24 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 						}}
 					/>
 					{ServiceStatusEnum[serviceStore?.status || "analise"] > 0 && (
-						<Button
+						<Text
 							status="danger"
-							style={styles.buttonOptionsService}
+							style={styles.textOptionsService}
 							onPress={handleDisassociateProfessional}
 						>
 							{userStore.userType === "professional"
-								? "DESASSOCIAR"
+								? "SAIR DO SERVIÇO"
 								: "BUSCAR OUTRO PROFISSIONAL"}
-						</Button>
+						</Text>
 					)}
 					{userStore.userType === "user" && (
-						<Button
+						<Text
 							status="danger"
-							style={styles.buttonOptionsService}
+							style={styles.textOptionsService}
 							onPress={handleCancelOrder}
 						>
 							CANCELAR PEDIDO
-						</Button>
+						</Text>
 					)}
 				</ScrollView>
 
@@ -367,9 +369,12 @@ const styles = StyleSheet.create({
 		marginBottom: "5%",
 		borderRadius: 8,
 	},
-	buttonOptionsService: {
+	textOptionsService: {
 		width: "70%",
+		textAlign: "center",
 		alignSelf: "center",
+		textDecorationLine: "underline",
+		fontSize: 12,
 		margin: 8,
 	},
 	backdrop: {

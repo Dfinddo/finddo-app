@@ -34,7 +34,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 						[
 							{text: "Renegociar"},
 							{
-								text: "Buscar um novo",
+								text: "Cancelar negociação",
 								onPress: () =>
 									serviceStore?.disassociateProfessionalOrder(),
 							},
@@ -84,7 +84,12 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 							<Text>Aguardando orçamento do profissional</Text>
 						)}
 					</Text>
-					{userStore.userType === "professional" ? (
+					{userStore.userType === "professional" &&
+						serviceStore.budget?.accepted && (
+							<Text>Aguardando orçamento do profissional</Text>
+						)}
+					{userStore.userType === "professional" &&
+					!serviceStore.budget ? (
 						<Button
 							style={styles.timeLineButton}
 							onPress={() => {

@@ -120,7 +120,7 @@ interface AddressApiResponse {
 }
 
 interface BudgetApiResponse {
-	accepted: string;
+	accepted: boolean;
 	budget: number;
 	material_value: number;
 	id: number;
