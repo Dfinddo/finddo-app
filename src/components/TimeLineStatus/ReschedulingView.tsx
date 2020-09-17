@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-color-literals */
 import React, {FC, useMemo, useState} from "react";
-import {Alert, StyleSheet} from "react-native";
+import {Alert, StyleSheet, View} from "react-native";
 import {Button, Layout, Text, Modal} from "@ui-kitten/components";
 
 import UserStore from "stores/user-store";
@@ -46,22 +46,55 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 
 	return (
 		<>
-			{serviceStore?.startTime && (
-				<Text>
-					{serviceStore.rescheduling
-						? format(
+			{serviceStore &&
+				(serviceStore.rescheduling ? (
+					<View>
+						<Text>
+							{format(
 								new Date(serviceStore.rescheduling.date_order),
 								"dd/MM/yyyy",
-						  )
-						: format(serviceStore.serviceDate, "dd/MM/yyyy")}
-				</Text>
-			)}
-			<Button
-				style={styles.timeLineButton}
-				onPress={() => setIsReschedule(true)}
-			>
-				REAGENDAR
-			</Button>
+							)}
+						</Text>
+						{userStore.userType === "user" ? (
+							<View>
+								<Button
+									style={styles.timeLineButton}
+									status="primary"
+									onPress={() =>
+										serviceStore.reschedulingAcceptedService(true)
+									}
+								>
+									ACEITAR
+								</Button>
+								<Button
+									style={styles.timeLineButton}
+									status="danger"
+									onPress={() =>
+										serviceStore.reschedulingAcceptedService(false)
+									}
+								>
+									RECUSAR
+								</Button>
+							</View>
+						) : (
+							<Text>Aguardando resposta do cliente</Text>
+						)}
+					</View>
+				) : (
+					<View>
+						<Text>{format(serviceStore.serviceDate, "dd/MM/yyyy")}</Text>
+						{userStore.userType === "professional" ? (
+							<Button
+								style={styles.timeLineButton}
+								onPress={() => setIsReschedule(true)}
+							>
+								REAGENDAR
+							</Button>
+						) : (
+							<Text>Aguardando resposta do profissional</Text>
+						)}
+					</View>
+				))}
 			<Modal
 				visible={isReschedule}
 				backdropStyle={styles.backdrop}
