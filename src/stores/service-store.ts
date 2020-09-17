@@ -8,6 +8,7 @@ import finddoApi, {
 	ServiceStatus,
 	serviceCategories,
 	ReschedulingApiResponse,
+	UserApiResponse,
 } from "finddo-api";
 import UserStore from "./user-store";
 import {format} from "date-fns";
@@ -66,6 +67,24 @@ class ServiceStore {
 	@observable
 	public rescheduling: ReschedulingApiResponse | null = null;
 
+	@observable
+	public professional_order: UserApiResponse | null = null;
+
+	@observable
+	public professional_photo: string | null = null;
+
+	@observable
+	public rate: string | null = null;
+
+	@observable
+	public user: UserApiResponse | null = null;
+
+	@observable
+	public user_photo: string | null = null;
+
+	@observable
+	public user_rate: string | null = null;
+
 	@observable public description = "";
 	@computed public get descriptionError(): string | undefined {
 		return validateInput(this.description, descriptionTests);
@@ -117,6 +136,12 @@ class ServiceStore {
 		serviceStore.startTime = apiResponse.hora_inicio;
 		serviceStore.endTime = apiResponse.hora_fim;
 		serviceStore.images = apiResponse.images;
+		serviceStore.professional_order = apiResponse.professional_order;
+		serviceStore.professional_photo = apiResponse.professional_photo;
+		serviceStore.rate = apiResponse.rate;
+		serviceStore.user = apiResponse.user;
+		serviceStore.user_photo = apiResponse.user_photo;
+		serviceStore.user_rate = apiResponse.user_rate;
 		serviceStore.address = AddressStore.createFromApiResponse(
 			apiResponse.address,
 		);
