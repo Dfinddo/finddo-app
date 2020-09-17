@@ -1,6 +1,14 @@
-import React, {FC, useCallback, useMemo} from "react";
-import {Alert, StyleSheet, View} from "react-native";
-import {Button, Text} from "@ui-kitten/components";
+/* eslint-disable react-native/no-color-literals */
+import React, {FC, useCallback, useMemo, useState} from "react";
+import {Alert, View} from "react-native";
+import {
+	Button,
+	Layout,
+	Modal,
+	StyleService,
+	Text,
+	useStyleSheet,
+} from "@ui-kitten/components";
 import {priceFormatter} from "utils";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
@@ -20,6 +28,9 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 	setIsLoading,
 	navigation,
 }) => {
+	const styles = useStyleSheet(themedStyles);
+	const [isBudgetDetails, setIsBudgetDetails] = useState(false);
+
 	const handleBudgetApprove = useCallback(
 		async (approve: boolean) => {
 			setIsLoading(true);
@@ -72,18 +83,21 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 				</Text>
 			) : (
 				<>
-					<Text style={styles.price}>
-						{serviceStore.budget ? (
-							priceFormatter(
+					{serviceStore.budget ? (
+						<Text
+							onPress={() => setIsBudgetDetails(true)}
+							style={styles.price}
+						>
+							{priceFormatter(
 								(
 									serviceStore.budget.budget +
 									serviceStore.budget.material_value
 								).toString(),
-							)
-						) : (
-							<Text>Aguardando orçamento do profissional</Text>
-						)}
-					</Text>
+							)}
+						</Text>
+					) : (
+						<Text>Aguardando orçamento do profissional</Text>
+					)}
 					{userStore.userType === "professional" &&
 						serviceStore.budget?.accepted && (
 							<Text>Aguardando orçamento do profissional</Text>
@@ -121,6 +135,58 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 							</View>
 						)
 					)}
+					{serviceStore.budget && (
+						<Modal
+							visible={isBudgetDetails}
+							backdropStyle={styles.backdrop}
+							style={styles.modalContainer}
+							onBackdropPress={() => setIsBudgetDetails(false)}
+						>
+							<Layout level="2" style={styles.modalContent}>
+								<Text style={styles.title}>Cálculo do serviço</Text>
+								<View style={styles.viewText}>
+									<Text style={styles.textPrice}>
+										{priceFormatter(
+											serviceStore.budget.budget.toString(),
+										)}
+									</Text>
+									<Text style={styles.text}>(Serviço)</Text>
+								</View>
+								<View style={styles.viewText}>
+									<Text style={styles.textPrice}>
+										{priceFormatter(
+											serviceStore.budget.budget.toString(),
+										)}
+									</Text>
+									<Text style={styles.text}>(Finddo)</Text>
+								</View>
+								<View style={styles.viewText}>
+									<Text style={styles.textPrice}>
+										{priceFormatter(
+											serviceStore.budget.material_value.toString(),
+										)}
+									</Text>
+									<Text style={styles.text}>(Produtos)</Text>
+								</View>
+								<View style={styles.viewTotal}>
+									<Text style={styles.textTotal}>
+										TOTAL:{"     "}
+										<Text style={styles.textPrice}>
+											{priceFormatter(
+												(
+													serviceStore.budget.budget +
+													serviceStore.budget.material_value
+												).toString(),
+											)}
+										</Text>
+									</Text>
+								</View>
+								<Button onPress={() => setIsBudgetDetails(false)}>
+									OK
+								</Button>
+							</Layout>
+						</Modal>
+					)}
 				</>
 			)}
 		</>
@@ -129,7 +195,39 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 
 export default PreviousBudgetView;
 
-const styles = StyleSheet.create({
+const themedStyles = StyleService.create({
+	title: {
+		fontSize: 24,
+		alignSelf: "center",
+		fontWeight: "bold",
+		paddingBottom: 8,
+	},
+	viewText: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "100%",
+		marginTop: 16,
+	},
+	text: {
+		color: "color-primary-default",
+		fontSize: 16,
+		marginTop: 8,
+	},
+	viewTotal: {
+		width: "100%",
+		alignSelf: "center",
+		padding: 16,
+		marginBottom: 16,
+	},
+	textTotal: {
+		fontSize: 16,
+		color: "grey",
+		alignSelf: "center",
+	},
+	textPrice: {
+		fontSize: 20,
+		color: "color-primary-default",
+	},
 	timeLineButton: {
 		width: "60%",
 		height: 24,
@@ -153,5 +251,21 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		paddingHorizontal: 8,
 		paddingTop: 4,
+	},
+	modalContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+		alignSelf: "center",
+		height: "56%",
+		width: "60%",
+	},
+	modalContent: {
+		flex: 1,
+		padding: "6%",
+		marginBottom: "5%",
+		borderRadius: 8,
+	},
+	backdrop: {
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
 	},
 });
