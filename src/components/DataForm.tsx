@@ -10,15 +10,22 @@ import {localeDateService} from "src/utils/calendarLocale";
 interface DataFormProps {
 	serviceStore: ServiceStore;
 	forceErrorDisplay?: boolean;
+	initialDate?: Date;
+	finalDate?: Date;
 }
 
 const DataForm = observer<DataFormProps>(props => {
-	const {serviceStore, forceErrorDisplay} = props;
+	const {
+		serviceStore,
+		forceErrorDisplay,
+		initialDate: initial,
+		finalDate: final,
+	} = props;
 
-	const initialDate = new Date();
-	const finalDate = new Date();
+	const initialDate = initial || new Date();
+	const finalDate = final || new Date();
 
-	finalDate.setDate(finalDate.getDate() + 6);
+	if (!final) finalDate.setDate(initialDate.getDate() + 6);
 
 	const endTimes = avaliableTimes.filter(
 		time => time > serviceStore.startTime,
