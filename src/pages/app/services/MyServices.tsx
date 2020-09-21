@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-color-literals */
 /* eslint-disable no-nested-ternary */
 import React, {useState, useEffect, useCallback} from "react";
 import {View, RefreshControl, Alert, StyleSheet} from "react-native";
@@ -92,6 +93,8 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		}
 	}, [serviceListStore]);
 
+	const isEmpty = serviceListStore.list.length > 0;
+
 	const handleChangeFilter = useCallback(
 		async (status: "" | ServiceStatus) => {
 			setIsLoading(true);
@@ -146,55 +149,72 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 			) : null}
 
 			<View style={styles.listWrapper}>
-				<List
-					data={serviceListStore.list}
-					ItemSeparatorComponent={Divider}
-					onEndReached={handleExpandList}
-					onEndReachedThreshold={0.2}
-					refreshControl={
-						<RefreshControl
-							colors={[theme["color-primary-active"]]}
-							refreshing={isLoading}
-							onRefresh={getServices}
-						/>
-					}
-					renderItem={({item}: {item: ServiceStore}) => (
-						<ListItem
-							onPress={() => {
-								if (
-									userStore.userType === "professional" &&
-									item.status === "analise"
-								) {
-									navigation.navigate("ViewService", {id: item.id!});
-								} else {
-									navigation.navigate("ServiceStatus", {id: item.id!});
-								}
-							}}
-							title={_evaProps => (
-								<Text
-									status={
+				{isEmpty ? (
+					<List
+						data={serviceListStore.list}
+						ItemSeparatorComponent={Divider}
+						onEndReached={handleExpandList}
+						onEndReachedThreshold={0.2}
+						refreshControl={
+							<RefreshControl
+								colors={[theme["color-primary-active"]]}
+								refreshing={isLoading}
+								onRefresh={getServices}
+							/>
+						}
+						renderItem={({item}: {item: ServiceStore}) => (
+							<ListItem
+								onPress={() => {
+									if (
+										userStore.userType === "professional" &&
 										item.status === "analise"
-											? "basic"
-											: item.status === "cancelado"
-											? "danger"
-											: "primary"
+									) {
+										navigation.navigate("ViewService", {
+											id: item.id!,
+										});
+									} else {
+										navigation.navigate("ServiceStatus", {
+											id: item.id!,
+										});
 									}
-								>
-									{serviceCategories[item.categoryID!].name}
-								</Text>
-							)}
-							description={serviceStatusDescription[item.status]}
-							accessoryRight={props => (
-								<Icon
-									{...props}
-									style={styles.icon}
-									name="arrow-ios-forward"
-									fill={"#AAA"}
-								/>
-							)}
+								}}
+								title={_evaProps => (
+									<Text
+										status={
+											item.status === "analise"
+												? "basic"
+												: item.status === "cancelado"
+												? "danger"
+												: "primary"
+										}
+									>
+										{serviceCategories[item.categoryID!].name}
+									</Text>
+								)}
+								description={serviceStatusDescription[item.status]}
+								accessoryRight={props => (
+									<Icon
+										{...props}
+										style={styles.icon}
+										name="arrow-ios-forward"
+										fill={"#AAA"}
+									/>
+								)}
+							/>
+						)}
+					/>
+				) : (
+					<View style={styles.emptyList}>
+						<Icon
+							style={styles.iconAlert}
+							fill="#8F9BB3"
+							name="alert-circle-outline"
 						/>
-					)}
-				/>
+						<Text style={styles.emptyListText}>
+							Ainda não possui nenhum serviço ativo
+						</Text>
+					</View>
+				)}
 
 				{userStore.userType === "user" && (
 					<Button
@@ -228,7 +248,21 @@ const styles = StyleSheet.create({
 	},
 	select: {width: "80%"},
 	icon: {width: 24, height: 24},
+	iconAlert: {width: 64, height: 64, marginTop: 16},
 	listWrapper: {height: "85%", width: "100%"},
+	emptyList: {
+		height: "65%",
+		width: "100%",
+		alignItems: "center",
+		justifyContent: "space-around",
+	},
+	emptyListText: {
+		width: "75%",
+		fontSize: 24,
+		color: "#8F9BB3",
+		textAlign: "center",
+		marginBottom: "30%",
+	},
 	button: {
 		marginVertical: "5%",
 		marginHorizontal: "12%",

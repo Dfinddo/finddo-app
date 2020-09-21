@@ -33,7 +33,7 @@ class ServiceListStore {
 
 			const response = await finddoApi.get(`${endpoint}/?page=1`);
 
-			console.log(response.data);
+			// console.log(response.data);
 			const services: ServiceApiResponse[] = response.data.items;
 			const serviceList = services.map(service =>
 				ServiceStore.createFromApiResponse(service),

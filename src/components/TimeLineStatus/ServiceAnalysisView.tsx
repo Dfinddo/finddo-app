@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import {StyleSheet, View} from "react-native";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {Avatar, Button, Icon, Text} from "@ui-kitten/components";
+import {Avatar, Icon, Text} from "@ui-kitten/components";
 import {ServicesStackParams} from "src/routes/app";
 import ServiceStore from "stores/service-store";
 import UserStore from "stores/user-store";
@@ -45,24 +45,27 @@ const ServiceAnalysisView: FC<ServiceAnalysisViewProps> = ({
 
 	return (
 		<>
-			<View style={styles.infoView}>
-				<Avatar
-					size="medium"
-					source={info.photo || require("assets/sem-foto.png")}
-				/>
-				<Text>{info.name}</Text>
-				<View style={styles.rateView}>
-					<Text status="warning">{info.rate ? info.rate : "0.0"}</Text>
-					<Icon
-						style={styles.icon}
-						fill={"#FCBD00"}
-						animation="zoom"
-						name="star"
+			{info.name && (
+				<View style={styles.infoView}>
+					<Avatar
+						size="medium"
+						source={info.photo || require("assets/sem-foto.png")}
 					/>
+					<Text>{info.name}</Text>
+					<View style={styles.rateView}>
+						<Text status="warning">{info.rate ? info.rate : "0.0"}</Text>
+						<Icon
+							style={styles.icon}
+							fill={"#FCBD00"}
+							animation="zoom"
+							name="star"
+						/>
+					</View>
 				</View>
-			</View>
-			<Button
-				style={styles.timeLineButton}
+			)}
+			<Text
+				style={styles.text}
+				status="primary"
 				onPress={() => {
 					if (serviceStore && serviceStore.id) {
 						navigation.navigate("ViewService", {
@@ -72,7 +75,7 @@ const ServiceAnalysisView: FC<ServiceAnalysisViewProps> = ({
 				}}
 			>
 				DETALHES DO SERVIÇO
-			</Button>
+			</Text>
 		</>
 	);
 };
@@ -94,12 +97,10 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		flexDirection: "row",
 	},
-	timeLineButton: {
-		width: "60%",
-		height: 24,
-		alignSelf: "center",
-		margin: 16,
-		borderRadius: 30,
+	text: {
+		textAlign: "center",
+		textDecorationLine: "underline",
+		fontSize: 12,
 	},
 	icon: {
 		width: 16,

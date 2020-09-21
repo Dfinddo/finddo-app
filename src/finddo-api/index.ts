@@ -9,8 +9,8 @@ export default finddoApi;
 
 export type ServiceStatus =
 	| "analise"
-	| "agendando_visita"
 	| "orcamento_previo"
+	| "agendando_visita"
 	| "aguardando_profissional"
 	| "a_caminho"
 	| "em_servico"
@@ -122,6 +122,8 @@ interface AddressApiResponse {
 interface BudgetApiResponse {
 	accepted: boolean;
 	budget: number;
+	value_with_tax: number;
+	total_value: number;
 	material_value: number;
 	id: number;
 	is_previous: boolean;

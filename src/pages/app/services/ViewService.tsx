@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, {useEffect, useState} from "react";
 import {StyleSheet, Alert, View} from "react-native";
-import {Button, Layout} from "@ui-kitten/components";
+import {Button, Layout, Text} from "@ui-kitten/components";
 import {useServiceList, useUser} from "hooks";
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -64,7 +64,9 @@ const ViewService = observer<ViewServiceScreenProps>(({route, navigation}) => {
 				<Button onPress={handleAssociateService}>ASSOCIAR AO PEDIDO</Button>
 				{/* TODO: Adicionar ação ao botão */}
 				{serviceStore.previous_budget && (
-					<Button onPress={() => {}}>EXIGE ORÇAMENTO PRESENCIAL</Button>
+					<Text status="danger" style={styles.text} onPress={() => {}}>
+						EXIGE ORÇAMENTO PRESENCIAL
+					</Text>
 				)}
 			</Layout>
 		);
@@ -86,5 +88,10 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "75%",
 		alignItems: "center",
+	},
+	text: {
+		fontSize: 11,
+		textDecorationLine: "underline",
+		marginTop: 24,
 	},
 });

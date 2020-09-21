@@ -90,7 +90,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 						>
 							{priceFormatter(
 								(
-									serviceStore.budget.budget +
+									serviceStore.budget.value_with_tax +
 									serviceStore.budget.material_value
 								).toString(),
 							)}
@@ -99,8 +99,9 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 						<Text>Aguardando orçamento do profissional</Text>
 					)}
 					{userStore.userType === "professional" &&
-						serviceStore.budget?.accepted && (
-							<Text>Aguardando orçamento do profissional</Text>
+						serviceStore.budget &&
+						!serviceStore.budget?.accepted && (
+							<Text>Aguardando aprovação do cliente</Text>
 						)}
 					{userStore.userType === "professional" &&
 					!serviceStore.budget ? (
@@ -117,7 +118,8 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 							ORÇAR
 						</Button>
 					) : (
-						serviceStore.budget && (
+						serviceStore.budget &&
+						userStore.userType !== "professional" && (
 							<View style={styles.buttonGroup}>
 								<Button
 									onPress={() => handleBudgetApprove(true)}
@@ -155,7 +157,10 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 								<View style={styles.viewText}>
 									<Text style={styles.textPrice}>
 										{priceFormatter(
-											serviceStore.budget.budget.toString(),
+											(
+												serviceStore.budget.value_with_tax -
+												serviceStore.budget.budget
+											).toString(),
 										)}
 									</Text>
 									<Text style={styles.text}>(Finddo)</Text>
@@ -174,7 +179,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 										<Text style={styles.textPrice}>
 											{priceFormatter(
 												(
-													serviceStore.budget.budget +
+													serviceStore.budget.value_with_tax +
 													serviceStore.budget.material_value
 												).toString(),
 											)}

@@ -1,6 +1,6 @@
 import React, {FC, useState, useCallback} from "react";
 import {StyleSheet, Alert} from "react-native";
-import {useService, useUser} from "hooks";
+import {useService, useServiceList, useUser} from "hooks";
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
@@ -20,6 +20,7 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
 	const [isLoading, setIsLoading] = useState(false);
 	const serviceStore = useService();
 	const userStore = useUser();
+	const serviceListStore = useServiceList();
 
 	const handleSubmitService = useCallback(async () => {
 		setIsLoading(true);
@@ -33,11 +34,12 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
 			else throw error;
 			setIsLoading(false);
 		} finally {
+			await serviceListStore.updateServiceList();
 			setIsLoading(false);
 			Alert.alert("Serviço cadastrado com sucesso");
 			props.navigation.navigate("Services", {screen: "MyServices"});
 		}
-	}, [serviceStore, userStore, props]);
+	}, [serviceStore, userStore, serviceListStore, props]);
 
 	return (
 		<Layout level="3">
