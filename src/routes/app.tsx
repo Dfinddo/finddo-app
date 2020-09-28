@@ -9,6 +9,7 @@ import {
 	ViewService,
 	ServiceStatus,
 	ServiceBudget,
+	ServiceClosure,
 } from "pages/app/services";
 import {
 	ServiceCategories,
@@ -157,6 +158,11 @@ const ServicesRoute: FC = () => {
 				component={NewServiceRoute}
 				options={{title: "Novo Serviço"}}
 			/>
+			<ServicesStack.Screen
+				name="ServiceClosure"
+				component={ServiceClosure}
+				options={{title: "Encerramento"}}
+			/>
 		</ServicesStack.Navigator>
 	);
 };
@@ -266,6 +272,7 @@ export type ServicesStackParams = {
 	ViewService: {id: number};
 	ServiceBudget: {id: number};
 	NewService: undefined;
+	ServiceClosure: {id: number};
 };
 
 export type AppDrawerParams = {

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-color-literals */
-import React, {useMemo, FC, useState} from "react";
+import React, {useMemo, FC, useState, useEffect} from "react";
 import {View, RefreshControl, Alert, StyleSheet} from "react-native";
 import {Text, useTheme, Layout} from "@ui-kitten/components";
 import {SvgXml} from "react-native-svg";
@@ -44,13 +44,15 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 	navigation,
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
+	const [status, setStatus] = useState<ServiceStatusEnum>(0);
 	const theme = useTheme();
 
-	const data = useMemo((): ITimeLineDataRender[] => {
-		const status: ServiceStatusEnum =
-			ServiceStatusEnum[serviceStore?.status || "analise"];
+	useEffect(() => {
+		setStatus(ServiceStatusEnum[serviceStore?.status || "analise"]);
+	}, [serviceStore]);
 
-		return [
+	const data = useMemo(
+		(): ITimeLineDataRender[] => [
 			{
 				title: "Pedido em análise",
 				body: (
@@ -99,16 +101,9 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 				title: "Profissional a caminho",
 				icon: statusIcon(4, status),
 			},
-			{
-				title: "Serviço em execução",
-				icon: statusIcon(5, status),
-			},
-			{
-				title: "Concluído",
-				icon: statusIcon(6, status),
-			},
-		];
-	}, [serviceStore, navigation, userStore]);
+		],
+		[serviceStore, status, navigation, userStore],
+	);
 
 	const loadingService = async (): Promise<void> => {
 		setIsLoading(true);

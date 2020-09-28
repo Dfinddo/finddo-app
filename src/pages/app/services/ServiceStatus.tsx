@@ -1,7 +1,9 @@
+/* eslint-disable no-empty-function */
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable react-native/no-color-literals */
 import React, {useEffect, useState, useCallback} from "react";
 import {Alert, StyleSheet, ImageBackground} from "react-native";
-import {Text} from "@ui-kitten/components";
+import {Button, Text} from "@ui-kitten/components";
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 
@@ -102,6 +104,13 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 			}
 		}, [serviceStore, navigation]);
 
+		const handleServiceClosure = useCallback(() => {
+			if (serviceStore)
+				navigation.navigate("ServiceClosure", {
+					id: serviceStore.id as number,
+				});
+		}, [serviceStore, navigation]);
+
 		if (serviceStore === void 0) return null;
 
 		return (
@@ -116,6 +125,30 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 						serviceStore={serviceStore}
 						navigation={navigation}
 					/>
+					{userStore.userType === "user" && (
+						<>
+							<Button
+								style={styles.timeLineButton}
+								onPress={handleServiceClosure}
+							>
+								O profissional já realizou o serviço
+							</Button>
+							<Text
+								status="danger"
+								style={styles.textOptionsService}
+								onPress={handleCancelOrder}
+							>
+								O profissional não compareceu ainda na residência
+							</Text>
+							<Text
+								status="danger"
+								style={styles.textOptionsService}
+								onPress={handleCancelOrder}
+							>
+								CANCELAR PEDIDO
+							</Text>
+						</>
+					)}
 					{ServiceStatusEnum[serviceStore?.status || "analise"] > 0 && (
 						<Text
 							status="danger"
@@ -125,15 +158,6 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							{userStore.userType === "professional"
 								? "SAIR DO SERVIÇO"
 								: "BUSCAR OUTRO PROFISSIONAL"}
-						</Text>
-					)}
-					{userStore.userType === "user" && (
-						<Text
-							status="danger"
-							style={styles.textOptionsService}
-							onPress={handleCancelOrder}
-						>
-							CANCELAR PEDIDO
 						</Text>
 					)}
 				</ScrollView>
@@ -168,18 +192,18 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 	},
 	timeLineButton: {
-		width: "60%",
+		width: "90%",
 		height: 24,
 		alignSelf: "center",
 		margin: 16,
 		borderRadius: 30,
 	},
 	textOptionsService: {
-		width: "70%",
+		width: "80%",
 		textAlign: "center",
 		alignSelf: "center",
 		textDecorationLine: "underline",
-		fontSize: 12,
-		margin: 8,
+		fontSize: 14,
+		marginBottom: 24,
 	},
 });

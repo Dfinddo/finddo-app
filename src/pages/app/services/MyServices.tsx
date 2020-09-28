@@ -149,7 +149,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 			) : null}
 
 			<View style={styles.listWrapper}>
-				{isEmpty ? (
+				{
 					<List
 						data={serviceListStore.list}
 						ItemSeparatorComponent={Divider}
@@ -161,6 +161,18 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 								refreshing={isLoading}
 								onRefresh={getServices}
 							/>
+						}
+						ListEmptyComponent={
+							<View style={styles.emptyList}>
+								<Icon
+									style={styles.iconAlert}
+									fill="#8F9BB3"
+									name="alert-circle-outline"
+								/>
+								<Text style={styles.emptyListText}>
+									Ainda não possui nenhum serviço ativo
+								</Text>
+							</View>
 						}
 						renderItem={({item}: {item: ServiceStore}) => (
 							<ListItem
@@ -203,18 +215,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 							/>
 						)}
 					/>
-				) : (
-					<View style={styles.emptyList}>
-						<Icon
-							style={styles.iconAlert}
-							fill="#8F9BB3"
-							name="alert-circle-outline"
-						/>
-						<Text style={styles.emptyListText}>
-							Ainda não possui nenhum serviço ativo
-						</Text>
-					</View>
-				)}
+				}
 
 				{userStore.userType === "user" && (
 					<Button
