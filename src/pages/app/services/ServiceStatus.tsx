@@ -38,41 +38,41 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				);
 		}, [route.params?.id, serviceListStore.list]);
 
-		const handleDisassociateProfessional = useCallback(async () => {
-			setIsLoading(true);
-			const message =
-				userStore.userType === "user"
-					? "Deseja buscar outro profissional para o atendimento?"
-					: "Deseja realmente abandonar o serviço?";
+		// const handleDisassociateProfessional = useCallback(async () => {
+		// 	setIsLoading(true);
+		// 	const message =
+		// 		userStore.userType === "user"
+		// 			? "Deseja buscar outro profissional para o atendimento?"
+		// 			: "Deseja realmente abandonar o serviço?";
 
-			try {
-				Alert.alert("Finddo", message, [
-					{text: "Sim"},
-					{
-						text: "Não",
-						onPress: () =>
-							serviceStore?.disassociateProfessionalOrder().then(() => {
-								if (userStore.userType === "professional") {
-									navigation.goBack();
-								}
-							}),
-					},
-				]);
+		// 	try {
+		// 		Alert.alert("Finddo", message, [
+		// 			{text: "Sim"},
+		// 			{
+		// 				text: "Não",
+		// 				onPress: () =>
+		// 					serviceStore?.disassociateProfessionalOrder().then(() => {
+		// 						if (userStore.userType === "professional") {
+		// 							navigation.goBack();
+		// 						}
+		// 					}),
+		// 			},
+		// 		]);
 
-				await serviceStore?.refreshServiceData();
-			} catch (error) {
-				if (error.response) {
-					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
-				} else if (error.request) {
-					Alert.alert(
-						"Falha ao se conectar",
-						"Verifique sua conexão e tente novamente",
-					);
-				} else throw error;
-			} finally {
-				setIsLoading(false);
-			}
-		}, [serviceStore, userStore, navigation]);
+		// 		await serviceStore?.refreshServiceData();
+		// 	} catch (error) {
+		// 		if (error.response) {
+		// 			Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+		// 		} else if (error.request) {
+		// 			Alert.alert(
+		// 				"Falha ao se conectar",
+		// 				"Verifique sua conexão e tente novamente",
+		// 			);
+		// 		} else throw error;
+		// 	} finally {
+		// 		setIsLoading(false);
+		// 	}
+		// }, [serviceStore, userStore, navigation]);
 
 		const handleCancelOrder = useCallback(async () => {
 			setIsLoading(true);
@@ -149,7 +149,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							</Text>
 						</>
 					)}
-					{ServiceStatusEnum[serviceStore?.status || "analise"] > 0 && (
+					{/* {ServiceStatusEnum[serviceStore?.status || "analise"] > 0 && (
 						<Text
 							status="danger"
 							style={styles.textOptionsService}
@@ -159,7 +159,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 								? "SAIR DO SERVIÇO"
 								: "BUSCAR OUTRO PROFISSIONAL"}
 						</Text>
-					)}
+					)} */}
 				</ScrollView>
 			</ImageBackground>
 		);

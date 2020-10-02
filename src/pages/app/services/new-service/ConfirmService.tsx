@@ -26,6 +26,7 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
 		setIsLoading(true);
 		try {
 			await serviceStore.saveService(userStore);
+			Alert.alert("Serviço cadastrado com sucesso");
 		} catch (error) {
 			if (error.message === "Invalid service data")
 				Alert.alert("Erro no envio do serviço, tente novamente");
@@ -36,7 +37,6 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
 		} finally {
 			await serviceListStore.updateServiceList();
 			setIsLoading(false);
-			Alert.alert("Serviço cadastrado com sucesso");
 			props.navigation.navigate("Services", {screen: "MyServices"});
 		}
 	}, [serviceStore, userStore, serviceListStore, props]);

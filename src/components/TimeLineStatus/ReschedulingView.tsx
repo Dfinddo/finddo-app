@@ -50,46 +50,56 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 				(serviceStore.rescheduling ? (
 					<View>
 						<Text>
-							{format(
+							{`${format(
 								new Date(serviceStore.rescheduling.date_order),
 								"dd/MM/yyyy",
-							)}
+							)} entre ${serviceStore.rescheduling.hora_inicio} e ${
+								serviceStore.rescheduling.hora_fim
+							}`}
 						</Text>
 						{userStore.userType === "user" ? (
-							<View>
+							<View style={styles.buttonGroup}>
 								<Button
-									style={styles.timeLineButton}
+									style={styles.button}
 									status="primary"
 									onPress={() =>
 										serviceStore.reschedulingAcceptedService(true)
 									}
 								>
-									ACEITAR
+									ALTERAR
 								</Button>
 								<Button
-									style={styles.timeLineButton}
+									style={styles.button}
 									status="danger"
 									onPress={() =>
 										serviceStore.reschedulingAcceptedService(false)
 									}
 								>
-									RECUSAR
+									NÃO ALTERAR
 								</Button>
 							</View>
 						) : (
-							<Text>Aguardando resposta do cliente</Text>
+							<View>
+								<Text>Aguardando resposta do cliente</Text>
+							</View>
 						)}
 					</View>
 				) : (
 					<View>
-						<Text>{format(serviceStore.serviceDate, "dd/MM/yyyy")}</Text>
+						<Text>{`${format(
+							new Date(serviceStore.serviceDate),
+							"dd/MM/yyyy",
+						)} entre ${serviceStore.startTime} e ${
+							serviceStore.endTime
+						}`}</Text>
 						{userStore.userType === "professional" ? (
-							<Button
-								style={styles.timeLineButton}
+							<Text
+								style={styles.text}
+								status="primary"
 								onPress={() => setIsReschedule(true)}
 							>
 								REAGENDAR
-							</Button>
+							</Text>
 						) : (
 							<Text>Aguardando resposta do profissional</Text>
 						)}
@@ -135,6 +145,21 @@ const styles = StyleSheet.create({
 		padding: "2%",
 		marginBottom: "5%",
 		borderRadius: 8,
+	},
+	buttonGroup: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-around",
+	},
+	button: {
+		height: 24,
+		alignSelf: "center",
+		margin: 16,
+	},
+	text: {
+		textAlign: "center",
+		textDecorationLine: "underline",
+		fontSize: 12,
 	},
 	backdrop: {
 		backgroundColor: "rgba(0, 0, 0, 0.5)",

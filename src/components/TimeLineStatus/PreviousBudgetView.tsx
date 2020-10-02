@@ -103,23 +103,39 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 						!serviceStore.budget?.accepted && (
 							<Text>Aguardando aprovação do cliente</Text>
 						)}
-					{userStore.userType === "professional" &&
-					!serviceStore.budget ? (
-						<Button
-							style={styles.timeLineButton}
-							onPress={() => {
-								if (serviceStore && serviceStore.id) {
-									navigation.navigate("ServiceBudget", {
-										id: serviceStore.id,
-									});
-								}
-							}}
-						>
-							ORÇAR
-						</Button>
+					{userStore.userType === "professional" ? (
+						<>
+							{!serviceStore.budget ? (
+								<Button
+									style={styles.timeLineButton}
+									onPress={() => {
+										if (serviceStore && serviceStore.id) {
+											navigation.navigate("ServiceBudget", {
+												id: serviceStore.id,
+											});
+										}
+									}}
+								>
+									ORÇAR
+								</Button>
+							) : (
+								<Text
+									style={styles.textLink}
+									status="primary"
+									onPress={() => {
+										if (serviceStore && serviceStore.id) {
+											navigation.navigate("ServiceBudget", {
+												id: serviceStore.id,
+											});
+										}
+									}}
+								>
+									RENEGOCIAR
+								</Text>
+							)}
+						</>
 					) : (
-						serviceStore.budget &&
-						userStore.userType !== "professional" && (
+						serviceStore.budget && (
 							<View style={styles.buttonGroup}>
 								<Button
 									onPress={() => handleBudgetApprove(true)}
@@ -132,7 +148,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 									style={styles.button}
 									status="danger"
 								>
-									RECUSAR
+									RENEGOCIAR
 								</Button>
 							</View>
 						)
@@ -217,6 +233,11 @@ const themedStyles = StyleService.create({
 		color: "color-primary-default",
 		fontSize: 16,
 		marginTop: 8,
+	},
+	textLink: {
+		textAlign: "center",
+		textDecorationLine: "underline",
+		fontSize: 12,
 	},
 	viewTotal: {
 		width: "100%",

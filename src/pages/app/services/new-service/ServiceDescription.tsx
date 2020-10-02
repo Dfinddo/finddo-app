@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-color-literals */
 import React, {useState} from "react";
 import {
 	View,
@@ -52,18 +53,6 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 	return (
 		<Layout style={styles.background}>
 			<ScrollView>
-				<Modal visible={isConfirmingUrgency}>
-					<Card>
-						<Text style={styles.urgencyModalText}>
-							Faremos o máximo possível para lhe atender o quanto antes.
-						</Text>
-						<Text style={styles.urgencyModalText}>
-							Por favor nos informe uma data e uma faixa de horário
-							ideais para o atendimento.
-						</Text>
-						<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>
-					</Card>
-				</Modal>
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : "height"}
 				>
@@ -103,6 +92,23 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 							forceErrorDisplay={hasFailedToFillForm}
 						/>
 					</View>
+					<Modal
+						backdropStyle={styles.backdrop}
+						style={styles.modalContainer}
+						visible={isConfirmingUrgency}
+					>
+						<Card>
+							<Text style={styles.urgencyModalText}>
+								Faremos o máximo possível para lhe atender o quanto
+								antes.
+							</Text>
+							<Text style={styles.urgencyModalText}>
+								Por favor nos informe uma data e uma faixa de horário
+								ideais para o atendimento.
+							</Text>
+							<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>
+						</Card>
+					</Modal>
 				</KeyboardAvoidingView>
 			</ScrollView>
 			<View style={styles.continueButtonContainer}>
@@ -126,5 +132,18 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 	urgencyInput: {height: 100},
-	urgencyModalText: {paddingHorizontal: 10, fontSize: 18},
+	urgencyModalText: {
+		paddingHorizontal: 10,
+		paddingBottom: 16,
+		fontSize: 18,
+	},
+	modalContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+		alignSelf: "center",
+		width: "90%",
+	},
+	backdrop: {
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
+	},
 });

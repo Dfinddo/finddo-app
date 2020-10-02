@@ -161,7 +161,7 @@ const ServicesRoute: FC = () => {
 			<ServicesStack.Screen
 				name="ServiceClosure"
 				component={ServiceClosure}
-				options={{title: "Encerramento"}}
+				options={{title: "Pagamento"}}
 			/>
 		</ServicesStack.Navigator>
 	);

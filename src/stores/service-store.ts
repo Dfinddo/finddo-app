@@ -182,7 +182,7 @@ class ServiceStore {
 				is_previous,
 			});
 
-			runInAction(() => this.refreshServiceData());
+			await this.refreshServiceData();
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
@@ -196,11 +196,10 @@ class ServiceStore {
 	public async budgetApprove(accepted: boolean): Promise<void> {
 		try {
 			await finddoApi.post("/orders/propose_budget", {
-				id: this.budget?.id,
+				id: this.id,
 				accepted,
 			});
-
-			runInAction(() => this.refreshServiceData());
+			await this.refreshServiceData();
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
