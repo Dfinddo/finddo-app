@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-empty-function */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable react-native/no-color-literals */
@@ -10,11 +11,12 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {useServiceList, useUser} from "hooks";
 import {ServicesStackParams} from "src/routes/app";
 import ServiceStore from "stores/service-store";
-import {ServiceStatusEnum} from "finddo-api";
+// import {ServiceStatusEnum} from "finddo-api";
 
 import {ScrollView} from "react-native-gesture-handler";
 import TimeLineStatus from "components/TimeLineStatus";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
+import {ServiceStatusEnum} from "finddo-api";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -125,21 +127,27 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 						serviceStore={serviceStore}
 						navigation={navigation}
 					/>
-					{userStore.userType === "user" && (
-						<>
-							<Button
-								style={styles.timeLineButton}
-								onPress={handleServiceClosure}
-							>
-								O profissional já realizou o serviço
-							</Button>
-							<Text
-								status="danger"
-								style={styles.textOptionsService}
-								onPress={handleCancelOrder}
-							>
-								O profissional não compareceu ainda na residência
-							</Text>
+					{userStore.userType === "user" &&
+						(serviceStore.status === "a_caminho" ||
+							serviceStore.status === "em_servico") && (
+							<>
+								<Button
+									style={styles.timeLineButton}
+									onPress={handleServiceClosure}
+								>
+									O profissional já realizou o serviço
+								</Button>
+								<Text
+									status="danger"
+									style={styles.textOptionsService}
+									onPress={handleCancelOrder}
+								>
+									O profissional não compareceu ainda na residência
+								</Text>
+							</>
+						)}
+					{userStore.userType === "user" &&
+						ServiceStatusEnum[serviceStore?.status] < 5 && (
 							<Text
 								status="danger"
 								style={styles.textOptionsService}
@@ -147,8 +155,18 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							>
 								CANCELAR PEDIDO
 							</Text>
-						</>
-					)}
+						)}
+					{userStore.userType === "professional" &&
+					ServiceStatusEnum[serviceStore?.status] === 4 ? (
+						<Text style={styles.textOptionsService}>
+							Aguardando confirmação do cliente ao local
+						</Text>
+					) : ServiceStatusEnum[serviceStore?.status] === 5 ? (
+						<Text style={styles.textOptionsService}>
+							Aguardando confirmação do cliente ao local
+						</Text>
+					) : null}
+
 					{/* {ServiceStatusEnum[serviceStore?.status || "analise"] > 0 && (
 						<Text
 							status="danger"

@@ -21,6 +21,7 @@ import ServiceAnalysisView from "./ServiceAnalysisView";
 interface ITimeLineDataRender {
 	title: string;
 	body?: JSX.Element | undefined;
+	bodyVisible: boolean;
 	icon: JSX.Element;
 }
 
@@ -64,6 +65,7 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 						/>
 					</Layout>
 				),
+				bodyVisible: true,
 				icon: statusIcon(0, status),
 			},
 			{
@@ -80,6 +82,7 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 						)}
 					</Layout>
 				),
+				bodyVisible: status >= 1,
 				icon: statusIcon(1, status),
 			},
 			{
@@ -95,10 +98,12 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 						)}
 					</Layout>
 				),
+				bodyVisible: status >= 2,
 				icon: statusIcon(2, status),
 			},
 			{
 				title: "Profissional a caminho",
+				bodyVisible: status >= 4,
 				icon: statusIcon(4, status),
 			},
 		],
