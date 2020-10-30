@@ -14,6 +14,7 @@ import {
 import {
 	ServiceCategories,
 	ServiceDescription,
+	ServiceProfessionalPreference,
 	ServicePreviousBudget,
 	ServiceDate,
 	ServicePhotos,
@@ -90,6 +91,11 @@ const NewServiceRoute: FC = () => {
 				name="ServiceCategories"
 				component={ServiceCategories}
 				options={{title: "Categoria do Serviço"}}
+			/>
+			<NewServiceStack.Screen
+				name="ServiceProfessionalPreference"
+				component={ServiceProfessionalPreference}
+				options={{title: "Escolha o profissional"}}
 			/>
 			<NewServiceStack.Screen
 				name="ServiceDescription"
@@ -258,6 +264,7 @@ export type AddressStackParams = {
 export type NewServiceStackParams = {
 	ServiceCategories: undefined;
 	ServiceDescription: undefined;
+	ServiceProfessionalPreference: undefined;
 	ServicePreviousBudget: undefined;
 	ServiceDate: undefined;
 	ServicePhotos: undefined;
@@ -271,7 +278,7 @@ export type ServicesStackParams = {
 	ServiceStatus: {id: number};
 	ViewService: {id: number};
 	ServiceBudget: {id: number};
-	NewService: undefined;
+	NewService: undefined | {screen: string};
 	ServiceClosure: {id: number};
 };
 

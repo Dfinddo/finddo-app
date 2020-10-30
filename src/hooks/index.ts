@@ -7,12 +7,14 @@ import {ServiceContext} from "components/providers/service-provider";
 import {CardListContext} from "components/providers/card-list-provider";
 import {AddressListContext} from "components/providers/address-list-provider";
 import {ServiceListContext} from "components/providers/service-list-provider";
+import {ProfessionalListContext} from "components/providers/professional-list-provider";
 
 import UserStore from "stores/user-store";
 import ServiceStore from "stores/service-store";
 import CardListStore from "stores/card-list-store";
 import AddressListStore from "stores/address-list-store";
 import ServiceListStore from "stores/service-list-store";
+import ProfessionalListStore from "stores/professional-list-store";
 
 const useSwitch = (initialSwitchState: boolean): [boolean, () => void] => {
 	const [switchState, setSwitchState] = useState(initialSwitchState);
@@ -28,6 +30,7 @@ const useService = (): ServiceStore => useContext(ServiceContext);
 const useCardList = (): CardListStore => useContext(CardListContext);
 const useAddressList = (): AddressListStore => useContext(AddressListContext);
 const useServiceList = (): ServiceListStore => useContext(ServiceListContext);
+const useProfessionalList = (): ProfessionalListStore => useContext(ProfessionalListContext);
 
 // Theme Hooks
 const useThemedHeaderConfig = (): StackNavigationOptions => {
@@ -50,5 +53,6 @@ export {
 	useCardList,
 	useServiceList,
 	useAddressList,
+	useProfessionalList,
 	useThemedHeaderConfig,
 };

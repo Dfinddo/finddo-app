@@ -4,6 +4,10 @@ import {validations, validateInput, pick, checkFieldsForErrors} from "utils";
 import finddoApi, {CardApiResponse} from "finddo-api";
 import {format} from "date-fns";
 
+import {RSA} from "react-native-rsa-native";
+import {MoipCreditCard} from "moip-sdk-js";
+import {MOIP_CREDS_DATA} from "config";
+
 const numberTests = [
 	validations.required(),
 	validations.definedLength(16),
@@ -116,6 +120,17 @@ class CardStore {
 					},
 				},
 			});
+
+			MoipCreditCard.setEncrypter(RSA, "react-native")
+				.setPubKey(MOIP_CREDS_DATA.publicKey)
+				.setCreditCard({
+					number: creditCard.number,
+					cvc: creditCard.cvc,
+					expirationMonth: creditCard.expirationDate.substr(0, 2),
+					expirationYear: creditCard.expirationDate.substr(2, 2),
+				})
+				.hash()
+				.then(hash => console.log("hash", hash));
 		} catch (error) {
 			if (error.response) throw new Error("Invalid credit card data");
 			else if (error.request) throw new Error("Connection error");

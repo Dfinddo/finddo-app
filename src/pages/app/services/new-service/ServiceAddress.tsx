@@ -5,6 +5,7 @@ import {
 	Platform,
 	StyleSheet,
 	View,
+	Dimensions,
 } from "react-native";
 import {
 	Button,
@@ -146,6 +147,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "flex-start",
 		flexDirection: "row",
+		maxWidth: Math.round(Dimensions.get('window').width)*0.95,
 		margin: 16,
 	},
 	searchAddress: {

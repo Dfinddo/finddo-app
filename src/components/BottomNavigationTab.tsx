@@ -27,7 +27,7 @@ const Finddo = (props: IconProps): JSX.Element => (
 	<SvgXml {...props} xml={finddoLogoNavegacao} width={50} height={50} />
 );
 
-const BottomNavigation: FC = () => {
+const BottomNavigation: FC = ({children}) => {
 	const [selectedIndex, setSelectedIndex] = React.useState(2);
 
 	const handleSelect = useCallback((index: number) => {
@@ -56,18 +56,21 @@ const BottomNavigation: FC = () => {
 	}, []);
 
 	return (
-		<BottomNavigationKitten
-			selectedIndex={selectedIndex}
-			onSelect={index => {
-				handleSelect(index);
-			}}
-		>
-			<BottomNavigationTab icon={ChatIcon} />
-			<BottomNavigationTab icon={PersonIcon} />
-			<BottomNavigationTab icon={Finddo} />
-			<BottomNavigationTab icon={InfoIcon} />
-			<BottomNavigationTab icon={SettingsIcon} />
-		</BottomNavigationKitten>
+		<>
+			{children}
+			<BottomNavigationKitten
+				selectedIndex={selectedIndex}
+				onSelect={index => {
+					handleSelect(index);
+				}}
+			>
+				<BottomNavigationTab icon={ChatIcon} />
+				<BottomNavigationTab icon={PersonIcon} />
+				<BottomNavigationTab icon={Finddo} />
+				<BottomNavigationTab icon={InfoIcon} />
+				<BottomNavigationTab icon={SettingsIcon} />
+			</BottomNavigationKitten>
+		</>
 	);
 };
 

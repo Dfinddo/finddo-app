@@ -8,6 +8,8 @@ target 'Finddo' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'react-native-rsa-native', :path => '../node_modules/react-native-rsa-native'
+
   target 'FinddoTests' do
     inherit! :complete
     # Pods for testing

@@ -14,6 +14,8 @@ import {
 	TabBar,
 	Tab,
 	Text,
+	Modal,
+	Card,
 } from "@ui-kitten/components";
 import {useUser, useServiceList} from "hooks";
 import {observer} from "mobx-react-lite";
@@ -21,6 +23,7 @@ import {
 	serviceStatusDescription,
 	ServiceStatus,
 	serviceCategories,
+	UserApiResponse,
 } from "finddo-api";
 import ServiceStore from "stores/service-store";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -44,6 +47,7 @@ type MyServicesScreenProps = StackScreenProps<
 >;
 
 const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
+	const [visible, setVisible] = React.useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const serviceListStore = useServiceList();
@@ -93,8 +97,6 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		}
 	}, [serviceListStore]);
 
-	const isEmpty = serviceListStore.list.length > 0;
-
 	const handleChangeFilter = useCallback(
 		async (status: "" | ServiceStatus) => {
 			setIsLoading(true);
@@ -116,6 +118,21 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		},
 		[serviceListStore],
 	);
+
+	function handleServiceDetails(id: number, professional: UserApiResponse | null ): void {
+		if (
+			userStore.userType === "professional" &&
+			!professional
+		) {
+			navigation.navigate("ViewService", {
+				id,
+			});
+		} else {
+			navigation.navigate("ServiceStatus", {
+				id,
+			});
+		}
+	}
 
 	return (
 		<Layout level="2" style={styles.container}>
@@ -163,6 +180,8 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 							/>
 						}
 						ListEmptyComponent={
+							<>
+							{!isLoading &&
 							<View style={styles.emptyList}>
 								<Icon
 									style={styles.iconAlert}
@@ -172,24 +191,12 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 								<Text style={styles.emptyListText}>
 									Ainda não possui nenhum serviço ativo
 								</Text>
-							</View>
+							</View>}
+							</>
 						}
 						renderItem={({item}: {item: ServiceStore}) => (
 							<ListItem
-								onPress={() => {
-									if (
-										userStore.userType === "professional" &&
-										item.status === "analise"
-									) {
-										navigation.navigate("ViewService", {
-											id: item.id!,
-										});
-									} else {
-										navigation.navigate("ServiceStatus", {
-											id: item.id!,
-										});
-									}
-								}}
+								onPress={()=>handleServiceDetails(item.id!, item.professional_order)}
 								title={_evaProps => (
 									<Text
 										status={
@@ -220,12 +227,41 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 				{userStore.userType === "user" && (
 					<Button
 						style={styles.button}
-						onPress={() => navigation.navigate("NewService")}
+						onPress={() => setVisible(true)}
 					>
 						NOVO PEDIDO
 					</Button>
 				)}
 			</View>
+
+			<Modal
+        visible={visible}
+        backdropStyle={styles.backdrop}
+        onBackdropPress={() => setVisible(false)}>
+        <Card disabled={true}>
+					<Button 
+						style={styles.modalButton} 
+						status="basic" 
+						onPress={() => {
+							setVisible(false);
+							navigation.navigate("NewService")
+					}}>
+            Qualquer profissional
+          </Button>
+					<Button 
+						style={styles.modalButton} 
+						status="basic" 
+						onPress={() => {
+							setVisible(false);
+							navigation.navigate("NewService",{screen: "ServiceProfessionalPreference"})
+					}}>
+            Associar um profissional ao meu pedido
+          </Button>
+					<Button style={styles.modalButton} status="danger" onPress={() => setVisible(false)}>
+            Cancelar
+          </Button>
+        </Card>
+      </Modal>
 		</Layout>
 	);
 });
@@ -249,9 +285,10 @@ const styles = StyleSheet.create({
 	},
 	select: {width: "80%"},
 	icon: {width: 24, height: 24},
-	iconAlert: {width: 64, height: 64, marginTop: 16},
+	iconAlert: {width: 64, height: 64, marginTop: 32},
 	listWrapper: {height: "85%", width: "100%"},
 	emptyList: {
+		flex: 1,
 		height: "65%",
 		width: "100%",
 		alignItems: "center",
@@ -263,9 +300,14 @@ const styles = StyleSheet.create({
 		color: "#8F9BB3",
 		textAlign: "center",
 		marginBottom: "30%",
+		marginTop:32,
 	},
 	button: {
-		marginVertical: "5%",
-		marginHorizontal: "12%",
+		marginVertical: "10%",
+		marginHorizontal: "5%",
 	},
+	modalButton: {	margin: 8, borderColor: "black" },
+	backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 });

@@ -143,6 +143,7 @@ interface ServiceApiResponse {
 	rescheduling: ReschedulingApiResponse | null;
 	category: {id: keyof typeof serviceCategories | null; name: string};
 	description: string;
+	preference: string | null;
 	end_order: string;
 	hora_fim: string;
 	hora_inicio: string;

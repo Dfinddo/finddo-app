@@ -3,7 +3,7 @@ import {observable, computed, action, runInAction} from "mobx";
 import {format} from "date-fns";
 import {validations, validateInput} from "utils";
 import AsyncStorage from "@react-native-community/async-storage";
-import finddoApi from "finddo-api";
+import finddoApi, { UserApiResponse } from "finddo-api";
 import {BACKEND_URL, BACKEND_URL_STORAGE} from "config";
 import AddressStore from "./address-store";
 // import {Alert} from "react-native";
@@ -60,7 +60,20 @@ class UserStore {
 		if (!this.birthdate) return "Required";
 	}
 
+	@observable public rate: number | undefined;
+
 	public billingAddress = new AddressStore();
+
+	@action
+	public static createFromApiResponse(
+		apiResponse: UserApiResponse,
+	): UserStore {
+		const userStore = new UserStore();
+
+		Object.assign(userStore, apiResponse);
+
+		return userStore;
+	}
 
 	public isRegistered = async (): Promise<boolean> => {
 		try {

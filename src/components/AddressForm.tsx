@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from "react";
-import {KeyboardAvoidingView, Platform, StyleSheet, View} from "react-native";
+import {StyleSheet, View} from "react-native";
 import ValidatedInput from "components/ValidatedInput";
 import {observer} from "mobx-react-lite";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
@@ -56,6 +56,7 @@ const AddressForm = observer<AddressFormProps>(props => {
 				forceErrorDisplay={forceErrorDisplay}
 				onBlur={getAddressData}
 				maxLength={9}
+				returnKeyType="next"
 			/>
 			<ValidatedInput
 				onChangeText={input => (addressStore.addressAlias = input)}

@@ -29,6 +29,7 @@ const orderApiFields = [
 	"start_order",
 	"previous_budget",
 	"previous_budget_value",
+	"preference",
 	"hora_inicio",
 	"hora_fim",
 ] as const;
@@ -85,6 +86,9 @@ class ServiceStore {
 	@observable
 	public user_rate: string | null = null;
 
+	@observable
+	public preference: string | null = null;
+
 	@observable public description = "";
 	@computed public get descriptionError(): string | undefined {
 		return validateInput(this.description, descriptionTests);
@@ -129,6 +133,7 @@ class ServiceStore {
 		serviceStore.urgency = apiResponse.urgency;
 		serviceStore.budget = apiResponse.budget;
 		serviceStore.rescheduling = apiResponse.rescheduling;
+		serviceStore.preference = apiResponse.preference;
 		serviceStore.previous_budget = apiResponse.previous_budget;
 		serviceStore.previous_budget_value = apiResponse.previous_budget_value;
 		serviceStore.status = apiResponse.order_status;
