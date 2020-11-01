@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-color-literals */
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {
 	ScrollView,
 	KeyboardAvoidingView,
@@ -7,6 +7,7 @@ import {
 	StyleSheet,
 	View,
 	Dimensions,
+	Alert,
 } from "react-native";
 import {
 	Button,
@@ -17,88 +18,50 @@ import {
 	List,
 	ListItem,
 	Avatar,
+	Divider,
 } from "@ui-kitten/components";
-import { useProfessionalList, useUser} from "hooks";
+import { useProfessionalList, useService, useUser} from "hooks";
 import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import {TouchableWithoutFeedback} from "@ui-kitten/components/devsupport";
-import UserStore from "stores/user-store";
 
 type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 	NewServiceStackParams,
 	"ServiceProfessionalPreference"
 >;
 
-// TODO: clean up
-const mock = [
-	{
-		id: "1",
-		name: "teste",
-		rate: 4.8,
-		imageUrl: {uri: "https://image.freepik.com/vetores-gratis/perfil-de-avatar-de-homem-no-icone-redondo_24640-14044.jpg"}
-	},
-	{
-		id: "2",
-		name: "teste",
-		rate: 4.8,
-		imageUrl: {uri: "https://image.freepik.com/vetores-gratis/perfil-de-avatar-de-homem-no-icone-redondo_24640-14044.jpg"}
-	},
-	{
-		id: "3",
-		name: "teste",
-		rate: 4.8,
-		imageUrl: {uri: "https://image.freepik.com/vetores-gratis/perfil-de-avatar-de-homem-no-icone-redondo_24640-14044.jpg"}
-	},
-	{
-		id: "4",
-		name: "teste",
-		rate: 4.8,
-		imageUrl: {uri: "https://image.freepik.com/vetores-gratis/perfil-de-avatar-de-homem-no-icone-redondo_24640-14044.jpg"}
-	},
-	{
-		id: "5",
-		name: "teste",
-		rate: 4.8,
-		imageUrl: {uri: "https://image.freepik.com/vetores-gratis/perfil-de-avatar-de-homem-no-icone-redondo_24640-14044.jpg"}
-	},
-	{
-		id: "6",
-		name: "teste",
-		rate: 4.8,
-		imageUrl: {uri: "https://image.freepik.com/vetores-gratis/perfil-de-avatar-de-homem-no-icone-redondo_24640-14044.jpg"}
-	},
-	{
-		id: "7",
-		name: "teste",
-		rate: 4.8,
-		imageUrl: {uri: "https://image.freepik.com/vetores-gratis/perfil-de-avatar-de-homem-no-icone-redondo_24640-14044.jpg"}
-	},
-];
-
 const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScreenProps>(props => {
 	const userStore = useUser();
+	const serviceStore = useService();
 	const professionalListStore = useProfessionalList();
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [selected, setSelected] = useState("");
-	const [data, setData] = React.useState<UserStore[]>([]);
-	const [value, setValue] = useState<string | undefined>();
+	const [value, setValue] = useState("");
 
 	useEffect(() => {
 		setIsLoading(true);
 		try {
-			professionalListStore.fetchProfessionals("pro", 1).then(() => {
-				setData(professionalListStore.list);
-				console.log(professionalListStore.list);
-			});
+			professionalListStore.fetchProfessionals(value, 1);
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
 		}
 		setIsLoading(false);
-	}, [professionalListStore, userStore]);
+	}, [professionalListStore, userStore, value]);
+
+	const handleExpandList = useCallback(()=>{
+		try {
+			if(professionalListStore.current_page){
+				professionalListStore.fetchProfessionals(value, professionalListStore.current_page + 1);
+			}
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log({error});
+		}
+	}, [professionalListStore, value]);
 
 	const onChangeText = (query: string): void => {
 		setValue(query);
@@ -113,6 +76,17 @@ const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScre
 			<Icon {...props} name="close" />
 		</TouchableWithoutFeedback>
 	);
+
+	function handleSubmit(): void {
+		if(!selected){
+			Alert.alert("Nenhum profissional foi selecionado");		
+			
+			return;
+		}
+
+		serviceStore.preference = selected;
+		props.navigation.navigate("ServiceCategories");
+	}
 
 	return (
 		<Layout level="3">
@@ -137,24 +111,26 @@ const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScre
 
 				<List
 					scrollEnabled
+					ItemSeparatorComponent={Divider}
+					onEndReached={handleExpandList}
+					onEndReachedThreshold={0.2}
 					style={styles.listContainer}
-					data={mock} // TODO: trocar para data
+					data={professionalListStore.list}
 					renderItem={({ item, index }) => (
 						<ListItem
 							key={index}
 							style={item.id === selected ? styles.listItemSelected : styles.listItem}
 							onPress={()=>setSelected(item.id)}
-							
 							title={()=><Text style={styles.title}>{item.name}</Text>}
 							description={()=><Text style={styles.description}>Classificação: {item.rate} estrelas</Text>}
 							accessoryLeft={(props) => (
-								<Avatar {...props} style={styles.avatar} source={item.imageUrl} />
+								<Avatar {...props} style={styles.avatar} source={item.profilePicture} />
 							)}
 						/>
 					)}
     		/>
 		
-				<Button style={styles.button} onPress={()=>{}}>CONTINUAR</Button>
+				<Button style={styles.button} onPress={handleSubmit}>CONTINUAR</Button>
 			</ScrollView>
 		</Layout>
 	);

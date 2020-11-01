@@ -17,22 +17,25 @@ class ProfessionalsListStore {
 	public async fetchProfessionals(name: string, page = 1): Promise<void> {
 		try {
 			const response = await finddoApi.post(`/users/find_by_name`, {
-				name, 
+				user: {name},
 				page,
 			});
 
-			console.log(response.data.items)
-			const users: UserApiResponse[] = response.data.items;
+			const users: UserApiResponse[] = response.data.items.map(
+				(item:{data:{attributes: UserApiResponse}})=>item.data.attributes
+			);
+
 			const userList = users.map(user =>
 				UserStore.createFromApiResponse(user),
 			);
 
 			runInAction(() => {
-				this.list = userList;
 				this.current_page = page;
+				this.list = this.current_page===1 ? userList : this.list.concat(userList);
 				this.total_pages = response.data.total_pages;
 			});
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.log(error)
 			if (error.response) throw new Error("Invalid name data");
 			else if (error.request) throw new Error("Connection error");
