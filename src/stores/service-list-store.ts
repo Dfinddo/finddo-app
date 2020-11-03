@@ -45,6 +45,7 @@ class ServiceListStore {
 				this.page = 1;
 			});
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.log({error});
 			if (error.response) throw new Error("Invalid service request");
 			else if (error.request) throw new Error("Connection error");
@@ -64,13 +65,12 @@ class ServiceListStore {
 				ServiceStore.createFromApiResponse(service),
 			);
 
-			console.log(serviceList);
-
 			runInAction(() => {
 				this.list = serviceList;
 				this.page = 1;
 			});
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.log({error});
 			if (error.response) throw new Error("Invalid service request");
 			else if (error.request) throw new Error("Connection error");
@@ -96,6 +96,7 @@ class ServiceListStore {
 				this.status = status;
 			});
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.log({error});
 			if (error.response) throw new Error("Invalid service request");
 			else if (error.request) throw new Error("Connection error");
@@ -122,6 +123,7 @@ class ServiceListStore {
 				this.page += 1;
 			});
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.log({error});
 			if (error.response) throw new Error("Invalid service request");
 			else if (error.request) throw new Error("Connection error");

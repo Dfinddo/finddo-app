@@ -84,7 +84,7 @@ const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScre
 			return;
 		}
 
-		serviceStore.preference = selected;
+		serviceStore.filtered_professional = selected;
 		props.navigation.navigate("ServiceCategories");
 	}
 

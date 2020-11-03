@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
 	},
 	containerDetails: {
 		width: "100%",
-		height: "75%",
+		height: "80%",
 		alignItems: "center",
 	},
 	text: {
