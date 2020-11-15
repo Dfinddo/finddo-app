@@ -54,6 +54,9 @@ class ServiceStore {
 	public categoryID: keyof typeof serviceCategories | null = null;
 
 	@observable
+	public categoryName: string | null = null;
+
+	@observable
 	public status: ServiceStatus = "" as ServiceStatus;
 
 	@observable
@@ -128,6 +131,7 @@ class ServiceStore {
 		// console.log(apiResponse);
 		serviceStore.id = apiResponse.id;
 		serviceStore.categoryID = apiResponse.category.id;
+		serviceStore.categoryName = apiResponse.category.name;
 		serviceStore.description = apiResponse.description;
 		serviceStore.userID = apiResponse.user.id;
 		serviceStore.urgency = apiResponse.urgency;

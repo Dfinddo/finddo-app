@@ -167,6 +167,25 @@ interface ServiceApiResponse {
 	user_rate: string;
 }
 
+interface ChatApiResponse {
+	id: string,
+	service_id: string,
+	sender_id: string,
+	receiver_id: string,
+	is_read: boolean,
+	message: string,
+}
+
+interface ConversationApiResponse {
+  order_id: string|null;
+  receiver_profile_photo: string|null;
+  title: string;
+  last_message: {
+		message: string|null; 
+		created_at: Date|null;
+	};
+}
+
 interface CardApiResponse {
 	creditCard: {
 		id: string;
@@ -185,5 +204,7 @@ export type {
 	BudgetApiResponse,
 	ReschedulingApiResponse,
 	ServiceApiResponse,
+	ChatApiResponse,
+	ConversationApiResponse,
 	CardApiResponse,
 };
