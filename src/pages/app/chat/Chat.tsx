@@ -1,5 +1,6 @@
-import React from "react";
-import {View} from "react-native";
+/* eslint-disable @typescript-eslint/naming-convention */
+import React, { useCallback, useEffect } from "react";
+import {Alert, RefreshControl, View} from "react-native";
 import {
 	Button,
 	Input,
@@ -12,42 +13,71 @@ import {
 	TopNavigation,
 	TopNavigationAction,
 	Avatar,
+	useTheme,
 } from "@ui-kitten/components";
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
+import { useChat, useServiceList, useUser } from "hooks";
+import { Message } from "stores/chat-store";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 
-const loadedMessages = [
-	"Sent Message",
-	"Received Message 1",
-	"Received Message 2",
-].map((message, i) => ({
-	content: message,
-	timestamp: "",
-	writenByOther: !i,
-}));
-
-interface Message {
-	content: string;
-	timestamp: "string";
-	writenByOther: boolean;
-}
-
 const Chat = observer<ProfileScreenProps>(props => {
+	const { order_id } = props.route.params;
 	const styles = useStyleSheet(themedStyles);
-	const [messages, setMessages] = React.useState(loadedMessages);
+	const chatStore = useChat();
+	const userStore = useUser();
+	const serviceListStore = useServiceList();
+	const [loading, setIsLoading] = React.useState(false);
 	const [message, setMessage] = React.useState("");
-	const onSendButtonPress = (): void => {
-		setMessages(oldMessages =>
-			oldMessages.concat({
-				content: message,
-				timestamp: Date(),
-				writenByOther: false,
-			}),
-		);
-		setMessage("");
+	const theme = useTheme();
+
+	const getChat = useCallback(async (): Promise<void> => {
+		setIsLoading(true);
+
+		try {
+			await chatStore.fetchChat(String(order_id));
+		} catch (error) {
+			if (error.response) {
+				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+			} else if (error.request) {
+				Alert.alert(
+					"Falha ao se conectar",
+					"Verifique sua conexão e tente novamente",
+				);
+			} else throw error;
+		} finally {
+			setIsLoading(false);
+		}
+	}, [chatStore, order_id]);
+
+	useEffect(() => void getChat(), [getChat]);
+
+	const onSendButtonPress = async (): Promise<void> => {
+		setIsLoading(true);
+		try {
+			const order = serviceListStore.list.find(element => element.id === order_id);
+
+			if(!order || !order.userID || !order.professional_order?.id) {
+				throw new Error("Pedido não localizado");
+			}
+
+			await chatStore.saveNewMessage({
+				order_id: String(order_id), 
+				sender_id: userStore.id,
+				receiver_id: userStore.id !== String(order.userID) ? 
+					String(order.userID) : 
+					String(order.professional_order?.id),
+				message,
+			});
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log(error);
+		}
+		finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -69,7 +99,17 @@ const Chat = observer<ProfileScreenProps>(props => {
 				)}
 			/>
 			<List
-				data={messages}
+				data={chatStore.chat}
+				onRefresh={chatStore.expandChat}
+				onEndReached={chatStore.updateChat}
+				onEndReachedThreshold={0.2}
+				refreshControl={
+					<RefreshControl
+						colors={[theme["color-primary-active"]]}
+						refreshing={loading}
+						onRefresh={getChat}
+					/>
+				}
 				renderItem={({item}) => <ChatMessage message={item} />}
 			/>
 			<Layout style={styles.messageInputContainer}>
@@ -145,24 +185,25 @@ interface ChatMessageProps {
 
 const ChatMessage = (props: ChatMessageProps): React.ReactElement => {
 	const styles = useStyleSheet(themedStyles);
+	const userStore = useUser();
 	const {message} = props;
 
 	return (
 		<View
 			style={[
-				message.writenByOther ? styles.messageRowOut : styles.messageRowIn,
+				message.sender_id !== userStore.id ? styles.messageRowOut : styles.messageRowIn,
 				styles.messageRow,
 			]}
 		>
 			<View
 				style={[
-					message.writenByOther
+					message.sender_id !== userStore.id
 						? styles.messageContentOut
 						: styles.messageContentIn,
 					styles.messageContent,
 				]}
 			>
-				<Text>{message.content}</Text>
+				<Text>{message.message}</Text>
 			</View>
 		</View>
 	);

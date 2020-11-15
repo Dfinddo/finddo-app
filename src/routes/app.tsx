@@ -28,6 +28,7 @@ import {MyAddresses, ManageAddress} from "pages/app/addresses";
 import Chat from "pages/app/chat/Chat";
 import {Cards, AddCard} from "pages/app/payment-methods";
 import {useThemedHeaderConfig, useUser} from "hooks";
+import ChatList from "pages/app/chat/ChatList";
 
 const PaymentMethodsStack = createStackNavigator<PaymentMethodsStackParams>();
 const AddressStack = createStackNavigator<AddressStackParams>();
@@ -193,6 +194,7 @@ const AppRoute: FC = () => {
 				component={PaymentMethodsRoute}
 			/>
 			<AppDrawer.Screen name="Help" component={Help} />
+			<AppDrawer.Screen name="ChatList" component={ChatList} />
 			<AppDrawer.Screen name="Chat" component={Chat} />
 		</AppDrawer.Navigator>
 	);
@@ -222,7 +224,7 @@ const DrawerContentUser: FC<DrawerContentComponentProps> = ({
 			onPress={() => navigation.navigate("PaymentMethods")}
 		/>
 		<DrawerItem title="Sobre" onPress={() => navigation.navigate("Help")} />
-		<DrawerItem title="Chat" onPress={() => navigation.navigate("Chat")} />
+		<DrawerItem title="Chat" onPress={() => navigation.navigate("ChatList")} />
 	</Drawer>
 );
 
@@ -244,7 +246,7 @@ const DrawerContentProfessional: FC<DrawerContentComponentProps> = ({
 			onPress={() => navigation.navigate("Addresses")}
 		/>
 		<DrawerItem title="Sobre" onPress={() => navigation.navigate("Help")} />
-		<DrawerItem title="Chat" onPress={() => navigation.navigate("Chat")} />
+		<DrawerItem title="Chat" onPress={() => navigation.navigate("ChatList")} />
 	</Drawer>
 );
 
@@ -288,7 +290,8 @@ export type AppDrawerParams = {
 	Addresses: undefined;
 	PaymentMethods: undefined;
 	Help: undefined;
-	Chat: undefined;
+	Chat: {order_id: number};
+	ChatList: undefined;
 };
 
 /* eslint-enable @typescript-eslint/consistent-type-definitions */

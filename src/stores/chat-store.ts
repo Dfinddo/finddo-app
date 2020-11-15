@@ -5,7 +5,7 @@ import {observable, action, runInAction} from "mobx";
 
 import finddoApi, {ChatApiResponse} from "finddo-api";
 
-interface Message {
+export interface Message {
 	id: string;
 	order_id: string;
 	sender_id: string;

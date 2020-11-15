@@ -34,7 +34,7 @@ const BottomNavigation: FC = ({children}) => {
 		setSelectedIndex(index);
 		switch (index) {
 			case 0:
-				RootNavigation.navigate("Chat");
+				RootNavigation.navigate("ChatList");
 				break;
 
 			case 1:
