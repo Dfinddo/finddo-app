@@ -9,7 +9,7 @@ import {
 	StyleService,
 	useStyleSheet,
 } from "@ui-kitten/components";
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {fechar} from "assets/svg/fechar";
 import {bolaCheia} from "assets/svg/bola-cheia";
@@ -26,8 +26,8 @@ const useInitialDisplay = (): [boolean, () => void] => {
 	}, []);
 
 	const markAsDisplayed = useCallback(
-		() =>
-			void AsyncStorage.setItem("tutorial-realizado", "true").then(() =>
+		async () =>
+			void await AsyncStorage.setItem("tutorial-realizado", "true").then(() =>
 				setWasDisplayed(true),
 			),
 		[],

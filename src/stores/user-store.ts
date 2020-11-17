@@ -2,7 +2,7 @@
 import {observable, computed, action, runInAction} from "mobx";
 import {format} from "date-fns";
 import {validations, validateInput} from "utils";
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import finddoApi, { UserApiResponse } from "finddo-api";
 import {BACKEND_URL, BACKEND_URL_STORAGE} from "config";
 import AddressStore from "./address-store";
