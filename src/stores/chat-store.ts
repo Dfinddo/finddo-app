@@ -46,9 +46,9 @@ class ChatStore {
 			// console.log(response.data);
 			const chatList: ChatApiResponse[] = response.data.chats;
 
-			const chat = chatList.map(message =>
+			const chat = chatList ? chatList.map(message =>
 				this.createMessageFromApiResponse(message),
-			);
+			) : [];
 
 			runInAction(() => {
 				this.chat = chat;
@@ -71,7 +71,7 @@ class ChatStore {
 			let chatList: ChatApiResponse[] = [];
 			let {total} = this;
 
-			for (let index = 1; index <= this.page; index++) {
+			for (let index = 1; index <= this.page + 1; index++) {
 				const response = await finddoApi.get(`chats/order`, {
 					params: {
 						page: index, 

@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
 	// description: {
 	// 	fontSize: 14,
 	// 	fontWeight: "300",
-	// 	color: "#666",
+	// 	color: "#d1c4c4",
 	// },
 	avatar: {
 		width: 56,
