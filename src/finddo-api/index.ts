@@ -174,6 +174,7 @@ interface ChatApiResponse {
 	receiver_id: string,
 	is_read: boolean,
 	message: string,
+	created_at: string,
 }
 
 interface ConversationApiResponse {

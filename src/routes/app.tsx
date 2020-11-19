@@ -290,7 +290,7 @@ export type AppDrawerParams = {
 	Addresses: undefined;
 	PaymentMethods: undefined;
 	Help: undefined;
-	Chat: {order_id: number};
+	Chat: {order_id: number, title: string, photo?: string | null};
 	ChatList: undefined;
 };
 

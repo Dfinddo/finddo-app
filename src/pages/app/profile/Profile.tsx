@@ -31,13 +31,10 @@ const Profile = observer<ProfileScreenProps>(props => {
 		userStore.getProfilePicture();
 	}, [userStore]);
 
-	const editProfile = useCallback(
-		(field: keyof UserStore) => () => {
-			setFieldToEdit(field);
-			setIsEditing(true);
-		},
-		[],
-	);
+	const editProfile = (field: keyof UserStore) => () => {
+		setFieldToEdit(field);
+		setIsEditing(true);
+	};
 
 	const logout = useCallback((): void => {
 		Alert.alert("Finddo", "Deseja sair?", [

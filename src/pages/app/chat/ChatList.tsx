@@ -2,6 +2,7 @@
 /* eslint-disable react-native/no-color-literals */
 import React, {useState, useEffect, useCallback} from "react";
 import {
+	Alert,
 	ScrollView,
 	StyleSheet,
 } from "react-native";
@@ -13,13 +14,12 @@ import {
 	Avatar,
 	Divider,
 } from "@ui-kitten/components";
-import { useChatList, useUser} from "hooks";
+import { useChatList} from "hooks";
 import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import { BACKEND_URL_STORAGE } from "config";
-import finddoApi from "finddo-api";
 
 type ChatListScreenProps = StackScreenProps<
 	AppDrawerParams,
@@ -27,26 +27,30 @@ type ChatListScreenProps = StackScreenProps<
 >;
 
 const ChatList = observer<ChatListScreenProps>(props => {
-	const userStore = useUser();
 	const chatListStore = useChatList();
 
 	const [isLoading, setIsLoading] = useState(false);
 
-	useEffect(() => {
-    setIsLoading(true);
-    if(chatListStore.list.length === 0){
-      try {
-				chatListStore.fetchChats();
-				finddoApi.get(`/chats/${userStore.id}`).then(response => {
-					console.log(response.data);
-				});
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log({error});
-      }
-    }
-		setIsLoading(false);
-	}, [chatListStore, userStore]);
+	const getChats = useCallback(async (): Promise<void> => {
+		setIsLoading(true);
+
+		try {
+			await chatListStore.fetchChats();
+		} catch (error) {
+			if (error.response) {
+				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+			} else if (error.request) {
+				Alert.alert(
+					"Falha ao se conectar",
+					"Verifique sua conexão e tente novamente",
+				);
+			} else throw error;
+		} finally {
+			setIsLoading(false);
+		}
+	}, [chatListStore]);
+
+	useEffect(() => void getChats(), [getChats]);
 
 	const handleExpandList = useCallback(async()=>{
 		try {
@@ -57,8 +61,8 @@ const ChatList = observer<ChatListScreenProps>(props => {
 		}
 	}, [chatListStore]);
 
-	function handleSubmit(id: number): void {
-		props.navigation.navigate("Chat",{order_id: id});
+	function handleSubmit(id: number, title: string): void {
+		props.navigation.navigate("Chat",{order_id: id, title});
 	}
 
 	return (
@@ -78,14 +82,18 @@ const ChatList = observer<ChatListScreenProps>(props => {
 						<ListItem
 							key={index}
 							style={styles.listItem}
-							onPress={()=>{handleSubmit(Number(item.order_id))}}
+							onPress={()=>{handleSubmit(Number(item.order_id), item.title)}}
 							title={(props)=><Text {...props} style={styles.title}>
                {item.title}
               </Text>}
 							// description={()=><Text style={styles.description}>Classificação: {item.rate} estrelas</Text>}
 							accessoryLeft={(props) => (
 								<Avatar {...props} style={styles.avatar} source={
-					 				{uri: `${BACKEND_URL_STORAGE}${item.receiver_profile_photo}`}	} />
+									item.receiver_profile_photo ? 
+									{
+										uri:`${BACKEND_URL_STORAGE}${item.receiver_profile_photo}`
+									} : require("assets/sem-foto.png")
+								}/>
 							)}
 						/>
 					)}

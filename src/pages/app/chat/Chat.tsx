@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {Alert, RefreshControl, View} from "react-native";
 import {
 	Button,
@@ -19,19 +19,21 @@ import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import { useChat, useServiceList, useUser } from "hooks";
+import ServiceStore from "stores/service-store";
 import { Message } from "stores/chat-store";
+import { BACKEND_URL_STORAGE } from "config";
+import finddoApi from "finddo-api";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 
 const Chat = observer<ProfileScreenProps>(props => {
-	const { order_id } = props.route.params;
+	const { order_id, title, photo=null } = props.route.params;
 	const styles = useStyleSheet(themedStyles);
 	const chatStore = useChat();
 	const userStore = useUser();
 	const serviceListStore = useServiceList();
 	const [loading, setIsLoading] = React.useState(false);
 	const [message, setMessage] = React.useState("");
-	const theme = useTheme();
 
 	const getChat = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
@@ -39,6 +41,8 @@ const Chat = observer<ProfileScreenProps>(props => {
 		try {
 			await chatStore.fetchChat(String(order_id));
 		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log(error);
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
 			} else if (error.request) {
@@ -57,7 +61,13 @@ const Chat = observer<ProfileScreenProps>(props => {
 	const onSendButtonPress = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			const order = serviceListStore.list.find(element => element.id === order_id);
+			let order = serviceListStore.list.find(element => element.id === order_id);
+
+			if(userStore.userType === "professional"){
+				const response = await finddoApi.get(`orders/${order_id}`);
+
+				order = ServiceStore.createFromApiResponse(response.data);
+			}
 
 			if(!order || !order.userID || !order.professional_order?.id) {
 				throw new Error("Pedido não localizado");
@@ -68,7 +78,7 @@ const Chat = observer<ProfileScreenProps>(props => {
 				sender_id: userStore.id,
 				receiver_id: userStore.id !== String(order.userID) ? 
 					String(order.userID) : 
-					String(order.professional_order?.id),
+					String(order.professional_order.id),
 				message,
 			});
 		} catch (error) {
@@ -80,14 +90,32 @@ const Chat = observer<ProfileScreenProps>(props => {
 		}
 	};
 
+	const handleUpdateChat = useCallback(async ()=>{
+		setIsLoading(true);
+		try {
+			await chatStore.updateChat();
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log(error);
+		}
+		finally {
+			setIsLoading(false);
+		}
+	}, [chatStore]);
+
 	return (
 		<Layout style={styles.container}>
 			<TopNavigation
 				title={props => (
 					<View style={styles.headerTitleContainer}>
-						<Avatar source={require("assets/sem-foto.png")} />
+						<Avatar 
+							source={
+								photo ? {	uri:`${BACKEND_URL_STORAGE}${photo}` } :
+									require("assets/sem-foto.png")
+							}
+						/>
 						<Text {...props} style={styles.headerTitle}>
-							Ful Lano
+							{title}
 						</Text>
 					</View>
 				)}
@@ -100,16 +128,10 @@ const Chat = observer<ProfileScreenProps>(props => {
 			/>
 			<List
 				data={chatStore.chat}
-				onRefresh={chatStore.expandChat}
-				onEndReached={chatStore.updateChat}
+				onEndReached={handleUpdateChat}
+				inverted
+				refreshing={loading}
 				onEndReachedThreshold={0.2}
-				refreshControl={
-					<RefreshControl
-						colors={[theme["color-primary-active"]]}
-						refreshing={loading}
-						onRefresh={getChat}
-					/>
-				}
 				renderItem={({item}) => <ChatMessage message={item} />}
 			/>
 			<Layout style={styles.messageInputContainer}>
@@ -135,6 +157,36 @@ const Chat = observer<ProfileScreenProps>(props => {
 
 export default Chat;
 
+interface ChatMessageProps {
+	message: Message;
+}
+
+const ChatMessage = (props: ChatMessageProps): React.ReactElement => {
+	const styles = useStyleSheet(themedStyles);
+	const userStore = useUser();
+	const {message} = props;
+
+	return (
+		<View
+			style={[
+				Number(message.sender_id) !== Number(userStore.id) ? styles.messageRowOut : styles.messageRowIn,
+				styles.messageRow,
+			]}
+		>
+			<View
+				style={[
+					Number(message.sender_id) !== Number(userStore.id)
+						? styles.messageContentOut
+						: styles.messageContentIn,
+					styles.messageContent,
+				]}
+			>
+				<Text style={styles.messageText}>{message.message}</Text>
+			</View>
+		</View>
+	);
+};
+
 const themedStyles = StyleService.create({
 	container: {
 		flex: 1,
@@ -158,10 +210,13 @@ const themedStyles = StyleService.create({
 	},
 	messageContentIn: {
 		alignSelf: "center",
-		backgroundColor: "color-basic-600",
+		backgroundColor: "color-info-500",
 	},
 	messageContentOut: {
 		backgroundColor: "color-primary-default",
+	},
+	messageText: {
+		color: "white",
 	},
 	messageInputContainer: {
 		flexDirection: "row",
@@ -178,33 +233,3 @@ const themedStyles = StyleService.create({
 	},
 	sendButton: {width: 42, height: 30, marginBottom: 4},
 });
-
-interface ChatMessageProps {
-	message: Message;
-}
-
-const ChatMessage = (props: ChatMessageProps): React.ReactElement => {
-	const styles = useStyleSheet(themedStyles);
-	const userStore = useUser();
-	const {message} = props;
-
-	return (
-		<View
-			style={[
-				message.sender_id !== userStore.id ? styles.messageRowOut : styles.messageRowIn,
-				styles.messageRow,
-			]}
-		>
-			<View
-				style={[
-					message.sender_id !== userStore.id
-						? styles.messageContentOut
-						: styles.messageContentIn,
-					styles.messageContent,
-				]}
-			>
-				<Text>{message.message}</Text>
-			</View>
-		</View>
-	);
-};

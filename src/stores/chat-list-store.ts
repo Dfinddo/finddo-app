@@ -21,7 +21,8 @@ class ChatListStore {
         params: {
           page: 1,
         },
-      });
+			});
+			
 			const chats: ConversationApiResponse[] = response.data.list;
 
 			runInAction(() => {

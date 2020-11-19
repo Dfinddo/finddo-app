@@ -28,7 +28,7 @@ class ChatStore {
 	): Message {
 		const chatStore: Message = {} as Message;
 
-		Object.assign(ChatStore, apiResponse);
+		Object.assign(chatStore, apiResponse);
 
 		return chatStore;
 	}
@@ -45,6 +45,7 @@ class ChatStore {
 
 			// console.log(response.data);
 			const chatList: ChatApiResponse[] = response.data.chats;
+
 			const chat = chatList.map(message =>
 				this.createMessageFromApiResponse(message),
 			);
@@ -133,7 +134,7 @@ class ChatStore {
 	@action
 	public saveNewMessage = async (data: Omit<Message, "id" | "is_read">): Promise<void> => {
 		try {
-			await finddoApi.post("/chats", {data});
+			await finddoApi.post("/chats", {chat: data});
 
 			runInAction(() => this.updateChat());
 		} catch (error) {
