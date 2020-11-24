@@ -85,6 +85,7 @@ const Chat = observer<ProfileScreenProps>(props => {
 		}
 		finally {
 			setIsLoading(false);
+			setMessage("");
 		}
 	};
 

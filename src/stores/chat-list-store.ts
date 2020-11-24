@@ -7,6 +7,9 @@ import finddoApi, {ConversationApiResponse} from "finddo-api";
 class ChatListStore {
 	@observable
 	public list: ConversationApiResponse[] = [];
+
+	@observable
+	public listAdmConversation: ConversationApiResponse[] = [];
 	
 	@observable
   public isAdminChat = false;
@@ -20,20 +23,24 @@ class ChatListStore {
 	@action
 	public async fetchChats(): Promise<void> {
 		try {
-			const response = !this.isAdminChat ? await finddoApi.get(`/chats/list`, {
+			const response = await finddoApi.get(`/chats/list`, {
         params: {
           page: 1,
         },
-			}) : await finddoApi.get(`/chats/list/admin`, {
+			});
+
+			const responseAdm = await finddoApi.get(`/chats/list/admin`, {
         params: {
           page: 1,
         },
 			});
 			
 			const chats: ConversationApiResponse[] = response.data.list;
+			const chatsAdm: ConversationApiResponse[] = responseAdm.data.list;
 
 			runInAction(() => {
-        this.list = chats;
+				this.list = chats;
+				this.listAdmConversation = chatsAdm;
         this.page = response.data.page;
         this.total = response.data.total;
       });

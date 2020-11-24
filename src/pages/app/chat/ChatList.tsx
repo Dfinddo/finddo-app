@@ -12,8 +12,8 @@ import {
 	ListItem,
 	Avatar,
 	Divider,
-	TabBar,
 	Tab,
+	TabView,
 } from "@ui-kitten/components";
 import { useChatList} from "hooks";
 import {observer} from "mobx-react-lite";
@@ -21,6 +21,7 @@ import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import { BACKEND_URL_STORAGE } from "config";
+import ChatListStore from "stores/chat-list-store";
 
 type ChatListScreenProps = StackScreenProps<
 	AppDrawerParams,
@@ -29,6 +30,7 @@ type ChatListScreenProps = StackScreenProps<
 
 const ChatList = observer<ChatListScreenProps>(props => {
 	const chatListStore = useChatList();
+	const [index, setIndex] = useState(0);
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -53,10 +55,12 @@ const ChatList = observer<ChatListScreenProps>(props => {
 
 	useEffect(() => void getChats(), [getChats]);
 
-	const handleChangeChatList = async (index: number): Promise<void> => {
-		chatListStore.isAdminChat = index === 1;
-		await getChats();
-	};
+	// const handleChangeChatList = async (index: number): Promise<void> => {
+	// 	console.log(index)
+	// 	setIndex(index);
+	// 	index === 1 ? await chatListStoreAdmin.fetchChats() : 
+	// 	await chatListStoreService.fetchChats();
+	// };
 
 	const handleExpandList = useCallback(async()=>{
 		try {
@@ -80,55 +84,61 @@ const ChatList = observer<ChatListScreenProps>(props => {
 		});
 	}
 
+	const getChatListView = (chatList: typeof chatListStore.list): JSX.Element => (
+		<List
+			scrollEnabled
+			ItemSeparatorComponent={Divider}
+			onEndReached={handleExpandList}
+			onEndReachedThreshold={0.2}
+			style={styles.listContainer}
+      data={chatList}
+			renderItem={({ item, index }: {item: typeof chatListStore.list[0], index: number}) => (<>
+				{ item &&
+						<ListItem
+							key={index}
+							style={styles.listItem}
+							onPress={() => {
+							handleSubmit(
+								Number(item.order_id), 
+								item.title, 
+								item.receiver_profile_photo ? item.receiver_profile_photo.photo : null,
+								)
+							}}
+							title={(props)=><Text {...props} style={styles.title}>
+								{item.title}
+							</Text>}
+							// description={()=><Text style={styles.description}>Classificação: {item.rate} estrelas</Text>}
+							accessoryLeft={(props) => (
+								<Avatar {...props} style={styles.avatar} source={
+									item.receiver_profile_photo ? 
+									{
+										uri:`${BACKEND_URL_STORAGE}${item.receiver_profile_photo.photo}`
+									} : require("assets/sem-foto.png")
+								}/>
+								)}
+						/>
+				}
+			</>)}
+    />
+	);
+
 	return (
 		<Layout level="3">
 				<TaskAwaitIndicator isAwaiting={isLoading} />
 				<Text style={styles.screenTitle} category="h4">Lista de Chats ativos</Text>
 
-				<TabBar
-					style={styles.tabContainer}
-					selectedIndex={chatListStore.isAdminChat ? 1 : 0}
-					onSelect={index => handleChangeChatList(index)}>
-					<Tab title='Serviços' />
-					<Tab title='Administrador'/>
-				</TabBar>
-
-				<List
-					scrollEnabled
-					ItemSeparatorComponent={Divider}
-					onEndReached={handleExpandList}
-					onEndReachedThreshold={0.2}
-					style={styles.listContainer}
-          data={chatListStore.list}
-					renderItem={({ item, index }: {item: typeof chatListStore.list[0], index: number}) => (<>
-							{ item &&
-									<ListItem
-										key={index}
-										style={styles.listItem}
-										onPress={() => {
-											handleSubmit(
-												Number(item.order_id), 
-												item.title, 
-												item.receiver_profile_photo ? item.receiver_profile_photo.photo : null,
-											)
-										}}
-										title={(props)=><Text {...props} style={styles.title}>
-										 {item.title}
-										</Text>}
-										// description={()=><Text style={styles.description}>Classificação: {item.rate} estrelas</Text>}
-										accessoryLeft={(props) => (
-											<Avatar {...props} style={styles.avatar} source={
-												item.receiver_profile_photo ? 
-												{
-													uri:`${BACKEND_URL_STORAGE}${item.receiver_profile_photo.photo}`
-												} : require("assets/sem-foto.png")
-											}/>
-										)}
-									/>
-							}
-						</>)}
-    		/>
-		</Layout>
+				<TabView
+					tabBarStyle={styles.tabBar}
+					selectedIndex={index}
+					onSelect={index => setIndex(index)}>
+					<Tab title='Serviços'>
+						{getChatListView(chatListStore.list)}
+					</Tab>
+					<Tab title='Suporte'>
+						{getChatListView(chatListStore.listAdmConversation)}
+					</Tab>
+				</TabView>
+			</Layout>
 	);
 });
 
@@ -162,8 +172,7 @@ const styles = StyleSheet.create({
 		height: 56,
 		marginRight: 12,
 	},
-	tabContainer: {
+	tabBar: {
 		height: 48,
-		fontSize: 24,
 	},
 });
