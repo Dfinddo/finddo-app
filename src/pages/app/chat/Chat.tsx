@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React, { useCallback, useEffect, useMemo } from "react";
-import {Alert, RefreshControl, View} from "react-native";
+import React, { useCallback, useEffect } from "react";
+import {Alert, View} from "react-native";
 import {
 	Button,
 	Input,
@@ -13,7 +13,6 @@ import {
 	TopNavigation,
 	TopNavigationAction,
 	Avatar,
-	useTheme,
 } from "@ui-kitten/components";
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -39,7 +38,7 @@ const Chat = observer<ProfileScreenProps>(props => {
 		setIsLoading(true);
 
 		try {
-			await chatStore.fetchChat(String(order_id));
+			await chatStore.fetchChat(String(order_id), props.route.params.isAdminChat);
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log(error);
@@ -54,7 +53,7 @@ const Chat = observer<ProfileScreenProps>(props => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [chatStore, order_id]);
+	}, [chatStore, order_id, props.route.params.isAdminChat]);
 
 	useEffect(() => void getChat(), [getChat]);
 
@@ -75,12 +74,11 @@ const Chat = observer<ProfileScreenProps>(props => {
 
 			await chatStore.saveNewMessage({
 				order_id: String(order_id), 
-				sender_id: userStore.id,
 				receiver_id: userStore.id !== String(order.userID) ? 
 					String(order.userID) : 
 					String(order.professional_order.id),
 				message,
-			});
+			}, userStore);
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log(error);
@@ -169,13 +167,14 @@ const ChatMessage = (props: ChatMessageProps): React.ReactElement => {
 	return (
 		<View
 			style={[
-				Number(message.sender_id) !== Number(userStore.id) ? styles.messageRowOut : styles.messageRowIn,
+				Number(message.receiver_id) === Number(userStore.id) ? 
+				styles.messageRowOut : styles.messageRowIn,
 				styles.messageRow,
 			]}
 		>
 			<View
 				style={[
-					Number(message.sender_id) !== Number(userStore.id)
+					Number(message.receiver_id) === Number(userStore.id)
 						? styles.messageContentOut
 						: styles.messageContentIn,
 					styles.messageContent,
@@ -207,6 +206,7 @@ const themedStyles = StyleService.create({
 		paddingHorizontal: 15,
 		paddingVertical: 10,
 		borderRadius: 8,
+		maxWidth: "50%",
 	},
 	messageContentIn: {
 		alignSelf: "center",

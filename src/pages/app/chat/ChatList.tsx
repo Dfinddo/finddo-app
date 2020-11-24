@@ -3,7 +3,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {
 	Alert,
-	ScrollView,
 	StyleSheet,
 } from "react-native";
 import {
@@ -13,6 +12,8 @@ import {
 	ListItem,
 	Avatar,
 	Divider,
+	TabBar,
+	Tab,
 } from "@ui-kitten/components";
 import { useChatList} from "hooks";
 import {observer} from "mobx-react-lite";
@@ -52,6 +53,11 @@ const ChatList = observer<ChatListScreenProps>(props => {
 
 	useEffect(() => void getChats(), [getChats]);
 
+	const handleChangeChatList = async (index: number): Promise<void> => {
+		chatListStore.isAdminChat = index === 1;
+		await getChats();
+	};
+
 	const handleExpandList = useCallback(async()=>{
 		try {
 			await chatListStore.updateChats();
@@ -61,15 +67,31 @@ const ChatList = observer<ChatListScreenProps>(props => {
 		}
 	}, [chatListStore]);
 
-	function handleSubmit(id: number, title: string): void {
-		props.navigation.navigate("Chat",{order_id: id, title});
+	function handleSubmit(
+		id: number, 
+		title: string, 
+		photo: string|null,
+	): void {
+		props.navigation.navigate("Chat",{
+			order_id: id, 
+			title, 
+			photo, 
+			isAdminChat: chatListStore.isAdminChat,
+		});
 	}
 
 	return (
 		<Layout level="3">
-			<ScrollView>
 				<TaskAwaitIndicator isAwaiting={isLoading} />
 				<Text style={styles.screenTitle} category="h4">Lista de Chats ativos</Text>
+
+				<TabBar
+					style={styles.tabContainer}
+					selectedIndex={chatListStore.isAdminChat ? 1 : 0}
+					onSelect={index => handleChangeChatList(index)}>
+					<Tab title='Serviços' />
+					<Tab title='Administrador'/>
+				</TabBar>
 
 				<List
 					scrollEnabled
@@ -78,27 +100,34 @@ const ChatList = observer<ChatListScreenProps>(props => {
 					onEndReachedThreshold={0.2}
 					style={styles.listContainer}
           data={chatListStore.list}
-					renderItem={({ item, index }: {item: typeof chatListStore.list[0], index: number}) => (
-						<ListItem
-							key={index}
-							style={styles.listItem}
-							onPress={()=>{handleSubmit(Number(item.order_id), item.title)}}
-							title={(props)=><Text {...props} style={styles.title}>
-               {item.title}
-              </Text>}
-							// description={()=><Text style={styles.description}>Classificação: {item.rate} estrelas</Text>}
-							accessoryLeft={(props) => (
-								<Avatar {...props} style={styles.avatar} source={
-									item.receiver_profile_photo ? 
-									{
-										uri:`${BACKEND_URL_STORAGE}${item.receiver_profile_photo}`
-									} : require("assets/sem-foto.png")
-								}/>
-							)}
-						/>
-					)}
+					renderItem={({ item, index }: {item: typeof chatListStore.list[0], index: number}) => (<>
+							{ item &&
+									<ListItem
+										key={index}
+										style={styles.listItem}
+										onPress={() => {
+											handleSubmit(
+												Number(item.order_id), 
+												item.title, 
+												item.receiver_profile_photo ? item.receiver_profile_photo.photo : null,
+											)
+										}}
+										title={(props)=><Text {...props} style={styles.title}>
+										 {item.title}
+										</Text>}
+										// description={()=><Text style={styles.description}>Classificação: {item.rate} estrelas</Text>}
+										accessoryLeft={(props) => (
+											<Avatar {...props} style={styles.avatar} source={
+												item.receiver_profile_photo ? 
+												{
+													uri:`${BACKEND_URL_STORAGE}${item.receiver_profile_photo.photo}`
+												} : require("assets/sem-foto.png")
+											}/>
+										)}
+									/>
+							}
+						</>)}
     		/>
-			</ScrollView>
 		</Layout>
 	);
 });
@@ -132,5 +161,9 @@ const styles = StyleSheet.create({
 		width: 56,
 		height: 56,
 		marginRight: 12,
+	},
+	tabContainer: {
+		height: 48,
+		fontSize: 24,
 	},
 });

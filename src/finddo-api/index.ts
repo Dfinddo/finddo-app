@@ -179,7 +179,7 @@ interface ChatApiResponse {
 
 interface ConversationApiResponse {
   order_id: string|null;
-  receiver_profile_photo: string|null;
+  receiver_profile_photo: {photo: string}|null;
   title: string;
   last_message: {
 		message: string|null; 

@@ -4,20 +4,23 @@
 import {observable, action, runInAction} from "mobx";
 
 import finddoApi, {ChatApiResponse} from "finddo-api";
+import UserStore from "./user-store";
 
 export interface Message {
 	id: string;
 	order_id: string;
-	sender_id: string;
 	receiver_id: string
 	is_read: boolean;
 	message: string;
+	// for_admin: string;
 }
 
 class ChatStore {
 	@observable order_id = "";
 
 	@observable public chat: Message[] = [];
+
+	@observable private isAdminChat = false;
 
 	@observable private page= 1;
 
@@ -34,17 +37,24 @@ class ChatStore {
 	}
 
 	@action
-	public async fetchChat(order_id: string): Promise<void> {
+	public async fetchChat(order_id: string, isAdminChat: boolean): Promise<void> {
 		try {
-			const response = await finddoApi.get(`chats/order`, {
+			const response = !isAdminChat ? await finddoApi.get(`chats/order`, {
 				params: {
 					page: 1, 
 					order_id,
 				},
+			}) : await finddoApi.get(`chats/order/admin`, {
+				params: {
+					page: 1, 
+					order_id,
+					receiver_id: 1,
+				},
 			});
 
-			// console.log(response.data);
-			const chatList: ChatApiResponse[] = response.data.chats;
+			const chatList: ChatApiResponse[] = response.data.chats.map(
+				(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
+			);
 
 			const chat = chatList ? chatList.map(message =>
 				this.createMessageFromApiResponse(message),
@@ -53,6 +63,7 @@ class ChatStore {
 			runInAction(() => {
 				this.chat = chat;
 				this.order_id = order_id;
+				this.isAdminChat = isAdminChat;
 				this.page = response.data.current_page;
 				this.total = response.data.total_pages;
 			});
@@ -72,14 +83,24 @@ class ChatStore {
 			let {total} = this;
 
 			for (let index = 1; index <= this.page + 1; index++) {
-				const response = await finddoApi.get(`chats/order`, {
+				const response = !this.isAdminChat ? await finddoApi.get(`chats/order`, {
 					params: {
 						page: index, 
 						order_id: this.order_id,
 					},
+				}) : await finddoApi.get(`chats/order/admin`, {
+					params: {
+						page: index, 
+						order_id: this.order_id,
+						receiver_id: 1,
+					},
 				});
 
-				chatList = [...chatList, ...response.data.chats];	
+				const list: ChatApiResponse[] = response.data.chats.map(
+					(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
+				);
+
+				chatList = [...chatList, ...list];	
 
 				if(total !== response.data.total_pages) {
 					total = response.data.total_pages;
@@ -106,13 +127,19 @@ class ChatStore {
 	@action
 	public async expandChat(): Promise<void> {
 		try {
-			const response = await finddoApi.get(`chats/order`, {
+			const response = this.isAdminChat ? await finddoApi.get(`chats/order`, {
 				params: {
 					page: this.page + 1, 
 					order_id: this.order_id,
 				},
+			}) : await finddoApi.get(`chats/admin/order`, {
+				params: {
+					page: this.page + 1, 
+					order_id: this.order_id,
+					receiver_id: 1,
+				},
 			});
-			const chatList: ChatApiResponse[] = response.data.chats;
+			const chatList: ChatApiResponse[] = response.data.chats.data.attributes;
 			const chat = chatList.map(service =>
 				this.createMessageFromApiResponse(service),
 			);
@@ -132,9 +159,13 @@ class ChatStore {
 	}
 
 	@action
-	public saveNewMessage = async (data: Omit<Message, "id" | "is_read">): Promise<void> => {
+	public saveNewMessage = async ({receiver_id, ...rest}: Omit<Message, "id" | "is_read">, user: UserStore): Promise<void> => {
 		try {
-			await finddoApi.post("/chats", {chat: data});
+			await finddoApi.post("/chats", {chat: {
+				...rest,
+				receiver_id: this.isAdminChat ? 1 : receiver_id,
+				for_admin: this.isAdminChat ? user.userType : "normal",
+			}});
 
 			runInAction(() => this.updateChat());
 		} catch (error) {
