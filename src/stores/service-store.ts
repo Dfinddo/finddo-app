@@ -274,6 +274,7 @@ class ServiceStore {
 			else if (error.request) throw new Error("Connection error");
 			else throw error;
 		}
+		runInAction(()=>this.clearServiceData())
 	};
 
 	@action

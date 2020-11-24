@@ -6,6 +6,7 @@ import {
 	Alert,
 	StyleSheet,
 	useWindowDimensions,
+	ScrollView,
 } from "react-native";
 import {Button, Text, Layout, useTheme} from "@ui-kitten/components";
 import {useService} from "hooks";
@@ -55,6 +56,7 @@ const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
 	));
 
 	return (
+		<ScrollView>
 		<Layout level="2" style={styles.container}>
 			<TaskAwaitIndicator isAwaiting={isLoading} />
 			<Image
@@ -77,6 +79,7 @@ const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
 				CONTINUAR
 			</Button>
 		</Layout>
+		</ScrollView>
 	);
 });
 
