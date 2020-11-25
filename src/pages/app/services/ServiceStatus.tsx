@@ -98,7 +98,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 								// serviceStore?.cancelOrder().then(() => {
 								// 	navigation.goBack();
 								// })
-								Alert.alert("Foi enviado uma mensagem automática para o suporte. Clique no chat para acompanhar o processo")
+								Alert.alert("Foi enviado uma mensagem automática para o suporte. Clique no chat para acompanhar o processo.")
 							} catch (error) {
 								throw new Error("Houve um erro ao tentar cancelar o pedido");
 							} finally {
