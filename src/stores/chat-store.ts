@@ -22,6 +22,8 @@ class ChatStore {
 
 	@observable private isAdminChat = false;
 
+	@observable private isGlobalChat = false;
+
 	@observable private page= 1;
 
 	@observable private total= 1;
@@ -37,7 +39,11 @@ class ChatStore {
 	}
 
 	@action
-	public async fetchChat(order_id: string, isAdminChat: boolean): Promise<void> {
+	public async fetchChat(
+		order_id: string, 
+		isAdminChat: boolean, 
+		isGlobalChat= false
+	): Promise<void> {
 		try {
 			const response = !isAdminChat ? await finddoApi.get(`chats/order`, {
 				params: {
@@ -64,6 +70,7 @@ class ChatStore {
 				this.chat = chat;
 				this.order_id = order_id;
 				this.isAdminChat = isAdminChat;
+				this.isGlobalChat = isGlobalChat;
 				this.page = response.data.current_page;
 				this.total = response.data.total_pages;
 			});
@@ -161,10 +168,14 @@ class ChatStore {
 	@action
 	public saveNewMessage = async ({receiver_id, ...rest}: Omit<Message, "id" | "is_read">, user: UserStore): Promise<void> => {
 		try {
-			await finddoApi.post("/chats", {chat: {
+			!this.isGlobalChat ? await finddoApi.post("/chats", {chat: {
 				...rest,
 				receiver_id: this.isAdminChat ? 1 : receiver_id,
 				for_admin: this.isAdminChat ? user.userType : "normal",
+			}}) : 
+			await finddoApi.post("/chats/admin", {chat: {
+				message: rest.message,
+				receiver_id: this.isAdminChat ? 1 : receiver_id,
 			}});
 
 			runInAction(() => this.updateChat());

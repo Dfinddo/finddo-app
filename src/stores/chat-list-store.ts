@@ -18,7 +18,7 @@ class ChatListStore {
 	private page = 1;
 
   @observable
-	private total = 1;
+	private totalPages = 1;
 
 	@action
 	public async fetchChats(): Promise<void> {
@@ -42,7 +42,7 @@ class ChatListStore {
 				this.list = chats;
 				this.listAdmConversation = chatsAdm;
         this.page = response.data.page;
-        this.total = response.data.total;
+        this.totalPages = response.data.total;
       });
 		} catch (error) {
 			if (error.response) throw new Error("Invalid card data");
@@ -53,7 +53,7 @@ class ChatListStore {
 
 	@action
 	public async updateChats(): Promise<void> {
-    if(this.page + 1 > this.total) {
+    if(this.page + 1 > this.totalPages) {
       return;
     }
 
@@ -73,7 +73,7 @@ class ChatListStore {
       runInAction(() => {
         this.list = [...this.list, ...chats];
         this.page = response.data.page;
-        this.total = response.data.total;
+        this.totalPages = response.data.total;
       });
 		} catch (error) {
 			if (error.response) throw new Error("Invalid card data");

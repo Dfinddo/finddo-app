@@ -21,7 +21,6 @@ import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import { BACKEND_URL_STORAGE } from "config";
-import ChatListStore from "stores/chat-list-store";
 
 type ChatListScreenProps = StackScreenProps<
 	AppDrawerParams,
@@ -39,6 +38,7 @@ const ChatList = observer<ChatListScreenProps>(props => {
 
 		try {
 			await chatListStore.fetchChats();
+
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -54,13 +54,6 @@ const ChatList = observer<ChatListScreenProps>(props => {
 	}, [chatListStore]);
 
 	useEffect(() => void getChats(), [getChats]);
-
-	// const handleChangeChatList = async (index: number): Promise<void> => {
-	// 	console.log(index)
-	// 	setIndex(index);
-	// 	index === 1 ? await chatListStoreAdmin.fetchChats() : 
-	// 	await chatListStoreService.fetchChats();
-	// };
 
 	const handleExpandList = useCallback(async()=>{
 		try {
@@ -148,7 +141,9 @@ const styles = StyleSheet.create({
 	// backgroundImageContent: {width: "100%", height: "100%"},
 	listContainer: {
 		alignSelf: "center",
-    width:"90%",
+		width:"90%",
+		backgroundColor: "transparent",
+		marginTop: 8,
   },
 	listItem: {
 		height: 80,
@@ -160,7 +155,7 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		fontSize: 20,
-		fontWeight: "500",
+		fontWeight: "700",
 	},
 	// description: {
 	// 	fontSize: 14,

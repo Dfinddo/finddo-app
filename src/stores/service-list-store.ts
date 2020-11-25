@@ -26,10 +26,10 @@ class ServiceListStore {
 			const endpoint =
 				// eslint-disable-next-line no-nested-ternary
 				userStore.userType === "user"
-					? `/orders/user/${userStore.id}/active`
+					? `/orders/user/active`
 					: !isProfessionalListService
 					? "/orders/available"
-					: `orders/active_orders_professional/${userStore.id}`;
+					: `orders/active_orders_professional`;
 
 			const response = await finddoApi.get(`${endpoint}/?page=1`);
 
