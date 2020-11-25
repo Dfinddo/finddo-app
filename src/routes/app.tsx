@@ -87,6 +87,7 @@ const NewServiceRoute: FC = () => {
 		<NewServiceStack.Navigator
 			screenOptions={screenOptions}
 			initialRouteName="ServiceCategories"
+			headerMode="none"
 		>
 			<NewServiceStack.Screen
 				name="ServiceCategories"

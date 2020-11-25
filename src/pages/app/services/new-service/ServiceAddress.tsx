@@ -147,12 +147,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "flex-start",
 		flexDirection: "row",
-		maxWidth: Math.round(Dimensions.get('window').width)*0.95,
+		maxWidth: Math.round(Dimensions.get('window').width)*0.90,
 		margin: 16,
 	},
 	searchAddress: {
 		height: 26,
-		alignSelf: "center",
 		borderBottomRightRadius: 0,
 		borderTopRightRadius: 0,
 	},

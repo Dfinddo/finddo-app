@@ -105,7 +105,7 @@ const AddPhotoButton = observer(() => {
 					ImagePicker.openPicker({
 						includeBase64: true,
 						multiple: true,
-					}).then(image => {
+					}).then((image: unknown) => {
 						serviceStore.images = serviceStore.images.concat(
 							image as ImageProps,
 						);
