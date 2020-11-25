@@ -5,6 +5,7 @@ import {observable, action, runInAction} from "mobx";
 
 import finddoApi, {ChatApiResponse} from "finddo-api";
 import UserStore from "./user-store";
+import {createAutomaticMessage, CreateMessageData} from "../utils/automaticMessage";
 
 export interface Message {
 	id: string;
@@ -175,10 +176,26 @@ class ChatStore {
 			}}) : 
 			await finddoApi.post("/chats/admin", {chat: {
 				message: rest.message,
-				receiver_id: this.isAdminChat ? 1 : receiver_id,
+				receiver_id: 1,
 			}});
 
 			runInAction(() => this.updateChat());
+		} catch (error) {
+			if (error.response) throw new Error("Invalid chat data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	};
+
+	static sendAutomaticMessageAdm = async (data: CreateMessageData): Promise<void> => {
+		try {
+			await finddoApi.post("/chats/admin", {chat: {
+				order_id: data.order.id,
+				message: createAutomaticMessage(data),
+				receiver_id:  1,
+				for_admin: data.user.userType
+			}});
+
 		} catch (error) {
 			if (error.response) throw new Error("Invalid chat data");
 			else if (error.request) throw new Error("Connection error");

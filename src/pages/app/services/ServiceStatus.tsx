@@ -17,6 +17,7 @@ import {ScrollView} from "react-native-gesture-handler";
 import TimeLineStatus from "components/TimeLineStatus";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {ServiceStatusEnum} from "finddo-api";
+import ChatStore from "stores/chat-store";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -81,14 +82,31 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 
 			try {
 				Alert.alert("Finddo", "Deseja cancelar o pedido?", [
-					{text: "Sim"},
 					{
-						text: "Não",
-						onPress: () =>
-							serviceStore?.cancelOrder().then(() => {
-								navigation.goBack();
-							}),
+						text: "Sim",
+						onPress: async () => {
+							setIsLoading(true);
+							
+							try {			
+								if(!serviceStore) throw new Error("É preciso existir um serviço");
+
+								await ChatStore.sendAutomaticMessageAdm({
+									user: userStore,
+									order: serviceStore,
+									reason: "cancel",
+								});
+								// serviceStore?.cancelOrder().then(() => {
+								// 	navigation.goBack();
+								// })
+								Alert.alert("Foi enviado uma mensagem automática para o suporte. Clique no chat para acompanhar o processo")
+							} catch (error) {
+								throw new Error("Houve um erro ao tentar cancelar o pedido");
+							} finally {
+								setIsLoading(false);
+							}
+						},
 					},
+					{text: "Não"},
 				]);
 
 				await serviceStore?.refreshServiceData();
