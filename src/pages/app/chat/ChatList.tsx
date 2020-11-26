@@ -15,7 +15,7 @@ import {
 	Tab,
 	TabView,
 } from "@ui-kitten/components";
-import { useChatList} from "hooks";
+import { useChatList } from "hooks";
 import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -64,18 +64,20 @@ const ChatList = observer<ChatListScreenProps>(props => {
 		}
 	}, [chatListStore]);
 
-	function handleSubmit(
+	function handleSubmit (data: {
 		id: number, 
+		another_user_id: number,
 		title: string, 
 		photo: string|null,
-	): void {
+	}): void {
 		props.navigation.navigate("Chat",{
-			order_id: id, 
-			title, 
-			photo, 
+			order_id: data.id, 
+			receiver_id: data.another_user_id,
+			title: data.title, 
+			photo: data.photo, 
 			isAdminChat: chatListStore.isAdminChat,
 		});
-	}
+	};
 
 	const getChatListView = (chatList: typeof chatListStore.list): JSX.Element => (
 		<List
@@ -91,11 +93,12 @@ const ChatList = observer<ChatListScreenProps>(props => {
 							key={index}
 							style={styles.listItem}
 							onPress={() => {
-							handleSubmit(
-								Number(item.order_id), 
-								item.title, 
-								item.receiver_profile_photo ? item.receiver_profile_photo.photo : null,
-								)
+							handleSubmit({
+								id: item.order_id, 
+								another_user_id: item.another_user_id,
+								title: item.title, 
+								photo: item.receiver_profile_photo ? item.receiver_profile_photo.photo : null,
+								})
 							}}
 							title={(props)=><Text {...props} style={styles.title}>
 								{item.title}

@@ -293,6 +293,7 @@ export type AppDrawerParams = {
 	Help: undefined;
 	Chat: {
 		order_id: number, 
+		receiver_id: number,
 		title: string, 
 		photo?: string | null,
 		isAdminChat: boolean,

@@ -17,20 +17,17 @@ import {
 import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
-import { useChat, useServiceList, useUser } from "hooks";
-import ServiceStore from "stores/service-store";
+import { useChat, useUser } from "hooks";
 import { Message } from "stores/chat-store";
 import { BACKEND_URL_STORAGE } from "config";
-import finddoApi from "finddo-api";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 
 const Chat = observer<ProfileScreenProps>(props => {
-	const { order_id, title, photo=null } = props.route.params;
+	const { order_id, receiver_id, title, photo=null } = props.route.params;
 	const styles = useStyleSheet(themedStyles);
 	const chatStore = useChat();
 	const userStore = useUser();
-	const serviceListStore = useServiceList();
 	const [loading, setIsLoading] = React.useState(false);
 	const [message, setMessage] = React.useState("");
 
@@ -60,23 +57,9 @@ const Chat = observer<ProfileScreenProps>(props => {
 	const onSendButtonPress = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			let order = serviceListStore.list.find(element => element.id === order_id);
-
-			if(userStore.userType === "professional"){
-				const response = await finddoApi.get(`orders/${order_id}`);
-
-				order = ServiceStore.createFromApiResponse(response.data);
-			}
-
-			if(!order || !order.userID || !order.professional_order?.id) {
-				throw new Error("Pedido não localizado");
-			}
-
 			await chatStore.saveNewMessage({
-				order_id: String(order_id), 
-				receiver_id: userStore.id !== String(order.userID) ? 
-					String(order.userID) : 
-					String(order.professional_order.id),
+				order_id, 
+				receiver_id,
 				message,
 			}, userStore);
 		} catch (error) {

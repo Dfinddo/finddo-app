@@ -30,7 +30,7 @@ interface ImageProps {
 }
 
 const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
-	const [isLoading, setIsLoading] = useState(false);
+	// const [isLoading, setIsLoading] = useState(false);
 	const windowWidth = useWindowDimensions().width;
 	const serviceStore = useService();
 	const selectedCategory = serviceCategories[serviceStore.categoryID!];
@@ -58,7 +58,7 @@ const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
 	return (
 		<ScrollView>
 		<Layout level="2" style={styles.container}>
-			<TaskAwaitIndicator isAwaiting={isLoading} />
+			{/* <TaskAwaitIndicator isAwaiting={isLoading} /> */}
 			<Image
 				source={selectedCategory.imageUrl}
 				style={styles.categoryImage}

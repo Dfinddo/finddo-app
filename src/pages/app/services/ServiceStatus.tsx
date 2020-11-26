@@ -1,6 +1,4 @@
 /* eslint-disable no-nested-ternary */
-/* eslint-disable no-empty-function */
-/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable react-native/no-color-literals */
 import React, {useEffect, useState, useCallback} from "react";
 import {Alert, StyleSheet, ImageBackground} from "react-native";
@@ -122,7 +120,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 			} finally {
 				setIsLoading(false);
 			}
-		}, [serviceStore, navigation]);
+		}, [serviceStore, userStore]);
 
 		const handleServiceClosure = useCallback(() => {
 			if (serviceStore)

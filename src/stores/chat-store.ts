@@ -8,9 +8,9 @@ import UserStore from "./user-store";
 import {createAutomaticMessage, CreateMessageData} from "../utils/automaticMessage";
 
 export interface Message {
-	id: string;
-	order_id: string;
-	receiver_id: string
+	id: number;
+	order_id: number;
+	receiver_id: number;
 	is_read: boolean;
 	message: string;
 	// for_admin: string;
@@ -45,6 +45,8 @@ class ChatStore {
 		isAdminChat: boolean, 
 		isGlobalChat= false
 	): Promise<void> {
+		this.chat = [];
+
 		try {
 			const response = !isAdminChat ? await finddoApi.get(`chats/order`, {
 				params: {
@@ -90,7 +92,7 @@ class ChatStore {
 			let chatList: ChatApiResponse[] = [];
 			let {total} = this;
 
-			for (let index = 1; index <= this.page + 1; index++) {
+			for (let index = 1; index <= this.page; index++) {
 				const response = !this.isAdminChat ? await finddoApi.get(`chats/order`, {
 					params: {
 						page: index, 
