@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useCallback, FC} from "react";
 import {
 	BottomNavigation as BottomNavigationKitten,
@@ -14,7 +15,7 @@ const PersonIcon = (props: IconProps): JSX.Element => (
 	<Icon {...props} name="person-outline" />
 );
 const InfoIcon = (props: IconProps): JSX.Element => (
-	<Icon {...props} name="alert-circle-outline" />
+	<Icon {...props} name="question-mark-circle-outline" />
 );
 const ChatIcon = (props: IconProps): JSX.Element => (
 	<Icon {...props} name="message-square-outline" />
@@ -46,7 +47,12 @@ const BottomNavigation: FC = ({children}) => {
 				break;
 
 			case 3:
-				RootNavigation.navigate("Help");
+				RootNavigation.navigate("Chat", {
+					order_id: 170, 
+					receiver_id: 1,
+					title: "Suporte", 
+					isAdminChat: true,
+				});
 				break;
 
 			default:

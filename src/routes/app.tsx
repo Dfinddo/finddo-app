@@ -216,6 +216,7 @@ const DrawerContentUser: FC<DrawerContentComponentProps> = ({
 			title="Perfil"
 			onPress={() => navigation.navigate("Profile")}
 		/>
+		<DrawerItem title="Chat" onPress={() => navigation.navigate("ChatList")} />
 		<DrawerItem
 			title="Endereços Cadastrados"
 			onPress={() => navigation.navigate("Addresses")}
@@ -225,7 +226,6 @@ const DrawerContentUser: FC<DrawerContentComponentProps> = ({
 			onPress={() => navigation.navigate("PaymentMethods")}
 		/>
 		<DrawerItem title="Sobre" onPress={() => navigation.navigate("Help")} />
-		<DrawerItem title="Chat" onPress={() => navigation.navigate("ChatList")} />
 	</Drawer>
 );
 
@@ -242,12 +242,12 @@ const DrawerContentProfessional: FC<DrawerContentComponentProps> = ({
 			title="Perfil"
 			onPress={() => navigation.navigate("Profile")}
 		/>
+		<DrawerItem title="Chat" onPress={() => navigation.navigate("ChatList")} />
 		<DrawerItem
 			title="Endereços Cadastrados"
 			onPress={() => navigation.navigate("Addresses")}
 		/>
 		<DrawerItem title="Sobre" onPress={() => navigation.navigate("Help")} />
-		<DrawerItem title="Chat" onPress={() => navigation.navigate("ChatList")} />
 	</Drawer>
 );
 
