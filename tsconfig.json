@@ -90,5 +90,6 @@
 		"metro.config.js",
 		"jest.config.js"
 	],
+	"useDefineForClassFields": true,
 	"forceConsistentCasingInFileNames": true // Disallow inconsistently-cased references to the same file.
 }

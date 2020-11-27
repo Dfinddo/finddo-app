@@ -1,5 +1,4 @@
 import "react-native-gesture-handler";
-import "mobx-react-lite/batchingForReactNative";
 import React, {useEffect, FC} from "react";
 import {NavigationContainer} from "@react-navigation/native";
 import {
@@ -12,6 +11,17 @@ import {finddoLightTheme, finddoDarkTheme} from "themes";
 import Routes from "routes";
 import {useUser} from "hooks";
 import {navigationRef} from "./routes/rootNavigation";
+import { configure } from "mobx"
+
+configure({
+		// useProxies: "never",
+		// enforceActions: "always",
+		enforceActions: 'observed',
+    computedRequiresReaction: true,
+    reactionRequiresObservable: true,
+    observableRequiresReaction: true,
+    // disableErrorBoundaries: true
+})
 
 const App: FC = () => {
 	const userStore = useUser();

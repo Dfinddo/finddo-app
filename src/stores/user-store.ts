@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/naming-convention */
-import {observable, computed, action, runInAction} from "mobx";
+import {observable, computed, action, runInAction, makeObservable} from "mobx";
 import {format} from "date-fns";
 import {validations, validateInput} from "utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -62,9 +63,12 @@ class UserStore {
 
 	@observable public rate: number | undefined;
 
+	constructor() {
+		makeObservable(this)
+	}
+
 	public billingAddress = new AddressStore();
 
-	@action
 	public static createFromApiResponse(
 		apiResponse: UserApiResponse,
 	): UserStore {
@@ -106,8 +110,8 @@ class UserStore {
 			// await finddoApi.put(`users/player_id_notifications/${this.id}`,
 			// 	{player_id: this.oneSignalID});
 
-			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
-			AsyncStorage.setItem("user", JSON.stringify(this));
+			await AsyncStorage.setItem("access-token", JSON.stringify(jwt));
+			await AsyncStorage.setItem("user", JSON.stringify(this));
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
