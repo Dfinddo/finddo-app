@@ -36,7 +36,7 @@ android/app/res/
 android/app/bin/
 
 # credentials
-config/*.js
+.env
 
 # auto generated files
 src/assets/licenses.json

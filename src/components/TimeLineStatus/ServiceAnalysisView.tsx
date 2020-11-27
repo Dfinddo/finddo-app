@@ -5,7 +5,7 @@ import {Avatar, Icon, Text} from "@ui-kitten/components";
 import {ServicesStackParams} from "src/routes/app";
 import ServiceStore from "stores/service-store";
 import UserStore from "stores/user-store";
-import {BACKEND_URL_STORAGE} from "config";
+import {BACKEND_URL_STORAGE} from "@env";
 
 interface ServiceAnalysisViewProps {
 	userStore: UserStore;

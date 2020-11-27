@@ -19,7 +19,7 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import { useChat, useUser } from "hooks";
 import { Message } from "stores/chat-store";
-import { BACKEND_URL_STORAGE } from "config";
+import { BACKEND_URL_STORAGE } from "@env";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 

@@ -17,7 +17,7 @@ import {serviceCategories, serviceStatusDescription} from "finddo-api";
 
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {priceFormatter} from "utils";
-import {BACKEND_URL_STORAGE} from "config";
+import {BACKEND_URL_STORAGE} from "@env";
 
 import {star} from "assets/svg/star";
 import {starSolid} from "assets/svg/star-solid";

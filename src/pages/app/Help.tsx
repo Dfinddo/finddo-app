@@ -19,7 +19,7 @@ import {
 	List,
 	ListItem,
 } from "@ui-kitten/components";
-import {PHONE} from "config";
+import {PHONE} from "@env";
 import licenses from "assets/licenses.json";
 
 const openChat = (): void => {

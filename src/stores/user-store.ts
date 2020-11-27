@@ -4,7 +4,7 @@ import {format} from "date-fns";
 import {validations, validateInput} from "utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import finddoApi, { UserApiResponse } from "finddo-api";
-import {BACKEND_URL, BACKEND_URL_STORAGE} from "config";
+import {BACKEND_URL, BACKEND_URL_STORAGE} from "@env";
 import AddressStore from "./address-store";
 // import {Alert} from "react-native";
 

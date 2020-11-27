@@ -20,7 +20,7 @@ import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
-import { BACKEND_URL_STORAGE } from "config";
+import { BACKEND_URL_STORAGE } from "@env";
 
 type ChatListScreenProps = StackScreenProps<
 	AppDrawerParams,

@@ -6,7 +6,7 @@ import {format} from "date-fns";
 
 import {RSA} from "react-native-rsa-native";
 import {MoipCreditCard} from "moip-sdk-js";
-import {MOIP_CREDS_DATA} from "config";
+import {MOIP_CREDS_DATA} from "@env";
 
 const numberTests = [
 	validations.required(),

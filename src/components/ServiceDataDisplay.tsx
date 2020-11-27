@@ -14,7 +14,7 @@ import {observer} from "mobx-react-lite";
 import ImageView from "react-native-image-viewing";
 import Carousel from "react-native-snap-carousel";
 import ServiceStore from "stores/service-store";
-import {BACKEND_URL_STORAGE} from "config";
+import {BACKEND_URL_STORAGE} from "@env";
 import {format} from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import {priceFormatter} from "utils";
