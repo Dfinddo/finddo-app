@@ -1,5 +1,5 @@
 import axios from "axios";
-import {BACKEND_URL} from "config/credentials";
+import {BACKEND_URL} from "@env";
 
 const finddoApi = axios.create({
 	baseURL: BACKEND_URL,
