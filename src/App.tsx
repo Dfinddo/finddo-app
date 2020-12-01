@@ -2,7 +2,7 @@
 /* eslint-disable line-comment-position */
 /* eslint-disable no-inline-comments */
 import "react-native-gesture-handler";
-import "mobx-react-lite/batchingForReactNative";
+// import "mobx-react-lite/batchingForReactNative";
 import React, {useEffect, FC} from "react";
 import {NavigationContainer} from "@react-navigation/native";
 import {

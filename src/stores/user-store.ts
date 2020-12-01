@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import finddoApi, { UserApiResponse } from "finddo-api";
 import {BACKEND_URL, BACKEND_URL_STORAGE} from "@env";
 import AddressStore from "./address-store";
+// import OneSignal from "react-native-onesignal";
 // import {Alert} from "react-native";
 
 const firstNameTests = [validations.required(), validations.maxLength(70)];
@@ -108,6 +109,21 @@ class UserStore {
 
 			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
 			AsyncStorage.setItem("user", JSON.stringify(this));
+
+			// let myCustomUniqueUserId = "something from my backend server";
+
+			// OneSignal.push(function() {
+			// 	OneSignal.on('subscriptionChange', function(isSubscribed) {
+			// 		if (isSubscribed) {
+			// 			// The user is subscribed
+			// 			//   Either the user subscribed for the first time
+			// 			//   Or the user was subscribed -> unsubscribed -> subscribed
+			// 			OneSignal.push(function() {
+			// 				OneSignal.setExternalUserId(myCustomUniqueUserId);
+			// 			});
+			// 		}
+			// 	});
+			// });
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});

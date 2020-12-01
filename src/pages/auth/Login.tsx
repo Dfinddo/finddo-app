@@ -28,6 +28,7 @@ const Login = observer<LoginScreenProps>(props => {
 		try {
 			await userStore.signIn(email, password);
 		} catch (error) {
+			console.log(error);
 			if (error.message === "Invalid credentials")
 				Alert.alert("Email ou senha incorretos");
 			else if (error.message === "Connection error")
