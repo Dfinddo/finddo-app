@@ -72,9 +72,9 @@ const App: FC = () => {
 		OneSignal.addEventListener('ids', onIds);
 		
 		return () => {
-					OneSignal.removeEventListener('received', onReceived);
-					OneSignal.removeEventListener('opened', onOpened);
-					OneSignal.removeEventListener('ids', onIds);
+			OneSignal.removeEventListener('received', onReceived);
+			OneSignal.removeEventListener('opened', onOpened);
+			OneSignal.removeEventListener('ids', onIds);
 		}
 	}, [userStore]);
 
