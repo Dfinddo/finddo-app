@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import finddoApi, { UserApiResponse } from "finddo-api";
 import {BACKEND_URL, BACKEND_URL_STORAGE} from "@env";
 import AddressStore from "./address-store";
+import OneSignal from "react-native-onesignal";
 // import OneSignal from "react-native-onesignal";
 // import {Alert} from "react-native";
 
@@ -110,6 +111,20 @@ class UserStore {
 			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
 			AsyncStorage.setItem("user", JSON.stringify(this));
 
+			OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
+				await finddoApi.get('notification/get_player_id', {
+					params: {
+						player_id: status.userId,
+					}
+				});
+		});
+
+			// await finddoApi.post("notification", {
+      //   "user_id": 68,
+      //   "data": "" ,
+      //   "content": "Wow!"
+    	// });
+
 			// let myCustomUniqueUserId = "something from my backend server";
 
 			// OneSignal.push(function() {
@@ -146,6 +161,8 @@ class UserStore {
 		// finddoApi.delete(
 		// 	`users/remove_player_id_notifications/${this.id}/${tokenService.getPlayerIDOneSignal()}`,
 		// );
+
+		OneSignal.removeExternalUserId();
 
 		delete finddoApi.defaults.headers.Authorization;
 	};

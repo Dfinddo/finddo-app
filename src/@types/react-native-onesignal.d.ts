@@ -243,5 +243,11 @@ declare module 'react-native-onesignal' {
        * @param {Function} handler (Optional) Handler function for solo remove.
        */
       public static removeEventListener(type: oneSignalEvents, handler?: Function): void;
+
+      // Use external user id
+      public static setExternalUserId(user_id: string): void;
+      
+      public static removeExternalUserId(): void;
+
   }
 }
