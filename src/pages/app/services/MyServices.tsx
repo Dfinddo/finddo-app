@@ -219,6 +219,17 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 										fill={"#AAA"}
 									/>
 								)}
+								accessoryLeft={props => (
+										<>
+											{item.urgency === "urgent" && <Icon
+												{...props}
+												style={styles.icon}
+												name="bell"
+												fill={"#c6d316"}
+											/>}
+									</>
+									)
+								}
 							/>
 						)}
 					/>

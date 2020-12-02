@@ -7,7 +7,6 @@ import finddoApi, { UserApiResponse } from "finddo-api";
 import {BACKEND_URL, BACKEND_URL_STORAGE} from "@env";
 import AddressStore from "./address-store";
 import OneSignal from "react-native-onesignal";
-// import OneSignal from "react-native-onesignal";
 // import {Alert} from "react-native";
 
 const firstNameTests = [validations.required(), validations.maxLength(70)];
@@ -112,12 +111,12 @@ class UserStore {
 			AsyncStorage.setItem("user", JSON.stringify(this));
 
 			OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
-				await finddoApi.get('notification/get_player_id', {
+				await finddoApi.get('users/set_player_id', {
 					params: {
 						player_id: status.userId,
 					}
 				});
-		});
+			});
 
 			// await finddoApi.post("notification", {
       //   "user_id": 68,
@@ -151,16 +150,18 @@ class UserStore {
 	public signOut = async (): Promise<void> => {
 		await AsyncStorage.multiRemove(["user", "access-token"]);
 
+		OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
+			await finddoApi.delete(
+				`users/remove_player_id_notifications/${this.id}/${status.userId}`,
+			);
+		});
+
 		(["id", "email", "cellphone", "name", "surname", "cpf"] as const).forEach(
 			field => (this[field] = ""),
 		);
 		this.userType = "user";
 
 		this.birthdate = new Date();
-
-		// finddoApi.delete(
-		// 	`users/remove_player_id_notifications/${this.id}/${tokenService.getPlayerIDOneSignal()}`,
-		// );
 
 		OneSignal.removeExternalUserId();
 

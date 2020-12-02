@@ -5,10 +5,11 @@ import {
 	KeyboardAvoidingView,
 	Alert,
 	StyleSheet,
+	TouchableWithoutFeedback,
 } from "react-native";
 import {SvgXml} from "react-native-svg";
 import {finddoLogo} from "../../assets/svg/finddo-logo";
-import {Input, Button, Text, Layout} from "@ui-kitten/components";
+import {Input, Button, Text, Layout, Icon, IconProps} from "@ui-kitten/components";
 import {observer} from "mobx-react-lite";
 import {useUser} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -22,13 +23,24 @@ const Login = observer<LoginScreenProps>(props => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [secureTextEntry, setSecureTextEntry] = useState(true);
+
+	const toggleSecureEntry = (): void => {
+    setSecureTextEntry(!secureTextEntry);
+  };
+
+  const renderIcon = (props: IconProps): JSX.Element => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'}/>
+    </TouchableWithoutFeedback>
+  );
 
 	const login = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 		try {
 			await userStore.signIn(email, password);
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			if (error.message === "Invalid credentials")
 				Alert.alert("Email ou senha incorretos");
 			else if (error.message === "Connection error")
@@ -65,9 +77,10 @@ const Login = observer<LoginScreenProps>(props => {
 					/>
 					<Input
 						label="Senha"
-						onChangeText={setPassword}
 						value={password}
-						secureTextEntry={true}
+						onChangeText={setPassword}
+						accessoryRight={renderIcon}
+						secureTextEntry={secureTextEntry}
 					/>
 					<Text
 						style={styles.loginEsqueciSenha}
@@ -97,7 +110,7 @@ export default Login;
 
 const styles = StyleSheet.create({
 	container: {flex: 1},
-	modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
+	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 	finddoLogoStyle: {marginTop: 25, marginBottom: 120},
 	loginForm: {
 		flex: 1,

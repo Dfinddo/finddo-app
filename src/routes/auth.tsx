@@ -19,6 +19,7 @@ const RegisterRoute = (): JSX.Element => {
 		<RegisterStack.Navigator
 			screenOptions={screenOptions}
 			initialRouteName="SelectUserType"
+			headerMode="none"
 		>
 			<RegisterStack.Screen
 				name="SelectUserType"
