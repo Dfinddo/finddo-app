@@ -205,6 +205,7 @@ class ServiceStore {
 	public async budgetApprove(accepted: boolean): Promise<void> {
 		try {
 			await finddoApi.post("/orders/propose_budget", {
+				budget: this.budget,
 				id: this.id,
 				accepted,
 			});
