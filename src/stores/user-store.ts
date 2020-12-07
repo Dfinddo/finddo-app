@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/naming-convention */
-import {observable, computed, action, runInAction} from "mobx";
+import { observable, computed, action, runInAction, makeObservable } from "mobx";
 import {format} from "date-fns";
 import {validations, validateInput} from "utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,52 +21,57 @@ const cellphoneTests = [validations.required(), validations.definedLength(11)];
 const cpfTests = [validations.required(), validations.definedLength(11)];
 
 class UserStore {
-	@observable public userType: "user" | "professional" = "user";
+    @observable public userType: "user" | "professional" = "user";
 
-	@observable public id = "";
+    @observable public id = "";
 
-	@observable public profilePicture = require("../assets/sem-foto.png");
+    @observable public profilePicture = require("../assets/sem-foto.png");
 
-	@observable public name = "";
-	@computed public get nameError(): string | undefined {
+    @observable public name = "";
+
+    constructor() {
+        makeObservable(this);
+    }
+
+    @computed public get nameError(): string | undefined {
 		return validateInput(this.name, firstNameTests);
 	}
 
-	@observable public surname = "";
-	@computed public get surnameError(): string | undefined {
+    @observable public surname = "";
+    @computed public get surnameError(): string | undefined {
 		return validateInput(this.surname, nameTests);
 	}
 
-	@observable public mothersName = "";
-	@computed public get mothersNameError(): string | undefined {
+    @observable public mothersName = "";
+    @computed public get mothersNameError(): string | undefined {
 		return validateInput(this.mothersName, nameTests);
 	}
 
-	@observable public email = "";
-	@computed public get emailError(): string | undefined {
+    @observable public email = "";
+    @computed public get emailError(): string | undefined {
 		return validateInput(this.email, emailTests);
 	}
 
-	@observable public cellphone = "";
-	@computed public get cellphoneError(): string | undefined {
+    @observable public cellphone = "";
+    @computed public get cellphoneError(): string | undefined {
 		return validateInput(this.cellphone, cellphoneTests);
 	}
 
-	@observable public cpf = "";
-	@computed public get cpfError(): string | undefined {
+    @observable public cpf = "";
+    @computed public get cpfError(): string | undefined {
 		return validateInput(this.cpf, cpfTests);
 	}
 
-	@observable public birthdate: Date = new Date();
-	@computed public get birthdateError(): string | undefined {
+    @observable public birthdate: Date = new Date();
+    @computed public get birthdateError(): string | undefined {
 		if (!this.birthdate) return "Required";
 	}
 
-	@observable public rate: number | undefined;
+    @observable public rate: number | undefined;
 
-	public billingAddress = new AddressStore();
+    public billingAddress = new AddressStore();
 
-	@action
+    @action
 	public static createFromApiResponse(
 		apiResponse: UserApiResponse,
 	): UserStore {
@@ -76,7 +82,7 @@ class UserStore {
 		return userStore;
 	}
 
-	public isRegistered = async (): Promise<boolean> => {
+    public isRegistered = async (): Promise<boolean> => {
 		try {
 			await finddoApi.get(
 				`/users?email=${this.email}&cellphone=${this.cellphone}&cpf=${this.cpf}`,
@@ -90,7 +96,7 @@ class UserStore {
 		}
 	};
 
-	public signIn = async (email: string, password: string): Promise<void> => {
+    public signIn = async (email: string, password: string): Promise<void> => {
 		try {
 			const response = await finddoApi.post("/login", {email, password});
 			const {jwt} = response.data;
@@ -147,7 +153,7 @@ class UserStore {
 		}
 	};
 
-	public signOut = async (): Promise<void> => {
+    public signOut = async (): Promise<void> => {
 		await AsyncStorage.multiRemove(["user", "access-token"]);
 
 		OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
@@ -168,7 +174,7 @@ class UserStore {
 		delete finddoApi.defaults.headers.Authorization;
 	};
 
-	public signUp = async (
+    public signUp = async (
 		password: string,
 		password_confirmation: string,
 	): Promise<void> => {
@@ -231,7 +237,7 @@ class UserStore {
 		}
 	};
 
-	public restoreSession = async (): Promise<void> => {
+    public restoreSession = async (): Promise<void> => {
 		const [userData, jwt] = (
 			await AsyncStorage.multiGet(["user", "access-token"])
 		).map(([, value]) => value && JSON.parse(value));
@@ -242,7 +248,7 @@ class UserStore {
 		Object.assign(this, userData);
 	};
 
-	@action
+    @action
 	public getProfilePicture = async (): Promise<void> => {
 		try {
 			const data = await finddoApi.get(`/users/profile_photo/${this.id}`);
@@ -259,7 +265,7 @@ class UserStore {
 		}
 	};
 
-	@action
+    @action
 	public setProfilePicture = async (profilePicture: {
 		data: string;
 	}): Promise<void> => {
@@ -287,7 +293,7 @@ class UserStore {
 		}
 	};
 
-	public recoverPassword = async (email: string): Promise<void> => {
+    public recoverPassword = async (email: string): Promise<void> => {
 		try {
 			await finddoApi.post("auth/password", {
 				email,

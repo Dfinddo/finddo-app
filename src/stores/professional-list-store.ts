@@ -1,19 +1,24 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/naming-convention */
-import {observable, action, runInAction} from "mobx";
+import { observable, action, runInAction, makeObservable } from "mobx";
 import UserStore from "stores/user-store";
 import finddoApi, { UserApiResponse} from "finddo-api";
 
 class ProfessionalsListStore {
-	@observable
+    @observable
 	public list: UserStore[] = [];
 
-	@observable
+    @observable
 	public current_page: number|undefined;
 
-	@observable
+    @observable
 	public total_pages: number|undefined;
 
-	@action
+    constructor() {
+        makeObservable(this);
+    }
+
+    @action
 	public async fetchProfessionals(name: string, page = 1): Promise<void> {
 		try {
 			const response = await finddoApi.post(`/users/find_by_name`, {

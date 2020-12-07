@@ -1,13 +1,18 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable class-methods-use-this */
-import {observable, action, runInAction} from "mobx";
+import { observable, action, runInAction, makeObservable } from "mobx";
 // import CardStore from "stores/card-store";
 import finddoApi, {CardApiResponse} from "finddo-api";
 
 class CardListStore {
-	@observable
+    @observable
 	public list: CardApiResponse[] = [];
 
-	@action
+    constructor() {
+        makeObservable(this);
+    }
+
+    @action
 	public async fetchCards(): Promise<void> {
 		try {
 			const response = await finddoApi.get(`/users/get_credit_card`);
@@ -21,7 +26,7 @@ class CardListStore {
 		}
 	}
 
-	@action
+    @action
 	public async removeCard(id: string): Promise<void> {
 		try {
 			await finddoApi.delete(`/users/credit_card/${id}`);

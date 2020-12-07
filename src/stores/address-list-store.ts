@@ -1,13 +1,18 @@
-import {observable, action, runInAction} from "mobx";
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+import { observable, action, runInAction, makeObservable } from "mobx";
 import AddressStore from "stores/address-store";
 import UserStore from "stores/user-store";
 import finddoApi, {AddressApiResponse} from "finddo-api";
 
 class AddressListStore {
-	@observable
+    @observable
 	public list: AddressStore[] = [];
 
-	@action
+    constructor() {
+        makeObservable(this);
+    }
+
+    @action
 	public async fetchAddresses(userStore: UserStore): Promise<void> {
 		try {
 			const data = await finddoApi.get(`/addresses/user/${userStore.id}`);

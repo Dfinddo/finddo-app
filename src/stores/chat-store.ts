@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/naming-convention */
-import {observable, action, runInAction} from "mobx";
+import { observable, action, runInAction, makeObservable } from "mobx";
 
 import finddoApi, {ChatApiResponse} from "finddo-api";
 import UserStore from "./user-store";
@@ -17,19 +17,23 @@ export interface Message {
 }
 
 class ChatStore {
-	@observable order_id = "";
+    @observable order_id = "";
 
-	@observable public chat: Message[] = [];
+    @observable public chat: Message[] = [];
 
-	@observable private isAdminChat = false;
+    @observable private isAdminChat = false;
 
-	@observable private isGlobalChat = false;
+    @observable private isGlobalChat = false;
 
-	@observable private page= 1;
+    @observable private page= 1;
 
-	@observable private total= 1;
-	
-	createMessageFromApiResponse(
+    @observable private total= 1;
+
+    constructor() {
+        makeObservable<ChatStore, "isAdminChat" | "isGlobalChat" | "page" | "total">(this);
+    }
+
+    createMessageFromApiResponse(
 		apiResponse: ChatApiResponse,
 	): Message {
 		const chatStore: Message = {} as Message;
@@ -39,7 +43,7 @@ class ChatStore {
 		return chatStore;
 	}
 
-	@action
+    @action
 	public async fetchChat(
 		order_id: string, 
 		isAdminChat: boolean, 
@@ -86,7 +90,7 @@ class ChatStore {
 		}
 	}
 
-	@action
+    @action
 	public async updateChat(): Promise<void> {
 		try {
 			let chatList: ChatApiResponse[] = [];
@@ -134,7 +138,7 @@ class ChatStore {
 		}
 	}
 
-	@action
+    @action
 	public async expandChat(): Promise<void> {
 		try {
 			const response = this.isAdminChat ? await finddoApi.get(`chats/order`, {
@@ -168,7 +172,7 @@ class ChatStore {
 		}
 	}
 
-	@action
+    @action
 	public saveNewMessage = async ({receiver_id, ...rest}: Omit<Message, "id" | "is_read">, user: UserStore): Promise<void> => {
 		try {
 			!this.isGlobalChat ? await finddoApi.post("/chats", {chat: {
@@ -189,7 +193,7 @@ class ChatStore {
 		}
 	};
 
-	static sendAutomaticMessageAdm = async (data: CreateMessageData): Promise<void> => {
+    static sendAutomaticMessageAdm = async (data: CreateMessageData): Promise<void> => {
 		try {
 			await finddoApi.post("/chats/admin", {chat: {
 				order_id: data.order.id,

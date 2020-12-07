@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/naming-convention */
-import {observable, computed, action, runInAction} from "mobx";
+import { observable, computed, action, runInAction, makeObservable } from "mobx";
 import {validations, validateInput, pick} from "utils";
 import AddressStore from "stores/address-store";
 import finddoApi, {
@@ -44,85 +45,90 @@ const addressApiFields = [
 ] as const;
 
 class ServiceStore {
-	@observable
+    @observable
 	public id: number | null = null;
 
-	@observable
+    @observable
 	public userID: number | null = null;
 
-	@observable
+    @observable
 	public categoryID: keyof typeof serviceCategories | null = null;
 
-	@observable
+    @observable
 	public categoryName: string | null = null;
 
-	@observable
+    @observable
 	public status: ServiceStatus = "" as ServiceStatus;
 
-	@observable
+    @observable
 	public previous_budget = false;
 
-	@observable
+    @observable
 	public previous_budget_value: number | null = null;
 
-	@observable
+    @observable
 	public budget: BudgetApiResponse | null = null;
 
-	@observable
+    @observable
 	public rescheduling: ReschedulingApiResponse | null = null;
 
-	@observable
+    @observable
 	public professional_order: UserApiResponse | null = null;
 
-	@observable
+    @observable
 	public professional_photo: string | null = null;
 
-	@observable
+    @observable
 	public rate: string | null = null;
 
-	@observable
+    @observable
 	public user: UserApiResponse | null = null;
 
-	@observable
+    @observable
 	public user_photo: string | null = null;
 
-	@observable
+    @observable
 	public user_rate: string | null = null;
 
-	@observable
+    @observable
 	public filtered_professional: string | null = null;
 
-	@observable public description = "";
-	@computed public get descriptionError(): string | undefined {
+    @observable public description = "";
+
+    constructor() {
+        makeObservable(this);
+    }
+
+    @computed public get descriptionError(): string | undefined {
 		return validateInput(this.description, descriptionTests);
 	}
 
-	@observable public urgency: "urgent" | "delayable" = "delayable";
-	@computed public get urgencyError(): string | undefined {
+    @observable public urgency: "urgent" | "delayable" = "delayable";
+    @computed public get urgencyError(): string | undefined {
 		return validateInput(this.urgency, defaultTests);
 	}
 
-	@observable public serviceDate: Date = new Date();
-	// @computed public get serviceDateError(): string | undefined {
-	// 	return validateInput(this.serviceDate, defaultTests);
-	// }
+    @observable public serviceDate: Date = new Date();
+    // @computed public get serviceDateError(): string | undefined {
+    // 	return validateInput(this.serviceDate, defaultTests);
+    // }
 
-	@observable public startTime = "";
-	@computed public get startTimeError(): string | undefined {
+    @observable public startTime = "";
+    @computed public get startTimeError(): string | undefined {
 		return validateInput(this.startTime, defaultTests);
 	}
 
-	@observable public endTime = "";
-	@computed public get endTimeError(): string | undefined {
+    @observable public endTime = "";
+    @computed public get endTimeError(): string | undefined {
 		return validateInput(this.endTime, defaultTests);
 	}
 
-	@observable
+    @observable
 	public images: {data: string; mime: string}[] = [];
 
-	public address = new AddressStore();
+    public address = new AddressStore();
 
-	@action
+    @action
 	public static createFromApiResponse(
 		apiResponse: ServiceApiResponse,
 	): ServiceStore {
@@ -158,7 +164,7 @@ class ServiceStore {
 		return serviceStore;
 	}
 
-	@action
+    @action
 	public async refreshServiceData(): Promise<void> {
 		try {
 			const response = await finddoApi.get(`/orders/${this.id}`);
@@ -177,7 +183,7 @@ class ServiceStore {
 		}
 	}
 
-	@action
+    @action
 	public async doServiceBudget(
 		budget: number,
 		material_value: number,
@@ -201,7 +207,7 @@ class ServiceStore {
 		}
 	}
 
-	@action
+    @action
 	public async budgetApprove(accepted: boolean): Promise<void> {
 		try {
 			await finddoApi.post("/orders/propose_budget", {
@@ -218,7 +224,7 @@ class ServiceStore {
 		}
 	}
 
-	@action
+    @action
 	public clearServiceData(): void {
 		this.categoryID = null;
 		this.description = "";
@@ -235,7 +241,7 @@ class ServiceStore {
 		this.rescheduling = null;
 	}
 
-	@action
+    @action
 	public saveService = async (userStore: UserStore): Promise<void> => {
 		const data = {
 			category_id: this.categoryID,
@@ -276,7 +282,7 @@ class ServiceStore {
 		}
 	};
 
-	@action
+    @action
 	public async associateProfessionalOrder(user: UserStore): Promise<void> {
 		if (user.userType === "user" || !user.isRegistered)
 			throw new Error("Unauthorized user");
@@ -292,7 +298,7 @@ class ServiceStore {
 		}
 	}
 
-	@action
+    @action
 	public async disassociateProfessionalOrder(): Promise<void> {
 		try {
 			await finddoApi.put(`/orders/disassociate/${this.id}`);
@@ -305,7 +311,7 @@ class ServiceStore {
 		}
 	}
 
-	@action
+    @action
 	public async cancelOrder(): Promise<void> {
 		try {
 			await finddoApi.put(`/orders/cancel/${this.id}`);
@@ -318,7 +324,7 @@ class ServiceStore {
 		}
 	}
 
-	@action
+    @action
 	public updateService = async (userStore: UserStore): Promise<void> => {
 		const data = {
 			category_id: this.categoryID,
@@ -343,7 +349,7 @@ class ServiceStore {
 		}
 	};
 
-	@action
+    @action
 	public reschedulingCreateService = async (
 		userStore: UserStore,
 	): Promise<void> => {
@@ -370,7 +376,7 @@ class ServiceStore {
 		}
 	};
 
-	@action
+    @action
 	public reschedulingAcceptedService = async (
 		accepted: boolean,
 	): Promise<void> => {

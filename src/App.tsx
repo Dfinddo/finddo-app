@@ -17,7 +17,7 @@ import {useUser} from "hooks";
 import {navigationRef} from "./routes/rootNavigation";
 import OneSignal from 'react-native-onesignal'; 
 import { ONE_SIGNAL_APP_ID } from "@env";
-
+import {configure} from "mobx";
 interface ResultsNotification {
 		notification: {
 			payload: {
@@ -53,9 +53,11 @@ const App: FC = () => {
 	useEffect(() => {
 		userStore.restoreSession();
 		
+		// TODO: Apos concluir migração alterar açoes
+		configure({ enforceActions: "always" });
+
 		OneSignal.setLogLevel(6, 0);
   
-		// Replace 'YOUR_ONESIGNAL_APP_ID' with your OneSignal App ID.
 		OneSignal.init(ONE_SIGNAL_APP_ID, {
 			kOSSettingsKeyAutoPrompt : false, 
 			kOSSettingsKeyInAppLaunchURL: false, 

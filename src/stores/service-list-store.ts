@@ -1,23 +1,28 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/naming-convention */
-import {observable, action, runInAction} from "mobx";
+import { observable, action, runInAction, makeObservable } from "mobx";
 import ServiceStore from "stores/service-store";
 import UserStore from "stores/user-store";
 import finddoApi, {ServiceApiResponse, ServiceStatus} from "finddo-api";
 
 class ServiceListStore {
-	@observable
+    @observable
 	public list: ServiceStore[] = [];
 
-	@observable
+    @observable
 	public status: "" | ServiceStatus = "";
 
-	@observable
+    @observable
 	private page = 1;
 
-	@observable
+    @observable
 	private url = "";
 
-	@action
+    constructor() {
+        makeObservable<ServiceListStore, "page" | "url">(this);
+    }
+
+    @action
 	public async fetchServices(
 		userStore: UserStore,
 		isProfessionalListService?: boolean,
@@ -53,7 +58,7 @@ class ServiceListStore {
 		}
 	}
 
-	@action
+    @action
 	public async updateServiceList(): Promise<void> {
 		try {
 			const params =
@@ -78,7 +83,7 @@ class ServiceListStore {
 		}
 	}
 
-	@action
+    @action
 	public async setStatusFilter(status: "" | ServiceStatus): Promise<void> {
 		try {
 			const params =
@@ -104,7 +109,7 @@ class ServiceListStore {
 		}
 	}
 
-	@action
+    @action
 	public async expandServiceList(): Promise<void> {
 		try {
 			const params =

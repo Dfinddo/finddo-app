@@ -1,26 +1,31 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable class-methods-use-this */
-import {observable, action, runInAction} from "mobx";
+import { observable, action, runInAction, makeObservable } from "mobx";
 // import CardStore from "stores/card-store";
 import finddoApi, {ConversationApiResponse} from "finddo-api";
 
 class ChatListStore {
-	@observable
+    @observable
 	public list: ConversationApiResponse[] = [];
 
-	@observable
+    @observable
 	public listAdmConversation: ConversationApiResponse[] = [];
-	
-	@observable
+
+    @observable
   public isAdminChat = false;
-  
-  @observable
-	private page = 1;
 
-  @observable
-	private totalPages = 1;
+    @observable
+      private page = 1;
 
-	@action
+    @observable
+      private totalPages = 1;
+
+    constructor() {
+        makeObservable<ChatListStore, "page" | "totalPages">(this);
+    }
+
+    @action
 	public async fetchChats(): Promise<void> {
 		try {
 			const response = await finddoApi.get(`/chats/list`, {
@@ -51,7 +56,7 @@ class ChatListStore {
 		}
 	}
 
-	@action
+    @action
 	public async updateChats(): Promise<void> {
     if(this.page + 1 > this.totalPages) {
       return;
