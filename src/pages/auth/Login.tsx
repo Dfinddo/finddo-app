@@ -27,6 +27,7 @@ type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
 interface LoginResponse {
   jwt: string;
   user: {
+		photo: string | null;
     data: {
       id: string;
       attributes: UserApiResponse;

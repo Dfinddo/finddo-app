@@ -15,7 +15,7 @@ import {
 import {StackScreenProps} from "@react-navigation/stack";
 import {RegisterStackParams} from "src/routes/auth";
 import {localeDateService} from "src/utils/calendarLocale";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { signUpData } from "stores/modules/user/actions";
 import finddoApi from "finddo-api";
 

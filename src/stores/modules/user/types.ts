@@ -2,7 +2,6 @@
 import { Address } from "../adresses/types";
 
 export enum UserActionTypes {
-  restoreSessionRequest= "RESTORE_SESSION_REQUEST",
   signInSuccess= "SIGN_IN_SUCCESS",
   signUpData= "SIGN_UP_DATA",
   updateProfilePhoto= "UPDATE_PROFILE_PHOTO",

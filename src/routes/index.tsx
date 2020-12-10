@@ -7,6 +7,7 @@ import { UserState } from "stores/modules/user/types";
 import { signInSuccess } from "stores/modules/user/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import finddoApi from "finddo-api";
+import BottomNavigation from "components/BottomNavigationTab";
 
 const Routes = (): JSX.Element => {
 	const dispatch = useDispatch();
@@ -26,7 +27,10 @@ const Routes = (): JSX.Element => {
 	useEffect(() => void restoreSession(), [restoreSession]);
 	
 	return userStore.id ? (
-		<AppRoute />
+		<>
+			<AppRoute />
+			<BottomNavigation />
+		</>
 	) : (
 		<AuthRoute />
 	);

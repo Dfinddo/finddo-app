@@ -3,12 +3,6 @@
 import { UserApiResponse } from "finddo-api";
 import { UserActionTypes } from "./types";
 
-export function restoreSession() {
-  return {
-    type: UserActionTypes.restoreSessionRequest,
-  };
-}
-
 export function signInSuccess(user: UserApiResponse)  {
   return {
     type: UserActionTypes.signInSuccess,
