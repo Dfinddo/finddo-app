@@ -2,7 +2,6 @@ import React from "react";
 import {StyleSheet} from "react-native";
 import {Button, Layout} from "@ui-kitten/components";
 import {useService, useSwitch} from "hooks";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import DataForm from "components/DataForm";
@@ -14,7 +13,7 @@ type ServiceDateScreenProps = StackScreenProps<
 
 // const screenWidth = Math.round(Dimensions.get("window").width);
 
-const ServiceDate = observer<ServiceDateScreenProps>(props => {
+const ServiceDate = ((props: ServiceDateScreenProps): JSX.Element => {
 	const serviceStore = useService();
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 	const onAdvanceAttempt = (): void => {
@@ -44,15 +43,15 @@ const styles = StyleSheet.create({
 		paddingVertical: 24,
 		alignItems: "center",
 	},
-	modalDialogContainer: {
-		flex: 1,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	modalDialogContent: {
-		width: 340,
-		borderRadius: 18,
-		opacity: 1,
-		alignItems: "center",
-	},
+	// modalDialogContainer: {
+	// 	flex: 1,
+	// 	alignItems: "center",
+	// 	justifyContent: "center",
+	// },
+	// modalDialogContent: {
+	// 	width: 340,
+	// 	borderRadius: 18,
+	// 	opacity: 1,
+	// 	alignItems: "center",
+	// },
 });

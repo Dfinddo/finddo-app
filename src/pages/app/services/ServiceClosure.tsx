@@ -4,7 +4,6 @@
 import React, {useEffect, useState, useCallback} from "react";
 import {Alert, StyleSheet, ImageBackground, View} from "react-native";
 import {Avatar, Button, Text, Card} from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ScrollView} from "react-native-gesture-handler";
 
@@ -39,8 +38,7 @@ const starIcon = (value: number, current: number): JSX.Element => (
 	<SvgXml xml={current >= value ? starSolid : star} width={24} height={24} />
 );
 
-const ServiceClosure = observer<ServiceClosureScreenProps>(
-	({route, navigation}) => {
+const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Element => {
 		const [serviceStore, setServiceStore] = useState<
 			ServiceStore | undefined
 		>();
@@ -57,7 +55,7 @@ const ServiceClosure = observer<ServiceClosureScreenProps>(
 				);
 		}, [route.params?.id, serviceListStore.list, serviceStore]);
 
-		if (serviceStore === void 0 || !serviceStore.categoryID) return null;
+		if (serviceStore === void 0 || !serviceStore.categoryID) return <View></View>;
 
 		const info: InfoData =
 			userStore.userType === "user"
@@ -149,8 +147,7 @@ const ServiceClosure = observer<ServiceClosureScreenProps>(
 				</ScrollView>
 			</ImageBackground>
 		);
-	},
-);
+	};
 
 export default ServiceClosure;
 

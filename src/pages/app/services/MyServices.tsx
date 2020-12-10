@@ -17,8 +17,7 @@ import {
 	Modal,
 	Card,
 } from "@ui-kitten/components";
-import {useUser, useServiceList} from "hooks";
-import {observer} from "mobx-react-lite";
+import {useServiceList} from "hooks";
 import {
 	serviceStatusDescription,
 	ServiceStatus,
@@ -30,6 +29,10 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import Tutorial from "components/Tutorial";
 import ValidatedSelect from "components/ValidatedSelect";
+import { useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import UserStore from "stores/user-store";
 
 const serviceStatus = [
 	"",
@@ -46,21 +49,24 @@ type MyServicesScreenProps = StackScreenProps<
 	"MyServices"
 >;
 
-const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
+const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 	const [visible, setVisible] = React.useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const serviceListStore = useServiceList();
-	const userStore = useUser();
+	const userStore = useSelector<State, UserState>(state => state.user);
 	const theme = useTheme();
 
 	const getServices = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 
 		try {
+			const content = new UserStore();
+			
+			Object.assign(content, userStore)
 			await serviceListStore.fetchServices(
-				userStore,
-				userStore.userType === "professional" && selectedIndex === 1,
+				content,
+				userStore.user_type === "professional" && selectedIndex === 1,
 			);
 		} catch (error) {
 			if (error.response) {
@@ -121,7 +127,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 
 	function handleServiceDetails(id: number, professional: UserApiResponse | null ): void {
 		if (
-			userStore.userType === "professional" &&
+			userStore.user_type === "professional" &&
 			!professional
 		) {
 			navigation.navigate("ViewService", {
@@ -137,7 +143,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 	return (
 		<Layout level="2" style={styles.container}>
 			<Tutorial />
-			{userStore.userType === "professional" && (
+			{userStore.user_type === "professional" && (
 				<TabBar
 					style={styles.tab}
 					selectedIndex={selectedIndex}
@@ -147,7 +153,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 					<Tab title="Meus serviços" />
 				</TabBar>
 			)}
-			{!(userStore.userType === "professional" && selectedIndex !== 1) ? (
+			{!(userStore.user_type === "professional" && selectedIndex !== 1) ? (
 				<View style={styles.optionsContainer}>
 					<ValidatedSelect
 						style={styles.select}
@@ -235,7 +241,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 					/>
 				}
 
-				{userStore.userType === "user" && (
+				{userStore.user_type === "user" && (
 					<Button
 						style={styles.button}
 						onPress={() => setVisible(true)}

@@ -23,9 +23,23 @@ const INITIAL_STATE: UserState = {
 const user: Reducer<UserState> = (state = INITIAL_STATE, action) => produce(state, draft => {
     switch(action.type){
       case UserActionTypes.signInSuccess:
-        const { user } = action.payload;          
+        const { user } = action.payload;  
 
         return user;
+
+      case UserActionTypes.signUpData:
+        const { newData } = action.payload;  
+
+        Object.assign(draft, newData);
+        
+        return draft;
+
+      case UserActionTypes.updateProfilePhoto:
+        const { profilePicture } = action.payload;  
+
+        draft.profilePicture = profilePicture;
+
+        return draft;
 
       case UserActionTypes.signOut:   
         return INITIAL_STATE;

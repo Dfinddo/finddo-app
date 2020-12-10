@@ -16,7 +16,6 @@ import {
 	TabView,
 } from "@ui-kitten/components";
 import { useChatList } from "hooks";
-import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
@@ -27,7 +26,7 @@ type ChatListScreenProps = StackScreenProps<
 	"ChatList"
 >;
 
-const ChatList = observer<ChatListScreenProps>(props => {
+const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 	const chatListStore = useChatList();
 	const [index, setIndex] = useState(0);
 

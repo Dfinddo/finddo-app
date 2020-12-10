@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useState, useCallback} from "react";
 import {
 	ScrollView,
@@ -10,16 +11,31 @@ import {
 import {SvgXml} from "react-native-svg";
 import {finddoLogo} from "../../assets/svg/finddo-logo";
 import {Input, Button, Text, Layout, Icon, IconProps} from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
-import {useUser} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AuthStackParams} from "src/routes/auth";
+import { useDispatch } from "react-redux";
+import { signInSuccess } from "stores/modules/user/actions";
+import finddoApi, { UserApiResponse } from "finddo-api";
+import { AxiosResponse } from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import OneSignal from "react-native-onesignal";
+import { BACKEND_URL_STORAGE } from "@env";
 
 type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
 
-const Login = observer<LoginScreenProps>(props => {
-	const userStore = useUser();
+interface LoginResponse {
+  jwt: string;
+  user: {
+    data: {
+      id: string;
+      attributes: UserApiResponse;
+    };
+  };
+}
+
+const Login = (props:LoginScreenProps): JSX.Element => {
+	const dispach = useDispatch();
 	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -38,7 +54,39 @@ const Login = observer<LoginScreenProps>(props => {
 	const login = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			await userStore.signIn(email, password);
+			const response: AxiosResponse<LoginResponse> = await finddoApi.post("login", {
+				email, 
+				password,
+			});
+
+			const {jwt} = response.data;
+			const {id, attributes: user} = response.data.user.data;
+			
+			if (user.activated === false) throw new Error("Account not validated");
+					
+			finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
+
+			const data = await finddoApi.get(`/users/profile_photo/${user.id}`);
+
+			if (data.data.photo) {
+				Object.assign( user, {profilePicture: {
+					uri: `${BACKEND_URL_STORAGE}${data.data.photo}`,
+				}});
+			}
+
+			const logged = Object.assign(user, {id});
+			
+			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
+			AsyncStorage.setItem("user", JSON.stringify(logged));
+			
+			OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
+				await finddoApi.get('users/set_player_id', {
+					params: {
+						player_id: status.userId,
+					}
+				});
+			});
+			dispach(signInSuccess(logged));
 		} catch (error) {
 			// console.log(error);
 			if (error.message === "Invalid credentials")
@@ -51,7 +99,7 @@ const Login = observer<LoginScreenProps>(props => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [email, password, userStore]);
+	}, [email, password, dispach]);
 
 	return (
 		<Layout level="1" style={styles.container}>
@@ -104,7 +152,7 @@ const Login = observer<LoginScreenProps>(props => {
 			</ScrollView>
 		</Layout>
 	);
-});
+};
 
 export default Login;
 

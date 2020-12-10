@@ -7,9 +7,8 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import rootSaga from './modules/rootSaga';
 import { UserState } from './modules/user/types';
 
-
 export interface State {
-  userStore: UserState,
+  user: UserState,
 }
 
 const sagaMiddleware = createSagaMiddleware();

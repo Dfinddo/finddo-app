@@ -20,7 +20,6 @@ import {
 } from "@ui-kitten/components";
 import ValidatedInput from "components/ValidatedInput";
 import {useService, useSwitch} from "hooks";
-import {observer} from "mobx-react-lite";
 import {serviceCategories} from "finddo-api";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
@@ -30,7 +29,7 @@ type ServiceDescriptionScreenProps = StackScreenProps<
 	"ServiceDescription"
 >;
 
-const NewService = observer<ServiceDescriptionScreenProps>(props => {
+const NewService = ((props: ServiceDescriptionScreenProps): JSX.Element => {
 	const [isConfirmingUrgency, setIsConfirmingUrgency] = useState(false);
 	const serviceStore = useService();
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);

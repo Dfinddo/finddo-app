@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {View, StyleSheet, Alert} from "react-native";
 import {Button, List, ListItem, Icon, Layout} from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
 import {useAddressList, useUser} from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AddressStackParams} from "src/routes/app";
@@ -13,7 +12,7 @@ type MyAddressesScreenProps = StackScreenProps<
 	"MyAddresses"
 >;
 
-const MyAddresses = observer<MyAddressesScreenProps>(({navigation}) => {
+const MyAddresses = (({navigation}: MyAddressesScreenProps): JSX.Element => {
 	const [addressStore, setAddressStore] = useState<AddressStore | undefined>(
 		new AddressStore(),
 	);

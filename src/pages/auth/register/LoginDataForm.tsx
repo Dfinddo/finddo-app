@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import {termos} from "../termos";
 import {politica} from "../politica";
-import {observer} from "mobx-react-lite";
 import {Input, Modal, Text, Button, Layout, Card} from "@ui-kitten/components";
 import ValidatedInput from "components/ValidatedInput";
 import {validations, validateInput} from "utils";
@@ -25,7 +24,7 @@ const passwordTests = [
 
 type LoginDataFormScreenProps = StackScreenProps<AuthStackParams, "Register">;
 
-const LoginDataForm = observer<LoginDataFormScreenProps>(props => {
+const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
 	const userStore = useUser();
 	const [isLoading, setIsLoading] = useState(false);
 	const [password, setPassword] = useState("");

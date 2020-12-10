@@ -10,7 +10,6 @@ import {
 import {serviceCategories, serviceStatusDescription} from "finddo-api";
 import {Layout, Text} from "@ui-kitten/components";
 import DataPieceDisplay from "components/DataPieceDisplay";
-import {observer} from "mobx-react-lite";
 import ImageView from "react-native-image-viewing";
 import Carousel from "react-native-snap-carousel";
 import ServiceStore from "stores/service-store";
@@ -23,7 +22,7 @@ interface ServiceImageRenderer {
 	(image: {item: ImageSourcePropType; index: number}): JSX.Element;
 }
 
-const ServiceDataDisplay = observer<{serviceStore: ServiceStore}>(props => {
+const ServiceDataDisplay = ((props: {serviceStore: ServiceStore}): JSX.Element => {
 	const {serviceStore} = props;
 	const windowWidth = useWindowDimensions().width;
 	const [displayedImage, setDisplayedImage] = useState<number | null>(null);

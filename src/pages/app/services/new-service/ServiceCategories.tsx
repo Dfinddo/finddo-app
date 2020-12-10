@@ -9,7 +9,6 @@ import {
 import {List, Card, Text} from "@ui-kitten/components";
 import {useService} from "hooks";
 import {serviceCategories} from "finddo-api";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 
@@ -22,7 +21,7 @@ const categoryList = Object.entries(
 	serviceCategories,
 ).map(([id, categoryData]) => ({id, ...categoryData}));
 
-const Services = observer<ServiceCategoriesScreenProps>(({navigation}) => {
+const Services = (({navigation}: ServiceCategoriesScreenProps): JSX.Element => {
 	const serviceStore = useService();
 
 	return (

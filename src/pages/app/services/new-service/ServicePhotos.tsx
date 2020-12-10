@@ -11,7 +11,6 @@ import {
 import {Button, Text, Layout, useTheme} from "@ui-kitten/components";
 import {useService} from "hooks";
 import {serviceCategories} from "finddo-api";
-import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
@@ -29,7 +28,7 @@ interface ImageProps {
 	mime: string;
 }
 
-const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
+const ServiceFotos = ((props :ServicePhotosScreenProps): JSX.Element => {
 	// const [isLoading, setIsLoading] = useState(false);
 	const windowWidth = useWindowDimensions().width;
 	const serviceStore = useService();
@@ -83,7 +82,7 @@ const ServiceFotos = observer<ServicePhotosScreenProps>(props => {
 	);
 });
 
-const AddPhotoButton = observer(() => {
+const AddPhotoButton = (): JSX.Element => {
 	const theme = useTheme();
 	const serviceStore = useService();
 
@@ -124,7 +123,7 @@ const AddPhotoButton = observer(() => {
 			</Layout>
 		</Pressable>
 	);
-});
+};
 
 export default ServiceFotos;
 

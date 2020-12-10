@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {StyleSheet, View} from "react-native";
 import ValidatedInput from "components/ValidatedInput";
-import {observer} from "mobx-react-lite";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
 import AddressStore from "stores/address-store";
 import {cepFormatter, numericFormattingFilter} from "utils";
@@ -12,7 +11,7 @@ interface AddressFormProps {
 	forceErrorDisplay?: boolean;
 }
 
-const AddressForm = observer<AddressFormProps>(props => {
+const AddressForm = ((props: AddressFormProps): JSX.Element => {
 	const [isLoading, setIsLoading] = useState(false);
 	const {addressStore, forceErrorDisplay} = props;
 

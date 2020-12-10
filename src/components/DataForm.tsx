@@ -3,7 +3,6 @@ import {StyleSheet, ScrollView, View} from "react-native";
 import {Layout, Text, Calendar, SelectItem} from "@ui-kitten/components";
 import {range} from "utils";
 import ServiceStore from "stores/service-store";
-import {observer} from "mobx-react-lite";
 import ValidatedSelect from "./ValidatedSelect";
 import {localeDateService} from "src/utils/calendarLocale";
 
@@ -14,7 +13,7 @@ interface DataFormProps {
 	finalDate?: Date;
 }
 
-const DataForm = observer<DataFormProps>(props => {
+const DataForm = ((props: DataFormProps): JSX.Element => {
 	const {
 		serviceStore,
 		forceErrorDisplay,
@@ -105,24 +104,24 @@ const avaliableTimes = range(9, 22)
 	.flatMap(hour => [`${hour}:00`, `${hour}:30`]);
 
 const styles = StyleSheet.create({
-	modalDialogContainer: {
-		flex: 1,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	modalDialogContent: {
-		width: 340,
-		borderRadius: 18,
-		opacity: 1,
-		alignItems: "center",
-	},
+	// modalDialogContainer: {
+	// 	flex: 1,
+	// 	alignItems: "center",
+	// 	justifyContent: "center",
+	// },
+	// modalDialogContent: {
+	// 	width: 340,
+	// 	borderRadius: 18,
+	// 	opacity: 1,
+	// 	alignItems: "center",
+	// },
 	calendarContainer: {width: "100%", padding: "5%"},
 	calendar: {alignSelf: "center"},
-	modalErrosTitulo: {fontWeight: "bold", textAlign: "center", fontSize: 24},
-	modalErrosContent: {
-		fontSize: 18,
-		marginVertical: 10,
-	},
+	// modalErrosTitulo: {fontWeight: "bold", textAlign: "center", fontSize: 24},
+	// modalErrosContent: {
+	// 	fontSize: 18,
+	// 	marginVertical: 10,
+	// },
 	timeSelect: {width: "35%"},
 	timeLabel: {textAlign: "right", marginBottom: 15},
 	contentWrapper: {

@@ -16,7 +16,6 @@ import {
 	Icon,
 } from "@ui-kitten/components";
 import {useService, useAddressList, useSwitch, useUser} from "hooks";
-import {observer} from "mobx-react-lite";
 import AddressForm from "components/AddressForm";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -32,7 +31,7 @@ type ServiceAddressScreenProps = StackScreenProps<
 const filter = (item: AddressStore, query: string): boolean =>
 	item.addressAlias.toLowerCase().includes(query.toLowerCase());
 
-const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
+const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 	const userStore = useUser();
 	const serviceStore = useService();
 	const addressStore = serviceStore.address;

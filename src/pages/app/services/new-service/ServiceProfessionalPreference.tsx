@@ -21,7 +21,6 @@ import {
 	Divider,
 } from "@ui-kitten/components";
 import { useProfessionalList, useService, useUser} from "hooks";
-import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
@@ -32,7 +31,7 @@ type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 	"ServiceProfessionalPreference"
 >;
 
-const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScreenProps>(props => {
+const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScreenProps): JSX.Element => {
 	const userStore = useUser();
 	const serviceStore = useService();
 	const professionalListStore = useProfessionalList();

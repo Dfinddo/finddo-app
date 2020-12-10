@@ -9,7 +9,6 @@ import {
 } from "@ui-kitten/components";
 import {useServiceList} from "hooks";
 import {SvgXml} from "react-native-svg";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import ServiceStore from "stores/service-store";
@@ -24,8 +23,8 @@ type ServiceBudgetScreenProps = StackScreenProps<
 	"ServiceBudget"
 >;
 
-const ServiceBudget = observer<ServiceBudgetScreenProps>(
-	({route, navigation}) => {
+const ServiceBudget = (
+	{route, navigation}: ServiceBudgetScreenProps): JSX.Element => {
 		const styles = useStyleSheet(themedStyles);
 		const [serviceStore, setServiceStore] = useState<
 			ServiceStore | undefined
@@ -87,7 +86,7 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 			updateFunction(data !== "" ? parseInt(data, 10) : 0);
 		};
 
-		if (serviceStore === void 0) return null;
+		if (serviceStore === void 0) return <View></View>;
 
 		return (
 			<ImageBackground
@@ -151,8 +150,9 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 				</Layout>
 			</ImageBackground>
 		);
-	},
-);
+	}
+
+;
 
 export default ServiceBudget;
 

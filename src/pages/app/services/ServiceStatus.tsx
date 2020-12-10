@@ -3,7 +3,6 @@
 import React, {useEffect, useState, useCallback} from "react";
 import {Alert, StyleSheet, ImageBackground} from "react-native";
 import {Button, Text} from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 
 import {useServiceList, useUser} from "hooks";
@@ -22,8 +21,7 @@ type ServiceStatusScreenProps = StackScreenProps<
 	"ServiceStatus"
 >;
 
-const ServiceStatus = observer<ServiceStatusScreenProps>(
-	({route, navigation}) => {
+const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps) => {
 		const [serviceStore, setServiceStore] = useState<
 			ServiceStore | undefined
 		>();
@@ -197,8 +195,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				</ScrollView>
 			</ImageBackground>
 		);
-	},
-);
+	};
 
 export default ServiceStatus;
 
@@ -211,20 +208,20 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 	},
-	timeLineContainer: {
-		flex: 1,
-		width: "100%",
-		padding: "5%",
-	},
-	timeLineView: {width: "80%", marginTop: "-4%"},
-	timeLineTitle: {fontSize: 18, color: "grey"},
-	timeLineLayout: {
-		minHeight: 48,
-		borderRadius: 8,
-		padding: "2%",
-		borderColor: "grey",
-		borderWidth: 1,
-	},
+	// timeLineContainer: {
+	// 	flex: 1,
+	// 	width: "100%",
+	// 	padding: "5%",
+	// },
+	// timeLineView: {width: "80%", marginTop: "-4%"},
+	// timeLineTitle: {fontSize: 18, color: "grey"},
+	// timeLineLayout: {
+	// 	minHeight: 48,
+	// 	borderRadius: 8,
+	// 	padding: "2%",
+	// 	borderColor: "grey",
+	// 	borderWidth: 1,
+	// },
 	timeLineButton: {
 		width: "90%",
 		height: 24,

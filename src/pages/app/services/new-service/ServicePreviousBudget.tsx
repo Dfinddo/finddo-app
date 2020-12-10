@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import {Text, Button, Layout, RadioGroup, Radio} from "@ui-kitten/components";
 import {useService} from "hooks";
-import {observer} from "mobx-react-lite";
 import {serviceCategories} from "finddo-api";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
@@ -21,7 +20,7 @@ type ServicePreviousBudgetScreenProps = StackScreenProps<
 	"ServicePreviousBudget"
 >;
 
-const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
+const NewService = ((props: ServicePreviousBudgetScreenProps): JSX.Element => {
 	const serviceStore = useService();
 	const selectedCategory = serviceCategories[serviceStore.categoryID!];
 

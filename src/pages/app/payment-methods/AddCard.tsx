@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import {Button, Datepicker, Layout} from "@ui-kitten/components";
 import CardStore from "stores/card-store";
-import {observer} from "mobx-react-lite";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
 import ValidatedInput from "components/ValidatedInput";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
@@ -27,7 +26,7 @@ import {localeDateService} from "src/utils/calendarLocale";
 
 type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "AddCard">;
 
-const AddCard = observer<CardsScreenProps>(props => {
+const AddCard = ((props: CardsScreenProps): JSX.Element => {
 	const [cardStore] = useState(new CardStore());
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -171,10 +170,10 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 15,
 	},
-	input: {
-		marginHorizontal: 12,
-		marginVertical: 8,
-	},
+	// input: {
+	// 	marginHorizontal: 12,
+	// 	marginVertical: 8,
+	// },
 	formRow: {
 		flexDirection: "row",
 	},

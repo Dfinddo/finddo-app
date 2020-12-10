@@ -4,7 +4,6 @@ import React, {useEffect, useState} from "react";
 import {StyleSheet, Alert, View} from "react-native";
 import {Button, Layout, Text} from "@ui-kitten/components";
 import {useServiceList, useUser} from "hooks";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import ServiceDataDisplay from "components/ServiceDataDisplay";
@@ -17,7 +16,7 @@ type ViewServiceScreenProps = StackScreenProps<
 	"ViewService"
 >;
 
-const ViewService = observer<ViewServiceScreenProps>(({route, navigation}) => {
+const ViewService = ({route, navigation}: ViewServiceScreenProps): JSX.Element => {
 	const [serviceStore, setServiceStore] = useState<ServiceStore | undefined>();
 	const [isLoading, setIsLoading] = useState(false);
 	const serviceListStore = useServiceList();
@@ -30,7 +29,7 @@ const ViewService = observer<ViewServiceScreenProps>(({route, navigation}) => {
 			);
 	}, [route.params?.id, serviceListStore.list]);
 
-	if (serviceStore === void 0) return null;
+	if (serviceStore === void 0) return <View></View>;
 
 	const handleAssociateService = async (): Promise<void> => {
 		setIsLoading(true);
@@ -73,7 +72,7 @@ const ViewService = observer<ViewServiceScreenProps>(({route, navigation}) => {
 	}
 
 	return <ServiceDataDisplay serviceStore={serviceStore} />;
-});
+};
 
 export default ViewService;
 

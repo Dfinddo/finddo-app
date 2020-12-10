@@ -14,7 +14,6 @@ import {
 	TopNavigationAction,
 	Avatar,
 } from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import { useChat, useUser } from "hooks";
@@ -23,7 +22,7 @@ import { BACKEND_URL_STORAGE } from "@env";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 
-const Chat = observer<ProfileScreenProps>(props => {
+const Chat = ((props: ProfileScreenProps): JSX.Element => {
 	const { order_id, receiver_id, title, photo=null } = props.route.params;
 	const styles = useStyleSheet(themedStyles);
 	const chatStore = useChat();

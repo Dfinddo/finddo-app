@@ -1,7 +1,6 @@
 import React, {FC, useState, useCallback} from "react";
 import {StyleSheet, Alert} from "react-native";
 import {useService, useServiceList, useUser} from "hooks";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import ServiceDataDisplay from "components/ServiceDataDisplay";
@@ -14,9 +13,7 @@ type ConfirmServiceScreenProps = StackScreenProps<
 	"ConfirmService"
 >;
 
-const ConfirmService: FC<ConfirmServiceScreenProps> = observer<
-	ConfirmServiceScreenProps
->(props => {
+const ConfirmService: FC<ConfirmServiceScreenProps> = (props => {
 	const [isLoading, setIsLoading] = useState(false);
 	const serviceStore = useService();
 	const userStore = useUser();

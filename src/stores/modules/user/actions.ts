@@ -9,21 +9,38 @@ export function restoreSession() {
   };
 }
 
-export function signInRequest(email: string, password: string)  {
-  return {
-    type: UserActionTypes.signInRequest,
-    payload: {
-      email,
-      password,
-    }
-  };
-}
-
 export function signInSuccess(user: UserApiResponse)  {
   return {
     type: UserActionTypes.signInSuccess,
     payload: {
       user,
+    }
+  };
+}
+
+interface SingUpDataProps {
+  name: string,
+  surname: string,
+  email: string,
+  cellphone: string,
+  cpf: string,
+  birthdate: Date,
+}
+
+export function signUpData(newData: SingUpDataProps)  {
+  return {
+    type: UserActionTypes.signUpData,
+    payload: {
+      newData,
+    }
+  };
+}
+
+export function updateProfilePhoto(profilePicture: {uri: string})  {
+  return {
+    type: UserActionTypes.updateProfilePhoto,
+    payload: {
+      profilePicture,
     }
   };
 }

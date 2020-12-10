@@ -88,3 +88,16 @@ const styles = StyleSheet.create({
 		justifyContent: "space-around",
 	},
 });
+
+// recoverPassword = async (email: string): Promise<void> => {
+// 	try {
+// 		await finddoApi.post("auth/password", {
+// 			email,
+// 			redirect_url: BACKEND_URL,
+// 		});
+// 	} catch (error) {
+// 		if (error.response) throw new Error("Email not found");
+// 		else if (error.request) throw new Error("Connection error");
+// 		else throw error;
+// 	}
+// };
