@@ -1,7 +1,8 @@
 export enum AddressActionTypes {
   setAdressesList= "SET_ADRESSES_LIST",
   addAddress= "ADD_ADDRESS",
-  removeAdressesList= "REMOVE_ADDRESS",
+  updateAddressList= "UPDATE_ADDRESS_LIST",
+  removeAddressList= "REMOVE_ADDRESS",
 }
 
 export interface Address {

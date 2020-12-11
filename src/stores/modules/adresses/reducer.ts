@@ -18,13 +18,26 @@ const cart: Reducer<AdressesState> = (state = INITIAL_STATE, action) =>
 
         return;
 
-      case AddressActionTypes.removeAdressesList:
+      case AddressActionTypes.updateAddressList:
+        const {item} = action.payload
+
+        const indexAddress = draft.list.findIndex(address => address.id === item.id);
+
+        if(indexAddress !== -1) {
+          draft.list[indexAddress]=item;
+        }else{
+          draft.list.push(item);
+        }
+
+        return;
+
+      case AddressActionTypes.removeAddressList:
         const {id} = action.payload
-
+  
         const index = draft.list.findIndex(item => item.id === id);
-
+  
         if(index !== -1) draft.list.splice(index, 1);
-
+  
         return;
 
       default:

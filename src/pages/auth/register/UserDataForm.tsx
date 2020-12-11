@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useState, useCallback} from "react";
 import {Alert, KeyboardAvoidingView, Platform, StyleSheet} from "react-native";
 import {Datepicker, Text, Button, Layout} from "@ui-kitten/components";
@@ -18,11 +19,17 @@ import {localeDateService} from "src/utils/calendarLocale";
 import { useDispatch } from "react-redux";
 import { signUpData } from "stores/modules/user/actions";
 import finddoApi from "finddo-api";
+import { AxiosResponse } from "axios";
 
 type UserDataFormScreenProps = StackScreenProps<
 	RegisterStackParams,
 	"UserDataForm"
 >;
+
+interface IsValidProps {
+	is_valid: boolean,
+	error: string | null,
+}
 
 const firstNameTests = [validations.required(), validations.maxLength(70)];
 const nameTests = [validations.required(), validations.maxLength(255)];
@@ -58,17 +65,21 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 
 	const onAdvanceAttempt = useCallback(async (): Promise<void> => {
-		let isRegistered = false;
-		
+
 		if (nameError || surnameError || emailError || cellphoneError || cpfError)
 			return setFillAttemptAsFailed();
 
 		setIsLoading(true);
 
 		try {
-			isRegistered = await finddoApi.get(
+			const isValid: AxiosResponse<IsValidProps> = await finddoApi.get(
 				`/users?email=${email}&cellphone=${cellphone}&cpf=${cpf}`,
 			);
+
+			console.log(isValid)
+
+			if (isValid.data.error) return Alert.alert("Erro", isValid.data.error);
+
 			
 		} catch (error) {
 			if (error.message === "Connection error")
@@ -80,9 +91,6 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-		console.log(isRegistered)
-
-		if (isRegistered) return Alert.alert("Erro", "Usuário já cadastrado.");
 
 		dispatch(signUpData({
 			name,

@@ -2,40 +2,131 @@ import React, {useState, useEffect, useCallback} from "react";
 import {StyleSheet, View} from "react-native";
 import ValidatedInput from "components/ValidatedInput";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
-import AddressStore from "stores/address-store";
-import {cepFormatter, numericFormattingFilter} from "utils";
+import {cepFormatter, numericFormattingFilter, validateInput, validations} from "utils";
 import TaskAwaitIndicator from "./TaskAwaitIndicator";
+import { Address } from "stores/modules/adresses/types";
+import { Button } from "@ui-kitten/components";
 
-interface AddressFormProps {
-	addressStore: AddressStore;
-	forceErrorDisplay?: boolean;
+export interface AddressFormData {
+	address: Address;
+	hasErrors: boolean;
 }
+interface AddressFormProps {
+	addressStore: Address;
+	forceErrorDisplay?: boolean;
+	onSubmitForm(data: AddressFormData): Promise<void>; 
+}
+
+const defaultTests = [validations.required(), validations.maxLength(128)];
+const cepTests = [validations.required(), validations.definedLength(8)];
+const numberTests = [validations.required(), validations.maxLength(10)];
+const stateTests = [validations.required(), validations.maxLength(2)];
+const complementTests = [validations.maxLength(128)];
 
 const AddressForm = ((props: AddressFormProps): JSX.Element => {
 	const [isLoading, setIsLoading] = useState(false);
-	const {addressStore, forceErrorDisplay} = props;
+	const {addressStore, forceErrorDisplay, onSubmitForm} = props;
+
+	const [id, setId] = useState("");
+
+	const [cep, setCep] = useState("");
+	const [cepError, setCepError] = useState<string|undefined>("");
+
+	const [addressAlias, setAddressAlias] = useState("");
+	const [addressAliasError, setAddressAliasError] = useState<string|undefined>("");
+
+	const [state, setState] = useState("");
+	const [stateError, setStateError] = useState<string|undefined>("");
+
+	const [city, setCity] = useState("");
+	const [cityError, setCityError] = useState<string|undefined>("");
+
+	const [district, setDistrict] = useState("");
+	const [districtError, setDistrictError] = useState<string|undefined>("");
+
+	const [street, setStreet] = useState("");
+	const [streetError, setStreetError] = useState<string|undefined>("");
+
+	const [number, setNumber] = useState("");
+	const [numberError, setNumberError] = useState<string|undefined>("");
+
+	const [complement, setComplement] = useState("");
+	const [complementError, setComplementError] = useState<string|undefined>("");
 
 	// Função temporária enquanto serviço só ser utilizado no Rio e Brasil
 	useEffect(() => {
-		addressStore.state = "RJ";
-		addressStore.city = "Rio de Janeiro";
+		setState("RJ");
+		setCity("Rio de Janeiro");
+		
+		setId(addressStore.id);
+		setCep(addressStore.cep);
+		setAddressAlias(addressStore.addressAlias);
+		setDistrict(addressStore.district);
+		setStreet(addressStore.street);
+		setNumber(addressStore.number);
+		setComplement(addressStore.complement);
 	}, [addressStore]);
 
 	const getAddressData = useCallback(async (): Promise<void> => {
-		if (addressStore.cep.length === 8) {
+		if (cep.length === 8) {
 			setIsLoading(true);
 			const {bairro, logradouro, uf, localidade} = await fetch(
-				`https://viacep.com.br/ws/${addressStore.cep}/json`,
+				`https://viacep.com.br/ws/${cep}/json`,
 			).then(response => response.json());
 
-			addressStore.street = logradouro ?? "";
-			addressStore.state = uf ?? "";
-			addressStore.city = localidade ?? "";
-			addressStore.district = bairro ?? "";
+			setStreet(logradouro ?? "");
+			setState(uf ?? "");
+			setCity(localidade ?? "");
+			setDistrict(bairro ?? "");
 
 			setIsLoading(false);
 		}
-	}, [addressStore]);
+	}, [cep]);
+
+	const handleSubmit = useCallback(async () => {
+		const data: AddressFormData = {
+			address: {
+				id,
+				addressAlias,
+				cep,
+				state,
+				city,
+				district,
+				street,
+				number,
+				complement,
+			},
+			hasErrors: Boolean(addressAliasError || 
+			cepError || 
+			stateError || 
+			cityError || 
+			districtError ||
+			streetError||
+			numberError ||
+			complementError),
+		};
+
+		await onSubmitForm(data);
+	}, [
+		id,
+		addressAlias,
+		cep,
+		state,
+		city,
+		district,
+		street,
+		number,
+		complement,
+		addressAliasError, 
+		cepError, 
+		stateError, 
+		cityError, 
+		districtError,
+		streetError,
+		numberError,
+		complementError,
+		onSubmitForm,
+	]);
 
 	return (
 		<View
@@ -47,70 +138,98 @@ const AddressForm = ((props: AddressFormProps): JSX.Element => {
 			<ValidatedMaskedInput
 				formatter={cepFormatter}
 				formattingFilter={numericFormattingFilter}
-				onChangeText={input => (addressStore.cep = input)}
+				onChangeText={input => {
+					setCep(input);
+					setCepError(validateInput(input, cepTests));
+				}}
 				label="CEP"
 				keyboardType={"number-pad"}
-				value={addressStore.cep}
-				error={addressStore.cepError}
+				value={cep}
+				error={cepError}
 				forceErrorDisplay={forceErrorDisplay}
 				onBlur={getAddressData}
 				maxLength={9}
 				returnKeyType="next"
 			/>
 			<ValidatedInput
-				onChangeText={input => (addressStore.addressAlias = input)}
+				onChangeText={input => {
+					setAddressAlias(input);
+					setAddressAliasError(validateInput(input, defaultTests));
+				}}
 				label="Nome do endereço"
-				value={addressStore.addressAlias}
-				error={addressStore.addressAliasError}
+				value={addressAlias}
+				error={addressAliasError}
 				forceErrorDisplay={forceErrorDisplay}
 			/>
 			<ValidatedInput
-				onChangeText={input => (addressStore.state = input)}
+				onChangeText={input => {
+					setState(input);
+					setStateError(validateInput(input, stateTests));
+				}}
 				label="Estado"
 				// retirar quando atender mais estados
 				disabled={true}
-				value={addressStore.state}
-				error={addressStore.stateError}
+				value={state}
+				error={stateError}
 				forceErrorDisplay={forceErrorDisplay}
 			/>
 			<ValidatedInput
-				onChangeText={input => (addressStore.city = input)}
+				onChangeText={input => {
+					setCity(input);
+					setCityError(validateInput(input, defaultTests));
+				}}
 				label="Cidade"
 				// retirar quando atender mais cidades
 				disabled={true}
-				value={addressStore.city}
-				error={addressStore.cityError}
+				value={city}
+				error={cityError}
 				forceErrorDisplay={forceErrorDisplay}
 			/>
 			<ValidatedInput
-				onChangeText={input => (addressStore.district = input)}
+				onChangeText={input => {
+					setDistrict(input);
+					setDistrictError(validateInput(input, defaultTests));
+				}}
 				label="Bairro"
-				value={addressStore.district}
-				error={addressStore.districtError}
+				value={district}
+				error={districtError}
 				forceErrorDisplay={forceErrorDisplay}
 			/>
 			<ValidatedInput
-				onChangeText={input => (addressStore.street = input)}
+				onChangeText={input => {
+					setStreet(input);
+					setStreetError(validateInput(input, defaultTests));
+				}}
 				label="Rua"
-				value={addressStore.street}
-				error={addressStore.streetError}
+				value={street}
+				error={streetError}
 				forceErrorDisplay={forceErrorDisplay}
 			/>
 			<ValidatedInput
-				onChangeText={input => (addressStore.number = input)}
+				onChangeText={input => {
+					setNumber(input);
+					setNumberError(validateInput(input, numberTests));
+				}}
 				label="Número"
-				value={addressStore.number}
-				error={addressStore.numberError}
+				value={number}
+				error={numberError}
 				forceErrorDisplay={forceErrorDisplay}
 				keyboardType="number-pad"
 			/>
 			<ValidatedInput
-				onChangeText={input => (addressStore.complement = input)}
+				onChangeText={input => {
+					setComplement(input);
+					setComplementError(validateInput(input, complementTests));
+				}}
 				label="Complemento"
-				value={addressStore.complement}
-				error={addressStore.complementError}
+				value={complement}
+				error={complementError}
 				forceErrorDisplay={forceErrorDisplay}
 			/>
+
+			<Button style={styles.button} onPress={handleSubmit}>
+				CONTINUAR
+			</Button>
 		</View>
 	);
 });
@@ -124,5 +243,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		padding: 15,
 	},
-	modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
+	button: {margin: 16},
+	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 });

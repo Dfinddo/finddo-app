@@ -26,8 +26,8 @@ type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
 
 interface LoginResponse {
   jwt: string;
+	photo: {photo:string | null};
   user: {
-		photo: string | null;
     data: {
       id: string;
       attributes: UserApiResponse;
@@ -60,22 +60,16 @@ const Login = (props:LoginScreenProps): JSX.Element => {
 				password,
 			});
 
-			const {jwt} = response.data;
+			const {jwt, photo} = response.data;
 			const {id, attributes: user} = response.data.user.data;
 			
 			if (user.activated === false) throw new Error("Account not validated");
 					
 			finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
 
-			const data = await finddoApi.get(`/users/profile_photo/${user.id}`);
-
-			if (data.data.photo) {
-				Object.assign( user, {profilePicture: {
-					uri: `${BACKEND_URL_STORAGE}${data.data.photo}`,
-				}});
-			}
-
-			const logged = Object.assign(user, {id});
+			const logged = Object.assign(user, {id, profilePicture: photo.photo ? {
+				uri: `${BACKEND_URL_STORAGE}${photo.photo}`,
+			}: require("../../assets/sem-foto.png")});
 			
 			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
 			AsyncStorage.setItem("user", JSON.stringify(logged));
