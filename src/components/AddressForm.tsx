@@ -60,7 +60,7 @@ const AddressForm = ((props: AddressFormProps): JSX.Element => {
 		
 		setId(addressStore.id);
 		setCep(addressStore.cep);
-		setAddressAlias(addressStore.addressAlias);
+		setAddressAlias(addressStore.name);
 		setDistrict(addressStore.district);
 		setStreet(addressStore.street);
 		setNumber(addressStore.number);
@@ -87,7 +87,7 @@ const AddressForm = ((props: AddressFormProps): JSX.Element => {
 		const data: AddressFormData = {
 			address: {
 				id,
-				addressAlias,
+				name: addressAlias,
 				cep,
 				state,
 				city,

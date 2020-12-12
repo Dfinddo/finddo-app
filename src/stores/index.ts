@@ -1,16 +1,18 @@
 import {applyMiddleware, createStore} from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 import rootReducer from './modules/rootReducer';
-
-import { composeWithDevTools } from 'redux-devtools-extension';
 import rootSaga from './modules/rootSaga';
+
 import { UserState } from './modules/user/types';
 import { AdressesState } from './modules/adresses/types';
+import { ChatState } from './modules/chats/types';
 
 export interface State {
   user: UserState,
   adresses: AdressesState,
+  chats: ChatState,
 }
 
 const sagaMiddleware = createSagaMiddleware();

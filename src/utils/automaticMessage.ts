@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import finddoApi from "finddo-api";
 import ServiceStore from "stores/service-store";
 import UserStore from "stores/user-store";
 
@@ -40,3 +41,19 @@ export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageDat
         return "";
     }
   };
+
+  export async function sendAutomaticMessageAdm(data: CreateMessageData): Promise<void> {
+		try {
+			await finddoApi.post("/chats/admin", {chat: {
+				order_id: data.order.id,
+				message: createAutomaticMessage(data),
+				receiver_id:  1,
+				for_admin: data.user.userType
+			}});
+
+		} catch (error) {
+			if (error.response) throw new Error("Invalid chat data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	};

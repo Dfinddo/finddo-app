@@ -21,7 +21,7 @@ const ManageAddress: FC<ManageAddressScreenProps> = ({navigation, route}) => {
 	const [addressStore, setAddressStore] = useState<Address>({
 		id: "",
 		cep: "",
-		addressAlias: "",
+		name: "",
 		state: "",
 		city: "",
 		district: "",
@@ -61,7 +61,7 @@ const ManageAddress: FC<ManageAddressScreenProps> = ({navigation, route}) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [navigation, setFillAttemptAsFailed]);
+	}, [navigation, setFillAttemptAsFailed, dispatch]);
 
 	if (addressStore === void 0) return null;
 

@@ -15,11 +15,15 @@ import {
 	Tab,
 	TabView,
 } from "@ui-kitten/components";
-import { useChatList } from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import { BACKEND_URL_STORAGE } from "@env";
+import { ChatListTypes, ChatList as IChatList } from "stores/modules/chats/types";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import finddoApi, { ConversationApiResponse } from "finddo-api";
+import { fetchChats, updateChatList } from "stores/modules/chats/actions";
 
 type ChatListScreenProps = StackScreenProps<
 	AppDrawerParams,
@@ -27,7 +31,11 @@ type ChatListScreenProps = StackScreenProps<
 >;
 
 const ChatList = ((props: ChatListScreenProps): JSX.Element => {
-	const chatListStore = useChatList();
+	const dispach = useDispatch();
+	const chatListStore = useSelector<State, ChatListTypes>(state => 
+		state.chats.chatLists
+	);
+
 	const [index, setIndex] = useState(0);
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +44,30 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 		setIsLoading(true);
 
 		try {
-			await chatListStore.fetchChats();
+			const response = await finddoApi.get(`/chats/list`, {
+        params: {
+          page: 1,
+        },
+			});
+
+			const responseAdm = await finddoApi.get(`/chats/list/admin`, {
+        params: {
+          page: 1,
+        },
+			});
+			
+			dispach(fetchChats({
+				default:{
+					list: response.data.list ?? [],
+					page: response.data.page ?? 1,
+					totalPages: response.data.total ?? 1,
+				},
+				admin:{
+					list: responseAdm.data.list ?? [],
+					page: responseAdm.data.page ?? 1,
+					totalPages: responseAdm.data.total ?? 1,
+				}
+			}));
 
 		} catch (error) {
 			if (error.response) {
@@ -50,18 +81,44 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [chatListStore]);
+	}, [dispach]);
 
 	useEffect(() => void getChats(), [getChats]);
 
 	const handleExpandList = useCallback(async()=>{
+		const isValid = index === 1 ? chatListStore.admin.page + 1 > chatListStore.admin.totalPages :
+		chatListStore.default.page + 1 > chatListStore.default.totalPages;
+		
+		if(isValid) {
+      return;
+		}
+		
 		try {
-			await chatListStore.updateChats();
+			const response = !index ? await finddoApi.get(`/chats/list`, {
+        params: {
+          page: chatListStore.default.page + 1,
+        },
+			}) : await finddoApi.get(`/chats/list/admin`, {
+        params: {
+          page: chatListStore.admin.page + 1,
+        },
+			});
+
+			const chats: ConversationApiResponse[] = response.data.list;
+
+			const selected = index === 1 ? chatListStore.admin.list :
+			 chatListStore.default.list;
+			
+			dispach(updateChatList({
+				list: [...selected, ...chats],
+				page: response.data.page,
+				totalPages: response.data.total,
+			}, index === 1));
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
 		}
-	}, [chatListStore]);
+	}, [dispach, chatListStore, index]);
 
 	function handleSubmit (data: {
 		id: number, 
@@ -74,19 +131,19 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 			receiver_id: data.another_user_id,
 			title: data.title, 
 			photo: data.photo, 
-			isAdminChat: chatListStore.isAdminChat,
+			isAdminChat: index === 1,
 		});
 	};
 
-	const getChatListView = (chatList: typeof chatListStore.list): JSX.Element => (
+	const getChatListView = (chatList: IChatList): JSX.Element => (
 		<List
 			scrollEnabled
 			ItemSeparatorComponent={Divider}
 			onEndReached={handleExpandList}
 			onEndReachedThreshold={0.2}
 			style={styles.listContainer}
-      data={chatList}
-			renderItem={({ item, index }: {item: typeof chatListStore.list[0], index: number}) => (<>
+      data={chatList.list}
+			renderItem={({ item, index }: {item: ConversationApiResponse, index: number}) => (<>
 				{ item &&
 						<ListItem
 							key={index}
@@ -127,10 +184,10 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 					selectedIndex={index}
 					onSelect={index => setIndex(index)}>
 					<Tab title='Serviços'>
-						{getChatListView(chatListStore.list)}
+						{chatListStore.default && getChatListView(chatListStore.default)}
 					</Tab>
 					<Tab title='Suporte'>
-						{getChatListView(chatListStore.listAdmConversation)}
+						{chatListStore.admin && getChatListView(chatListStore.admin)}
 					</Tab>
 				</TabView>
 			</Layout>

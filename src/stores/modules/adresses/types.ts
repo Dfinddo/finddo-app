@@ -8,7 +8,7 @@ export enum AddressActionTypes {
 export interface Address {
 	id: string,
   cep: string,
-	addressAlias: string,
+	name: string,
 	state: string,
 	city: string,
 	district: string,

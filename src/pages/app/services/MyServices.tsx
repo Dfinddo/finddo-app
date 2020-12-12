@@ -59,7 +59,6 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 
 	const getServices = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
-
 		try {
 			const content = new UserStore();
 			

@@ -16,25 +16,58 @@ import {
 } from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
-import { useChat, useUser } from "hooks";
 import { Message } from "stores/chat-store";
 import { BACKEND_URL_STORAGE } from "@env";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import { Chat as IChat } from "stores/modules/chats/types";
+import finddoApi, { ChatApiResponse } from "finddo-api";
+import { fetchActiveChat } from "stores/modules/chats/actions";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 
 const Chat = ((props: ProfileScreenProps): JSX.Element => {
 	const { order_id, receiver_id, title, photo=null } = props.route.params;
 	const styles = useStyleSheet(themedStyles);
-	const chatStore = useChat();
-	const userStore = useUser();
+	const dispach = useDispatch();
+	const chatStore = useSelector<State, IChat>(state => state.chats.activeChat);
+	const userStore = useSelector<State, UserState>(state => state.user);
 	const [loading, setIsLoading] = React.useState(false);
 	const [message, setMessage] = React.useState("");
 
 	const getChat = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
+		const {isAdminChat} = props.route.params;
 
 		try {
-			await chatStore.fetchChat(String(order_id), props.route.params.isAdminChat);
+			const response = !isAdminChat ? await finddoApi.get(`chats/order`, {
+				params: {
+					page: 1, 
+					order_id: String(order_id),
+				},
+			}) : await finddoApi.get(`chats/order/admin`, {
+				params: {
+					page: 1, 
+					order_id: String(order_id),
+					receiver_id: 1,
+				},
+			});
+
+			const chat: Message[] = response.data.chats.map(
+				(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
+			);
+
+			console.log(chat)
+
+			dispach(fetchActiveChat({
+				messages: chat,
+				order_id: String(order_id),
+				isAdminChat,
+				isGlobalChat: order_id === 170,
+				page: response.data.current_page,
+				total: response.data.total_pages,
+			}));
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log(error);
@@ -49,18 +82,25 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [chatStore, order_id, props.route.params.isAdminChat]);
+	}, [order_id, props.route.params, dispach]);
 
 	useEffect(() => void getChat(), [getChat]);
 
 	const onSendButtonPress = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			await chatStore.saveNewMessage({
-				order_id, 
-				receiver_id,
+			const response = !(order_id === 170) ? await finddoApi.post("/chats", {chat: {
+				order_id,
 				message,
-			}, userStore);
+				receiver_id: chatStore.isAdminChat ? 1 : receiver_id,
+				for_admin: chatStore.isAdminChat ? userStore.user_type : "normal",
+			}}) : 
+			await finddoApi.post("/chats/admin", {chat: {
+				message,
+				receiver_id: 1,
+			}});
+
+			await getChat();
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log(error);
@@ -74,7 +114,45 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 	const handleUpdateChat = useCallback(async ()=>{
 		setIsLoading(true);
 		try {
-			await chatStore.updateChat();
+			let chat: Message[] = [];
+			let {total} = chatStore;
+
+			const page = chatStore.page +1 > total ? chatStore.page : chatStore.page +1; 
+
+			console.log(page)
+			for (let index = 1; index <= page; index++) {
+				const response = !chatStore.isAdminChat ? await finddoApi.get(`chats/order`, {
+					params: {
+						page: index, 
+						order_id: chatStore.order_id,
+					},
+				}) : await finddoApi.get(`chats/order/admin`, {
+					params: {
+						page: index, 
+						order_id: chatStore.order_id,
+						receiver_id: 1,
+					},
+				});
+
+				const list: Message[] = response.data.chats.map(
+					(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
+				);
+
+				chat = [...chat, ...list];	
+
+				if(total !== response.data.total_pages) {
+					total = response.data.total_pages;
+				}
+			}
+
+			dispach(fetchActiveChat({
+				messages: chat,
+				order_id: String(order_id),
+				isAdminChat: chatStore.isAdminChat,
+				isGlobalChat: order_id === 170,
+				page,
+				total,
+			}));
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log(error);
@@ -82,7 +160,7 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 		finally {
 			setIsLoading(false);
 		}
-	}, [chatStore]);
+	}, [chatStore, dispach, order_id]);
 
 	return (
 		<Layout style={styles.container}>
@@ -108,7 +186,7 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 				)}
 			/>
 			<List
-				data={chatStore.chat}
+				data={chatStore.messages}
 				onEndReached={handleUpdateChat}
 				inverted
 				refreshing={loading}
@@ -144,20 +222,20 @@ interface ChatMessageProps {
 
 const ChatMessage = (props: ChatMessageProps): React.ReactElement => {
 	const styles = useStyleSheet(themedStyles);
-	const userStore = useUser();
+	const userStoreID = useSelector<State, string>(state => state.user.id);
 	const {message} = props;
 
 	return (
 		<View
 			style={[
-				Number(message.receiver_id) === Number(userStore.id) ? 
+				Number(message.receiver_id) === Number(userStoreID) ? 
 				styles.messageRowOut : styles.messageRowIn,
 				styles.messageRow,
 			]}
 		>
 			<View
 				style={[
-					Number(message.receiver_id) === Number(userStore.id)
+					Number(message.receiver_id) === Number(userStoreID)
 						? styles.messageContentOut
 						: styles.messageContentIn,
 					styles.messageContent,

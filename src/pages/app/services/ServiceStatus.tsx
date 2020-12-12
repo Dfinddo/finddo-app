@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-native/no-color-literals */
 import React, {useEffect, useState, useCallback} from "react";
-import {Alert, StyleSheet, ImageBackground} from "react-native";
+import {Alert, StyleSheet, ImageBackground, View} from "react-native";
 import {Button, Text} from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
 
@@ -15,13 +15,14 @@ import TimeLineStatus from "components/TimeLineStatus";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {ServiceStatusEnum} from "finddo-api";
 import ChatStore from "stores/chat-store";
+import { sendAutomaticMessageAdm } from "src/utils/automaticMessage";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
 	"ServiceStatus"
 >;
 
-const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps) => {
+const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Element => {
 		const [serviceStore, setServiceStore] = useState<
 			ServiceStore | undefined
 		>();
@@ -86,7 +87,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps) => {
 							try {			
 								if(!serviceStore) throw new Error("É preciso existir um serviço");
 
-								await ChatStore.sendAutomaticMessageAdm({
+								await sendAutomaticMessageAdm({
 									user: userStore,
 									order: serviceStore,
 									reason: "cancel",
@@ -127,7 +128,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps) => {
 				});
 		}, [serviceStore, navigation]);
 
-		if (serviceStore === void 0) return null;
+		if (serviceStore === void 0) return <View></View>;
 
 		return (
 			<ImageBackground
