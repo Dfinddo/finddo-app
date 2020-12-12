@@ -12,16 +12,19 @@ import {
 } from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
 import {PaymentMethodsStackParams} from "src/routes/app";
-import {useCardList} from "hooks";
+import { useDispatch, useSelector } from "react-redux";
+import {State} from "stores/index";
+import { Card } from "stores/modules/cards/types";
+import { removeCard, setCardsList } from "stores/modules/cards/actions";
+import finddoApi, { CardApiResponse } from "finddo-api";
+import { AxiosResponse } from "axios";
 
 interface ICreditCard {
-	creditCard: {
-		id: string;
-		brand: string;
-		first6: string;
-		last4: string;
-		store: boolean;
-	};
+	id: string;
+	brand: string;
+	first6: string;
+	last4: string;
+	store: boolean;
 }
 
 type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "Cards">;
@@ -29,14 +32,20 @@ type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "Cards">;
 const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 	const styles = useStyleSheet(themedStyles);
 	const [isLoading, setIsLoading] = useState(false);
-	const cardListStore = useCardList();
+	const dispatch = useDispatch();
+	const cardListStore = useSelector<State, Card[]>(state => 
+		state.cards.list
+	);
 	const theme = useTheme();
 
 	const getCreditCards = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 
 		try {
-			await cardListStore.fetchCards();
+			const response: AxiosResponse<CardApiResponse[]> = await finddoApi.get(`/users/get_credit_card`);
+			const cards: Card[] = response.data.map(item => item.creditCard);
+
+			dispatch(setCardsList(cards));
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -49,7 +58,7 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [cardListStore]);
+	}, [dispatch]);
 
 	useEffect(() => {
 		getCreditCards();
@@ -57,7 +66,7 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 
 	const handleDeleteCard = useCallback(
 		(id: string): void => {
-			if (cardListStore.list.length === 1) {
+			if (cardListStore.length === 1) {
 				Alert.alert(
 					"Finddo",
 					"Você não pode ter menos de 1 cartão cadastrado.",
@@ -79,7 +88,10 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 						{text: "Não"},
 						{
 							text: "Sim",
-							onPress: () => cardListStore.removeCard(id),
+							onPress: () => {
+								finddoApi.delete(`/users/credit_card/${id}`);
+								dispatch(removeCard(id));
+							},
 						},
 					],
 				);
@@ -89,7 +101,7 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 				Alert.alert("Erro ao tentar remover o Cartão, tente novamente.");
 			}
 		},
-		[cardListStore],
+		[cardListStore, dispatch],
 	);
 
 	const renderCardItem = (
@@ -97,15 +109,15 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 	): JSX.Element => (
 		<View style={styles.cardItem}>
 			<Text category="h6" status="control">
-				{info.item.creditCard.brand}
+				{info.item.brand}
 				{"   "}
 			</Text>
 			<Text category="h6" status="control">
-				**** **** **** {info.item.creditCard.last4}
+				**** **** **** {info.item.last4}
 			</Text>
 			<Button
 				onPress={() => {
-					handleDeleteCard(info.item.creditCard.id);
+					handleDeleteCard(info.item.id);
 				}}
 				size="medium"
 				appearance="ghost"
@@ -120,7 +132,7 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 			<List
 				style={styles.list}
 				contentContainerStyle={styles.listContent}
-				data={cardListStore.list}
+				data={cardListStore}
 				refreshControl={
 					<RefreshControl
 						colors={[theme["color-primary-active"]]}

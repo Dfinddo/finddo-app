@@ -8,11 +8,13 @@ import rootSaga from './modules/rootSaga';
 import { UserState } from './modules/user/types';
 import { AdressesState } from './modules/adresses/types';
 import { ChatState } from './modules/chats/types';
+import { CardsState } from './modules/cards/types';
 
 export interface State {
   user: UserState,
   adresses: AdressesState,
   chats: ChatState,
+  cards: CardsState,
 }
 
 const sagaMiddleware = createSagaMiddleware();

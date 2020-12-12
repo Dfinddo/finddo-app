@@ -6,7 +6,7 @@ import {format} from "date-fns";
 
 import {RSA} from "react-native-rsa-native";
 import {MoipCreditCard} from "moip-sdk-js";
-import {MOIP_CREDS_DATA} from "@env";
+import {MOIP_CREDS_DATA_PUBLIC_KEY} from "@env";
 
 const numberTests = [
 	validations.required(),
@@ -122,7 +122,7 @@ class CardStore {
 			});
 
 			MoipCreditCard.setEncrypter(RSA, "react-native")
-				.setPubKey(MOIP_CREDS_DATA.publicKey)
+				.setPubKey(MOIP_CREDS_DATA_PUBLIC_KEY)
 				.setCreditCard({
 					number: creditCard.number,
 					cvc: creditCard.cvc,

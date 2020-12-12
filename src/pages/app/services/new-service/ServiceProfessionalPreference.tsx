@@ -32,7 +32,6 @@ type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 >;
 
 const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScreenProps): JSX.Element => {
-	const userStore = useUser();
 	const serviceStore = useService();
 	const professionalListStore = useProfessionalList();
 
@@ -49,7 +48,7 @@ const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScre
 			console.log({error});
 		}
 		setIsLoading(false);
-	}, [professionalListStore, userStore, value]);
+	}, [professionalListStore, value]);
 
 	const handleExpandList = useCallback(()=>{
 		try {
