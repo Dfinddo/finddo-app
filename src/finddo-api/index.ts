@@ -94,6 +94,7 @@ interface UserApiResponse {
 	mothers_name: string;
 	name: string;
 	nickname: null;
+	photo: string | null;
 	own_id_wirecard: string;
 	player_ids: string[];
 	provider: string;

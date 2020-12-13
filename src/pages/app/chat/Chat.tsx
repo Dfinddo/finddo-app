@@ -58,8 +58,6 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 				(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
 			);
 
-			console.log(chat)
-
 			dispach(fetchActiveChat({
 				messages: chat,
 				order_id: String(order_id),
@@ -119,7 +117,6 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 
 			const page = chatStore.page +1 > total ? chatStore.page : chatStore.page +1; 
 
-			console.log(page)
 			for (let index = 1; index <= page; index++) {
 				const response = !chatStore.isAdminChat ? await finddoApi.get(`chats/order`, {
 					params: {

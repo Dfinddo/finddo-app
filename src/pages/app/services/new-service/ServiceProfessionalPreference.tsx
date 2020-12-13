@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react-native/no-color-literals */
 import React, {useState, useEffect, useCallback} from "react";
 import {
@@ -20,11 +21,18 @@ import {
 	Avatar,
 	Divider,
 } from "@ui-kitten/components";
-import { useProfessionalList, useService, useUser} from "hooks";
+import { useService } from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import {TouchableWithoutFeedback} from "@ui-kitten/components/devsupport";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { ProfessionalsState } from "stores/modules/professionals/types";
+import finddoApi, { UserApiResponse } from "finddo-api";
+import { setProfessionalList } from "stores/modules/professionals/actions";
+import { UserState } from "stores/modules/user/types";
+import { BACKEND_URL_STORAGE } from "@env";
 
 type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -33,33 +41,60 @@ type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 
 const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScreenProps): JSX.Element => {
 	const serviceStore = useService();
-	const professionalListStore = useProfessionalList();
+	const dispach = useDispatch();
+	const professionalListStore = useSelector<State, ProfessionalsState>(state => 
+		state.professionals
+	);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [selected, setSelected] = useState("");
 	const [value, setValue] = useState("");
 
-	useEffect(() => {
+	const fetchProfessionals = useCallback(async (name: string, page = 1): Promise<void> => {
 		setIsLoading(true);
+
 		try {
-			professionalListStore.fetchProfessionals(value, 1);
+			const response = await finddoApi.post(`/users/find_by_name`, {
+				user: {name},
+				page,
+			});
+
+			const list: UserState[] = response.data.items.map(
+				(item:{data:{attributes: UserApiResponse}})=>Object.assign(item.data.attributes, 
+					{ profilePicture: item.data.attributes.photo ? {
+					uri: `${BACKEND_URL_STORAGE}${item.data.attributes.photo}`,
+				}: require("../../../../assets/sem-foto.png")})
+			);
+
+			dispach(setProfessionalList({
+				list: page === 1 ? list : professionalListStore.list.concat(list),
+				current_page: page,
+				total_pages: response.data.total_pages,
+			}));
 		} catch (error) {
 			// eslint-disable-next-line no-console
-			console.log({error});
+			console.log(error)
+			if (error.response) throw new Error("Invalid name data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}finally{
+			setIsLoading(false);
 		}
-		setIsLoading(false);
-	}, [professionalListStore, value]);
+	}, [dispach, professionalListStore]);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	useEffect(() => void fetchProfessionals(value, 1), [value]);
 
 	const handleExpandList = useCallback(()=>{
 		try {
 			if(professionalListStore.current_page){
-				professionalListStore.fetchProfessionals(value, professionalListStore.current_page + 1);
+				fetchProfessionals(value, professionalListStore.current_page + 1);
 			}
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
 		}
-	}, [professionalListStore, value]);
+	}, [professionalListStore, fetchProfessionals, value]);
 
 	const onChangeText = (query: string): void => {
 		setValue(query);
