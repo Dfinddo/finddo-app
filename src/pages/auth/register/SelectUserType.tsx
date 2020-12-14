@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, {FC} from "react";
 import {StyleSheet} from "react-native";
 import {Button, Text, Layout} from "@ui-kitten/components";
-import {useUser} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RegisterStackParams} from "src/routes/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import { updateUser } from "stores/modules/user/actions";
 
 type SelectUserTypeScreenProps = StackScreenProps<
 	RegisterStackParams,
@@ -11,9 +15,11 @@ type SelectUserTypeScreenProps = StackScreenProps<
 >;
 
 const SelectUserType: FC<SelectUserTypeScreenProps> = ({navigation}) => {
-	const userStore = useUser();
+	const dispatch = useDispatch();
+	const userStore = useSelector<State, UserState>(state => state.user);
+
 	const advance = (userType: "user" | "professional") => () => {
-		userStore.userType = userType;
+		dispatch(updateUser({...userStore, user_type: userType}));
 		navigation.navigate("UserDataForm");
 	};
 

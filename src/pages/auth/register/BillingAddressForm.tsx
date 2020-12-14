@@ -1,14 +1,16 @@
-import React from "react";
-import AddressForm from "components/AddressForm";
-import {useUser, useSwitch} from "hooks";
+/* eslint-disable require-await */
+import React, { useCallback, useState } from "react";
+import AddressForm, { AddressFormData } from "components/AddressForm";
+import {useSwitch} from "hooks";
 import {Layout, Button} from "@ui-kitten/components";
-import {ScrollView, StyleSheet} from "react-native";
+import {Alert, ScrollView, StyleSheet} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RegisterStackParams} from "src/routes/auth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
-import AddressStore from "stores/address-store";
+import { Address } from "stores/modules/adresses/types";
+import { updateUser } from "stores/modules/user/actions";
 
 type BillingAddressFormScreenProps = StackScreenProps<
 	RegisterStackParams,
@@ -17,16 +19,31 @@ type BillingAddressFormScreenProps = StackScreenProps<
 
 const BillingAddressForm = ((props: BillingAddressFormScreenProps): JSX.Element => {
 	const userStore = useSelector<State, UserState>(state => state.user);
+	const dispatch = useDispatch();
 
 	console.log(userStore);
 	// const {billingAddress: addressStore} = userStore;
-	const addressStore = new AddressStore();
+	const [addressStore, setAddressStore] = useState<Address>({
+		id: "",
+		cep: "",
+		name: "",
+		state: "",
+		city: "",
+		district: "",
+		street: "",
+		number: "",
+		complement: "",
+	});
+	
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 
-	const onAdvanceAttempt = (): void => {
-		if (addressStore.hasErrors) return setFillAttemptAsFailed();
+	const onAdvanceAttempt = useCallback(async (data: AddressFormData): Promise<void> => {
+		if (data.hasErrors)setFillAttemptAsFailed()
+
+		dispatch(updateUser({...userStore, billingAddress: {...addressStore}}));
 		props.navigation.navigate("LoginDataForm");
-	};
+
+	}, [props.navigation, setFillAttemptAsFailed, dispatch, userStore, addressStore]);
 
 	return (
 		<Layout level="1" style={styles.container}>
@@ -34,8 +51,8 @@ const BillingAddressForm = ((props: BillingAddressFormScreenProps): JSX.Element 
 				<AddressForm
 					addressStore={addressStore}
 					forceErrorDisplay={hasFailedToFillForm}
+					onSubmitForm={onAdvanceAttempt}
 				/>
-				<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>
 			</ScrollView>
 		</Layout>
 	);

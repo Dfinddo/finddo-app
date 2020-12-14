@@ -16,10 +16,11 @@ import {
 import {StackScreenProps} from "@react-navigation/stack";
 import {RegisterStackParams} from "src/routes/auth";
 import {localeDateService} from "src/utils/calendarLocale";
-import { useDispatch } from "react-redux";
-import { signUpData } from "stores/modules/user/actions";
-import finddoApi from "finddo-api";
-import { AxiosResponse } from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "stores/modules/user/actions";
+import { isRegistered } from "finddo-api";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
 
 type UserDataFormScreenProps = StackScreenProps<
 	RegisterStackParams,
@@ -43,6 +44,8 @@ const cpfTests = [validations.required(), validations.definedLength(11)];
 
 const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 	const dispatch = useDispatch();
+	const userStore = useSelector<State, UserState>(state => state.user);
+	
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [name, setName] = useState("");
@@ -72,15 +75,7 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 		setIsLoading(true);
 
 		try {
-			const isValid: AxiosResponse<IsValidProps> = await finddoApi.get(
-				`/users?email=${email}&cellphone=${cellphone}&cpf=${cpf}`,
-			);
-
-			console.log(isValid.data)
-
-			if (isValid.data.error) return Alert.alert("Erro", isValid.data.error);
-
-			
+			await isRegistered({email, cellphone, cpf});
 		} catch (error) {
 			if (error.message === "Connection error")
 				Alert.alert("Falha ao conectar");
@@ -92,7 +87,8 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 			setIsLoading(false);
 		}
 
-		dispatch(signUpData({
+		dispatch(updateUser({
+			...userStore,
 			name,
 			surname,
 			email,
@@ -105,6 +101,7 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 	}, [
 		dispatch,
 		props.navigation,
+		userStore,
 		name,
 		surname,
 		email,

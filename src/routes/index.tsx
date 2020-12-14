@@ -4,7 +4,7 @@ import AuthRoute from "./auth";
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "../stores";
 import { UserState } from "stores/modules/user/types";
-import { signInSuccess } from "stores/modules/user/actions";
+import { updateUser } from "stores/modules/user/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import finddoApi from "finddo-api";
 import BottomNavigation from "components/BottomNavigationTab";
@@ -21,7 +21,7 @@ const Routes = (): JSX.Element => {
 		if (!userData || !jwt) return;
 
 		finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
-		dispatch(signInSuccess(userData));
+		dispatch(updateUser(userData));
 	}, [dispatch]);
 
 	useEffect(() => void restoreSession(), [restoreSession]);

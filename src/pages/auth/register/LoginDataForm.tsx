@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useState, useCallback} from "react";
 import {
 	ScrollView,
@@ -11,10 +12,18 @@ import {politica} from "../politica";
 import {Input, Modal, Text, Button, Layout, Card} from "@ui-kitten/components";
 import ValidatedInput from "components/ValidatedInput";
 import {validations, validateInput} from "utils";
-import {useUser} from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AuthStackParams} from "src/routes/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import { format } from "date-fns";
+import finddoApi from "finddo-api";
+import { updateUser } from "stores/modules/user/actions";
+import OneSignal from "react-native-onesignal";
+import { BACKEND_URL_STORAGE } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const passwordTests = [
 	validations.required(),
@@ -25,7 +34,9 @@ const passwordTests = [
 type LoginDataFormScreenProps = StackScreenProps<AuthStackParams, "Register">;
 
 const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
-	const userStore = useUser();
+	const userStore = useSelector<State, UserState>(state => state.user);
+	const dispatch = useDispatch();
+	
 	const [isLoading, setIsLoading] = useState(false);
 	const [password, setPassword] = useState("");
 	const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -37,23 +48,86 @@ const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
 			: "As senhas devem ser iguais";
 
 	const submit = useCallback(async (): Promise<void> => {
-		setIsLoading(true);
-		if (passwordErrors) {
-			Alert.alert("Erro ao se cadastrar", "As senhas devem ser iguais");
+		if(!userStore.billingAddress)return Alert.alert("Erro ao se cadastrar", "Endereço não preenchido");
+		if (passwordErrors)return Alert.alert("Erro ao se cadastrar", "As senhas devem ser iguais");
 
-			setIsLoading(false);
+		const {name, surname, cellphone, email, cpf, user_type, birthdate} = userStore;
+		const {
+			city,
+			state,
+			cep,
+			district,
+			number,
+			street,
+			complement,
+		} = userStore.billingAddress;
 
-			return;
+		console.log(userStore);
+
+		if (!birthdate) {
+			throw new Error("Invalid birthdate date");
 		}
-		try {
-			await userStore.signUp(password, passwordConfirmation);
 
-			if (userStore.userType === "professional") {
+		try {
+			setIsLoading(true);
+
+			await finddoApi.post("/users", {
+				user: {
+					name,
+					surname,
+					cellphone,
+					email,
+					cpf,
+					user_type,
+					birthdate: format(birthdate, "dd/MM/yyyy"),
+					password,
+					password_confirmation: passwordConfirmation,
+				},
+				address: {
+					city,
+					state,
+					cep,
+					district,
+					number,
+					street,
+					complement,
+				},
+			});
+
+			if (userStore.user_type === "professional") {
 				Alert.alert(
 					"Profissional cadastrado com sucesso. Aguardando aprovação",
 				);
 				props.navigation.navigate("Login");
 			}
+
+			const response = await finddoApi.post("login", {
+				email, 
+				password,
+			});
+
+			const {jwt, photo} = response.data;
+			const {id, attributes: user} = response.data.user.data;
+			
+			if (user.activated === false) throw new Error("Account not validated");
+					
+			finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
+
+			const logged = Object.assign(user, {id, profilePicture: photo.photo ? {
+				uri: `${BACKEND_URL_STORAGE}${photo.photo}`,
+			}: require("../../../assets/sem-foto.png")});
+			
+			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
+			AsyncStorage.setItem("user", JSON.stringify(logged));
+			
+			OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
+				await finddoApi.get('users/set_player_id', {
+					params: {
+						player_id: status.userId,
+					}
+				});
+			});
+			dispatch(updateUser(logged));
 		} catch (error) {
 			if (error.message === "Invalid credentials")
 				Alert.alert("Email ou senha incorretos");
@@ -64,7 +138,7 @@ const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [password, passwordConfirmation, passwordErrors, props, userStore]);
+	}, [password, passwordConfirmation, passwordErrors, props, userStore, dispatch]);
 
 	return (
 		<Layout level="1" style={styles.container}>

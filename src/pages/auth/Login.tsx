@@ -15,7 +15,7 @@ import {StackScreenProps} from "@react-navigation/stack";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AuthStackParams} from "src/routes/auth";
 import { useDispatch } from "react-redux";
-import { signInSuccess } from "stores/modules/user/actions";
+import { updateUser } from "stores/modules/user/actions";
 import finddoApi, { UserApiResponse } from "finddo-api";
 import { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -24,16 +24,16 @@ import { BACKEND_URL_STORAGE } from "@env";
 
 type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
 
-interface LoginResponse {
-  jwt: string;
-	photo: {photo:string | null};
-  user: {
-    data: {
-      id: string;
-      attributes: UserApiResponse;
-    };
-  };
-}
+// interface LoginResponse {
+//   jwt: string;
+// 	photo: {photo:string | null};
+//   user: {
+//     data: {
+//       id: string;
+//       attributes: UserApiResponse;
+//     };
+//   };
+// }
 
 const Login = (props:LoginScreenProps): JSX.Element => {
 	const dispatch = useDispatch();
@@ -55,7 +55,7 @@ const Login = (props:LoginScreenProps): JSX.Element => {
 	const login = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			const response: AxiosResponse<LoginResponse> = await finddoApi.post("login", {
+			const response = await finddoApi.post("login", {
 				email, 
 				password,
 			});
@@ -81,7 +81,7 @@ const Login = (props:LoginScreenProps): JSX.Element => {
 					}
 				});
 			});
-			dispatch(signInSuccess(logged));
+			dispatch(updateUser(logged));
 		} catch (error) {
 			// console.log(error);
 			if (error.message === "Invalid credentials")

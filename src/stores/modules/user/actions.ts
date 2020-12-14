@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { UserApiResponse } from "finddo-api";
-import { UserActionTypes } from "./types";
+import { UserActionTypes, UserState } from "./types";
 
-export function signInSuccess(user: UserApiResponse)  {
+export function updateUser(user: UserState)  {
   return {
-    type: UserActionTypes.signInSuccess,
+    type: UserActionTypes.updateUser,
     payload: {
       user,
     }
@@ -19,15 +18,6 @@ interface SingUpDataProps {
   cellphone: string,
   cpf: string,
   birthdate: Date,
-}
-
-export function signUpData(newData: SingUpDataProps)  {
-  return {
-    type: UserActionTypes.signUpData,
-    payload: {
-      newData,
-    }
-  };
 }
 
 export function updateProfilePhoto(profilePicture: {uri: string})  {
