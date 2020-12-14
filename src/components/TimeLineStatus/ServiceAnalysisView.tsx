@@ -3,13 +3,13 @@ import {StyleSheet, View} from "react-native";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {Avatar, Icon, Text} from "@ui-kitten/components";
 import {ServicesStackParams} from "src/routes/app";
-import ServiceStore from "stores/service-store";
-import UserStore from "stores/user-store";
 import {BACKEND_URL_STORAGE} from "@env";
+import { UserState } from "stores/modules/user/types";
+import { Service } from "stores/modules/services/types";
 
 interface ServiceAnalysisViewProps {
-	userStore: UserStore;
-	serviceStore: ServiceStore;
+	userStore: UserState;
+	serviceStore: Service;
 	navigation: StackNavigationProp<ServicesStackParams, "ServiceStatus">;
 }
 
@@ -27,7 +27,7 @@ const ServiceAnalysisView: FC<ServiceAnalysisViewProps> = ({
 	navigation,
 }) => {
 	const info: InfoData =
-		userStore.userType === "user"
+		userStore.user_type === "user"
 			? {
 					name: serviceStore.professional_order?.name,
 					photo: {

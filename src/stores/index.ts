@@ -10,12 +10,14 @@ import { AdressesState } from './modules/adresses/types';
 import { ChatState } from './modules/chats/types';
 import { CardsState } from './modules/cards/types';
 import { ProfessionalsState } from './modules/professionals/types';
+import { ServiceState } from './modules/services/types';
 
 export interface State {
   user: UserState,
   adresses: AdressesState,
   chats: ChatState,
   cards: CardsState,
+  services: ServiceState,
   professionals: ProfessionalsState,
 }
 

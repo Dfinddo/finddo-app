@@ -9,9 +9,7 @@ import {ScrollView} from "react-native-gesture-handler";
 
 import {SvgXml} from "react-native-svg";
 
-import {useServiceList, useUser} from "hooks";
 import {ServicesStackParams} from "src/routes/app";
-import ServiceStore from "stores/service-store";
 import {serviceCategories, serviceStatusDescription} from "finddo-api";
 
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
@@ -21,6 +19,10 @@ import {BACKEND_URL_STORAGE} from "@env";
 import {star} from "assets/svg/star";
 import {starSolid} from "assets/svg/star-solid";
 import {format} from "date-fns";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { Service, ServiceList } from "stores/modules/services/types";
+import { UserState } from "stores/modules/user/types";
 
 type ServiceClosureScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -40,25 +42,26 @@ const starIcon = (value: number, current: number): JSX.Element => (
 
 const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Element => {
 		const [serviceStore, setServiceStore] = useState<
-			ServiceStore | undefined
+			Service | undefined
 		>();
 		const [isLoading, setIsLoading] = useState(false);
 		const [rate, setRate] = useState(0);
 
-		const serviceListStore = useServiceList();
-		const userStore = useUser();
+		const dispatch = useDispatch();
+		const serviceListStore = useSelector<State, ServiceList>(state => state.services.list);
+		const userStore = useSelector<State, UserState>(state => state.user);
 
 		useEffect(() => {
 			if (route.params?.id)
 				setServiceStore(
-					serviceListStore.list.find(({id}) => route.params.id === id),
+					serviceListStore.items.find(({id}) => route.params.id === id),
 				);
-		}, [route.params?.id, serviceListStore.list, serviceStore]);
+		}, [route.params?.id, serviceListStore, serviceStore]);
 
-		if (serviceStore === void 0 || !serviceStore.categoryID) return <View></View>;
+		if (serviceStore === void 0 || !serviceStore.category.id) return <View></View>;
 
 		const info: InfoData =
-			userStore.userType === "user"
+			userStore.user_type === "user"
 				? {
 						name: serviceStore.professional_order?.name,
 						photo: {
@@ -81,7 +84,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 					<TaskAwaitIndicator isAwaiting={isLoading} />
 					<Card style={styles.card}>
 						<Text style={styles.title}>
-							{serviceCategories[serviceStore.categoryID].name}
+							{serviceCategories[serviceStore.category.id].name}
 						</Text>
 						{serviceStore.budget && (
 							<Text style={styles.total} status="primary">

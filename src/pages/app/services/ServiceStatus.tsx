@@ -1,21 +1,23 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-native/no-color-literals */
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useState, useCallback, useEffect} from "react";
 import {Alert, StyleSheet, ImageBackground, View} from "react-native";
 import {Button, Text} from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
 
-import {useServiceList, useUser} from "hooks";
 import {ServicesStackParams} from "src/routes/app";
-import ServiceStore from "stores/service-store";
 // import {ServiceStatusEnum} from "finddo-api";
 
 import {ScrollView} from "react-native-gesture-handler";
 import TimeLineStatus from "components/TimeLineStatus";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
-import {ServiceStatusEnum} from "finddo-api";
-import ChatStore from "stores/chat-store";
+import finddoApi, {ServiceStatusEnum} from "finddo-api";
 import { sendAutomaticMessageAdm } from "src/utils/automaticMessage";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import { Service, ServiceList } from "stores/modules/services/types";
+import { updateService } from "stores/modules/services/actions";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
@@ -23,20 +25,20 @@ type ServiceStatusScreenProps = StackScreenProps<
 >;
 
 const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Element => {
-		const [serviceStore, setServiceStore] = useState<
-			ServiceStore | undefined
-		>();
+		const [serviceStore, setServiceStore] = useState<Service | undefined>();
 		const [isLoading, setIsLoading] = useState(false);
+		const {id} = route.params;
 
-		const serviceListStore = useServiceList();
-		const userStore = useUser();
+		const dispatch = useDispatch();
+		const servicesListStore = useSelector<State, ServiceList>(state => state.services.list);
+		const userStore = useSelector<State, UserState>(state => state.user);
+
 
 		useEffect(() => {
-			if (route.params?.id)
-				setServiceStore(
-					serviceListStore.list.find(({id}) => route.params.id === id),
-				);
-		}, [route.params?.id, serviceListStore.list]);
+			if(id) {
+				setServiceStore(servicesListStore.items.find(item => item.id === id))
+			}
+		}, [id, servicesListStore]);
 
 		// const handleDisassociateProfessional = useCallback(async () => {
 		// 	setIsLoading(true);
@@ -75,6 +77,8 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 		// }, [serviceStore, userStore, navigation]);
 
 		const handleCancelOrder = useCallback(async () => {
+			if(!serviceStore) return;
+			
 			setIsLoading(true);
 
 			try {
@@ -106,7 +110,9 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 					{text: "Não"},
 				]);
 
-				await serviceStore?.refreshServiceData();
+				const response = await finddoApi.get(`/orders/${serviceStore.id}`);
+
+				dispatch(updateService(response.data));
 			} catch (error) {
 				if (error.response) {
 					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -119,7 +125,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 			} finally {
 				setIsLoading(false);
 			}
-		}, [serviceStore, userStore]);
+		}, [serviceStore, userStore, dispatch]);
 
 		const handleServiceClosure = useCallback(() => {
 			if (serviceStore)
@@ -142,7 +148,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 						serviceStore={serviceStore}
 						navigation={navigation}
 					/>
-					{userStore.userType === "user" &&
+					{userStore.user_type === "user" &&
 						(serviceStore.status === "a_caminho" ||
 							serviceStore.status === "em_servico") && (
 							<>
@@ -161,7 +167,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 								</Text>
 							</>
 						)}
-					{userStore.userType === "user" &&
+					{userStore.user_type === "user" &&
 						ServiceStatusEnum[serviceStore?.status] < 5 && (
 							<Text
 								status="danger"
@@ -171,7 +177,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 								CANCELAR PEDIDO
 							</Text>
 						)}
-					{userStore.userType === "professional" &&
+					{userStore.user_type === "professional" &&
 					ServiceStatusEnum[serviceStore?.status] === 4 ? (
 						<Text style={styles.textOptionsService}>
 							Aguardando confirmação do cliente ao local

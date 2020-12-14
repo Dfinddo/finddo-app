@@ -211,3 +211,21 @@ export type {
 	ConversationApiResponse,
 	CardApiResponse,
 };
+
+export async function isRegistered(data: {
+	email: string,
+	cellphone: string, 
+	cpf: string,
+}): Promise<boolean> {
+	try {
+		await finddoApi.get(
+			`/users?email=${data.email}&cellphone=${data.cellphone}&cpf=${data.cpf}`,
+		);
+
+		return false;
+	} catch (error) {
+		if (error.response && error.response.status === 403) return true;
+		else if (error.request) throw new Error("Connection error");
+		else throw error;
+	}
+};

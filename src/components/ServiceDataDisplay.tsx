@@ -12,17 +12,17 @@ import {Layout, Text} from "@ui-kitten/components";
 import DataPieceDisplay from "components/DataPieceDisplay";
 import ImageView from "react-native-image-viewing";
 import Carousel from "react-native-snap-carousel";
-import ServiceStore from "stores/service-store";
 import {BACKEND_URL_STORAGE} from "@env";
 import {format} from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import {priceFormatter} from "utils";
+import { Service } from "stores/modules/services/types";
 
 interface ServiceImageRenderer {
 	(image: {item: ImageSourcePropType; index: number}): JSX.Element;
 }
 
-const ServiceDataDisplay = ((props: {serviceStore: ServiceStore}): JSX.Element => {
+const ServiceDataDisplay = ((props: {serviceStore: Service}): JSX.Element => {
 	const {serviceStore} = props;
 	const windowWidth = useWindowDimensions().width;
 	const [displayedImage, setDisplayedImage] = useState<number | null>(null);
@@ -75,7 +75,7 @@ const ServiceDataDisplay = ((props: {serviceStore: ServiceStore}): JSX.Element =
 				<DataPieceDisplay
 					style={styles.blockStart}
 					hint="Categoria"
-					value={serviceCategories[serviceStore.categoryID!].name}
+					value={serviceCategories[serviceStore.category.id!].name}
 				/>
 				{serviceStore.previous_budget_value && (
 					<DataPieceDisplay
@@ -97,7 +97,7 @@ const ServiceDataDisplay = ((props: {serviceStore: ServiceStore}): JSX.Element =
 						serviceStore.serviceDate,
 						"EEEE', dia' dd 'de' MMMM 'de' yyyy",
 						{locale: ptBR},
-					)},\nentre ${serviceStore.startTime} e ${serviceStore.endTime}`}
+					)},\nentre ${serviceStore.hora_inicio} e ${serviceStore.hora_fim}`}
 				/>
 				<DataPieceDisplay
 					style={styles.blockStart}

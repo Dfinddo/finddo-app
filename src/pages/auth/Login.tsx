@@ -36,7 +36,7 @@ interface LoginResponse {
 }
 
 const Login = (props:LoginScreenProps): JSX.Element => {
-	const dispach = useDispatch();
+	const dispatch = useDispatch();
 	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -81,7 +81,7 @@ const Login = (props:LoginScreenProps): JSX.Element => {
 					}
 				});
 			});
-			dispach(signInSuccess(logged));
+			dispatch(signInSuccess(logged));
 		} catch (error) {
 			// console.log(error);
 			if (error.message === "Invalid credentials")
@@ -94,7 +94,7 @@ const Login = (props:LoginScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [email, password, dispach]);
+	}, [email, password, dispatch]);
 
 	return (
 		<Layout level="1" style={styles.container}>

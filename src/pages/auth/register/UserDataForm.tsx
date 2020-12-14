@@ -76,7 +76,7 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 				`/users?email=${email}&cellphone=${cellphone}&cpf=${cpf}`,
 			);
 
-			console.log(isValid)
+			console.log(isValid.data)
 
 			if (isValid.data.error) return Alert.alert("Erro", isValid.data.error);
 

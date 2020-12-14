@@ -30,7 +30,7 @@ type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 const Chat = ((props: ProfileScreenProps): JSX.Element => {
 	const { order_id, receiver_id, title, photo=null } = props.route.params;
 	const styles = useStyleSheet(themedStyles);
-	const dispach = useDispatch();
+	const dispatch = useDispatch();
 	const chatStore = useSelector<State, IChat>(state => state.chats.activeChat);
 	const userStore = useSelector<State, UserState>(state => state.user);
 	const [loading, setIsLoading] = React.useState(false);
@@ -58,7 +58,7 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 				(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
 			);
 
-			dispach(fetchActiveChat({
+			dispatch(fetchActiveChat({
 				messages: chat,
 				order_id: String(order_id),
 				isAdminChat,
@@ -80,7 +80,7 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [order_id, props.route.params, dispach]);
+	}, [order_id, props.route.params, dispatch]);
 
 	useEffect(() => void getChat(), [getChat]);
 
@@ -142,7 +142,7 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 				}
 			}
 
-			dispach(fetchActiveChat({
+			dispatch(fetchActiveChat({
 				messages: chat,
 				order_id: String(order_id),
 				isAdminChat: chatStore.isAdminChat,
@@ -157,7 +157,7 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 		finally {
 			setIsLoading(false);
 		}
-	}, [chatStore, dispach, order_id]);
+	}, [chatStore, dispatch, order_id]);
 
 	return (
 		<Layout style={styles.container}>

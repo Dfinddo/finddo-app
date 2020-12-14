@@ -31,7 +31,7 @@ type ChatListScreenProps = StackScreenProps<
 >;
 
 const ChatList = ((props: ChatListScreenProps): JSX.Element => {
-	const dispach = useDispatch();
+	const dispatch = useDispatch();
 	const chatListStore = useSelector<State, ChatListTypes>(state => 
 		state.chats.chatLists
 	);
@@ -56,7 +56,7 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
         },
 			});
 			
-			dispach(fetchChats({
+			dispatch(fetchChats({
 				default:{
 					list: response.data.list ?? [],
 					page: response.data.page ?? 1,
@@ -81,7 +81,7 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [dispach]);
+	}, [dispatch]);
 
 	useEffect(() => void getChats(), [getChats]);
 
@@ -109,7 +109,7 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 			const selected = index === 1 ? chatListStore.admin.list :
 			 chatListStore.default.list;
 			
-			dispach(updateChatList({
+			dispatch(updateChatList({
 				list: [...selected, ...chats],
 				page: response.data.page,
 				totalPages: response.data.total,
@@ -118,7 +118,7 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 			// eslint-disable-next-line no-console
 			console.log({error});
 		}
-	}, [dispach, chatListStore, index]);
+	}, [dispatch, chatListStore, index]);
 
 	function handleSubmit (data: {
 		id: number, 

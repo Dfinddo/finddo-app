@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react-native/no-color-literals */
 /* eslint-disable no-nested-ternary */
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useCallback, useMemo} from "react";
 import {View, RefreshControl, Alert, StyleSheet} from "react-native";
 import {
 	Button,
@@ -17,22 +18,21 @@ import {
 	Modal,
 	Card,
 } from "@ui-kitten/components";
-import {useServiceList} from "hooks";
-import {
+import finddoApi, {
 	serviceStatusDescription,
 	ServiceStatus,
 	serviceCategories,
 	UserApiResponse,
 } from "finddo-api";
-import ServiceStore from "stores/service-store";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import Tutorial from "components/Tutorial";
 import ValidatedSelect from "components/ValidatedSelect";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
-import UserStore from "stores/user-store";
+import { Service, ServiceList } from "stores/modules/services/types";
+import { setServices } from "stores/modules/services/actions";
 
 const serviceStatus = [
 	"",
@@ -53,20 +53,30 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 	const [visible, setVisible] = React.useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
-	const serviceListStore = useServiceList();
+	const [status, setStatus] = useState<"" | ServiceStatus>("");
+	const dispatch = useDispatch();
+	const serviceListStore = useSelector<State, ServiceList>(state => state.services.list);
 	const userStore = useSelector<State, UserState>(state => state.user);
 	const theme = useTheme();
+
+	const url = useMemo<string>(()=>{
+		if (userStore.user_type === "user") return `/orders/user/active`;
+		
+		return selectedIndex === 1 ? "/orders/available" : `orders/active_orders_professional`;
+	}, [userStore, selectedIndex]);
 
 	const getServices = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			const content = new UserStore();
+			const response = await finddoApi.get(`${url}/?page=1`);
 			
-			Object.assign(content, userStore)
-			await serviceListStore.fetchServices(
-				content,
-				userStore.user_type === "professional" && selectedIndex === 1,
-			);
+			const {items, total_pages} = response.data;
+
+			dispatch(setServices({
+				items,
+				page: 1,
+				total: total_pages,
+			}));
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -79,15 +89,30 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [userStore, serviceListStore, selectedIndex]);
+	}, [url, dispatch]);
 
 	useEffect(() => void getServices(), [getServices]);
 
 	const handleExpandList = useCallback(async (): Promise<void> => {
+		if(serviceListStore.page + 1 > serviceListStore.total) return;
+
 		setIsLoading(true);
 
 		try {
-			await serviceListStore.expandServiceList();
+			const params =
+				status !== ""
+					? {page: serviceListStore.page, order_status: status}
+					: {page: serviceListStore.page};
+
+			const response = await finddoApi.get(url, {params});
+
+			const {items, total_pages} = response.data;
+
+			dispatch(setServices({
+				items: [...serviceListStore.items, ...items],
+				page: serviceListStore.page + 1,
+				total: total_pages,
+			}))
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -100,14 +125,26 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [serviceListStore]);
+	}, [serviceListStore, dispatch, status, url]);
 
 	const handleChangeFilter = useCallback(
 		async (status: "" | ServiceStatus) => {
 			setIsLoading(true);
 
 			try {
-				await serviceListStore.setStatusFilter(status);
+				setStatus(status);
+
+				const params =
+				status !== "" ? {page: 1, order_status: status} : {page: 1};
+
+				const response = await finddoApi.get(url, {params});
+				const {items, total_pages} = response.data;
+
+				dispatch(setServices({
+					items,
+					page: 1,
+					total: total_pages,
+				}));
 			} catch (error) {
 				if (error.response) {
 					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -121,7 +158,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 				setIsLoading(false);
 			}
 		},
-		[serviceListStore],
+		[dispatch, url],
 	);
 
 	function handleServiceDetails(id: number, professional: UserApiResponse | null ): void {
@@ -157,7 +194,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 					<ValidatedSelect
 						style={styles.select}
 						label="Filtrar por status"
-						value={serviceStatusDescription[serviceListStore.status]}
+						value={serviceStatusDescription[status]}
 						onSelect={index => handleChangeFilter(serviceStatus[index])}
 					>
 						{serviceStatus.map((status, i) => (
@@ -173,7 +210,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 			<View style={styles.listWrapper}>
 				{
 					<List
-						data={serviceListStore.list}
+						data={serviceListStore.items}
 						ItemSeparatorComponent={Divider}
 						onEndReached={handleExpandList}
 						onEndReachedThreshold={0.2}
@@ -199,7 +236,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 							</View>}
 							</>
 						}
-						renderItem={({item}: {item: ServiceStore}) => (
+						renderItem={({item}: {item: Service}) => (
 							<ListItem
 								onPress={()=>handleServiceDetails(item.id!, item.professional_order)}
 								title={_evaProps => (
@@ -212,7 +249,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 												: "primary"
 										}
 									>
-										{serviceCategories[item.categoryID!].name}
+										{serviceCategories[item.category.id!].name}
 									</Text>
 								)}
 								description={serviceStatusDescription[item.status]}

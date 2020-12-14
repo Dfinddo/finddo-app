@@ -12,12 +12,15 @@ import {
 import {priceFormatter} from "utils";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
-import UserStore from "stores/user-store";
-import ServiceStore from "stores/service-store";
+import { UserState } from "stores/modules/user/types";
+import { Service } from "stores/modules/services/types";
+import finddoApi from "finddo-api";
+import { useDispatch } from "react-redux";
+import { updateService } from "stores/modules/services/actions";
 
 interface PreviousBudgetViewProps {
-	userStore: UserStore;
-	serviceStore: ServiceStore;
+	userStore: UserState;
+	serviceStore: Service;
 	setIsLoading(condition: boolean): void;
 	navigation: StackNavigationProp<ServicesStackParams, "ServiceStatus">;
 }
@@ -29,6 +32,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 	navigation,
 }) => {
 	const styles = useStyleSheet(themedStyles);
+	const dispatch = useDispatch();
 	const [isBudgetDetails, setIsBudgetDetails] = useState(false);
 
 	const handleBudgetApprove = useCallback(
@@ -36,7 +40,11 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 			setIsLoading(true);
 
 			try {
-				await serviceStore?.budgetApprove(approve);
+				await finddoApi.post("/orders/propose_budget", {
+					budget: serviceStore.budget,
+					id: serviceStore.id,
+					accepted: approve,
+				});
 
 				if (!approve) {
 					Alert.alert(
@@ -46,14 +54,17 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 							{text: "Renegociar"},
 							{
 								text: "Cancelar negociação",
-								onPress: () =>
-									serviceStore?.disassociateProfessionalOrder(),
+								onPress: async () => {
+									await finddoApi.put(`/orders/disassociate/${serviceStore.id}`)
+								}
 							},
 						],
 					);
 				}
 
-				await serviceStore?.refreshServiceData();
+				const response = await finddoApi.get(`/orders/${serviceStore.id}`);
+
+				dispatch(updateService(response.data));
 			} catch (error) {
 				if (error.response) {
 					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -67,7 +78,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 				setIsLoading(false);
 			}
 		},
-		[serviceStore, setIsLoading],
+		[serviceStore, setIsLoading, dispatch],
 	);
 
 	const getPrevious = useMemo(() => serviceStore.previous_budget, [
@@ -78,7 +89,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 		<>
 			{!getPrevious ? (
 				<Text>
-					{userStore.userType === "professional" ? "O cliente" : "Você"}{" "}
+					{userStore.user_type === "professional" ? "O cliente" : "Você"}{" "}
 					solicitou orçamento presencial.
 				</Text>
 			) : (
@@ -98,12 +109,12 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 					) : (
 						<Text>Aguardando orçamento do profissional</Text>
 					)}
-					{userStore.userType === "professional" &&
+					{userStore.user_type === "professional" &&
 						serviceStore.budget &&
 						!serviceStore.budget?.accepted && (
 							<Text>Aguardando aprovação do cliente</Text>
 						)}
-					{userStore.userType === "professional" ? (
+					{userStore.user_type === "professional" ? (
 						<>
 							{!serviceStore.budget ? (
 								<Button

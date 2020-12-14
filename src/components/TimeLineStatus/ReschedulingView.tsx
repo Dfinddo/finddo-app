@@ -1,18 +1,22 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react-native/no-color-literals */
 import React, {FC, useMemo, useState} from "react";
 import {Alert, StyleSheet, View} from "react-native";
 import {Button, Layout, Text, Modal} from "@ui-kitten/components";
 
-import UserStore from "stores/user-store";
-import ServiceStore from "stores/service-store";
-
 import {format} from "date-fns";
 
 import DataForm from "components/DataForm";
 
+import { UserState } from "stores/modules/user/types";
+import { Service } from "stores/modules/services/types";
+import finddoApi from "finddo-api";
+import { updateService } from "stores/modules/services/actions";
+import { useDispatch } from "react-redux";
+
 interface ReschedulingViewProps {
-	userStore: UserStore;
-	serviceStore: ServiceStore;
+	userStore: UserState;
+	serviceStore: Service;
 	setIsLoading(condition: boolean): void;
 }
 
@@ -23,14 +27,33 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 }) => {
 	const [isReschedule, setIsReschedule] = useState(false);
 
+	const dispatch = useDispatch();
+
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const initialDate = useMemo(() => new Date(serviceStore.serviceDate), []);
 
 	const handleUpdateSchedule = async (): Promise<void> => {
 		setIsLoading(true);
 		setIsReschedule(false);
+
+		const rescheduling = {
+			date_order: format(serviceStore.serviceDate, "dd/MM/yyyy"),
+			hora_inicio: serviceStore.hora_inicio,
+			hora_fim: serviceStore.hora_fim,
+			professional_accepted:
+				userStore.user_type === "professional" ? true : null,
+			user_accepted: userStore.user_type === "user" ? true : null,
+		};
+
 		try {
-			await serviceStore?.reschedulingCreateService(userStore);
+			await finddoApi.post(`/orders/${serviceStore.id}/reschedulings`, {
+				rescheduling,
+			});
+
+			const response = await finddoApi.get(`/orders/${serviceStore.id}`);
+
+			dispatch(updateService(response.data));
+			
 			Alert.alert("Serviço alterado com sucesso");
 		} catch (error) {
 			if (error.message === "Invalid service data")
@@ -57,23 +80,29 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 								serviceStore.rescheduling.hora_fim
 							}`}
 						</Text>
-						{userStore.userType === "user" ? (
+						{userStore.user_type === "user" ? (
 							<View style={styles.buttonGroup}>
 								<Button
 									style={styles.button}
 									status="primary"
-									onPress={() =>
-										serviceStore.reschedulingAcceptedService(true)
-									}
+									onPress={async () => {
+										await finddoApi.put(`/orders/${serviceStore.id}/reschedulings/${true}`);
+										const response = await finddoApi.get(`/orders/${serviceStore.id}`);
+
+										dispatch(updateService(response.data));
+									}}
 								>
 									ALTERAR
 								</Button>
 								<Button
 									style={styles.button}
 									status="danger"
-									onPress={() =>
-										serviceStore.reschedulingAcceptedService(false)
-									}
+									onPress={async () => {
+										await finddoApi.put(`/orders/${serviceStore.id}/reschedulings/${false}`);
+										const response = await finddoApi.get(`/orders/${serviceStore.id}`);
+
+										dispatch(updateService(response.data));
+									}}
 								>
 									NÃO ALTERAR
 								</Button>
@@ -89,10 +118,10 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 						<Text>{`${format(
 							new Date(serviceStore.serviceDate),
 							"dd/MM/yyyy",
-						)} entre ${serviceStore.startTime} e ${
-							serviceStore.endTime
+						)} entre ${serviceStore.hora_inicio} e ${
+							serviceStore.hora_fim
 						}`}</Text>
-						{userStore.userType === "professional" ? (
+						{userStore.user_type === "professional" ? (
 							<Text
 								style={styles.text}
 								status="primary"

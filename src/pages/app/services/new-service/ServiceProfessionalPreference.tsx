@@ -41,7 +41,7 @@ type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 
 const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScreenProps): JSX.Element => {
 	const serviceStore = useService();
-	const dispach = useDispatch();
+	const dispatch = useDispatch();
 	const professionalListStore = useSelector<State, ProfessionalsState>(state => 
 		state.professionals
 	);
@@ -66,7 +66,7 @@ const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScre
 				}: require("../../../../assets/sem-foto.png")})
 			);
 
-			dispach(setProfessionalList({
+			dispatch(setProfessionalList({
 				list: page === 1 ? list : professionalListStore.list.concat(list),
 				current_page: page,
 				total_pages: response.data.total_pages,
@@ -80,7 +80,7 @@ const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScre
 		}finally{
 			setIsLoading(false);
 		}
-	}, [dispach, professionalListStore]);
+	}, [dispatch, professionalListStore]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => void fetchProfessionals(value, 1), [value]);

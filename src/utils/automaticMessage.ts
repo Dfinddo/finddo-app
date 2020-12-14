@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import finddoApi from "finddo-api";
-import ServiceStore from "stores/service-store";
-import UserStore from "stores/user-store";
+import { Service } from "stores/modules/services/types";
+import { UserState } from "stores/modules/user/types";
 
 type Reason = 
   "not_attend" | 
@@ -9,18 +9,19 @@ type Reason =
   "accidentally_created" | 
   "problem" | 
   "generic" | 
+  "cant_previous" |
   "accidentally_associated"
 
 export interface CreateMessageData {
-  user: UserStore;
-  order: ServiceStore;
+  user: UserState;
+  order: Service;
   reason: Reason;
 }
 
 export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageData): string  => {
     switch (reason) {
       case "not_attend":
-        return user.userType === 'user' ? `Profissional nao compareceu: Olá, 
+        return user.user_type === 'user' ? `Profissional nao compareceu: Olá, 
         eu sou o usuário ${user.name} ${user.surname}, e o 
         profissional ${order.professional_order?.name} ${order.professional_order?.surname} 
         não compareceu para o pedido #${order.id}.` : 
@@ -28,7 +29,7 @@ export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageDat
         o pedido #${order.id}, não poderei realiza-lo.`
         ;
       case "generic":
-        return `Olá, eu sou o ${user.userType ==="user" ? "usuário" : "profissional"}
+        return `Olá, eu sou o ${user.user_type ==="user" ? "usuário" : "profissional"}
          ${user.name} ${user.surname}, e tive 
         problemas com o pedido #${order.id}.`;
       case "accidentally_created":
@@ -37,6 +38,9 @@ export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageDat
       case "accidentally_associated":
         return `Olá, eu sou o profissional ${user.name} ${user.surname}, e aceitei o pedido 
         #${order.id} sem querer, e portanto gostaria de cancela-lo.`;
+      case "cant_previous":
+        return `Olá, eu sou o profissional ${user.name} ${user.surname}, e gostaria de aceitar pedido 
+        #${order.id}, porém o tipo de orçamento não tem como ser calculado previamente.`;
       default: 
         return "";
     }
@@ -48,7 +52,7 @@ export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageDat
 				order_id: data.order.id,
 				message: createAutomaticMessage(data),
 				receiver_id:  1,
-				for_admin: data.user.userType
+				for_admin: data.user.user_type
 			}});
 
 		} catch (error) {
