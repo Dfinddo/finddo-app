@@ -6,7 +6,7 @@ import {Button, Layout, Text, Modal} from "@ui-kitten/components";
 
 import {format} from "date-fns";
 
-import DataForm from "components/DataForm";
+import DataForm, { DataFormOnSubmitProps } from "components/DataForm";
 
 import { UserState } from "stores/modules/user/types";
 import { Service } from "stores/modules/services/types";
@@ -32,14 +32,18 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const initialDate = useMemo(() => new Date(serviceStore.serviceDate), []);
 
-	const handleUpdateSchedule = async (): Promise<void> => {
+	const handleUpdateSchedule = async ({
+		hora_inicio,
+		hora_fim,
+		serviceDate,
+	}: DataFormOnSubmitProps): Promise<void> => {
 		setIsLoading(true);
 		setIsReschedule(false);
 
 		const rescheduling = {
-			date_order: format(serviceStore.serviceDate, "dd/MM/yyyy"),
-			hora_inicio: serviceStore.hora_inicio,
-			hora_fim: serviceStore.hora_fim,
+			date_order: format(serviceDate, "dd/MM/yyyy"),
+			hora_inicio,
+			hora_fim,
 			professional_accepted:
 				userStore.user_type === "professional" ? true : null,
 			user_accepted: userStore.user_type === "user" ? true : null,
@@ -144,9 +148,9 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 					<DataForm
 						serviceStore={serviceStore}
 						initialDate={initialDate}
+						onSubmit={handleUpdateSchedule}
 					/>
 				</Layout>
-				<Button onPress={handleUpdateSchedule}>REAGENDAR</Button>
 			</Modal>
 		</>
 	);

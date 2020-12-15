@@ -40,7 +40,7 @@ const BillingAddressForm = ((props: BillingAddressFormScreenProps): JSX.Element 
 	const onAdvanceAttempt = useCallback(async (data: AddressFormData): Promise<void> => {
 		if (data.hasErrors)setFillAttemptAsFailed()
 
-		dispatch(updateUser({...userStore, billingAddress: {...addressStore}}));
+		dispatch(updateUser({...userStore, ...addressStore, billingAddress: {...addressStore}}));
 		props.navigation.navigate("LoginDataForm");
 
 	}, [props.navigation, setFillAttemptAsFailed, dispatch, userStore, addressStore]);

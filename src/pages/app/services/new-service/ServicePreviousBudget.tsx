@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React from "react";
 import {
 	View,
@@ -8,12 +9,15 @@ import {
 	StyleSheet,
 } from "react-native";
 import {Text, Button, Layout, RadioGroup, Radio} from "@ui-kitten/components";
-import {useService} from "hooks";
 import {serviceCategories} from "finddo-api";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
 import {priceFormatter, numericFormattingFilter} from "utils";
+import { useDispatch, useSelector } from "react-redux";
+import { Service } from "stores/modules/services/types";
+import { State } from "stores/index";
+import { updateNewService } from "stores/modules/services/actions";
 
 type ServicePreviousBudgetScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -21,8 +25,11 @@ type ServicePreviousBudgetScreenProps = StackScreenProps<
 >;
 
 const NewService = ((props: ServicePreviousBudgetScreenProps): JSX.Element => {
-	const serviceStore = useService();
-	const selectedCategory = serviceCategories[serviceStore.categoryID!];
+	const dispatch = useDispatch();
+	const newService = useSelector<State, Service>(state => 
+		state.services.newService
+	);
+	const selectedCategory = serviceCategories[newService.category.id!];
 
 	const onAdvanceAttempt = (): void => {
 		props.navigation.navigate("ServiceDate");
@@ -43,9 +50,12 @@ const NewService = ((props: ServicePreviousBudgetScreenProps): JSX.Element => {
 							Como deseja receber o orçamento?
 						</Text>
 						<RadioGroup
-							selectedIndex={serviceStore.previous_budget ? 0 : 1}
+							selectedIndex={newService.previous_budget ? 0 : 1}
 							onChange={index =>
-								(serviceStore.previous_budget = index === 0)
+								dispatch(updateNewService({
+									...newService,
+									previous_budget: index === 0,
+								}))
 							}
 							style={styles.radioGroup}
 						>
@@ -66,7 +76,7 @@ const NewService = ((props: ServicePreviousBudgetScreenProps): JSX.Element => {
 						</RadioGroup>
 					</View>
 				</KeyboardAvoidingView>
-				{serviceStore.previous_budget && (
+				{newService.previous_budget && (
 					<View style={styles.budgetContainer}>
 						<Text style={styles.text}>
 							Você já recebeu um orçamento? Nos informe o valor.
@@ -78,13 +88,16 @@ const NewService = ((props: ServicePreviousBudgetScreenProps): JSX.Element => {
 							formattingFilter={numericFormattingFilter}
 							keyboardType={"number-pad"}
 							onChangeText={input => {
-								serviceStore.previous_budget_value = parseInt(
-									input,
-									10,
-								);
+								dispatch({
+									...newService,
+									previous_budget_value: parseInt(
+										input,
+										10,
+									),
+								});
 							}}
 							value={
-								serviceStore.previous_budget_value?.toString() || ""
+								newService.previous_budget_value?.toString() || ""
 							}
 							maxLength={11}
 						/>

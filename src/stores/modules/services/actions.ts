@@ -13,9 +13,24 @@ export function setServices(data: ServiceList)  {
 
 export function updateService(updated: Service)  {
   return {
-    type: ServiceActionTypes.setServices,
+    type: ServiceActionTypes.updateService,
     payload: {
       updated,
     }
+  };
+}
+
+export function updateNewService(form: Service)  {
+  return {
+    type: ServiceActionTypes.updateNewService,
+    payload: {
+      form,
+    }
+  };
+}
+
+export function clearNewService()  {
+  return {
+    type: ServiceActionTypes.clearNewService,
   };
 }

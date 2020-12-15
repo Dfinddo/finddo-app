@@ -21,7 +21,6 @@ import {
 	Avatar,
 	Divider,
 } from "@ui-kitten/components";
-import { useService } from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
@@ -33,6 +32,9 @@ import finddoApi, { UserApiResponse } from "finddo-api";
 import { setProfessionalList } from "stores/modules/professionals/actions";
 import { UserState } from "stores/modules/user/types";
 import { BACKEND_URL_STORAGE } from "@env";
+import { updateNewService } from "stores/modules/services/actions";
+import { Service } from "stores/modules/services/types";
+import { select } from "redux-saga/effects";
 
 type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -40,14 +42,16 @@ type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 >;
 
 const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScreenProps): JSX.Element => {
-	const serviceStore = useService();
 	const dispatch = useDispatch();
+	const newService = useSelector<State, Service>(state => 
+		state.services.newService
+	);
 	const professionalListStore = useSelector<State, ProfessionalsState>(state => 
 		state.professionals
 	);
 
 	const [isLoading, setIsLoading] = useState(false);
-	const [selected, setSelected] = useState("");
+	const [selected, setSelected] = useState<string>("");
 	const [value, setValue] = useState("");
 
 	const fetchProfessionals = useCallback(async (name: string, page = 1): Promise<void> => {
@@ -117,7 +121,10 @@ const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScre
 			return;
 		}
 
-		serviceStore.filtered_professional = selected;
+		dispatch(updateNewService({
+			...newService, 
+			filtered_professional: select as unknown as string | null
+		}))
 		props.navigation.navigate("ServiceCategories");
 	}
 

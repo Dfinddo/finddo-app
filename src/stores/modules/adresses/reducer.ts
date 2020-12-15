@@ -8,7 +8,7 @@ const INITIAL_STATE: AdressesState = {
   list: [],
 };
 
-const cart: Reducer<AdressesState> = (state = INITIAL_STATE, action) => 
+const adresses: Reducer<AdressesState> = (state = INITIAL_STATE, action) => 
   produce(state, draft => {
     switch(action.type){
       case AddressActionTypes.setAdressesList:
@@ -45,4 +45,4 @@ const cart: Reducer<AdressesState> = (state = INITIAL_STATE, action) =>
     }
   })
 
-export default cart;
+export default adresses;

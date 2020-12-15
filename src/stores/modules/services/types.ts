@@ -10,6 +10,8 @@ import { Address } from "../adresses/types";
 export enum ServiceActionTypes {
   setServices= "SET_SERVICES",
   updateService= "UPDATE_SERVICE",
+  updateNewService= "UPDATE_NEW_SERVICE",
+  clearNewService= "CLEAR_NEW_SERVICE",
 }
 
 export interface Service {
@@ -50,5 +52,5 @@ export interface ServiceList {
 export interface ServiceState {
   list: ServiceList,
 
-  activeService: Service,
+  newService: Service,
 }

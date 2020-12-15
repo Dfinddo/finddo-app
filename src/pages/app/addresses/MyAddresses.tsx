@@ -20,7 +20,6 @@ const MyAddresses = (({navigation}: MyAddressesScreenProps): JSX.Element => {
 	const userStoreID = useSelector<State, string>(state => state.user.id);
 	const addressListStore = useSelector<State, AdressesState>(state => state.adresses);
 	const [isLoading, setIsLoading] = useState(false);
-	// const addressListStore = useAddressList();
 
 	const getAdresses = useCallback(async (): Promise<void> => {
 		setIsLoading(true);

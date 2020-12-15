@@ -11,7 +11,7 @@ const INITIAL_STATE: ProfessionalsState = {
 	total_pages: 1,
 };
 
-const cards: Reducer<ProfessionalsState> = (state = INITIAL_STATE, action) => produce(state, draft => {
+const professionals: Reducer<ProfessionalsState> = (state = INITIAL_STATE, action) => produce(state, draft => {
     switch(action.type){
       case ProfessionalListActionTypes.setProfessionalList:
         const { data } = action.payload; 
@@ -23,4 +23,4 @@ const cards: Reducer<ProfessionalsState> = (state = INITIAL_STATE, action) => pr
     }
   })
 
-export default cards;
+export default professionals;

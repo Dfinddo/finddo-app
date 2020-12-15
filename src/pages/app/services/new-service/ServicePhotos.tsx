@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {
 	View,
 	Pressable,
@@ -9,7 +9,6 @@ import {
 	ScrollView,
 } from "react-native";
 import {Button, Text, Layout, useTheme} from "@ui-kitten/components";
-import {useService} from "hooks";
 import {serviceCategories} from "finddo-api";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -17,6 +16,10 @@ import {NewServiceStackParams} from "src/routes/app";
 import ImagePicker from "react-native-image-crop-picker";
 import Carousel from "react-native-snap-carousel";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { Service } from "stores/modules/services/types";
+import { updateNewService } from "stores/modules/services/actions";
 
 type ServicePhotosScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -31,21 +34,27 @@ interface ImageProps {
 const ServiceFotos = ((props :ServicePhotosScreenProps): JSX.Element => {
 	// const [isLoading, setIsLoading] = useState(false);
 	const windowWidth = useWindowDimensions().width;
-	const serviceStore = useService();
-	const selectedCategory = serviceCategories[serviceStore.categoryID!];
+	const dispatch = useDispatch();
+	const newService = useSelector<State, Service>(state => 
+		state.services.newService
+	);
+	const selectedCategory = serviceCategories[newService.category.id!];
 
 	const removePhoto = (index: number) => (): void =>
 		Alert.alert("Foto", "Deseja remove essa foto?", [
 			{text: "Cancelar"},
 			{
 				text: "Remover foto",
-				onPress: () => serviceStore.images.splice(index, 1),
+				onPress: () => dispatch(updateNewService({
+					...newService,
+					images: newService.images.splice(index, 1),
+				})),
 			},
 		]);
 
 	const onAdvance = () => void props.navigation.navigate("ServiceAddress");
 
-	const servicePhotos = serviceStore.images.map((image, i) => (
+	const servicePhotos = newService.images.map((image, i) => (
 		<Pressable key={image.data} onPress={removePhoto(i)}>
 			<Image
 				style={styles.serviceImage}
@@ -84,7 +93,10 @@ const ServiceFotos = ((props :ServicePhotosScreenProps): JSX.Element => {
 
 const AddPhotoButton = (): JSX.Element => {
 	const theme = useTheme();
-	const serviceStore = useService();
+	const dispatch = useDispatch();
+	const newService = useSelector<State, Service>(state => 
+		state.services.newService
+	);
 
 	const addPhoto = (): void =>
 		Alert.alert("Foto", "O que deseja fazer?", [
@@ -93,9 +105,12 @@ const AddPhotoButton = (): JSX.Element => {
 				text: "Tirar uma nova foto",
 				onPress: () =>
 					ImagePicker.openCamera({includeBase64: true}).then(image => {
-						serviceStore.images = serviceStore.images.concat(
-							image as ImageProps,
-						);
+						dispatch(updateNewService({
+							...newService,
+							images: newService.images.concat(
+								image as ImageProps,
+							),
+						}));
 					}),
 			},
 			{
@@ -105,9 +120,12 @@ const AddPhotoButton = (): JSX.Element => {
 						includeBase64: true,
 						multiple: true,
 					}).then((image: unknown) => {
-						serviceStore.images = serviceStore.images.concat(
-							image as ImageProps,
-						);
+						dispatch(updateNewService({
+							...newService,
+							images: newService.images.concat(
+								image as ImageProps,
+							),
+						}));
 					}),
 			},
 		]);

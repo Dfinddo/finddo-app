@@ -11,7 +11,7 @@ const INITIAL_STATE: ServiceState = {
     page: 1,
     total: 1,
   },
-  activeService: {
+  newService: {
     id: null,
     category: {
       id: null,
@@ -51,7 +51,7 @@ const INITIAL_STATE: ServiceState = {
 	},
 };
 
-const chats: Reducer<ServiceState> = (state = INITIAL_STATE, action) => produce(state, draft => {
+const services: Reducer<ServiceState> = (state = INITIAL_STATE, action) => produce(state, draft => {
     switch(action.type){
       case ServiceActionTypes.setServices:
         const { data } = action.payload; 
@@ -78,21 +78,26 @@ const chats: Reducer<ServiceState> = (state = INITIAL_STATE, action) => produce(
         };
         
         return;
-    
-      // case ServiceActionTypes.updateChatList:
-      //   const { isAdminChat, updatedChat } = action.payload;  
-  
-      //   if(isAdminChat){
-      //     draft.chatLists.admin = updatedChat;
-      //   }else{
-      //     draft.chatLists.default = updatedChat;
-      //   }
 
-      //   return;
+      case ServiceActionTypes.updateNewService:
+          const { form } = action.payload; 
+
+          draft.newService = {
+            ...form,
+            // userID: form.user ? form.user.id : null,
+            // serviceDate: new Date(form.start_order),
+          };
+          
+          return;
+    
+      case ServiceActionTypes.clearNewService:
+        draft.newService = INITIAL_STATE.newService;
+
+        return;
 
       default:
         return draft;
     }
   })
 
-export default chats;
+export default services;

@@ -7,10 +7,13 @@ import {
 	StyleSheet,
 } from "react-native";
 import {List, Card, Text} from "@ui-kitten/components";
-import {useService} from "hooks";
 import {serviceCategories} from "finddo-api";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { Service } from "stores/modules/services/types";
+import { updateNewService } from "stores/modules/services/actions";
 
 type ServiceCategoriesScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -22,7 +25,10 @@ const categoryList = Object.entries(
 ).map(([id, categoryData]) => ({id, ...categoryData}));
 
 const Services = (({navigation}: ServiceCategoriesScreenProps): JSX.Element => {
-	const serviceStore = useService();
+	const dispatch = useDispatch();
+	const newService = useSelector<State, Service>(state =>
+		state.services.newService
+	);
 
 	return (
 		<ImageBackground
@@ -46,7 +52,13 @@ const Services = (({navigation}: ServiceCategoriesScreenProps): JSX.Element => {
 						>
 							<Pressable
 								onPress={() => {
-									serviceStore.categoryID = item.id;
+									dispatch(updateNewService({
+										...newService,
+										category: {
+											id: item.id,
+											name: item.name,
+										},
+									}));
 									navigation.navigate("ServiceDescription");
 								}}
 							>

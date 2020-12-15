@@ -1,13 +1,22 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, { useEffect, useState } from "react";
 import {StyleSheet, ScrollView, View} from "react-native";
-import {Layout, Text, Calendar, SelectItem} from "@ui-kitten/components";
-import {range} from "utils";
+import {Layout, Text, Calendar, SelectItem, Button} from "@ui-kitten/components";
+import {range, validations} from "utils";
 import ValidatedSelect from "./ValidatedSelect";
 import {localeDateService} from "src/utils/calendarLocale";
 import { Service } from "stores/modules/services/types";
 
+// const defaultTests = [validations.required()];
+
+export interface DataFormOnSubmitProps {
+	hora_inicio: string;
+	hora_fim: string;
+	serviceDate: Date;
+}
 interface DataFormProps {
 	serviceStore: Service;
+	onSubmit(data: DataFormOnSubmitProps): Promise<void>;
 	forceErrorDisplay?: boolean;
 	initialDate?: Date;
 	finalDate?: Date;
@@ -17,35 +26,41 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 	const {
 		serviceStore,
 		forceErrorDisplay,
+		onSubmit,
 		initialDate: initial,
 		finalDate: final,
 	} = props;
 
-	const [newServiceStore, setNewServiceStore] = useState<Service>();
+	const [startTime, setStartTime] = useState("--:--");
+	const [endTime, setEndTime] = useState("--:--");
+	const [serviceDate, setServiceDate] = useState<Date>(new Date());
+	// const [newServiceStore, setNewServiceStore] = useState<Service>();
 
 	const initialDate = initial || new Date();
 	const finalDate = final || new Date();
 
 	useEffect(() => {
-		setNewServiceStore(serviceStore);
+		setStartTime(serviceStore.hora_inicio);
+		setEndTime(serviceStore.hora_fim);
+		setServiceDate(serviceStore.serviceDate);
 	}, [serviceStore])
 
-	if(!newServiceStore) return <View></View>
+	// if(!serviceStore) return <View></View>
 
 	if (!final) finalDate.setDate(initialDate.getDate() + 6);
 
 	const endTimes = avaliableTimes.filter(
-		time => time > newServiceStore.hora_inicio,
+		time => time > startTime,
 	);
 
 	const onStartSelect = (index: number): void => {
-		newServiceStore.hora_inicio = avaliableTimes[index];
-		if (newServiceStore.hora_inicio >= newServiceStore.hora_fim)
-			newServiceStore.hora_fim = "";
+		setStartTime(avaliableTimes[index]);
+
+		if (startTime >= endTime) setEndTime("");
 	};
 
 	const onEndSelect = (index: number) =>
-		void (newServiceStore.hora_fim = endTimes[index]);
+		void (setEndTime(endTimes[index]));
 
 	return (
 		<Layout level="1" style={styles.contentWrapper}>
@@ -59,8 +74,8 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 				<Calendar
 					style={styles.calendar}
 					dateService={localeDateService}
-					date={newServiceStore.serviceDate}
-					onSelect={date => (newServiceStore.serviceDate = date)}
+					date={serviceDate}
+					onSelect={date => (setServiceDate(date))}
 					min={initialDate}
 					max={finalDate}
 				/>
@@ -71,7 +86,7 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 						</Text>
 						<ValidatedSelect
 							style={styles.timeSelect}
-							value={newServiceStore.hora_inicio}
+							value={startTime}
 							forceErrorDisplay={forceErrorDisplay}
 							placeholder={"--:--"}
 							onSelect={onStartSelect}
@@ -87,7 +102,7 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 						</Text>
 						<ValidatedSelect
 							style={styles.timeSelect}
-							value={newServiceStore.hora_fim}
+							value={endTime}
 							forceErrorDisplay={forceErrorDisplay}
 							placeholder={"--:--"}
 							onSelect={onEndSelect}
@@ -98,6 +113,16 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 						</ValidatedSelect>
 					</View>
 				</View>
+
+				<Button onPress={async() => {
+					await onSubmit({
+						hora_inicio: startTime,
+						hora_fim: endTime,
+						serviceDate,
+					})}
+				}>
+					CONFIRMAR
+				</Button>
 			</ScrollView>
 		</Layout>
 	);
