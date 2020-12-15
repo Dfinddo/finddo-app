@@ -15,7 +15,6 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import ImagePicker from "react-native-image-crop-picker";
 import ValidatedInput from "components/ValidatedInput";
-import UserStore from "stores/user-store";
 import {phoneFormatter, cpfFormatter, numericFormattingFilter} from "utils";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,9 +32,9 @@ const Profile = ((props: ProfileScreenProps): JSX.Element => {
 	const dispatch = useDispatch();
 	const userStore = useSelector<State, UserState>(state => state.user);
 	const [isEditing, setIsEditing] = useState(false);
-	const [fieldToEdit, setFieldToEdit] = useState<keyof UserStore>("email");
+	const [fieldToEdit, setFieldToEdit] = useState<keyof UserState>("email");
 
-	const editProfile = (field: keyof UserStore) => () => {
+	const editProfile = (field: keyof UserState) => () => {
 		setFieldToEdit(field);
 		setIsEditing(true);
 	};
@@ -71,15 +70,14 @@ const Profile = ((props: ProfileScreenProps): JSX.Element => {
 					props.navigation.navigate("Services");
 					await AsyncStorage.multiRemove(["user", "access-token"]);
 
-					OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
-						await finddoApi.delete(
-							`users/remove_player_id_notifications/${userStore.id}/${status.userId}`,
-						);
-					});
+					OneSignal.getPermissionSubscriptionState(
+						(status: {userId: string}) => 
+							finddoApi.delete(
+							`users/remove_player_id_notifications/${userStore.id}/${status.userId}`
+							).then(() => delete finddoApi.defaults.headers.Authorization)
+					);
 
 					OneSignal.removeExternalUserId();
-
-					delete finddoApi.defaults.headers.Authorization;
 
 					dispatch(signOut());
 				},
@@ -144,7 +142,7 @@ export default Profile;
 
 interface ProfileEditModalProps {
 	visible: boolean;
-	field: keyof UserStore;
+	field: keyof UserState;
 	onClose: () => void;
 }
 

@@ -76,27 +76,27 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 
 		try {
 			await isRegistered({email, cellphone, cpf});
+
+			dispatch(updateUser({
+				...userStore,
+				name,
+				surname,
+				email,
+				cellphone,
+				cpf,
+				birthdate,
+			}));
+			props.navigation.navigate("BillingAddressForm");
 		} catch (error) {
 			if (error.message === "Connection error")
-				Alert.alert("Falha ao conectar");
+				Alert.alert("Finddo", "Erro na conexão");		
 			else {
-				setIsLoading(false);
-				throw error;
+				Alert.alert("Finddo", error.message);
+				// throw error;
 			}
 		} finally {
 			setIsLoading(false);
 		}
-
-		dispatch(updateUser({
-			...userStore,
-			name,
-			surname,
-			email,
-			cellphone,
-			cpf,
-			birthdate,
-		}));
-		props.navigation.navigate("BillingAddressForm");
 
 	}, [
 		dispatch,
@@ -154,6 +154,7 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 						setEmail(input);
 						setEmailError(validateInput(input, emailTests))
 					}}
+					keyboardType="email-address"
 					label="Email"
 					maxLength={255}
 					value={email}
@@ -196,7 +197,7 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 					date={birthdate}
 					style={styles.input}
 				/>
-				<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>
+				<Button style={styles.buttom} onPress={onAdvanceAttempt}>CONTINUAR</Button>
 			</KeyboardAvoidingView>
 		</Layout>
 	);
@@ -227,4 +228,9 @@ const styles = StyleSheet.create({
 	},
 	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 	input: {width: "100%"},
+	buttom: {
+		width: "90%", 
+		height: 24,
+		margin: 16,
+	},
 });

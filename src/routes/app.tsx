@@ -27,8 +27,11 @@ import {Profile} from "pages/app/profile";
 import {MyAddresses, ManageAddress} from "pages/app/addresses";
 import Chat from "pages/app/chat/Chat";
 import {Cards, AddCard} from "pages/app/payment-methods";
-import {useThemedHeaderConfig, useUser} from "hooks";
+import {useThemedHeaderConfig} from "hooks";
 import ChatList from "pages/app/chat/ChatList";
+import { useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
 
 const PaymentMethodsStack = createStackNavigator<PaymentMethodsStackParams>();
 const AddressStack = createStackNavigator<AddressStackParams>();
@@ -176,13 +179,13 @@ const ServicesRoute: FC = () => {
 };
 
 const AppRoute: FC = () => {
-	const userStore = useUser();
+	const userStore = useSelector<State, UserState>(state => state.user);
 
 	return (
 		<AppDrawer.Navigator
 			initialRouteName="Services"
 			drawerContent={
-				userStore.userType === "user"
+				userStore.user_type === "user"
 					? DrawerContentUser
 					: DrawerContentProfessional
 			}

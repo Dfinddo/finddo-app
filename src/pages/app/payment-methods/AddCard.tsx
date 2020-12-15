@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useState, useEffect, useCallback} from "react";
 import {
 	View,
@@ -8,7 +9,6 @@ import {
 	StyleSheet,
 } from "react-native";
 import {Button, Datepicker, Layout} from "@ui-kitten/components";
-import CardStore from "stores/card-store";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
 import ValidatedInput from "components/ValidatedInput";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
@@ -18,18 +18,64 @@ import {
 	phoneFormatter,
 	cpfFormatter,
 	creditCardFormatter,
+	validations,
+	validateInput,
 } from "utils";
 import {useSwitch} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import {PaymentMethodsStackParams} from "src/routes/app";
 import {localeDateService} from "src/utils/calendarLocale";
+import finddoApi from "finddo-api";
+import { createHashMoip } from "src/services/moip";
+import { format } from "date-fns";
 
 type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "AddCard">;
 
+const numberTests = [
+	validations.required(),
+	validations.definedLength(16),
+	validations.validCreditCardNumber(),
+];
+const expirationDateTests = [
+	validations.required(),
+	validations.definedLength(4),
+	validations.validCreditCardDate(),
+];
+const cvcTests = [validations.required(), validations.definedLength(3)];
+const holderNameTests = [validations.required()];
+const taxDocumentTests = [
+	validations.required(),
+	validations.definedLength(11),
+];
+const phoneTests = [validations.required(), validations.definedLength(11)];
+
+
 const AddCard = ((props: CardsScreenProps): JSX.Element => {
-	const [cardStore] = useState(new CardStore());
+	const [cardStore] = useState({
+		
+	});
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 	const [isLoading, setIsLoading] = useState(false);
+
+	const [number, setNumber] = useState("");
+	const [numberError, setNumberError] = useState<string|undefined>("");
+
+	const [expirationDate, setExpirationDate] = useState("");
+	const [expirationDateError, setExpirationDateError] = useState<string|undefined>("");
+
+	const [cvc, setCvc] = useState("");
+	const [cvcError, setCvcError] = useState<string|undefined>("");
+
+	const [holderName, setHolderName] = useState("");
+	const [holderNameError, setHolderNameError] = useState<string|undefined>("");
+
+	const [taxDocument, setTaxDocument] = useState("");
+	const [taxDocumentError, setTaxDocumentError] = useState<string|undefined>("");
+
+	const [phone, setPhone] = useState("");
+	const [phoneError, setPhoneError] = useState<string|undefined>("");
+
+	const [holderBirthdate, setHolderBirthdate] = useState<Date>(new Date());
 
 	useEffect(
 		() =>
@@ -41,11 +87,60 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 		[],
 	);
 
+	const saveCard = useCallback(async (): Promise<void> => {
+		try {
+			await finddoApi.post("/users/add_credit_card", {
+				credit_card: {
+					method: "CREDIT_CARD",
+					creditCard: {
+						expirationMonth: expirationDate.substr(0, 2),
+						expirationYear: expirationDate.substr(2, 2),
+						number,
+						cvc,
+						holder: {
+							fullname: holderName,
+							birthdate: format(
+								holderBirthdate,
+								"yyyy-MM-dd",
+							),
+							taxDocument: {
+								type: "CPF",
+								number: taxDocument,
+							},
+							phone: {
+								countryCode: "55",
+								areaCode: phone.substr(0, 2),
+								number: phone.substr(2, 9),
+							},
+						},
+					},
+				},
+			});
+
+			createHashMoip({
+				cvc,
+				expirationDate,
+				number,
+			})
+		} catch (error) {
+			if (error.response) throw new Error("Invalid credit card data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	}, [cvc, expirationDate, phone, number, holderBirthdate, holderName, taxDocument]);
+
 	const onSaveAttempt = useCallback(async (): Promise<void> => {
 		try {
 			setIsLoading(true);
-			if (cardStore.hasErrors) return setFillAttemptAsFailed();
-			await cardStore.saveCard();
+			if (
+				cvcError || 
+				expirationDateError || 
+				phoneError || 
+				numberError || 
+				holderNameError || 
+				taxDocumentError) return setFillAttemptAsFailed();
+
+			await saveCard();
 			props.navigation.navigate("Cards");
 		} catch (error) {
 			// eslint-disable-next-line no-console
@@ -54,7 +149,16 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [cardStore, props, setFillAttemptAsFailed]);
+	}, [
+		props, 
+		setFillAttemptAsFailed, 
+		saveCard,
+		cvcError,
+		expirationDateError,
+		phoneError,
+		numberError,
+		holderNameError,
+		taxDocumentError]);
 
 	return (
 		<Layout level="2" style={styles.container}>
@@ -73,10 +177,13 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 								placeholder="1234 3456 5678 7890"
 								keyboardType="number-pad"
 								maxLength={19}
-								error={cardStore.numberError}
+								error={numberError}
 								forceErrorDisplay={hasFailedToFillForm}
-								value={cardStore.number}
-								onChangeText={text => (cardStore.number = text)}
+								value={number}
+								onChangeText={text => {
+									setNumberError(validateInput(text, numberTests));
+									setNumber(text);
+								}}
 							/>
 							<View style={styles.formRow}>
 								<ValidatedMaskedInput
@@ -87,12 +194,13 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 									placeholder="MM/AA"
 									maxLength={5}
 									keyboardType="number-pad"
-									error={cardStore.expirationDateError}
+									error={expirationDateError}
 									forceErrorDisplay={hasFailedToFillForm}
-									value={cardStore.expirationDate}
-									onChangeText={text =>
-										(cardStore.expirationDate = text)
-									}
+									value={expirationDate}
+									onChangeText={text => {
+										setExpirationDateError(validateInput(text, expirationDateTests));
+										setExpirationDate(text);
+									}}
 								/>
 								<ValidatedInput
 									style={styles.cvc}
@@ -100,10 +208,13 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 									keyboardType="number-pad"
 									maxLength={3}
 									placeholder="123"
-									error={cardStore.cvcError}
+									error={cvcError}
 									forceErrorDisplay={hasFailedToFillForm}
-									value={cardStore.cvc}
-									onChangeText={text => (cardStore.cvc = text)}
+									value={cvc}
+									onChangeText={text => {
+										setCvcError(validateInput(text, cvcTests));
+										setCvc(text);
+									}}
 								/>
 								<Datepicker
 									dateService={localeDateService}
@@ -111,29 +222,35 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 									label="Data de Nascimento"
 									placeholder="dd/mm/aaaa"
 									min={new Date("01/01/1920")}
-									date={cardStore.holderBirthdate}
-									onSelect={text => (cardStore.holderBirthdate = text)}
+									date={holderBirthdate}
+									onSelect={date => setHolderBirthdate(date)}
 								/>
 							</View>
 							<ValidatedInput
 								label="Titular"
 								placeholder="Nome como aparece no cartão"
-								value={cardStore.holderName}
-								error={cardStore.holderNameError}
+								value={holderName}
+								error={holderNameError}
 								forceErrorDisplay={hasFailedToFillForm}
-								onChangeText={text => (cardStore.holderName = text)}
+								onChangeText={text => {
+									setHolderNameError(validateInput(text, holderNameTests));
+									setHolderName(text);
+								}}
 							/>
 							<ValidatedMaskedInput
 								formatter={cpfFormatter}
 								formattingFilter={numericFormattingFilter}
 								label="CPF"
-								onChangeText={text => (cardStore.taxDocument = text)}
 								placeholder="000.000.000-00"
 								keyboardType={"number-pad"}
 								maxLength={14}
-								value={cardStore.taxDocument}
-								error={cardStore.taxDocumentError}
+								value={taxDocument}
+								error={taxDocumentError}
 								forceErrorDisplay={hasFailedToFillForm}
+								onChangeText={text => {
+									setTaxDocumentError(validateInput(text, taxDocumentTests));
+									setTaxDocument(text);
+								}}
 							/>
 							<ValidatedMaskedInput
 								formatter={phoneFormatter}
@@ -142,10 +259,13 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 								placeholder="(00) 00000-0000"
 								keyboardType={"number-pad"}
 								maxLength={15}
-								onChangeText={text => (cardStore.phone = text)}
-								value={cardStore.phone}
-								error={cardStore.phoneError}
+								value={phone}
+								error={phoneError}
 								forceErrorDisplay={hasFailedToFillForm}
+								onChangeText={text => {
+									setPhoneError(validateInput(text, phoneTests));
+									setPhone(text);
+								}}
 							/>
 						</Layout>
 					</KeyboardAvoidingView>

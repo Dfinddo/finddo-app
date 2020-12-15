@@ -12,7 +12,7 @@ export interface AddressFormData {
 	hasErrors: boolean;
 }
 interface AddressFormProps {
-	addressStore: Address;
+	addressStore?: Address;
 	forceErrorDisplay?: boolean;
 	onSubmitForm(data: AddressFormData): Promise<void>; 
 }
@@ -58,13 +58,15 @@ const AddressForm = ((props: AddressFormProps): JSX.Element => {
 		setState("RJ");
 		setCity("Rio de Janeiro");
 		
-		setId(addressStore.id);
-		setCep(addressStore.cep);
-		setAddressAlias(addressStore.name);
-		setDistrict(addressStore.district);
-		setStreet(addressStore.street);
-		setNumber(addressStore.number);
-		setComplement(addressStore.complement);
+		if(addressStore){
+			setId(addressStore.id);
+			setCep(addressStore.cep);
+			setAddressAlias(addressStore.name);
+			setDistrict(addressStore.district);
+			setStreet(addressStore.street);
+			setNumber(addressStore.number);
+			setComplement(addressStore.complement);
+		}
 	}, [addressStore]);
 
 	const getAddressData = useCallback(async (): Promise<void> => {
@@ -243,6 +245,10 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		padding: 15,
 	},
-	button: {margin: 16},
+	button: {
+		width: "90%",
+		height: 24,
+		margin: 16,
+	},
 	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 });

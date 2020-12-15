@@ -52,17 +52,6 @@ const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
 		if (passwordErrors)return Alert.alert("Erro ao se cadastrar", "As senhas devem ser iguais");
 
 		const {name, surname, cellphone, email, cpf, user_type, birthdate} = userStore;
-		const {
-			city,
-			state,
-			cep,
-			district,
-			number,
-			street,
-			complement,
-		} = userStore.billingAddress;
-
-		console.log(userStore);
 
 		if (!birthdate) {
 			throw new Error("Invalid birthdate date");
@@ -84,13 +73,7 @@ const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
 					password_confirmation: passwordConfirmation,
 				},
 				address: {
-					city,
-					state,
-					cep,
-					district,
-					number,
-					street,
-					complement,
+					...userStore.billingAddress
 				},
 			});
 
@@ -212,7 +195,7 @@ const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
 					</Text>
 				</Text>
 			</KeyboardAvoidingView>
-			<Button onPress={submit}>CRIAR</Button>
+			<Button style={styles.buttom} onPress={submit}>CRIAR</Button>
 		</Layout>
 	);
 });
@@ -222,12 +205,14 @@ export default LoginDataForm;
 const styles = StyleSheet.create({
 	container: {flex: 1},
 	contentWrapper: {
+		height: "70%",
 		alignItems: "center",
 		justifyContent: "center",
 		padding: 15,
 	},
 	text: {textAlign: "center"},
 	fontTitle: {
+		marginBottom: 24,
 		fontSize: 30,
 		textAlign: "center",
 		fontWeight: "bold",
@@ -239,4 +224,10 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 	modalContent: {height: 300},
+	buttom: {
+		alignSelf: "center",
+		width: "95%",
+		height: 24,
+		marginTop: 8,
+	},
 });

@@ -52,7 +52,7 @@ const Login = (props:LoginScreenProps): JSX.Element => {
     </TouchableWithoutFeedback>
   );
 
-	const login = useCallback(async (): Promise<void> => {
+	const login = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
 			const response = await finddoApi.post("login", {
@@ -94,7 +94,7 @@ const Login = (props:LoginScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [email, password, dispatch]);
+	};
 
 	return (
 		<Layout level="1" style={styles.container}>
