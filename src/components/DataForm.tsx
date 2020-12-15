@@ -113,17 +113,16 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 						</ValidatedSelect>
 					</View>
 				</View>
-
-				<Button onPress={async() => {
-					await onSubmit({
-						hora_inicio: startTime,
-						hora_fim: endTime,
-						serviceDate,
-					})}
-				}>
-					CONFIRMAR
-				</Button>
 			</ScrollView>
+			<Button style={styles.buttom} onPress={async() => {
+				await onSubmit({
+					hora_inicio: startTime,
+					hora_fim: endTime,
+					serviceDate,
+				})}
+			}>
+				CONFIRMAR
+			</Button>
 		</Layout>
 	);
 });
@@ -135,31 +134,16 @@ const avaliableTimes = range(9, 22)
 	.flatMap(hour => [`${hour}:00`, `${hour}:30`]);
 
 const styles = StyleSheet.create({
-	// modalDialogContainer: {
-	// 	flex: 1,
-	// 	alignItems: "center",
-	// 	justifyContent: "center",
-	// },
-	// modalDialogContent: {
-	// 	width: 340,
-	// 	borderRadius: 18,
-	// 	opacity: 1,
-	// 	alignItems: "center",
-	// },
-	calendarContainer: {width: "100%", padding: "5%"},
+	calendarContainer: {width: "100%", padding: 12},
 	calendar: {alignSelf: "center"},
-	// modalErrosTitulo: {fontWeight: "bold", textAlign: "center", fontSize: 24},
-	// modalErrosContent: {
-	// 	fontSize: 18,
-	// 	marginVertical: 10,
-	// },
-	timeSelect: {width: "35%"},
+	timeSelect: {width: "40%"},
 	timeLabel: {textAlign: "right", marginBottom: 15},
 	contentWrapper: {
-		height: "95%",
+		width: "100%",
+		height: "100%",
 		justifyContent: "flex-start",
 		alignItems: "center",
-		paddingHorizontal: 15,
+		padding: 24,
 	},
 	rowContainer: {
 		flex: 1,
@@ -174,5 +158,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "flex-start",
 		flexDirection: "row",
+	},
+	buttom: {
+		margin: 16,
+		width: "90%",
+		height: 24,
 	},
 });

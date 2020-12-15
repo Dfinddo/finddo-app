@@ -2,7 +2,6 @@
 /* eslint-disable react-native/no-color-literals */
 import React, {useState, useEffect, useCallback} from "react";
 import {
-	ScrollView,
 	KeyboardAvoidingView,
 	Platform,
 	StyleSheet,
@@ -34,7 +33,6 @@ import { UserState } from "stores/modules/user/types";
 import { BACKEND_URL_STORAGE } from "@env";
 import { updateNewService } from "stores/modules/services/actions";
 import { Service } from "stores/modules/services/types";
-import { select } from "redux-saga/effects";
 
 type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -123,14 +121,14 @@ const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScre
 
 		dispatch(updateNewService({
 			...newService, 
-			filtered_professional: select as unknown as string | null
+			filtered_professional: selected
 		}))
 		props.navigation.navigate("ServiceCategories");
 	}
 
 	return (
 		<Layout level="3">
-			<ScrollView>
+			<View style={styles.container}>
 				<TaskAwaitIndicator isAwaiting={isLoading} />
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : void 0}
@@ -171,7 +169,7 @@ const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScre
     		/>
 		
 				<Button style={styles.button} onPress={handleSubmit}>CONTINUAR</Button>
-			</ScrollView>
+			</View>
 		</Layout>
 	);
 });
@@ -179,7 +177,7 @@ const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScre
 export default ServiceProfessionalPreference;
 
 const styles = StyleSheet.create({
-	// backgroundImageContent: {width: "100%", height: "100%"},
+	container: {width: "100%", height: "100%"},
 	formWrapper: {
 		flex: 1,
 		height: "100%",
@@ -234,5 +232,6 @@ const styles = StyleSheet.create({
 		width: "90%", 
 		borderRadius: 8,
 		alignSelf: "center",
+		margin: 16,
 	},
 });

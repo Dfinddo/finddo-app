@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React from "react";
+import React, { useState } from "react";
 import {
 	View,
 	Image,
@@ -31,7 +31,18 @@ const NewService = ((props: ServicePreviousBudgetScreenProps): JSX.Element => {
 	);
 	const selectedCategory = serviceCategories[newService.category.id!];
 
+	const [previousBudgetValue, setPreviousBudgetValue] = useState("");
+
 	const onAdvanceAttempt = (): void => {
+		if(previousBudgetValue) {
+			dispatch(updateNewService({
+				...newService,
+				previous_budget_value: parseInt(
+					previousBudgetValue,
+					10,
+				),
+			}));
+		}
 		props.navigation.navigate("ServiceDate");
 	};
 
@@ -88,23 +99,15 @@ const NewService = ((props: ServicePreviousBudgetScreenProps): JSX.Element => {
 							formattingFilter={numericFormattingFilter}
 							keyboardType={"number-pad"}
 							onChangeText={input => {
-								dispatch({
-									...newService,
-									previous_budget_value: parseInt(
-										input,
-										10,
-									),
-								});
+								setPreviousBudgetValue(input);
 							}}
-							value={
-								newService.previous_budget_value?.toString() || ""
-							}
+							value={previousBudgetValue}
 							maxLength={11}
 						/>
 					</View>
 				)}
 				<View style={styles.continueButtonContainer}>
-					<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>
+					<Button style={styles.buttom} onPress={onAdvanceAttempt}>CONTINUAR</Button>
 				</View>
 			</ScrollView>
 		</Layout>
@@ -146,5 +149,10 @@ const styles = StyleSheet.create({
 		width: "100%",
 		marginTop: "0.8%",
 		paddingHorizontal: "5%",
+	},
+	buttom: {
+		margin: 8,
+		width: "90%",
+		height: 24,
 	},
 });

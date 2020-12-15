@@ -52,18 +52,6 @@ const styles = StyleSheet.create({
 	container: {
 		width: "100%",
 		height: "100%",
-		paddingVertical: 24,
 		alignItems: "center",
 	},
-	// modalDialogContainer: {
-	// 	flex: 1,
-	// 	alignItems: "center",
-	// 	justifyContent: "center",
-	// },
-	// modalDialogContent: {
-	// 	width: 340,
-	// 	borderRadius: 18,
-	// 	opacity: 1,
-	// 	alignItems: "center",
-	// },
 });

@@ -45,7 +45,7 @@ const NewService = ((props: ServiceDescriptionScreenProps): JSX.Element => {
 	const newService = useSelector<State, Service>(state =>
 		state.services.newService
 	);
-		
+	
 	const [descriptionError, setDescriptionError] = useState<string|undefined>("Campo obrigatório");
 
 	const [isConfirmingUrgency, setIsConfirmingUrgency] = useState(false);

@@ -83,7 +83,7 @@ const ServiceFotos = ((props :ServicePhotosScreenProps): JSX.Element => {
 					itemWidth={(windowWidth * 3) / 4}
 				/>
 			</View>
-			<Button style={styles.button} onPress={onAdvance}>
+			<Button style={styles.buttom} onPress={onAdvance}>
 				CONTINUAR
 			</Button>
 		</Layout>
@@ -174,5 +174,9 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	button: {marginTop: 0.4},
+	buttom: {
+		marginTop: 0.8,
+		width: "90%",
+		height: 24,
+	},
 });

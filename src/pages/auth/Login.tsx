@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React, {useState, useCallback} from "react";
+import React, {useState} from "react";
 import {
 	ScrollView,
 	Platform,
@@ -16,24 +16,12 @@ import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AuthStackParams} from "src/routes/auth";
 import { useDispatch } from "react-redux";
 import { updateUser } from "stores/modules/user/actions";
-import finddoApi, { UserApiResponse } from "finddo-api";
-import { AxiosResponse } from "axios";
+import finddoApi from "finddo-api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import OneSignal from "react-native-onesignal";
 import { BACKEND_URL_STORAGE } from "@env";
 
 type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
-
-// interface LoginResponse {
-//   jwt: string;
-// 	photo: {photo:string | null};
-//   user: {
-//     data: {
-//       id: string;
-//       attributes: UserApiResponse;
-//     };
-//   };
-// }
 
 const Login = (props:LoginScreenProps): JSX.Element => {
 	const dispatch = useDispatch();
@@ -153,7 +141,6 @@ export default Login;
 
 const styles = StyleSheet.create({
 	container: {flex: 1},
-	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 	finddoLogoStyle: {marginTop: 25, marginBottom: 120},
 	loginForm: {
 		flex: 1,

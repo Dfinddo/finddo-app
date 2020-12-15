@@ -6,7 +6,6 @@ import {
 	Platform,
 	StyleSheet,
 	View,
-	Dimensions,
 	Alert,
 } from "react-native";
 import {
@@ -73,7 +72,6 @@ const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 			const adresses: AddressApiResponse[] = response.data;
 			
 			dispatch(setAdressesList(adresses));
-			setData(addressListStore.list);
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -86,9 +84,13 @@ const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [dispatch, userStore, addressListStore]);
+	}, [dispatch, userStore]);
 
 	useEffect(() => void getAdresses(), [getAdresses]);
+
+	useEffect(()=>{
+		setData(addressListStore.list);
+	}, [addressListStore]);
 
 
 	const onSaveAttempt = useCallback(async (data: AddressFormData): Promise<void> => {
@@ -134,13 +136,11 @@ const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 		</TouchableWithoutFeedback>
 	);
 
-	const handleAutoCompleteForm = (): void => {
-		Object.assign(
-			addressStore,
-			addressListStore.list.find(item => item.name === value) || {},
-			{city: "Rio de Janeiro", state: "RJ"},
+	const handleAutoCompleteForm = useCallback((): void => {
+		setAddressStore(
+			addressListStore.list.find(item => item.name === value) || {} as Address
 		);
-	};
+	}, [addressListStore,value]);
 
 	return (
 		<Layout level="3">
@@ -185,7 +185,6 @@ const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 export default ServiceAddress;
 
 const styles = StyleSheet.create({
-	// backgroundImageContent: {width: "100%", height: "100%"},
 	formWrapper: {
 		flex: 1,
 		alignItems: "center",
@@ -194,23 +193,23 @@ const styles = StyleSheet.create({
 	},
 	pickUpAddress: {
 		alignItems: "center",
+		alignSelf: "center",
 		justifyContent: "flex-start",
 		flexDirection: "row",
-		maxWidth: Math.round(Dimensions.get('window').width)*0.90,
+		width: "90%",
 		margin: 16,
 	},
 	searchAddress: {
+		flex: 1,
 		height: 26,
+		width: "100%",
 		borderBottomRightRadius: 0,
 		borderTopRightRadius: 0,
 	},
 	searchAddressButton: {
 		height: 24,
-		width: "25%",
-		alignSelf: "center",
-		marginTop: 12,
+		alignItems: "center",
 		borderBottomLeftRadius: 0,
 		borderTopLeftRadius: 0,
 	},
-	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 });

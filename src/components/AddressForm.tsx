@@ -229,7 +229,7 @@ const AddressForm = ((props: AddressFormProps): JSX.Element => {
 				forceErrorDisplay={forceErrorDisplay}
 			/>
 
-			<Button style={styles.button} onPress={handleSubmit}>
+			<Button style={styles.buttomAddressForm} onPress={handleSubmit}>
 				CONTINUAR
 			</Button>
 		</View>
@@ -245,10 +245,9 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		padding: 15,
 	},
-	button: {
-		width: "90%",
+	buttomAddressForm: {
+		alignItems: "center",
+		alignSelf: "center",
 		height: 24,
-		margin: 16,
 	},
-	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 });

@@ -82,6 +82,14 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = (props => {
 				address,
 				images,
 			});
+
+			const params = {page: 1};
+
+			const response = await finddoApi.get(`/orders/user/active`, {params});
+			const services = response.data.items;
+
+			dispatch(setServices(services));
+			
 			Alert.alert("Serviço cadastrado com sucesso");
 		} catch (error) {
 			if (error.message === "Invalid service data")
@@ -91,12 +99,6 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = (props => {
 			else throw error;
 			setIsLoading(false);
 		} finally {
-			const params = {page: 1};
-
-			const response = await finddoApi.get(`/orders/user/active`, {params});
-			const services = response.data.items;
-
-			dispatch(setServices(services));
 			dispatch(clearNewService())
 			
 			setIsLoading(false);
