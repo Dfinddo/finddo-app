@@ -225,7 +225,8 @@ export async function isRegistered(data: {
 		return false;
 	} catch (error) {
 		if (error.response && error.response.status === 403) {
-			throw new Error(error.response.data.error);
+			// throw new Error(error.response.data.error);
+			return true;
 		}
 		else if (error.request) throw new Error("Connection error");
 		else throw error;

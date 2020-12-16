@@ -16,12 +16,11 @@ import {
 } from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
-import { Message } from "stores/chat-store";
 import { BACKEND_URL_STORAGE } from "@env";
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
-import { Chat as IChat } from "stores/modules/chats/types";
+import { Chat as IChat, Message } from "stores/modules/chats/types";
 import finddoApi, { ChatApiResponse } from "finddo-api";
 import { fetchActiveChat } from "stores/modules/chats/actions";
 
@@ -87,7 +86,7 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 	const onSendButtonPress = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			const response = !(order_id === 170) ? await finddoApi.post("/chats", {chat: {
+			!(order_id === 170) ? await finddoApi.post("/chats", {chat: {
 				order_id,
 				message,
 				receiver_id: chatStore.isAdminChat ? 1 : receiver_id,

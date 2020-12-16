@@ -10,6 +10,7 @@ type Reason =
   "problem" | 
   "generic" | 
   "cant_previous" |
+  "renegotiate" |
   "accidentally_associated"
 
 export interface CreateMessageData {
@@ -21,7 +22,7 @@ export interface CreateMessageData {
 export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageData): string  => {
     switch (reason) {
       case "not_attend":
-        return user.user_type === 'user' ? `Profissional nao compareceu: Olá, 
+        return user.user_type === 'user' ? `Olá, 
         eu sou o usuário ${user.name} ${user.surname}, e o 
         profissional ${order.professional_order?.name} ${order.professional_order?.surname} 
         não compareceu para o pedido #${order.id}.` : 
@@ -32,6 +33,9 @@ export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageDat
         return `Olá, eu sou o ${user.user_type ==="user" ? "usuário" : "profissional"}
          ${user.name} ${user.surname}, e tive 
         problemas com o pedido #${order.id}.`;
+      case "renegotiate":
+        return `Olá, eu sou o ${user.user_type ==="user" ? "usuário" : "profissional"}
+        ${user.name} ${user.surname}, e gostaria de renegociar o pedido #${order.id}.`;
       case "accidentally_created":
         return `Olá, eu sou o usuário ${user.name} ${user.surname}, e criei o pedido 
         #${order.id} sem querer, e portanto gostaria de cancela-lo.`;
