@@ -52,7 +52,7 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 	const theme = useTheme();
 
 	useEffect(() => {
-		setStatus(ServiceStatusEnum[serviceStore?.status || "analise"]);
+		setStatus(ServiceStatusEnum[serviceStore?.order_status || "analise"]);
 	}, [serviceStore]);
 
 	const data = useMemo(

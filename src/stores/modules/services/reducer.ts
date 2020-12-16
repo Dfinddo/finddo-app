@@ -14,10 +14,10 @@ const INITIAL_STATE: ServiceState = {
   newService: {
     id: null,
     category: {
-      id: null,
+      id: 1,
       name: null,
     },
-    status: "analise",
+    order_status: "analise",
 		description: "",
 		userID: null,
     urgency: "delayable",

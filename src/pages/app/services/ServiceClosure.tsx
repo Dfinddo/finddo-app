@@ -142,7 +142,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 						</Card>
 						<Card style={styles.smallCard}>
 							<Text>
-								{serviceStatusDescription[serviceStore.status]}
+								{serviceStatusDescription[serviceStore.order_status]}
 							</Text>
 						</Card>
 					</View>

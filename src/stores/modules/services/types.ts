@@ -21,7 +21,7 @@ export interface Service {
     id: keyof typeof serviceCategories | null;
     name: string | null;
   };
-  status: ServiceStatus;
+  order_status: ServiceStatus;
   previous_budget: boolean;
   previous_budget_value: number | null;
   budget: BudgetApiResponse | null;

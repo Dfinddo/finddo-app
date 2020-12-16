@@ -68,7 +68,7 @@ const ViewService = ({route, navigation}: ViewServiceScreenProps): JSX.Element =
 
 	if (
 		userStore.user_type === "professional" &&
-		serviceStore.status === "analise"
+		serviceStore.order_status === "analise"
 	) {
 		return (
 			<Layout level="1" style={styles.container}>

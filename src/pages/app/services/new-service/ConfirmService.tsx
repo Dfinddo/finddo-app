@@ -69,7 +69,7 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = (props => {
 
 		const images: any[] = [];
 
-		serviceStore.images.map((image, i) =>
+		if(serviceStore.images)serviceStore.images.map((image, i) =>
 			images.push({
 				base64: image.data,
 				file_name: `${userStore.id}_${serviceStore.hora_inicio}_photo${i + 1}`,

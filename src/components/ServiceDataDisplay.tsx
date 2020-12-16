@@ -85,10 +85,10 @@ const ServiceDataDisplay = ((props: {serviceStore: Service}): JSX.Element => {
 						)}
 					/>
 				)}
-				{Boolean(serviceStore.status) && (
+				{Boolean(serviceStore.order_status) && (
 					<DataPieceDisplay
 						hint="Status"
-						value={serviceStatusDescription[serviceStore.status]}
+						value={serviceStatusDescription[serviceStore.order_status]}
 					/>
 				)}
 				<DataPieceDisplay

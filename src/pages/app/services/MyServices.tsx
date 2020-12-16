@@ -62,7 +62,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 	const url = useMemo<string>(()=>{
 		if (userStore.user_type === "user") return `/orders/user/active`;
 		
-		return selectedIndex === 1 ? "/orders/available" : `orders/active_orders_professional`;
+		return selectedIndex === 0 ? "/orders/available" : `orders/active_orders_professional`;
 	}, [userStore, selectedIndex]);
 
 	const getServices = useCallback(async (): Promise<void> => {
@@ -242,9 +242,9 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 								title={_evaProps => (
 									<Text
 										status={
-											item.status === "analise"
+											item.order_status === "analise"
 												? "basic"
-												: item.status === "cancelado"
+												: item.order_status === "cancelado"
 												? "danger"
 												: "primary"
 										}
@@ -252,7 +252,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 										{serviceCategories[item.category.id!].name}
 									</Text>
 								)}
-								description={serviceStatusDescription[item.status]}
+								description={serviceStatusDescription[item.order_status]}
 								accessoryRight={props => (
 									<Icon
 										{...props}

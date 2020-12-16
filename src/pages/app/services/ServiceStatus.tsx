@@ -149,8 +149,8 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 						navigation={navigation}
 					/>
 					{userStore.user_type === "user" &&
-						(serviceStore.status === "a_caminho" ||
-							serviceStore.status === "em_servico") && (
+						(serviceStore.order_status === "a_caminho" ||
+							serviceStore.order_status === "em_servico") && (
 							<>
 								<Button
 									style={styles.timeLineButton}
@@ -168,7 +168,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 							</>
 						)}
 					{userStore.user_type === "user" &&
-						ServiceStatusEnum[serviceStore?.status] < 5 && (
+						ServiceStatusEnum[serviceStore?.order_status] < 5 && (
 							<Text
 								status="danger"
 								style={styles.textOptionsService}
@@ -178,11 +178,11 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 							</Text>
 						)}
 					{userStore.user_type === "professional" &&
-					ServiceStatusEnum[serviceStore?.status] === 4 ? (
+					ServiceStatusEnum[serviceStore?.order_status] === 4 ? (
 						<Text style={styles.textOptionsService}>
 							Aguardando confirmação do cliente ao local
 						</Text>
-					) : ServiceStatusEnum[serviceStore?.status] === 5 ? (
+					) : ServiceStatusEnum[serviceStore?.order_status] === 5 ? (
 						<Text style={styles.textOptionsService}>
 							Aguardando confirmação do cliente ao local
 						</Text>

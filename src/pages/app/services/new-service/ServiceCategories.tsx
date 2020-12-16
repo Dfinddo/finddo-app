@@ -20,11 +20,11 @@ type ServiceCategoriesScreenProps = StackScreenProps<
 	"ServiceCategories"
 >;
 
-const categoryList = Object.entries(
-	serviceCategories,
-).map(([id, categoryData]) => ({id, ...categoryData}));
-
 const Services = (({navigation}: ServiceCategoriesScreenProps): JSX.Element => {
+	const categoryList = Object.entries(
+		serviceCategories,
+	).map(([id, categoryData]) => ({id, ...categoryData}));
+	
 	const dispatch = useDispatch();
 	const newService = useSelector<State, Service>(state =>
 		state.services.newService
