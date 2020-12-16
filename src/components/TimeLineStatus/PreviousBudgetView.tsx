@@ -1,3 +1,5 @@
+/* eslint-disable no-undefined */
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react-native/no-color-literals */
 import React, {FC, useCallback, useMemo, useState} from "react";
 import {Alert, View} from "react-native";
@@ -14,9 +16,11 @@ import {StackNavigationProp} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import { UserState } from "stores/modules/user/types";
 import { Service } from "stores/modules/services/types";
-import finddoApi from "finddo-api";
-import { useDispatch } from "react-redux";
+import finddoApi, { ConversationApiResponse } from "finddo-api";
+import { useDispatch, useSelector } from "react-redux";
 import { updateService } from "stores/modules/services/actions";
+import { createAutomaticMessage } from "src/utils/automaticMessage";
+import { State } from "stores/index";
 
 interface PreviousBudgetViewProps {
 	userStore: UserState;
@@ -33,6 +37,16 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 }) => {
 	const styles = useStyleSheet(themedStyles);
 	const dispatch = useDispatch();
+	const chatInfo = useSelector<State, ConversationApiResponse | undefined>(
+		state => state.chats.chatLists.default.list.find(
+			chat => chat.order_id === serviceStore.id
+		)
+	);
+
+	const chats = useSelector<State, ConversationApiResponse[] | undefined>(
+		state => state.chats.chatLists.default.list
+	);
+
 	const [isBudgetDetails, setIsBudgetDetails] = useState(false);
 
 	const handleBudgetApprove = useCallback(
@@ -51,7 +65,30 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 						"Finddo",
 						"Deseja renegociar com o profissional ou buscar por um novo?",
 						[
-							{text: "Renegociar"},
+							{
+								text: "Renegociar",
+								onPress: async () => {
+									if(serviceStore.professional_order && chatInfo){
+										await finddoApi.post("/chats", {chat: {
+											order_id: serviceStore.id,
+											message: createAutomaticMessage({
+												order: serviceStore,
+												user: userStore,
+												reason: "renegotiate",
+											}),
+											receiver_id: serviceStore.professional_order.id,
+											for_admin: "normal",
+										}});
+										navigation.navigate("Chat", {
+											order_id: chatInfo.order_id,
+											receiver_id: chatInfo.another_user_id,
+											isAdminChat: false,
+											title: chatInfo.title,
+											photo: serviceStore.professional_photo,
+										});
+									}
+								},
+							},
 							{
 								text: "Cancelar negociação",
 								onPress: async () => {
@@ -61,10 +98,6 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 						],
 					);
 				}
-
-				const response = await finddoApi.get(`/orders/${serviceStore.id}`);
-
-				dispatch(updateService(response.data));
 			} catch (error) {
 				if (error.response) {
 					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -76,9 +109,12 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 				} else throw error;
 			} finally {
 				setIsLoading(false);
+				await finddoApi.get(`/orders/${serviceStore.id}`).then(response => {
+					dispatch(updateService(response.data));
+				});
 			}
 		},
-		[serviceStore, setIsLoading, dispatch],
+		[serviceStore, setIsLoading, dispatch, userStore, navigation, chatInfo],
 	);
 
 	const getPrevious = useMemo(() => serviceStore.previous_budget, [

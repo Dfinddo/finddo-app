@@ -286,6 +286,13 @@ export type ServicesStackParams = {
 	ServiceBudget: {id: number};
 	NewService: undefined | {screen: string};
 	ServiceClosure: {id: number};
+	Chat: {
+		order_id: number, 
+		receiver_id: number,
+		title: string, 
+		photo?: string | null,
+		isAdminChat: boolean,
+	};
 };
 
 export type AppDrawerParams = {
