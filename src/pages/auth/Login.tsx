@@ -20,7 +20,6 @@ import finddoApi from "finddo-api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import OneSignal from "react-native-onesignal";
 import { BACKEND_URL_STORAGE } from "@env";
-import { fetchChats } from "stores/modules/chats/actions";
 
 type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
 

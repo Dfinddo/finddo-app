@@ -197,7 +197,6 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 export default ChatList;
 
 const styles = StyleSheet.create({
-	// backgroundImageContent: {width: "100%", height: "100%"},
 	listContainer: {
 		alignSelf: "center",
 		width:"90%",
@@ -216,11 +215,6 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: "700",
 	},
-	// description: {
-	// 	fontSize: 14,
-	// 	fontWeight: "300",
-	// 	color: "#d1c4c4",
-	// },
 	avatar: {
 		width: 56,
 		height: 56,

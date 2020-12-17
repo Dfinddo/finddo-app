@@ -19,7 +19,7 @@ import { Service } from "stores/modules/services/types";
 import finddoApi, { ConversationApiResponse } from "finddo-api";
 import { useDispatch, useSelector } from "react-redux";
 import { updateService } from "stores/modules/services/actions";
-import { createAutomaticMessage } from "src/utils/automaticMessage";
+import { sendAutomaticMessage } from "src/utils/automaticMessage";
 import { State } from "stores/index";
 
 interface PreviousBudgetViewProps {
@@ -69,16 +69,11 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 								text: "Renegociar",
 								onPress: async () => {
 									if(serviceStore.professional_order && chatInfo){
-										await finddoApi.post("/chats", {chat: {
-											order_id: serviceStore.id,
-											message: createAutomaticMessage({
-												order: serviceStore,
-												user: userStore,
-												reason: "renegotiate",
-											}),
-											receiver_id: serviceStore.professional_order.id,
-											for_admin: "normal",
-										}});
+										await sendAutomaticMessage({
+											order: serviceStore,
+											user: userStore,
+											reason: "renegotiate",
+										})
 										navigation.navigate("Chat", {
 											order_id: chatInfo.order_id,
 											receiver_id: chatInfo.another_user_id,
@@ -98,6 +93,10 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 						],
 					);
 				}
+
+				await finddoApi.get(`/orders/${serviceStore.id}`).then(response => {
+					dispatch(updateService(response.data));
+				});
 			} catch (error) {
 				if (error.response) {
 					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -109,9 +108,6 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 				} else throw error;
 			} finally {
 				setIsLoading(false);
-				await finddoApi.get(`/orders/${serviceStore.id}`).then(response => {
-					dispatch(updateService(response.data));
-				});
 			}
 		},
 		[serviceStore, setIsLoading, dispatch, userStore, navigation, chatInfo],

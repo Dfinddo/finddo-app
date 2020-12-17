@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-native/no-color-literals */
 import React, {useState, useCallback, useEffect} from "react";
@@ -11,8 +12,8 @@ import {ServicesStackParams} from "src/routes/app";
 import {ScrollView} from "react-native-gesture-handler";
 import TimeLineStatus from "components/TimeLineStatus";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
-import finddoApi, {ServiceStatusEnum} from "finddo-api";
-import { sendAutomaticMessageAdm } from "src/utils/automaticMessage";
+import finddoApi, {ConversationApiResponse, ServiceStatusEnum} from "finddo-api";
+import { sendAutomaticMessage, sendAutomaticMessageAdm } from "src/utils/automaticMessage";
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
@@ -32,7 +33,6 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 		const dispatch = useDispatch();
 		const servicesListStore = useSelector<State, ServiceList>(state => state.services.list);
 		const userStore = useSelector<State, UserState>(state => state.user);
-
 
 		useEffect(() => {
 			if(id) {
@@ -76,6 +76,33 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 		// 	}
 		// }, [serviceStore, userStore, navigation]);
 
+		const handleProfessionalDontAttend = useCallback(async () => {
+			if(!serviceStore) return;
+			
+			setIsLoading(true);
+
+			try {
+				if(!serviceStore || !serviceStore.id) throw new Error("É preciso existir um serviço");
+
+				await sendAutomaticMessage({
+					user: userStore,
+					order: serviceStore,
+					reason: "not_attend",
+				}, true);
+
+				navigation.navigate("Chat", {
+					order_id: serviceStore.id,
+					receiver_id: 1,
+					isAdminChat: true,
+					title: `${serviceStore.category.name  } - Suporte`,
+				});
+			} catch (error) {
+				throw new Error("Houve um erro ao tentar cancelar o pedido");
+			} finally {
+				setIsLoading(false);
+			}	
+		}, [navigation, serviceStore, userStore]);
+
 		const handleCancelOrder = useCallback(async () => {
 			if(!serviceStore) return;
 			
@@ -89,17 +116,22 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 							setIsLoading(true);
 							
 							try {			
-								if(!serviceStore) throw new Error("É preciso existir um serviço");
+								if(!serviceStore || !serviceStore.id) throw new Error("É preciso existir um serviço");
 
-								await sendAutomaticMessageAdm({
+								await sendAutomaticMessage({
 									user: userStore,
 									order: serviceStore,
 									reason: "cancel",
-								});
+								}, true);
 								// serviceStore?.cancelOrder().then(() => {
 								// 	navigation.goBack();
 								// })
-								Alert.alert("Foi enviado uma mensagem automática para o suporte. Clique no chat para acompanhar o processo.")
+								navigation.navigate("Chat", {
+									order_id: serviceStore.id,
+									receiver_id: 1,
+									isAdminChat: true,
+									title: `${serviceStore.category.name  } - Suporte`,
+								});
 							} catch (error) {
 								throw new Error("Houve um erro ao tentar cancelar o pedido");
 							} finally {
@@ -125,7 +157,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 			} finally {
 				setIsLoading(false);
 			}
-		}, [serviceStore, userStore, dispatch]);
+		}, [serviceStore, userStore, dispatch, navigation]);
 
 		const handleServiceClosure = useCallback(() => {
 			if (serviceStore)
@@ -150,7 +182,8 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 					/>
 					{userStore.user_type === "user" &&
 						(serviceStore.order_status === "a_caminho" ||
-							serviceStore.order_status === "em_servico") && (
+							serviceStore.order_status === "em_servico") && 
+						(
 							<>
 								<Button
 									style={styles.timeLineButton}
@@ -161,7 +194,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 								<Text
 									status="danger"
 									style={styles.textOptionsService}
-									onPress={handleCancelOrder}
+									onPress={handleProfessionalDontAttend}
 								>
 									O profissional não compareceu ainda na residência
 								</Text>
@@ -215,20 +248,6 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 	},
-	// timeLineContainer: {
-	// 	flex: 1,
-	// 	width: "100%",
-	// 	padding: "5%",
-	// },
-	// timeLineView: {width: "80%", marginTop: "-4%"},
-	// timeLineTitle: {fontSize: 18, color: "grey"},
-	// timeLineLayout: {
-	// 	minHeight: 48,
-	// 	borderRadius: 8,
-	// 	padding: "2%",
-	// 	borderColor: "grey",
-	// 	borderWidth: 1,
-	// },
 	timeLineButton: {
 		width: "90%",
 		height: 24,

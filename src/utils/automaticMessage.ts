@@ -50,6 +50,29 @@ export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageDat
     }
   };
 
+  export async function sendAutomaticMessage(
+    data: CreateMessageData,
+    isAdminChat?: boolean
+  ): Promise<void> {
+    // eslint-disable-next-line no-nested-ternary
+    const receiver_id = isAdminChat ? 1 : (data.user.user_type === "user") ? 
+    data.order.professional_order?.id : data.order.userID;
+
+		try {
+			await finddoApi.post("/chats", {chat: {
+        order_id: data.order.id,
+        message: createAutomaticMessage(data),
+        receiver_id,
+        for_admin: isAdminChat ? data.user.user_type :"normal",
+      }});
+
+		} catch (error) {
+			if (error.response) throw new Error("Invalid chat data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	};
+
   export async function sendAutomaticMessageAdm(data: CreateMessageData): Promise<void> {
 		try {
 			await finddoApi.post("/chats/admin", {chat: {
