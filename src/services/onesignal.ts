@@ -62,4 +62,13 @@ export function setExternalUserId(id: string): void {
   OneSignal.setExternalUserId(id);
 }
 
+// notification
+// {
+//   "notification": 
+//   {
+//       "user_id": 6,
+//       "content": "Fala, Daniel !"
+//   }
+// }
+
   

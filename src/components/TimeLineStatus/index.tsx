@@ -105,7 +105,7 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 				icon: statusIcon(2, status),
 			},
 			{
-				title: "Profissional a caminho",
+				title: "Aguardando confirmação de chegada",
 				bodyVisible: status >= 4,
 				icon: statusIcon(4, status),
 			},

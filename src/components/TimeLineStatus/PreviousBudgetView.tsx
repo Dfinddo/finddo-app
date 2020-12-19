@@ -43,10 +43,6 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 		)
 	);
 
-	const chats = useSelector<State, ConversationApiResponse[] | undefined>(
-		state => state.chats.chatLists.default.list
-	);
-
 	const [isBudgetDetails, setIsBudgetDetails] = useState(false);
 
 	const handleBudgetApprove = useCallback(
@@ -54,8 +50,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 			setIsLoading(true);
 
 			try {
-				await finddoApi.post("/orders/propose_budget", {
-					budget: serviceStore.budget,
+				await finddoApi.post("/orders/budget_approve", {
 					id: serviceStore.id,
 					accepted: approve,
 				});
@@ -178,7 +173,7 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 							)}
 						</>
 					) : (
-						serviceStore.budget && (
+						serviceStore.budget && !serviceStore.budget.accepted && (
 							<View style={styles.buttonGroup}>
 								<Button
 									onPress={() => handleBudgetApprove(true)}

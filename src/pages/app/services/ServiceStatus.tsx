@@ -36,9 +36,15 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 
 		useEffect(() => {
 			if(id) {
+				const selected = servicesListStore.items.find(item => item.id === id);
+
+				if(selected?.order_status === "em_servico") navigation.navigate("ServiceClosure",{
+					id,
+				})
+
 				setServiceStore(servicesListStore.items.find(item => item.id === id))
 			}
-		}, [id, servicesListStore]);
+		}, [id, servicesListStore, navigation]);
 
 		// const handleDisassociateProfessional = useCallback(async () => {
 		// 	setIsLoading(true);
@@ -181,8 +187,8 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 						navigation={navigation}
 					/>
 					{userStore.user_type === "user" &&
-						(serviceStore.order_status === "a_caminho" ||
-							serviceStore.order_status === "em_servico") && 
+						// (serviceStore.order_status === "a_caminho" ||
+						// 	serviceStore.order_status === "em_servico") && 
 						(
 							<>
 								<Button
@@ -213,11 +219,11 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 					{userStore.user_type === "professional" &&
 					ServiceStatusEnum[serviceStore?.order_status] === 4 ? (
 						<Text style={styles.textOptionsService}>
-							Aguardando confirmação do cliente ao local
+							Aguardando cliente confirmar realização do serviço
 						</Text>
 					) : ServiceStatusEnum[serviceStore?.order_status] === 5 ? (
 						<Text style={styles.textOptionsService}>
-							Aguardando confirmação do cliente ao local
+							Aguardando cliente confirmar realização do serviço
 						</Text>
 					) : null}
 

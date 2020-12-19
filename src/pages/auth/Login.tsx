@@ -71,8 +71,7 @@ const Login = (props:LoginScreenProps): JSX.Element => {
 			});
 			dispatch(updateUser(logged));
 		} catch (error) {
-			// console.log(error);
-			if (error.message === "Invalid credentials")
+			if (error.response.data.error === "Log in failed! Username or password invalid!")
 				Alert.alert("Email ou senha incorretos");
 			else if (error.message === "Connection error")
 				Alert.alert("Falha ao conectar");

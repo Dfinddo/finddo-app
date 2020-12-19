@@ -23,10 +23,10 @@ export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageDat
     switch (reason) {
       case "not_attend":
         return user.user_type === 'user' ? `Olá, 
-        eu sou o usuário ${user.name} ${user.surname}, e o 
+        eu sou o usuário: ${user.name} ${user.surname}, e o 
         profissional ${order.professional_order?.name} ${order.professional_order?.surname} 
         não compareceu para o pedido #${order.id}.` : 
-        `Olá, eu sou o profissional ${user.name} ${user.surname}, e infelizmente apesar de ter aceitado 
+        `Olá, eu sou o profissional: ${user.name} ${user.surname}, e infelizmente apesar de ter aceitado 
         o pedido #${order.id}, não poderei realiza-lo.`
         ;
       case "generic":
@@ -37,13 +37,13 @@ export const createAutomaticMessage = ({ user,  reason, order}: CreateMessageDat
         return `Olá, eu sou o ${user.user_type ==="user" ? "usuário" : "profissional"}
         ${user.name} ${user.surname}, e gostaria de renegociar o pedido #${order.id}.`;
       case "accidentally_created":
-        return `Olá, eu sou o usuário ${user.name} ${user.surname}, e criei o pedido 
+        return `Olá, eu sou o usuário: ${user.name} ${user.surname}, e criei o pedido 
         #${order.id} sem querer, e portanto gostaria de cancela-lo.`;
       case "accidentally_associated":
-        return `Olá, eu sou o profissional ${user.name} ${user.surname}, e aceitei o pedido 
+        return `Olá, eu sou o profissional: ${user.name} ${user.surname}, e aceitei o pedido 
         #${order.id} sem querer, e portanto gostaria de cancela-lo.`;
       case "cant_previous":
-        return `Olá, eu sou o profissional ${user.name} ${user.surname}, e gostaria de aceitar pedido 
+        return `Olá, eu sou o profissional: ${user.name} ${user.surname}, e gostaria de aceitar pedido 
         #${order.id}, porém o tipo de orçamento não tem como ser calculado previamente.`;
       default: 
         return "";

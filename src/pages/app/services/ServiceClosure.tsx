@@ -36,6 +36,9 @@ interface InfoData {
 	};
 }
 
+// {{APIUrl}}/api/v2/orders/rate/:order_id?user_rate=4.5&professional_rate=3.4
+
+
 const starIcon = (value: number, current: number): JSX.Element => (
 	<SvgXml xml={current >= value ? starSolid : star} width={24} height={24} />
 );
