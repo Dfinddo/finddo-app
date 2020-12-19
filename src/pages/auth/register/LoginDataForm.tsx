@@ -20,10 +20,8 @@ import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
 import { format } from "date-fns";
 import finddoApi from "finddo-api";
-import { updateUser } from "stores/modules/user/actions";
-import OneSignal from "react-native-onesignal";
-import { BACKEND_URL_STORAGE } from "@env";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signIn } from "stores/modules/user/actions";
+import { setLoading } from "stores/modules/application/actions";
 
 const passwordTests = [
 	validations.required(),
@@ -34,10 +32,10 @@ const passwordTests = [
 type LoginDataFormScreenProps = StackScreenProps<AuthStackParams, "Register">;
 
 const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
+	const isLoading = useSelector<State, boolean>(state => state.application.isLoading);
 	const userStore = useSelector<State, UserState>(state => state.user);
 	const dispatch = useDispatch();
 	
-	const [isLoading, setIsLoading] = useState(false);
 	const [password, setPassword] = useState("");
 	const [passwordConfirmation, setPasswordConfirmation] = useState("");
 	const [isShowingPolitics, setIsShowingPolitics] = useState(false);
@@ -58,7 +56,7 @@ const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
 		}
 
 		try {
-			setIsLoading(true);
+			dispatch(setLoading(true));
 
 			await finddoApi.post("/users", {
 				user: {
@@ -84,42 +82,16 @@ const LoginDataForm = ((props: LoginDataFormScreenProps): JSX.Element => {
 				props.navigation.navigate("Login");
 			}
 
-			const response = await finddoApi.post("login", {
-				email, 
-				password,
-			});
-
-			const {jwt, photo} = response.data;
-			const {id, attributes: user} = response.data.user.data;
-			
-			if (user.activated === false) throw new Error("Account not validated");
-					
-			finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
-
-			const logged = Object.assign(user, {id, profilePicture: photo.photo ? {
-				uri: `${BACKEND_URL_STORAGE}${photo.photo}`,
-			}: require("../../../assets/sem-foto.png")});
-			
-			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
-			AsyncStorage.setItem("user", JSON.stringify(logged));
-			
-			OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
-				await finddoApi.get('users/set_player_id', {
-					params: {
-						player_id: status.userId,
-					}
-				});
-			});
-			dispatch(updateUser(logged));
+			dispatch(signIn(email, password))
 		} catch (error) {
 			if (error.message === "Invalid credentials")
 				Alert.alert("Email ou senha incorretos");
 			else if (error.message === "Connection error")
 				Alert.alert("Falha ao conectar");
 			else throw error;
-			setIsLoading(false);
+			dispatch(setLoading(false));
 		} finally {
-			setIsLoading(false);
+			dispatch(setLoading(false));
 		}
 	}, [password, passwordConfirmation, passwordErrors, props, userStore, dispatch]);
 
