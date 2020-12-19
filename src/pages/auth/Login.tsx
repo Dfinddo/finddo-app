@@ -4,7 +4,6 @@ import {
 	ScrollView,
 	Platform,
 	KeyboardAvoidingView,
-	Alert,
 	StyleSheet,
 	TouchableWithoutFeedback,
 } from "react-native";
@@ -14,18 +13,15 @@ import {Input, Button, Text, Layout, Icon, IconProps} from "@ui-kitten/component
 import {StackScreenProps} from "@react-navigation/stack";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AuthStackParams} from "src/routes/auth";
-import { useDispatch } from "react-redux";
-import { updateUser } from "stores/modules/user/actions";
-import finddoApi from "finddo-api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import OneSignal from "react-native-onesignal";
-import { BACKEND_URL_STORAGE } from "@env";
+import { useDispatch, useSelector } from "react-redux";
+import { signIn } from "stores/modules/user/actions";
+import { State } from "stores/index";
 
 type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
 
 const Login = (props:LoginScreenProps): JSX.Element => {
 	const dispatch = useDispatch();
-	const [isLoading, setIsLoading] = useState(false);
+	const isLoading = useSelector<State, boolean>(state => state.application.isLoading);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [secureTextEntry, setSecureTextEntry] = useState(true);
@@ -40,47 +36,9 @@ const Login = (props:LoginScreenProps): JSX.Element => {
     </TouchableWithoutFeedback>
   );
 
-	const login = async (): Promise<void> => {
-		setIsLoading(true);
-		try {
-			const response = await finddoApi.post("login", {
-				email, 
-				password,
-			});
-
-			const {jwt, photo} = response.data;
-			const {id, attributes: user} = response.data.user.data;
-			
-			if (user.activated === false) throw new Error("Account not validated");
-					
-			finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
-
-			const logged = Object.assign(user, {id, profilePicture: photo.photo ? {
-				uri: `${BACKEND_URL_STORAGE}${photo.photo}`,
-			}: require("../../assets/sem-foto.png")});
-			
-			AsyncStorage.setItem("access-token", JSON.stringify(jwt));
-			AsyncStorage.setItem("user", JSON.stringify(logged));
-			
-			OneSignal.getPermissionSubscriptionState(async(status: {userId: string}) => {
-				await finddoApi.get('users/set_player_id', {
-					params: {
-						player_id: status.userId,
-					}
-				});
-			});
-			dispatch(updateUser(logged));
-		} catch (error) {
-			if (error.response.data.error === "Log in failed! Username or password invalid!")
-				Alert.alert("Email ou senha incorretos");
-			else if (error.message === "Connection error")
-				Alert.alert("Falha ao conectar");
-			else if (error.message === "Account not validated")
-				Alert.alert("Sua conta ainda não foi validada.");
-			else throw error;
-		} finally {
-			setIsLoading(false);
-		}
+	// eslint-disable-next-line require-await
+	const login = (): void => {
+		dispatch(signIn(email,password));
 	};
 
 	return (

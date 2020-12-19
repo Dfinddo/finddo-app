@@ -2,6 +2,16 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { UserActionTypes, UserState } from "./types";
 
+export function signIn(email: string, password: string) {
+  return {
+    type: UserActionTypes.signIn,
+    payload: {
+      email,
+      password,
+    }
+  };
+}
+
 export function updateUser(user: UserState)  {
   return {
     type: UserActionTypes.updateUser,

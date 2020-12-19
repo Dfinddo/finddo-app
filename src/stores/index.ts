@@ -11,8 +11,10 @@ import { ChatState } from './modules/chats/types';
 import { CardsState } from './modules/cards/types';
 import { ProfessionalsState } from './modules/professionals/types';
 import { ServiceState } from './modules/services/types';
+import { ApplicationState } from './modules/application/types';
 
 export interface State {
+  application: ApplicationState,
   user: UserState,
   adresses: AdressesState,
   chats: ChatState,

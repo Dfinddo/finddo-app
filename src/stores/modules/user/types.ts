@@ -3,7 +3,7 @@ import { Address } from "../adresses/types";
 
 export enum UserActionTypes {
   updateUser= "UPDATE_USER",
-  // signInSuccess= "SIGN_IN_SUCCESS",
+  signIn= "SIGN_IN",
   updateProfilePhoto= "UPDATE_PROFILE_PHOTO",
   signOut= "SIGN_OUT",
 }
