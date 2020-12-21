@@ -202,7 +202,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 									style={styles.textOptionsService}
 									onPress={handleProfessionalDontAttend}
 								>
-									O profissional não compareceu ainda na residência
+									O profissional ainda não compareceu na residência
 								</Text>
 							</>
 						)}
