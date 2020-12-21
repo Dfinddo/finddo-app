@@ -49,13 +49,12 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 		async (approve: boolean) => {
 			setIsLoading(true);
 
-			try {
-				await finddoApi.post("/orders/budget_approve", {
-					id: serviceStore.id,
-					accepted: approve,
-				});
-
+			try {			
 				if (!approve) {
+					await finddoApi.post("/orders/budget_approve", {
+						id: serviceStore.id,
+						accepted: approve,
+					});
 					Alert.alert(
 						"Finddo",
 						"Deseja renegociar com o profissional ou buscar por um novo?",
@@ -84,6 +83,25 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 								onPress: async () => {
 									await finddoApi.put(`/orders/disassociate/${serviceStore.id}`)
 								}
+							},
+						],
+					);
+				} else {
+					Alert.alert(
+						"Finddo",
+						"Deseja mesmo aceitar o orçamento feito pelo profissional?",
+						[
+							{
+								text: "Sim",
+								onPress: async () => {
+									await finddoApi.post("/orders/budget_approve", {
+										id: serviceStore.id,
+										accepted: approve,
+									});
+								},
+							},
+							{
+								text: "Não",
 							},
 						],
 					);
