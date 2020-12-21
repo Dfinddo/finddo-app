@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable react-native/no-color-literals */
 import React, {useEffect, useState, useCallback} from "react";
-import {Alert, StyleSheet, ImageBackground, View} from "react-native";
-import {Avatar, Button, Text, Card, Modal, Layout} from "@ui-kitten/components";
+import {Alert, StyleSheet, ImageBackground, View, StyleProp, ImageStyle} from "react-native";
+import {Avatar, Button, Text, Card, Modal, Layout, useStyleSheet, StyleService} from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ScrollView} from "react-native-gesture-handler";
 
@@ -44,41 +44,42 @@ const starIcon = (value: number, current: number): JSX.Element => (
 );
 
 const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Element => {
-		const [serviceStore, setServiceStore] = useState<
-			Service | undefined
-		>();
-		const [isLoading, setIsLoading] = useState(false);
-		const [rate, setRate] = useState(0);
+	const styles = useStyleSheet(themedStyles);
+	const [serviceStore, setServiceStore] = useState<
+		Service | undefined
+	>();
+	const [isLoading, setIsLoading] = useState(false);
+	const [rate, setRate] = useState(0);
 
-		const [isBudgetDetails, setIsBudgetDetails] = useState(false);
+	const [isBudgetDetails, setIsBudgetDetails] = useState(false);
 
-		const dispatch = useDispatch();
-		const serviceListStore = useSelector<State, ServiceList>(state => state.services.list);
-		const userStore = useSelector<State, UserState>(state => state.user);
+	const dispatch = useDispatch();
+	const serviceListStore = useSelector<State, ServiceList>(state => state.services.list);
+	const userStore = useSelector<State, UserState>(state => state.user);
 
-		useEffect(() => {
-			if (route.params?.id)
-				setServiceStore(
-					serviceListStore.items.find(({id}) => route.params.id === id),
-				);
-		}, [route.params?.id, serviceListStore, serviceStore]);
+	useEffect(() => {
+		if (route.params?.id)
+			setServiceStore(
+				serviceListStore.items.find(({id}) => route.params.id === id),
+			);
+	}, [route.params?.id, serviceListStore, serviceStore]);
 
-		if (serviceStore === void 0 || !serviceStore.category.id) return <View></View>;
+	if (serviceStore === void 0 || !serviceStore.category.id) return <View></View>;
 
-		const info: InfoData =
-			userStore.user_type === "user"
-				? {
-						name: serviceStore.professional_order?.name,
+	const info: InfoData =
+		userStore.user_type === "user"
+			? {
+					name: serviceStore.professional_order?.name,
+					photo: {
+						uri: `${BACKEND_URL_STORAGE}${serviceStore.professional_photo}`,
+					},
+			  }
+			: {
+					name: serviceStore.user?.name,
 						photo: {
-							uri: `${BACKEND_URL_STORAGE}${serviceStore.professional_photo}`,
-						},
-				  }
-				: {
-						name: serviceStore.user?.name,
-						photo: {
-							uri: `${BACKEND_URL_STORAGE}${serviceStore.user_photo}`,
-						},
-				  };
+						uri: `${BACKEND_URL_STORAGE}${serviceStore.user_photo}`,
+					},
+			  };
 
 		return (
 			<ImageBackground
@@ -109,7 +110,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 					<Card style={styles.card}>
 						<View style={styles.infoView}>
 							<Avatar
-								style={styles.avatar}
+								style={styles.avatar as StyleProp<ImageStyle>}
 								source={info.photo || require("assets/sem-foto.png")}
 							/>
 							<Text style={styles.name}>{info.name}</Text>
@@ -218,7 +219,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 
 export default ServiceClosure;
 
-const styles = StyleSheet.create({
+const themedStyles = StyleService.create({
 	// view
 	backgroundImageContent: {
 		width: "100%",
@@ -258,6 +259,7 @@ const styles = StyleSheet.create({
 	avatar: {
 		width: 80,
 		height: 80,
+		marginLeft: 8,
 	},
 	rate: {
 		width: "90%",
