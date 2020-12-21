@@ -3,7 +3,7 @@
 /* eslint-disable react-native/no-color-literals */
 import React, {useEffect, useState, useCallback} from "react";
 import {Alert, StyleSheet, ImageBackground, View} from "react-native";
-import {Avatar, Button, Text, Card} from "@ui-kitten/components";
+import {Avatar, Button, Text, Card, Modal, Layout} from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ScrollView} from "react-native-gesture-handler";
 
@@ -50,6 +50,8 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 		const [isLoading, setIsLoading] = useState(false);
 		const [rate, setRate] = useState(0);
 
+		const [isBudgetDetails, setIsBudgetDetails] = useState(false);
+
 		const dispatch = useDispatch();
 		const serviceListStore = useSelector<State, ServiceList>(state => state.services.list);
 		const userStore = useSelector<State, UserState>(state => state.user);
@@ -90,7 +92,11 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 							{serviceCategories[serviceStore.category.id].name}
 						</Text>
 						{serviceStore.budget && (
-							<Text style={styles.total} status="primary">
+							<Text 
+								onPress={() => setIsBudgetDetails(true)}
+								style={styles.total} 
+								status="primary"
+							>
 								{priceFormatter(
 									(
 										serviceStore.budget.value_with_tax +
@@ -151,6 +157,61 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 					</View>
 					<Button style={styles.button}>Encerrar serviço</Button>
 				</ScrollView>
+				{serviceStore.budget && (
+					<Modal
+						visible={isBudgetDetails}
+						backdropStyle={styles.backdrop}
+						style={styles.modalContainer}
+						onBackdropPress={() => setIsBudgetDetails(false)}
+					>
+						<Layout level="2" style={styles.modalContent}>
+							<Text style={styles.title}>Cálculo do serviço</Text>
+							<View style={styles.viewText}>
+								<Text style={styles.textPrice}>
+									{priceFormatter(
+										serviceStore.budget.budget.toString(),
+									)}
+								</Text>
+								<Text style={styles.text}>(Serviço)</Text>
+							</View>
+							<View style={styles.viewText}>
+								<Text style={styles.textPrice}>
+									{priceFormatter(
+										(
+											serviceStore.budget.value_with_tax -
+											serviceStore.budget.budget
+										).toString(),
+									)}
+								</Text>
+								<Text style={styles.text}>(Finddo)</Text>
+							</View>
+							<View style={styles.viewText}>
+								<Text style={styles.textPrice}>
+									{priceFormatter(
+										serviceStore.budget.material_value.toString(),
+									)}
+								</Text>
+								<Text style={styles.text}>(Produtos)</Text>
+							</View>
+							<View style={styles.viewTotal}>
+								<Text style={styles.textTotal}>
+									TOTAL:{"     "}
+									<Text style={styles.textPrice}>
+										{priceFormatter(
+											(
+												serviceStore.budget.value_with_tax +
+												serviceStore.budget.material_value
+											).toString(),
+										)}
+									</Text>
+								</Text>
+									</View>
+							<Button onPress={() => setIsBudgetDetails(false)}>
+								OK
+							</Button>
+						</Layout>
+				</Modal>
+			)}
 			</ImageBackground>
 		);
 	};
@@ -158,6 +219,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 export default ServiceClosure;
 
 const styles = StyleSheet.create({
+	// view
 	backgroundImageContent: {
 		width: "100%",
 		height: "100%",
@@ -229,5 +291,48 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		margin: 16,
 		borderRadius: 30,
+	},
+	// modal
+	modalContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+		alignSelf: "center",
+		height: "56%",
+		width: "60%",
+	},
+	modalContent: {
+		flex: 1,
+		padding: "6%",
+		marginBottom: "5%",
+		borderRadius: 8,
+	},
+	textTotal: {
+		fontSize: 16,
+		color: "grey",
+		alignSelf: "center",
+	},
+	textPrice: {
+		fontSize: 20,
+		color: "color-primary-default",
+	},
+	viewText: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "100%",
+		marginTop: 16,
+	},
+	text: {
+		color: "color-primary-default",
+		fontSize: 16,
+		marginTop: 8,
+	},
+	viewTotal: {
+		width: "100%",
+		alignSelf: "center",
+		padding: 16,
+		marginBottom: 16,
+	},
+	backdrop: {
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
 	},
 });

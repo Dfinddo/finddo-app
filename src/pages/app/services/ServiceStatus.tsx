@@ -195,7 +195,7 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 									style={styles.timeLineButton}
 									onPress={handleServiceClosure}
 								>
-									O profissional já realizou o serviço
+									Profissional chegou a residência
 								</Button>
 								<Text
 									status="danger"
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		alignSelf: "center",
 		textDecorationLine: "underline",
-		fontSize: 14,
+		fontSize: 12,
 		marginBottom: 24,
 	},
 });

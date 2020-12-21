@@ -267,7 +267,7 @@ const themedStyles = StyleService.create({
 	},
 	messageContentIn: {
 		alignSelf: "center",
-		backgroundColor: "color-info-500",
+		backgroundColor: "#666",
 	},
 	messageContentOut: {
 		backgroundColor: "color-primary-default",
