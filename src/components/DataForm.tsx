@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import {StyleSheet, ScrollView, View} from "react-native";
 import {Layout, Text, Calendar, SelectItem, Button} from "@ui-kitten/components";
-import {range, validations} from "utils";
+import {range} from "utils";
 import ValidatedSelect from "./ValidatedSelect";
 import {localeDateService} from "src/utils/calendarLocale";
 import { Service } from "stores/modules/services/types";

@@ -25,8 +25,7 @@ import {useSwitch} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import {PaymentMethodsStackParams} from "src/routes/app";
 import {localeDateService} from "src/utils/calendarLocale";
-import finddoApi from "finddo-api";
-import { createHashMoip } from "src/services/moip";
+import { doingPaymentMoip } from "src/services/moip";
 import { format } from "date-fns";
 
 type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "AddCard">;
@@ -51,9 +50,6 @@ const phoneTests = [validations.required(), validations.definedLength(11)];
 
 
 const AddCard = ((props: CardsScreenProps): JSX.Element => {
-	const [cardStore] = useState({
-		
-	});
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -87,40 +83,29 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 		[],
 	);
 
+	// eslint-disable-next-line require-await
 	const saveCard = useCallback(async (): Promise<void> => {
 		try {
-			await finddoApi.post("/users/add_credit_card", {
-				credit_card: {
-					method: "CREDIT_CARD",
-					creditCard: {
-						expirationMonth: expirationDate.substr(0, 2),
-						expirationYear: expirationDate.substr(2, 2),
-						number,
-						cvc,
-						holder: {
-							fullname: holderName,
-							birthdate: format(
-								holderBirthdate,
-								"yyyy-MM-dd",
-							),
-							taxDocument: {
-								type: "CPF",
-								number: taxDocument,
-							},
-							phone: {
-								countryCode: "55",
-								areaCode: phone.substr(0, 2),
-								number: phone.substr(2, 9),
-							},
-						},
-					},
-				},
-			});
-
-			createHashMoip({
+			doingPaymentMoip({
 				cvc,
 				expirationDate,
 				number,
+				holder: {
+					fullname: holderName,
+					birthdate: format(
+						holderBirthdate,
+						"yyyy-MM-dd",
+					),
+					taxDocument: {
+						type: "CPF",
+						number: taxDocument,
+					},
+					phone: {
+						countryCode: "55",
+						areaCode: phone.substr(0, 2),
+						number: phone.substr(2, 9),
+					},
+				}
 			})
 		} catch (error) {
 			if (error.response) throw new Error("Invalid credit card data");

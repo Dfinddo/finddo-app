@@ -1,22 +1,53 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {RSA} from "react-native-rsa-native";
 import {MoipCreditCard} from "moip-sdk-js";
 import {MOIP_CREDS_DATA_PUBLIC_KEY} from "@env";
+import finddoApi from "finddo-api";
 
 interface ICreditCardProps {
   number: string,
   cvc: string,
-  expirationDate: string
+	expirationDate: string,
+	holder: {
+		fullname: string,
+		birthdate: string,
+		taxDocument: {
+			type: string,
+			number: string,
+		},
+		phone: {
+			countryCode: string,
+			areaCode: string,
+			number: string,
+		},
+	}
 }
 
-export function createHashMoip (creditCard: ICreditCardProps): void {
+export function doingPaymentMoip ({
+	number, 
+	cvc, 
+	expirationDate, 
+	holder
+}: ICreditCardProps): void {
   MoipCreditCard.setEncrypter(RSA, "react-native")
 		.setPubKey(MOIP_CREDS_DATA_PUBLIC_KEY)
 		.setCreditCard({
-			number: creditCard.number,
-			cvc: creditCard.cvc,
-			expirationMonth: creditCard.expirationDate.substr(0, 2),
-			expirationYear: creditCard.expirationDate.substr(2, 2),
+			number,
+			cvc,
+			expirationMonth: expirationDate.substr(0, 2),
+			expirationYear: expirationDate.substr(2, 2),
 		})
 		.hash()
-		.then(hash => hash).catch(error => {throw new Error("Invalid credit card data")});
+		.then(async hash => {
+			// TODO: ajustar rota
+			await finddoApi.post("/users/add_credit_card", {
+				credit_card: {
+					method: "CREDIT_CARD",
+					creditCard: {
+						hash,
+						holder,
+					}
+				},
+			});
+		}).catch(error => {throw new Error("Invalid credit card data")});
 }
