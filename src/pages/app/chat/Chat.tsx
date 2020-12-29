@@ -38,11 +38,13 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 
 	useEffect(() => {
 		dispatch(fetchActiveChat({order_id: String(order_id), isAdminChat}));
-		myFirebase.database().ref().limitToLast(1)
+		myFirebase.database().ref(`/chats/${order_id}/${isAdminChat ? "admin" : "common"}`)
+		.limitToFirst(500)
+		.orderByKey()
 		.on('value', snapshot => {
-			dispatch(updateActiveChat({
+			if(snapshot.val()) dispatch(updateActiveChat({
 				messages: Object.keys(snapshot.val()).map(key => 
-					({id: key,...snapshot.val()[key], })) as Message[],
+					({...snapshot.val()[key]})).reverse() as Message[],
 				order_id: String(order_id),
 				isAdminChat,
 				isGlobalChat: order_id === 170,
@@ -80,55 +82,55 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 		}
 	};
 
-	const handleUpdateChat = useCallback(async ()=>{
-		setIsLoading(true);
-		try {
-			let chat: Message[] = [];
-			let {total} = chatStore;
+	// const handleUpdateChat = useCallback(async ()=>{
+	// 	setIsLoading(true);
+	// 	try {
+	// 		let chat: Message[] = [];
+	// 		let {total} = chatStore;
 
-			const page = chatStore.page +1 > total ? chatStore.page : chatStore.page +1; 
+	// 		const page = chatStore.page +1 > total ? chatStore.page : chatStore.page +1; 
 
-			for (let index = 1; index <= page; index++) {
-				const response = !chatStore.isAdminChat ? await finddoApi.get(`chats/order`, {
-					params: {
-						page: index, 
-						order_id: chatStore.order_id,
-					},
-				}) : await finddoApi.get(`chats/order/admin`, {
-					params: {
-						page: index, 
-						order_id: chatStore.order_id,
-						receiver_id: 1,
-					},
-				});
+	// 		for (let index = 1; index <= page; index++) {
+	// 			const response = !chatStore.isAdminChat ? await finddoApi.get(`chats/order`, {
+	// 				params: {
+	// 					page: index, 
+	// 					order_id: chatStore.order_id,
+	// 				},
+	// 			}) : await finddoApi.get(`chats/order/admin`, {
+	// 				params: {
+	// 					page: index, 
+	// 					order_id: chatStore.order_id,
+	// 					receiver_id: 1,
+	// 				},
+	// 			});
 
-				const list: Message[] = response.data.chats.map(
-					(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
-				);
+	// 			const list: Message[] = response.data.chats.map(
+	// 				(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
+	// 			);
 
-				chat = [...chat, ...list];	
+	// 			chat = [...chat, ...list];	
 
-				if(total !== response.data.total_pages) {
-					total = response.data.total_pages;
-				}
-			}
+	// 			if(total !== response.data.total_pages) {
+	// 				total = response.data.total_pages;
+	// 			}
+	// 		}
 
-			dispatch(updateActiveChat({
-				messages: chat,
-				order_id: String(order_id),
-				isAdminChat: chatStore.isAdminChat,
-				isGlobalChat: order_id === 170,
-				page,
-				total,
-			}));
-		} catch (error) {
-			// eslint-disable-next-line no-console
-			console.log(error);
-		}
-		finally {
-			setIsLoading(false);
-		}
-	}, [chatStore, dispatch, order_id]);
+	// 		dispatch(updateActiveChat({
+	// 			messages: chat,
+	// 			order_id: String(order_id),
+	// 			isAdminChat: chatStore.isAdminChat,
+	// 			isGlobalChat: order_id === 170,
+	// 			page,
+	// 			total,
+	// 		}));
+	// 	} catch (error) {
+	// 		// eslint-disable-next-line no-console
+	// 		console.log(error);
+	// 	}
+	// 	finally {
+	// 		setIsLoading(false);
+	// 	}
+	// }, [chatStore, dispatch, order_id]);
 
 	return (
 		<Layout style={styles.container}>
@@ -155,11 +157,11 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 			/>
 			<List
 				data={chatStore.messages}
-				onEndReached={handleUpdateChat}
+				// onEndReached={handleUpdateChat}
 				inverted
 				refreshing={loading}
 				onEndReachedThreshold={0.2}
-				renderItem={({item}) => <ChatMessage message={item} />}
+				renderItem={({item}) =>  <ChatMessage message={item} />}
 			/>
 			<Layout style={styles.messageInputContainer}>
 				<Input

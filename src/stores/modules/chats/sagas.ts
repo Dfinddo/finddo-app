@@ -7,16 +7,16 @@ import { fetchActiveChat, updateActiveChat } from "./actions";
 // import { setLoading } from "../application/actions";
 import { ChatActionTypes, Message } from "./types";
 
-type ChatConnectionRequest = ReturnType<typeof fetchActiveChat>
+type FetchActiveChatRequest = ReturnType<typeof fetchActiveChat>
 
 
 const getChat = (chatUrl: string) =>
-    myFirebase.database().ref(chatUrl)
+    myFirebase.database().ref(chatUrl).orderByKey().limitToFirst(500)
     .once('value')
     .then(snapshot => Object.keys(snapshot.val()).map(key => 
       ({id: key,...snapshot.val()[key], })) as Message[]);
 
-function* fetchChat({payload}: ChatConnectionRequest) {
+function* fetchChat({payload}: FetchActiveChatRequest) {
   const {order_id, isAdminChat} = payload.chatInfo;
   // const oldChat: Chat = yield select((state: State) => state.chats.activeChat);
 
@@ -24,7 +24,7 @@ function* fetchChat({payload}: ChatConnectionRequest) {
     const messages = yield call(getChat, `/chats/${order_id}/${isAdminChat ? "admin" : "common"}`);
 
     yield put(updateActiveChat({
-      messages,
+      messages: messages.reverse(),
       order_id,
       isAdminChat,
       isGlobalChat: Number(order_id) === 170,
