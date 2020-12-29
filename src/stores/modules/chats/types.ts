@@ -4,6 +4,7 @@ import { ConversationApiResponse } from "finddo-api";
 export enum ChatActionTypes {
   fetchChats= "FETCH_CHATS",
   fetchActiveChat= "FETCH_ACTIVE_CHAT",
+  activeChatConnection= "ACTIVE_CHAT_CONNECTION",
   updateChatList= "UPDATE_CHATLIST",
   updateChat= "UPDATE_CHAT",
 }

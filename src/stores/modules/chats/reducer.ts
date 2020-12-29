@@ -37,7 +37,7 @@ const chats: Reducer<ChatState> = (state = INITIAL_STATE, action) => produce(sta
         
         return;
 
-      case ChatActionTypes.fetchActiveChat:
+      case ChatActionTypes.updateChat:
         const { chat } = action.payload; 
 
         draft.activeChat = chat;

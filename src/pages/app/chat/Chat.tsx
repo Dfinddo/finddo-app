@@ -22,12 +22,13 @@ import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
 import { Chat as IChat, Message } from "stores/modules/chats/types";
 import finddoApi, { ChatApiResponse } from "finddo-api";
-import { fetchActiveChat } from "stores/modules/chats/actions";
+import { fetchActiveChat, updateActiveChat } from "stores/modules/chats/actions";
+import { myFirebase } from "src/services/firebase";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 
 const Chat = ((props: ProfileScreenProps): JSX.Element => {
-	const { order_id, receiver_id, title, photo=null } = props.route.params;
+	const { order_id, isAdminChat, receiver_id, title, photo=null } = props.route.params;
 	const styles = useStyleSheet(themedStyles);
 	const dispatch = useDispatch();
 	const chatStore = useSelector<State, IChat>(state => state.chats.activeChat);
@@ -35,58 +36,26 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 	const [loading, setIsLoading] = React.useState(false);
 	const [message, setMessage] = React.useState("");
 
-	const getChat = useCallback(async (): Promise<void> => {
-		setIsLoading(true);
-		const {isAdminChat} = props.route.params;
-
-		try {
-			const response = !isAdminChat ? await finddoApi.get(`chats/order`, {
-				params: {
-					page: 1, 
-					order_id: String(order_id),
-				},
-			}) : await finddoApi.get(`chats/order/admin`, {
-				params: {
-					page: 1, 
-					order_id: String(order_id),
-					receiver_id: 1,
-				},
-			});
-
-			const chat: Message[] = response.data.chats.map(
-				(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
-			);
-
-			dispatch(fetchActiveChat({
-				messages: chat,
+	useEffect(() => {
+		dispatch(fetchActiveChat({order_id: String(order_id), isAdminChat}));
+		myFirebase.database().ref().limitToLast(1)
+		.on('value', snapshot => {
+			dispatch(updateActiveChat({
+				messages: Object.keys(snapshot.val()).map(key => 
+					({id: key,...snapshot.val()[key], })) as Message[],
 				order_id: String(order_id),
 				isAdminChat,
 				isGlobalChat: order_id === 170,
-				page: response.data.current_page,
-				total: response.data.total_pages,
+				page:1,
+				total:1,
 			}));
-		} catch (error) {
-			// eslint-disable-next-line no-console
-			console.log(error);
-			if (error.response) {
-				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
-			} else if (error.request) {
-				Alert.alert(
-					"Falha ao se conectar",
-					"Verifique sua conexão e tente novamente",
-				);
-			} else throw error;
-		} finally {
-			setIsLoading(false);
-		}
-	}, [order_id, props.route.params, dispatch]);
-
-	useEffect(() => void getChat(), [getChat]);
+		})
+	},[dispatch, order_id, isAdminChat]);
 
 	const onSendButtonPress = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			!(order_id === 170) ? await finddoApi.post("/chats", {chat: {
+			const response = !(order_id === 170) ? await finddoApi.post("/chats", {chat: {
 				order_id,
 				message,
 				receiver_id: chatStore.isAdminChat ? 1 : receiver_id,
@@ -97,7 +66,10 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 				receiver_id: 1,
 			}});
 
-			await getChat();
+			await myFirebase.database().ref(
+				`/chats/${order_id}/${chatStore.isAdminChat ? "admin" : "common"}`
+				).push(response.data);
+				
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log(error);
@@ -141,7 +113,7 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 				}
 			}
 
-			dispatch(fetchActiveChat({
+			dispatch(updateActiveChat({
 				messages: chat,
 				order_id: String(order_id),
 				isAdminChat: chatStore.isAdminChat,
