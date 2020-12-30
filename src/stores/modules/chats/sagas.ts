@@ -20,7 +20,7 @@ const getChat = (chatUrl: string) =>
     myFirebase.database().ref(chatUrl).orderByKey().limitToFirst(500)
     .once('value')
     .then(snapshot => Object.keys(snapshot.val()).map(key => 
-      ({id: key,...snapshot.val()[key], })) as Message[]);
+      ({id: key,...snapshot.val()[key], })) as Message[]).catch(()=>[]);
 
 function* fetchChat({payload}: FetchActiveChatRequest) {
   const {order_id, isAdminChat} = payload.chatInfo;
@@ -37,7 +37,7 @@ function* fetchChat({payload}: FetchActiveChatRequest) {
       total: 1,
     }));
   } catch (error) {
-    Alert.alert("Sua conta ainda não foi validada.");
+    Alert.alert("Finddo","Erro ao carregar o chat.");
   }
 }
 
