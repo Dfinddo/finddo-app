@@ -1,6 +1,3 @@
-/* eslint-disable no-undefined */
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable react-native/no-color-literals */
 import React, {FC, useCallback, useMemo, useState} from "react";
 import {Alert, View} from "react-native";
 import {

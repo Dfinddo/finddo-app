@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import {RSA} from "react-native-rsa-native";
 import {MoipCreditCard} from "moip-sdk-js";
 import {MOIP_CREDS_DATA_PUBLIC_KEY} from "@env";

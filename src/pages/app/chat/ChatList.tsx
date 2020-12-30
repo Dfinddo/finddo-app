@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable react-native/no-color-literals */
 import React, {useState, useEffect, useCallback} from "react";
 import {
 	Alert,
@@ -23,7 +21,7 @@ import { ChatListTypes, ChatList as IChatList } from "stores/modules/chats/types
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "stores/index";
 import finddoApi, { ConversationApiResponse } from "finddo-api";
-import { fetchChats, updateChatList } from "stores/modules/chats/actions";
+import { fetchChatList, updateChatList } from "stores/modules/chats/actions";
 
 type ChatListScreenProps = StackScreenProps<
 	AppDrawerParams,
@@ -56,7 +54,7 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
         },
 			});
 			
-			dispatch(fetchChats({
+			dispatch(fetchChatList({
 				default:{
 					list: response.data.list ?? [],
 					page: response.data.page ?? 1,

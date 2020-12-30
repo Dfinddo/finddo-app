@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/naming-convention */
 import { BACKEND_URL_STORAGE } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import finddoApi from "finddo-api";
@@ -7,10 +6,16 @@ import { Alert } from "react-native";
 import OneSignal from "react-native-onesignal";
 import { all, call, CallEffect, put, select, takeLatest } from "redux-saga/effects";
 import { setLoading } from "../application/actions";
-import { signIn, updateUser } from "./actions";
+import { updateUser } from "./actions";
 import { UserActionTypes } from "./types";
 
-type SessionConfigsRequest = ReturnType<typeof signIn>
+interface SessionConfigsRequest {
+  type: UserActionTypes.signIn,
+  payload: {
+    email: string,
+    password: string,
+  },
+}
 
 function* sessionConfigs ({payload}: SessionConfigsRequest) {
   const {email, password} = payload;

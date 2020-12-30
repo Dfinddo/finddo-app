@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { ProfessionalsState, ProfessionalListActionTypes } from "./types";
+import { ProfessionalsState, ProfessionalListActionTypes, ProfessionalListActions } from "./types";
 
-export function setProfessionalList(data: ProfessionalsState) {
+export function setProfessionalList(data: ProfessionalsState): ProfessionalListActions {
   return {
     type: ProfessionalListActionTypes.setProfessionalList,
     payload: {

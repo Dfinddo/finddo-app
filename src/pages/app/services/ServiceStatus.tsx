@@ -1,14 +1,9 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-nested-ternary */
-/* eslint-disable react-native/no-color-literals */
 import React, {useState, useCallback, useEffect} from "react";
 import {Alert, StyleSheet, ImageBackground, View} from "react-native";
 import {Button, Text} from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
-
 import {ServicesStackParams} from "src/routes/app";
-// import {ServiceStatusEnum} from "finddo-api";
-
 import {ScrollView} from "react-native-gesture-handler";
 import TimeLineStatus from "components/TimeLineStatus";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";

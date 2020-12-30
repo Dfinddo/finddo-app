@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { UserActionTypes, UserState } from "./types";
+import { UserActions, UserActionTypes, UserState } from "./types";
 
-export function signIn(email: string, password: string) {
+export function signIn(email: string, password: string): UserActions {
   return {
     type: UserActionTypes.signIn,
     payload: {
@@ -12,7 +10,7 @@ export function signIn(email: string, password: string) {
   };
 }
 
-export function updateUser(user: UserState)  {
+export function updateUser(user: UserState): UserActions {
   return {
     type: UserActionTypes.updateUser,
     payload: {
@@ -21,16 +19,7 @@ export function updateUser(user: UserState)  {
   };
 }
 
-interface SingUpDataProps {
-  name: string,
-  surname: string,
-  email: string,
-  cellphone: string,
-  cpf: string,
-  birthdate: Date,
-}
-
-export function updateProfilePhoto(profilePicture: {uri: string})  {
+export function updateProfilePhoto(profilePicture: {uri: string}): UserActions {
   return {
     type: UserActionTypes.updateProfilePhoto,
     payload: {
@@ -39,7 +28,7 @@ export function updateProfilePhoto(profilePicture: {uri: string})  {
   };
 }
 
-export function signOut()  {
+export function signOut(): UserActions  {
   return {
     type: UserActionTypes.signOut,
   };

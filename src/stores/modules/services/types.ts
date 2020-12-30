@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { 
   BudgetApiResponse, 
   ReschedulingApiResponse, 
@@ -13,6 +12,34 @@ export enum ServiceActionTypes {
   updateNewService= "UPDATE_NEW_SERVICE",
   clearNewService= "CLEAR_NEW_SERVICE",
 }
+
+interface SetServiceAction {
+  type: ServiceActionTypes.setServices,
+  payload: {
+    data: ServiceList,
+  },
+}
+
+interface UpdateServiceAction {
+  type: ServiceActionTypes.updateService,
+  payload: {
+    updated: Service,
+  },
+}
+
+interface UpdateNewServiceAction {
+  type: ServiceActionTypes.updateNewService,
+  payload: {
+    form: Service,
+  },
+}
+
+interface ClearNewServiceAction {
+  type: ServiceActionTypes.clearNewService,
+}
+
+export type ServiceActions = SetServiceAction | UpdateServiceAction | 
+  UpdateNewServiceAction | ClearNewServiceAction;
 
 export interface Service {
   id: number | null;

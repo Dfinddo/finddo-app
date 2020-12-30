@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useState} from "react";
 import {
 	ScrollView,
@@ -36,7 +35,6 @@ const Login = (props:LoginScreenProps): JSX.Element => {
     </TouchableWithoutFeedback>
   );
 
-	// eslint-disable-next-line require-await
 	const login = (): void => {
 		dispatch(signIn(email,password));
 	};

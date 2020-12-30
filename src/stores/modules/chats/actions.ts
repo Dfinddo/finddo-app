@@ -1,18 +1,21 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { Chat, ChatActionTypes, ChatList, ChatListTypes } from "./types";
+import { 
+  Chat, 
+  ChatActions, 
+  ChatActionTypes, 
+  ChatList, 
+  ChatListTypes 
+} from "./types";
 
-export function fetchChats(data: ChatListTypes)  {
+export function fetchChatList(data: ChatListTypes): ChatActions  {
   return {
-    type: ChatActionTypes.fetchChats,
+    type: ChatActionTypes.fetchChatList,
     payload: {
       data,
     }
   };
 }
 
-export function updateChatList(data: ChatList, isAdmin: boolean)  {
+export function updateChatList(data: ChatList, isAdmin: boolean): ChatActions  {
   return {
     type: ChatActionTypes.updateChatList,
     payload: {
@@ -27,25 +30,16 @@ interface FetchActiveChatProps{
   isAdminChat: boolean,
 }
 
-export function fetchActiveChat(chatInfo: FetchActiveChatProps)  {
+export function fetchActiveChat(chatInfo: FetchActiveChatProps): ChatActions  {
   return {
     type: ChatActionTypes.fetchActiveChat,
     payload: {
-      chatInfo,
+      chatInfo
     }
   };
 }
 
-export function updateActiveChat(chat: Chat)  {
-  return {
-    type: ChatActionTypes.updateChat,
-    payload: {
-      chat,
-    }
-  };
-}
-
-export function sendMessage(chat: Chat)  {
+export function updateActiveChat(chat: Chat): ChatActions  {
   return {
     type: ChatActionTypes.updateChat,
     payload: {

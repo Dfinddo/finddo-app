@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, {FC} from "react";
 import {StyleSheet} from "react-native";
 import {Button, Text, Layout} from "@ui-kitten/components";

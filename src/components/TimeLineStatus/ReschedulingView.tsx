@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable react-native/no-color-literals */
 import React, {FC, useMemo, useState} from "react";
 import {Alert, StyleSheet, View} from "react-native";
 import {Button, Layout, Text, Modal} from "@ui-kitten/components";
@@ -29,8 +27,7 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 
 	const dispatch = useDispatch();
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const initialDate = useMemo(() => new Date(serviceStore.serviceDate), []);
+	const initialDate = useMemo(() => new Date(serviceStore.serviceDate), [serviceStore]);
 
 	const handleUpdateSchedule = async ({
 		hora_inicio,

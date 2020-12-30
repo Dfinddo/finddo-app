@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useState, useCallback} from "react";
 import {Alert, KeyboardAvoidingView, Platform, StyleSheet} from "react-native";
 import {Datepicker, Text, Button, Layout} from "@ui-kitten/components";
@@ -207,26 +206,16 @@ export default UserDataForm;
 
 const styles = StyleSheet.create({
 	container: {flex: 1},
-	// backgroundImageContent: {width: "100%", height: "100%"},
-	// finddoLogoStyle: {marginTop: 60, marginBottom: 120},
 	form: {
 		alignItems: "center",
 		justifyContent: "center",
 		padding: 15,
 	},
-	// cadastroFormSizeAndFont: {
-	// 	fontSize: 18,
-	// 	height: 45,
-	// 	borderBottomWidth: 2,
-	// 	textAlign: "left",
-	// 	width: 300,
-	// },
 	fontTitle: {
 		fontSize: 30,
 		textAlign: "center",
 		fontWeight: "bold",
 	},
-	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 	input: {width: "100%"},
 	buttom: {
 		width: "90%", 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import finddoApi from "finddo-api";
 import { Service } from "stores/modules/services/types";
 import { UserState } from "stores/modules/user/types";

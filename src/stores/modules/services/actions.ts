@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { Service, ServiceActionTypes, ServiceList } from "./types";
+import { Service, ServiceActions, ServiceActionTypes, ServiceList } from "./types";
 
-export function setServices(data: ServiceList)  {
+export function setServices(data: ServiceList): ServiceActions {
   return {
     type: ServiceActionTypes.setServices,
     payload: {
@@ -11,7 +9,7 @@ export function setServices(data: ServiceList)  {
   };
 }
 
-export function updateService(updated: Service)  {
+export function updateService(updated: Service): ServiceActions  {
   return {
     type: ServiceActionTypes.updateService,
     payload: {
@@ -20,7 +18,7 @@ export function updateService(updated: Service)  {
   };
 }
 
-export function updateNewService(form: Service)  {
+export function updateNewService(form: Service): ServiceActions  {
   return {
     type: ServiceActionTypes.updateNewService,
     payload: {
@@ -29,7 +27,7 @@ export function updateNewService(form: Service)  {
   };
 }
 
-export function clearNewService()  {
+export function clearNewService(): ServiceActions {
   return {
     type: ServiceActionTypes.clearNewService,
   };

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-case-declarations */
-/* eslint-disable no-undefined */
 import { Reducer } from "redux";
 import produce from 'immer';
 import { ChatActionTypes, ChatState } from "./types";
@@ -30,7 +28,7 @@ const INITIAL_STATE: ChatState = {
 
 const chats: Reducer<ChatState> = (state = INITIAL_STATE, action) => produce(state, draft => {
     switch(action.type){
-      case ChatActionTypes.fetchChats:
+      case ChatActionTypes.fetchChatList:
         const { data } = action.payload; 
         
         draft.chatLists = data;

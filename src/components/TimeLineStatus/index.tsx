@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-color-literals */
 import React, {useMemo, FC, useState, useEffect} from "react";
 import {View, RefreshControl, Alert, StyleSheet} from "react-native";
 import {Text, useTheme, Layout} from "@ui-kitten/components";

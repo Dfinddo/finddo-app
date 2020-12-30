@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { AddressApiResponse } from "finddo-api";
-import { Address, AddressActionTypes } from "./types";
+import { Address, AddressActions, AddressActionTypes } from "./types";
 
-export function setAdressesList(list: AddressApiResponse[]) {
+export function setAdressesList(list: AddressApiResponse[]): AddressActions {
   return {
     type: AddressActionTypes.setAdressesList,
     payload: {
@@ -12,7 +10,7 @@ export function setAdressesList(list: AddressApiResponse[]) {
   };
 }
 
-export function updateAdressesList(item: Address) {
+export function updateAdressesList(item: Address): AddressActions {
   return {
     type: AddressActionTypes.updateAddressList,
     payload: {
@@ -21,7 +19,7 @@ export function updateAdressesList(item: Address) {
   };
 }
 
-export function removeAddress(id: string) {
+export function removeAddress(id: string): AddressActions {
   return {
     type: AddressActionTypes.removeAddressList,
     payload: {

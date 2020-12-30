@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useEffect, useState, useCallback} from "react";
 import {View, Alert, ScrollView, ImageBackground} from "react-native";
 import {

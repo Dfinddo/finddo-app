@@ -254,7 +254,6 @@ const DrawerContentProfessional: FC<DrawerContentComponentProps> = ({
 	</Drawer>
 );
 
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 
 export type PaymentMethodsStackParams = {
@@ -311,5 +310,3 @@ export type AppDrawerParams = {
 	ChatList: undefined;
 };
 
-/* eslint-enable @typescript-eslint/consistent-type-definitions */
-/* eslint-enable @typescript-eslint/naming-convention */

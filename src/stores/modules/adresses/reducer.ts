@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return */
 /* eslint-disable no-case-declarations */
 import { Reducer } from "redux";
 import produce from 'immer';

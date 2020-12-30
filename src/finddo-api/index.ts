@@ -17,8 +17,6 @@ export type ServiceStatus =
 	| "finalizado"
 	| "cancelado";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export enum ServiceStatusEnum {
 	"analise",
 	"orcamento_previo",
@@ -198,8 +196,6 @@ interface CardApiResponse {
 		store: boolean;
 	};
 }
-
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export type {
 	UserApiResponse,

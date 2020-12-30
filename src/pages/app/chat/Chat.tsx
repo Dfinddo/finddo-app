@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import React, { useCallback, useEffect } from "react";
-import {Alert, View} from "react-native";
+import React, { useEffect } from "react";
+import {View} from "react-native";
 import {
 	Button,
 	Input,
@@ -21,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
 import { Chat as IChat, Message } from "stores/modules/chats/types";
-import finddoApi, { ChatApiResponse } from "finddo-api";
+import finddoApi from "finddo-api";
 import { fetchActiveChat, updateActiveChat } from "stores/modules/chats/actions";
 import { myFirebase } from "src/services/firebase";
 
@@ -82,56 +81,6 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 		}
 	};
 
-	// const handleUpdateChat = useCallback(async ()=>{
-	// 	setIsLoading(true);
-	// 	try {
-	// 		let chat: Message[] = [];
-	// 		let {total} = chatStore;
-
-	// 		const page = chatStore.page +1 > total ? chatStore.page : chatStore.page +1; 
-
-	// 		for (let index = 1; index <= page; index++) {
-	// 			const response = !chatStore.isAdminChat ? await finddoApi.get(`chats/order`, {
-	// 				params: {
-	// 					page: index, 
-	// 					order_id: chatStore.order_id,
-	// 				},
-	// 			}) : await finddoApi.get(`chats/order/admin`, {
-	// 				params: {
-	// 					page: index, 
-	// 					order_id: chatStore.order_id,
-	// 					receiver_id: 1,
-	// 				},
-	// 			});
-
-	// 			const list: Message[] = response.data.chats.map(
-	// 				(item: {data:{attributes: ChatApiResponse}}) => item.data.attributes
-	// 			);
-
-	// 			chat = [...chat, ...list];	
-
-	// 			if(total !== response.data.total_pages) {
-	// 				total = response.data.total_pages;
-	// 			}
-	// 		}
-
-	// 		dispatch(updateActiveChat({
-	// 			messages: chat,
-	// 			order_id: String(order_id),
-	// 			isAdminChat: chatStore.isAdminChat,
-	// 			isGlobalChat: order_id === 170,
-	// 			page,
-	// 			total,
-	// 		}));
-	// 	} catch (error) {
-	// 		// eslint-disable-next-line no-console
-	// 		console.log(error);
-	// 	}
-	// 	finally {
-	// 		setIsLoading(false);
-	// 	}
-	// }, [chatStore, dispatch, order_id]);
-
 	return (
 		<Layout style={styles.container}>
 			<TopNavigation
@@ -157,7 +106,6 @@ const Chat = ((props: ProfileScreenProps): JSX.Element => {
 			/>
 			<List
 				data={chatStore.messages}
-				// onEndReached={handleUpdateChat}
 				inverted
 				refreshing={loading}
 				onEndReachedThreshold={0.2}

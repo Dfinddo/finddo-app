@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useState, useEffect, useCallback} from "react";
 import {
 	View,
@@ -275,10 +274,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 15,
 	},
-	// input: {
-	// 	marginHorizontal: 12,
-	// 	marginVertical: 8,
-	// },
 	formRow: {
 		flexDirection: "row",
 	},

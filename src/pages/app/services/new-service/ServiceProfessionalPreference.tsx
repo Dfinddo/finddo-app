@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable react-native/no-color-literals */
 import React, {useState, useEffect, useCallback} from "react";
 import {
 	KeyboardAvoidingView,

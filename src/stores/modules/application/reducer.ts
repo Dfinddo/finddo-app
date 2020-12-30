@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-case-declarations */
-/* eslint-disable no-undefined */
 import { Reducer } from "redux";
 import produce from 'immer';
 import { ApplicationActionTypes, ApplicationState } from "./types";

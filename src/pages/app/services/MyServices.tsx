@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable react-native/no-color-literals */
 /* eslint-disable no-nested-ternary */
 import React, {useState, useEffect, useCallback, useMemo} from "react";
 import {View, RefreshControl, Alert, StyleSheet} from "react-native";

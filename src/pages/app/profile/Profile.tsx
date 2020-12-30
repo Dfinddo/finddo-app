@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useState, useCallback} from "react";
 import {Pressable, View, Alert, StyleSheet, Modal} from "react-native";
 import {

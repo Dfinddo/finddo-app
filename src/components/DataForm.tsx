@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, { useEffect, useState } from "react";
 import {StyleSheet, ScrollView, View} from "react-native";
 import {Layout, Text, Calendar, SelectItem, Button} from "@ui-kitten/components";

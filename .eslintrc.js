@@ -200,7 +200,7 @@ module.exports = {
 		"@typescript-eslint/ban-types": "error",
 		"camelcase": "off",
 		"@typescript-eslint/naming-convention": [
-			"error",
+			"off",
 			{
 				selector: "default",
 				format: ["camelCase"],
@@ -263,7 +263,7 @@ module.exports = {
 		"react-native/no-unused-styles": "error",
 		"react-native/split-platform-components": "error",
 		"react-native/no-inline-styles": "error",
-		"react-native/no-color-literals": "error",
+		"react-native/no-color-literals": "off",
 		"react-native/no-raw-text": "off",
 		"react-native/no-single-element-style-arrays": "error",
 

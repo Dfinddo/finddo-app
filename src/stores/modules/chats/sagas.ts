@@ -1,13 +1,19 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/naming-convention */
-import { all, put, select, call, take, SelectEffect, takeLatest } from "redux-saga/effects";
+import { Alert } from "react-native";
+import { all, put, call, takeLatest } from "redux-saga/effects";
 import { myFirebase } from 'src/services/firebase';
-// import { State } from "stores/index";
-import { fetchActiveChat, updateActiveChat } from "./actions";
-// import { setLoading } from "../application/actions";
+import { updateActiveChat } from "./actions";
 import { ChatActionTypes, Message } from "./types";
 
-type FetchActiveChatRequest = ReturnType<typeof fetchActiveChat>
+interface FetchActiveChatRequest {
+  type: ChatActionTypes.fetchActiveChat,
+  payload: {
+    chatInfo: {
+      order_id: string, 
+      isAdminChat: boolean,
+    }
+  },
+}
 
 
 const getChat = (chatUrl: string) =>
@@ -18,7 +24,6 @@ const getChat = (chatUrl: string) =>
 
 function* fetchChat({payload}: FetchActiveChatRequest) {
   const {order_id, isAdminChat} = payload.chatInfo;
-  // const oldChat: Chat = yield select((state: State) => state.chats.activeChat);
 
   try {
     const messages = yield call(getChat, `/chats/${order_id}/${isAdminChat ? "admin" : "common"}`);
@@ -31,8 +36,8 @@ function* fetchChat({payload}: FetchActiveChatRequest) {
       page: 1,
       total: 1,
     }));
-  } catch (e) {
-    // yield put({ type: ACTIONS.FETCH_CHAT_FAIL, payload: e });
+  } catch (error) {
+    Alert.alert("Sua conta ainda não foi validada.");
   }
 }
 

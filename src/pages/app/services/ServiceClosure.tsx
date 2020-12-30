@@ -1,9 +1,15 @@
-/* eslint-disable no-empty-function */
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable react-native/no-color-literals */
-import React, {useEffect, useState, useCallback} from "react";
-import {Alert, StyleSheet, ImageBackground, View, StyleProp, ImageStyle} from "react-native";
-import {Avatar, Button, Text, Card, Modal, Layout, useStyleSheet, StyleService} from "@ui-kitten/components";
+import React, {useEffect, useState} from "react";
+import {ImageBackground, View, StyleProp, ImageStyle} from "react-native";
+import {
+	Avatar, 
+	Button, 
+	Text, 
+	Card, 
+	Modal, 
+	Layout, 
+	useStyleSheet, 
+	StyleService
+} from "@ui-kitten/components";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ScrollView} from "react-native-gesture-handler";
 

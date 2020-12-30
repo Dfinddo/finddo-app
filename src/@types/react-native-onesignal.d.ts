@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable no-dupe-class-members */
 /* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/naming-convention */
 declare module 'react-native-onesignal' {
 
   enum InFocusDisplayOption {

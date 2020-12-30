@@ -1,13 +1,46 @@
 import { ConversationApiResponse } from "finddo-api";
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export enum ChatActionTypes {
-  fetchChats= "FETCH_CHATS",
+  fetchChatList= "FETCH_CHATS",
   fetchActiveChat= "FETCH_ACTIVE_CHAT",
-  activeChatConnection= "ACTIVE_CHAT_CONNECTION",
   updateChatList= "UPDATE_CHATLIST",
   updateChat= "UPDATE_CHAT",
 }
+
+interface FetchChatListAction {
+  type: ChatActionTypes.fetchChatList,
+  payload: {
+    data: ChatListTypes,
+  },
+}
+
+interface UpdateChatListAction {
+  type: ChatActionTypes.updateChatList,
+  payload: {
+    isAdminChat: boolean,
+    updatedChat: ChatList,
+  },
+}
+
+interface FetchActiveChatAction {
+  type: ChatActionTypes.fetchActiveChat,
+  payload: {
+    chatInfo: {
+      order_id: string, 
+      isAdminChat: boolean,
+    }
+  },
+}
+
+interface UpdateActiveChatAction {
+  type: ChatActionTypes.updateChat,
+  payload: {
+    chat: Chat
+  },
+}
+
+export type ChatActions = FetchChatListAction | 
+  UpdateChatListAction | FetchActiveChatAction | UpdateActiveChatAction;
 
 export interface Message {
 	id: number;

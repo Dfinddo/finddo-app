@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, {FC, useState, useCallback} from "react";
 import {StyleSheet, Alert} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
