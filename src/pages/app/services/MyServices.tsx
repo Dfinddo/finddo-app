@@ -68,12 +68,12 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 		try {
 			const response = await finddoApi.get(`${url}/?page=1`);
 			
-			const {items, total_pages} = response.data;
+			const {items, total_pages: total} = response.data;
 
 			dispatch(setServices({
 				items,
 				page: 1,
-				total: total_pages,
+				total,
 			}));
 		} catch (error) {
 			if (error.response) {

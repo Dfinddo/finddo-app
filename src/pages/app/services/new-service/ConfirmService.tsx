@@ -85,9 +85,13 @@ const ConfirmService: FC<ConfirmServiceScreenProps> = (props => {
 			const params = {page: 1};
 
 			const response = await finddoApi.get(`/orders/user/active`, {params});
-			const services = response.data.items;
+			const {items, total_pages: total} = response.data;
 
-			dispatch(setServices(services));
+			dispatch(setServices({
+				items,
+				page: 1,
+				total,
+			}));
 			
 			Alert.alert("Serviço cadastrado com sucesso");
 		} catch (error) {
