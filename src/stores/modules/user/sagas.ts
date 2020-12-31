@@ -32,7 +32,7 @@ function* sessionConfigs ({payload}: SessionConfigsRequest) {
         
     finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
 
-    const logged = Object.assign(user, {id, profilePicture: photo.photo ? {
+    const logged = Object.assign(user, {id, profilePicture: photo && photo.photo ? {
       uri: `${BACKEND_URL_STORAGE}${photo.photo}`,
     }: require("../../../assets/sem-foto.png")});
     
