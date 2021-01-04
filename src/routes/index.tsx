@@ -1,30 +1,39 @@
-/* eslint-disable react-native/no-inline-styles */
-import React from "react";
-import {useUser} from "hooks";
+import React, { useCallback, useEffect } from "react";
 import AppRoute from "./app";
 import AuthRoute from "./auth";
-import {observer} from "mobx-react-lite";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "../stores";
+import { UserState } from "stores/modules/user/types";
+import { updateUser } from "stores/modules/user/actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import finddoApi from "finddo-api";
 import BottomNavigation from "components/BottomNavigationTab";
-import {KeyboardAvoidingView, Platform} from "react-native";
 
-const Routes = observer(() => {
-	const userStore = useUser();
+const Routes = (): JSX.Element => {
+	const dispatch = useDispatch();
+	const userStore = useSelector<State, UserState>(state => state.user);
 
+	const restoreSession = useCallback(async () => {
+		const [userData, jwt] = (
+			await AsyncStorage.multiGet(["user", "access-token"])
+		).map(([, value]) => value && JSON.parse(value));
+
+		if (!userData || !jwt) return;
+
+		finddoApi.defaults.headers.Authorization = `Bearer ${jwt}`;
+		dispatch(updateUser(userData));
+	}, [dispatch]);
+
+	useEffect(() => void restoreSession(), [restoreSession]);
+	
 	return userStore.id ? (
 		<>
-			<BottomNavigation>
-				<KeyboardAvoidingView
-					behavior={Platform.OS === "ios" ? "padding" : "height"}
-					keyboardVerticalOffset={Platform.OS === "ios" ? 200 : void 0}
-					style={{flex: 1}}
-				>
-					<AppRoute />
-				</KeyboardAvoidingView>
-			</BottomNavigation>
+			<AppRoute />
+			<BottomNavigation />
 		</>
 	) : (
 		<AuthRoute />
 	);
-});
+};
 
 export default Routes;

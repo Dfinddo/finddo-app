@@ -7,43 +7,34 @@ import {
 	StyleService,
 	useStyleSheet,
 } from "@ui-kitten/components";
-import {useServiceList} from "hooks";
 import {SvgXml} from "react-native-svg";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
-import ServiceStore from "stores/service-store";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
 import {priceFormatter, numericFormattingFilter} from "utils";
 
 import {finddoLogo} from "../../../assets/svg/finddo-logo";
+import { useDispatch } from "react-redux";
+import finddoApi from "finddo-api";
+import { updateService } from "stores/modules/services/actions";
 
 type ServiceBudgetScreenProps = StackScreenProps<
 	ServicesStackParams,
 	"ServiceBudget"
 >;
 
-const ServiceBudget = observer<ServiceBudgetScreenProps>(
-	({route, navigation}) => {
+const ServiceBudget = (
+	{route, navigation}: ServiceBudgetScreenProps): JSX.Element => {
+		const {id} = route.params;
 		const styles = useStyleSheet(themedStyles);
-		const [serviceStore, setServiceStore] = useState<
-			ServiceStore | undefined
-		>();
 		const [price, setPrice] = useState(0);
 		const [finddoTax, setFinddoTax] = useState(0);
 		const [productPrice, setProductPrice] = useState(0);
 		const [total, setTotal] = useState("");
 		const [isLoading, setIsLoading] = useState(false);
 
-		const serviceListStore = useServiceList();
-
-		useEffect(() => {
-			if (route.params?.id)
-				setServiceStore(
-					serviceListStore.list.find(({id}) => route.params.id === id),
-				);
-		}, [route.params?.id, serviceListStore.list]);
+		const dispatch = useDispatch();
 
 		useEffect(() => {
 			const tax: number =
@@ -64,8 +55,16 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 		const handleSubmitBudget = useCallback(async () => {
 			setIsLoading(true);
 			try {
-				await serviceStore?.doServiceBudget(price, productPrice, true);
-				await serviceStore?.refreshServiceData();
+				await finddoApi.post("/orders/propose_budget", {
+					id,
+					budget: price,
+					material_value: productPrice,
+					is_previous: true,
+				});
+
+				const response = await finddoApi.get(`/orders/${id}`);
+
+				dispatch(updateService(response.data));
 			} catch (error) {
 				if (error.message === "Invalid service data")
 					Alert.alert("Erro no envio do orçamento, tente novamente");
@@ -78,7 +77,7 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 				Alert.alert("Orçamento realizado com sucesso");
 				navigation.goBack();
 			}
-		}, [serviceStore, navigation, price, productPrice]);
+		}, [navigation, price, productPrice, id, dispatch]);
 
 		const updateBudget = (
 			data: string,
@@ -87,7 +86,7 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 			updateFunction(data !== "" ? parseInt(data, 10) : 0);
 		};
 
-		if (serviceStore === void 0) return null;
+		if (!id) return <View></View>;
 
 		return (
 			<ImageBackground
@@ -151,8 +150,9 @@ const ServiceBudget = observer<ServiceBudgetScreenProps>(
 				</Layout>
 			</ImageBackground>
 		);
-	},
-);
+	}
+
+;
 
 export default ServiceBudget;
 

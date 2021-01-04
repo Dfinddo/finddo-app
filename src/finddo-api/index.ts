@@ -17,8 +17,6 @@ export type ServiceStatus =
 	| "finalizado"
 	| "cancelado";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export enum ServiceStatusEnum {
 	"analise",
 	"orcamento_previo",
@@ -94,6 +92,7 @@ interface UserApiResponse {
 	mothers_name: string;
 	name: string;
 	nickname: null;
+	photo: string | null;
 	own_id_wirecard: string;
 	player_ids: string[];
 	provider: string;
@@ -198,8 +197,6 @@ interface CardApiResponse {
 	};
 }
 
-/* eslint-enable @typescript-eslint/naming-convention */
-
 export type {
 	UserApiResponse,
 	AddressApiResponse,
@@ -209,4 +206,25 @@ export type {
 	ChatApiResponse,
 	ConversationApiResponse,
 	CardApiResponse,
+};
+
+export async function isRegistered(data: {
+	email: string,
+	cellphone: string, 
+	cpf: string,
+}): Promise<boolean> {
+	try {
+		await finddoApi.get(
+			`/users?email=${data.email}&cellphone=${data.cellphone}&cpf=${data.cpf}`,
+		);
+
+		return false;
+	} catch (error) {
+		if (error.response && error.response.status === 403) {
+			// throw new Error(error.response.data.error);
+			return true;
+		}
+		else if (error.request) throw new Error("Connection error");
+		else throw error;
+	}
 };

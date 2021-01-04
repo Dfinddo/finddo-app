@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-color-literals */
 import React, {useState} from "react";
 import {
 	View,
@@ -19,26 +18,42 @@ import {
 	Layout,
 } from "@ui-kitten/components";
 import ValidatedInput from "components/ValidatedInput";
-import {useService, useSwitch} from "hooks";
-import {observer} from "mobx-react-lite";
+import {useSwitch} from "hooks";
 import {serviceCategories} from "finddo-api";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { Service } from "stores/modules/services/types";
+import { updateNewService } from "stores/modules/services/actions";
+import { validateInput, validations } from "utils";
 
 type ServiceDescriptionScreenProps = StackScreenProps<
 	NewServiceStackParams,
 	"ServiceDescription"
 >;
 
-const NewService = observer<ServiceDescriptionScreenProps>(props => {
+const descriptionTests = [
+	validations.required(),
+	validations.minLength(5),
+	validations.maxLength(10000),
+];
+
+const NewService = ((props: ServiceDescriptionScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const newService = useSelector<State, Service>(state =>
+		state.services.newService
+	);
+	
+	const [descriptionError, setDescriptionError] = useState<string|undefined>("Campo obrigatório");
+
 	const [isConfirmingUrgency, setIsConfirmingUrgency] = useState(false);
-	const serviceStore = useService();
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
-	const selectedCategory = serviceCategories[serviceStore.categoryID!];
+	const selectedCategory = serviceCategories[newService.category.id!];
 
 	const onAdvanceAttempt = (): void => {
-		if (serviceStore.descriptionError) return setFillAttemptAsFailed();
-		if (serviceStore.urgency === "urgent" && !isConfirmingUrgency)
+		if (descriptionError) return setFillAttemptAsFailed();
+		if (newService.urgency === "urgent" && !isConfirmingUrgency)
 			return setIsConfirmingUrgency(true);
 
 		setIsConfirmingUrgency(false);
@@ -46,7 +61,10 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 	};
 
 	const setUrgency = ({row}: {row: number}): void =>
-		void (serviceStore.urgency = (["delayable", "urgent"] as const)[row]);
+		void (dispatch(updateNewService({
+			...newService,
+			urgency: (["delayable", "urgent"] as const)[row],
+		})));
 
 	const urgencies = ["Sem urgência", "Com urgência"] as const;
 
@@ -65,7 +83,7 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 							label="Urgência"
 							selectedIndex={
 								new IndexPath(
-									{delayable: 0, urgent: 1}[serviceStore.urgency],
+									{delayable: 0, urgent: 1}[newService.urgency],
 								)
 							}
 							onSelect={
@@ -73,7 +91,7 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 							}
 							value={
 								urgencies[
-									{delayable: 0, urgent: 1}[serviceStore.urgency]
+									{delayable: 0, urgent: 1}[newService.urgency]
 								]
 							}
 						>
@@ -86,9 +104,15 @@ const NewService = observer<ServiceDescriptionScreenProps>(props => {
 							textStyle={styles.urgencyInput}
 							multiline={true}
 							placeholder="Nos conte o que precisa, ex.: Minha pia entupiu..."
-							onChangeText={input => (serviceStore.description = input)}
-							value={serviceStore.description}
-							error={serviceStore.descriptionError}
+							onChangeText={input => {
+								setDescriptionError(validateInput(input, descriptionTests));
+								dispatch(updateNewService({
+									...newService, 
+									description: input,
+								}))}
+							}
+							value={newService.description}
+							error={descriptionError}
 							forceErrorDisplay={hasFailedToFillForm}
 						/>
 					</View>

@@ -1,44 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {StyleSheet, ScrollView, View} from "react-native";
-import {Layout, Text, Calendar, SelectItem} from "@ui-kitten/components";
+import {Layout, Text, Calendar, SelectItem, Button} from "@ui-kitten/components";
 import {range} from "utils";
-import ServiceStore from "stores/service-store";
-import {observer} from "mobx-react-lite";
 import ValidatedSelect from "./ValidatedSelect";
 import {localeDateService} from "src/utils/calendarLocale";
+import { Service } from "stores/modules/services/types";
 
+// const defaultTests = [validations.required()];
+
+export interface DataFormOnSubmitProps {
+	hora_inicio: string;
+	hora_fim: string;
+	serviceDate: Date;
+}
 interface DataFormProps {
-	serviceStore: ServiceStore;
+	serviceStore: Service;
+	onSubmit(data: DataFormOnSubmitProps): Promise<void>;
 	forceErrorDisplay?: boolean;
 	initialDate?: Date;
 	finalDate?: Date;
 }
 
-const DataForm = observer<DataFormProps>(props => {
+const DataForm = ((props: DataFormProps): JSX.Element => {
 	const {
 		serviceStore,
 		forceErrorDisplay,
+		onSubmit,
 		initialDate: initial,
 		finalDate: final,
 	} = props;
 
+	const [startTime, setStartTime] = useState("--:--");
+	const [endTime, setEndTime] = useState("--:--");
+	const [serviceDate, setServiceDate] = useState<Date>(new Date());
+	// const [newServiceStore, setNewServiceStore] = useState<Service>();
+
 	const initialDate = initial || new Date();
 	const finalDate = final || new Date();
+
+	useEffect(() => {
+		setStartTime(serviceStore.hora_inicio);
+		setEndTime(serviceStore.hora_fim);
+		setServiceDate(serviceStore.serviceDate);
+	}, [serviceStore])
+
+	// if(!serviceStore) return <View></View>
 
 	if (!final) finalDate.setDate(initialDate.getDate() + 6);
 
 	const endTimes = avaliableTimes.filter(
-		time => time > serviceStore.startTime,
+		time => time > startTime,
 	);
 
 	const onStartSelect = (index: number): void => {
-		serviceStore.startTime = avaliableTimes[index];
-		if (serviceStore.startTime >= serviceStore.endTime)
-			serviceStore.endTime = "";
+		setStartTime(avaliableTimes[index]);
+
+		if (startTime >= endTime) setEndTime("");
 	};
 
 	const onEndSelect = (index: number) =>
-		void (serviceStore.endTime = endTimes[index]);
+		void (setEndTime(endTimes[index]));
 
 	return (
 		<Layout level="1" style={styles.contentWrapper}>
@@ -52,8 +73,8 @@ const DataForm = observer<DataFormProps>(props => {
 				<Calendar
 					style={styles.calendar}
 					dateService={localeDateService}
-					date={serviceStore.serviceDate}
-					onSelect={date => (serviceStore.serviceDate = date)}
+					date={serviceDate}
+					onSelect={date => (setServiceDate(date))}
 					min={initialDate}
 					max={finalDate}
 				/>
@@ -64,8 +85,7 @@ const DataForm = observer<DataFormProps>(props => {
 						</Text>
 						<ValidatedSelect
 							style={styles.timeSelect}
-							value={serviceStore.startTime}
-							error={serviceStore.startTimeError}
+							value={startTime}
 							forceErrorDisplay={forceErrorDisplay}
 							placeholder={"--:--"}
 							onSelect={onStartSelect}
@@ -81,8 +101,7 @@ const DataForm = observer<DataFormProps>(props => {
 						</Text>
 						<ValidatedSelect
 							style={styles.timeSelect}
-							value={serviceStore.endTime}
-							error={serviceStore.endTimeError}
+							value={endTime}
 							forceErrorDisplay={forceErrorDisplay}
 							placeholder={"--:--"}
 							onSelect={onEndSelect}
@@ -94,6 +113,15 @@ const DataForm = observer<DataFormProps>(props => {
 					</View>
 				</View>
 			</ScrollView>
+			<Button style={styles.buttom} onPress={async() => {
+				await onSubmit({
+					hora_inicio: startTime,
+					hora_fim: endTime,
+					serviceDate,
+				})}
+			}>
+				CONFIRMAR
+			</Button>
 		</Layout>
 	);
 });
@@ -105,31 +133,16 @@ const avaliableTimes = range(9, 22)
 	.flatMap(hour => [`${hour}:00`, `${hour}:30`]);
 
 const styles = StyleSheet.create({
-	modalDialogContainer: {
-		flex: 1,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	modalDialogContent: {
-		width: 340,
-		borderRadius: 18,
-		opacity: 1,
-		alignItems: "center",
-	},
-	calendarContainer: {width: "100%", padding: "5%"},
+	calendarContainer: {width: "100%", padding: 12},
 	calendar: {alignSelf: "center"},
-	modalErrosTitulo: {fontWeight: "bold", textAlign: "center", fontSize: 24},
-	modalErrosContent: {
-		fontSize: 18,
-		marginVertical: 10,
-	},
-	timeSelect: {width: "35%"},
+	timeSelect: {width: "40%"},
 	timeLabel: {textAlign: "right", marginBottom: 15},
 	contentWrapper: {
-		height: "95%",
+		width: "100%",
+		height: "100%",
 		justifyContent: "flex-start",
 		alignItems: "center",
-		paddingHorizontal: 15,
+		padding: 24,
 	},
 	rowContainer: {
 		flex: 1,
@@ -144,5 +157,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "flex-start",
 		flexDirection: "row",
+	},
+	buttom: {
+		margin: 16,
+		width: "90%",
+		height: 24,
 	},
 });

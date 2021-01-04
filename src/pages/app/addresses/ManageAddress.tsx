@@ -1,12 +1,16 @@
 import React, {useState, useEffect, FC, useCallback} from "react";
 import {ScrollView, StyleSheet, Alert} from "react-native";
-import {useAddressList, useSwitch} from "hooks";
-import AddressStore from "stores/address-store";
-import {Layout, Button} from "@ui-kitten/components";
-import AddressForm from "components/AddressForm";
+import {useSwitch} from "hooks";
+import {Layout} from "@ui-kitten/components";
+import AddressForm, { AddressFormData } from "components/AddressForm";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AddressStackParams} from "src/routes/app";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { Address } from "stores/modules/adresses/types";
+import finddoApi from "finddo-api";
+import { updateAdressesList } from "stores/modules/adresses/actions";
 
 type ManageAddressScreenProps = StackScreenProps<
 	AddressStackParams,
@@ -14,25 +18,41 @@ type ManageAddressScreenProps = StackScreenProps<
 >;
 
 const ManageAddress: FC<ManageAddressScreenProps> = ({navigation, route}) => {
-	const [addressStore, setAddressStore] = useState<AddressStore | undefined>(
-		new AddressStore(),
-	);
+	const [addressStore, setAddressStore] = useState<Address>({
+		id: "",
+		cep: "",
+		name: "",
+		state: "",
+		city: "",
+		district: "",
+		street: "",
+		number: "",
+		complement: "",
+	});
 	const [isLoading, setIsLoading] = useState(false);
-	const addressList = useAddressList();
+	const dispatch = useDispatch();
+	const addressList = useSelector<State, Address[]>(state => 
+		state.adresses.list
+	);
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 
 	useEffect(() => {
-		if (route.params?.id)
-			setAddressStore(
-				addressList.list.find(({id}) => route.params?.id === id),
-			);
-	}, [route.params?.id, addressList.list]);
+		if (route.params && route.params.id){
+			const getAddress = addressList.find(({id}) => route.params?.id === id);
 
-	const onSaveAttempt = useCallback(async (): Promise<void> => {
+			if(getAddress)setAddressStore(getAddress);
+		}
+	}, [route.params, addressList]);
+
+	const onSaveAttempt = useCallback(async (data: AddressFormData): Promise<void> => {
 		try {
 			setIsLoading(true);
-			if (addressStore?.hasErrors) return setFillAttemptAsFailed();
-			await addressStore?.saveAddress();
+			if (data.hasErrors) return setFillAttemptAsFailed();
+			const response = data.address.id
+				? await finddoApi.put(`/addresses/${data.address.id}`, {address:{...data.address}})
+				: await finddoApi.post("/addresses", {address:{...data.address}});
+
+			dispatch(updateAdressesList(response.data));
 			navigation.goBack();
 		} catch (error) {
 			// eslint-disable-next-line no-console
@@ -41,7 +61,7 @@ const ManageAddress: FC<ManageAddressScreenProps> = ({navigation, route}) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [addressStore, navigation, setFillAttemptAsFailed]);
+	}, [navigation, setFillAttemptAsFailed, dispatch]);
 
 	if (addressStore === void 0) return null;
 
@@ -52,10 +72,11 @@ const ManageAddress: FC<ManageAddressScreenProps> = ({navigation, route}) => {
 				<AddressForm
 					addressStore={addressStore}
 					forceErrorDisplay={hasFailedToFillForm}
+					onSubmitForm={onSaveAttempt}
 				/>
-				<Button style={styles.button} onPress={onSaveAttempt}>
+				{/* <Button style={styles.button} onPress={onSaveAttempt}>
 					CONTINUAR
-				</Button>
+				</Button> */}
 			</ScrollView>
 		</Layout>
 	);
@@ -65,5 +86,5 @@ export default ManageAddress;
 
 const styles = StyleSheet.create({
 	container: {flex: 1},
-	button: {margin: 16},
+	// button: {margin: 16},
 });

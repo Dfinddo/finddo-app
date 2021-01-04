@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
 	View,
 	Image,
@@ -8,24 +8,40 @@ import {
 	StyleSheet,
 } from "react-native";
 import {Text, Button, Layout, RadioGroup, Radio} from "@ui-kitten/components";
-import {useService} from "hooks";
-import {observer} from "mobx-react-lite";
 import {serviceCategories} from "finddo-api";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
 import {priceFormatter, numericFormattingFilter} from "utils";
+import { useDispatch, useSelector } from "react-redux";
+import { Service } from "stores/modules/services/types";
+import { State } from "stores/index";
+import { updateNewService } from "stores/modules/services/actions";
 
 type ServicePreviousBudgetScreenProps = StackScreenProps<
 	NewServiceStackParams,
 	"ServicePreviousBudget"
 >;
 
-const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
-	const serviceStore = useService();
-	const selectedCategory = serviceCategories[serviceStore.categoryID!];
+const NewService = ((props: ServicePreviousBudgetScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const newService = useSelector<State, Service>(state => 
+		state.services.newService
+	);
+	const selectedCategory = serviceCategories[newService.category.id!];
+
+	const [previousBudgetValue, setPreviousBudgetValue] = useState("");
 
 	const onAdvanceAttempt = (): void => {
+		if(previousBudgetValue) {
+			dispatch(updateNewService({
+				...newService,
+				previous_budget_value: parseInt(
+					previousBudgetValue,
+					10,
+				),
+			}));
+		}
 		props.navigation.navigate("ServiceDate");
 	};
 
@@ -44,9 +60,12 @@ const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
 							Como deseja receber o orçamento?
 						</Text>
 						<RadioGroup
-							selectedIndex={serviceStore.previous_budget ? 0 : 1}
+							selectedIndex={newService.previous_budget ? 0 : 1}
 							onChange={index =>
-								(serviceStore.previous_budget = index === 0)
+								dispatch(updateNewService({
+									...newService,
+									previous_budget: index === 0,
+								}))
 							}
 							style={styles.radioGroup}
 						>
@@ -67,7 +86,7 @@ const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
 						</RadioGroup>
 					</View>
 				</KeyboardAvoidingView>
-				{serviceStore.previous_budget && (
+				{newService.previous_budget && (
 					<View style={styles.budgetContainer}>
 						<Text style={styles.text}>
 							Você já recebeu um orçamento? Nos informe o valor.
@@ -79,20 +98,15 @@ const NewService = observer<ServicePreviousBudgetScreenProps>(props => {
 							formattingFilter={numericFormattingFilter}
 							keyboardType={"number-pad"}
 							onChangeText={input => {
-								serviceStore.previous_budget_value = parseInt(
-									input,
-									10,
-								);
+								setPreviousBudgetValue(input);
 							}}
-							value={
-								serviceStore.previous_budget_value?.toString() || ""
-							}
+							value={previousBudgetValue}
 							maxLength={11}
 						/>
 					</View>
 				)}
 				<View style={styles.continueButtonContainer}>
-					<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>
+					<Button style={styles.buttom} onPress={onAdvanceAttempt}>CONTINUAR</Button>
 				</View>
 			</ScrollView>
 		</Layout>
@@ -134,5 +148,10 @@ const styles = StyleSheet.create({
 		width: "100%",
 		marginTop: "0.8%",
 		paddingHorizontal: "5%",
+	},
+	buttom: {
+		margin: 8,
+		width: "90%",
+		height: 24,
 	},
 });

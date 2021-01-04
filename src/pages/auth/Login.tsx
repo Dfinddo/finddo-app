@@ -1,26 +1,26 @@
-import React, {useState, useCallback} from "react";
+import React, {useState} from "react";
 import {
 	ScrollView,
 	Platform,
 	KeyboardAvoidingView,
-	Alert,
 	StyleSheet,
 	TouchableWithoutFeedback,
 } from "react-native";
 import {SvgXml} from "react-native-svg";
 import {finddoLogo} from "../../assets/svg/finddo-logo";
 import {Input, Button, Text, Layout, Icon, IconProps} from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
-import {useUser} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AuthStackParams} from "src/routes/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { signIn } from "stores/modules/user/actions";
+import { State } from "stores/index";
 
 type LoginScreenProps = StackScreenProps<AuthStackParams, "Login">;
 
-const Login = observer<LoginScreenProps>(props => {
-	const userStore = useUser();
-	const [isLoading, setIsLoading] = useState(false);
+const Login = (props:LoginScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const isLoading = useSelector<State, boolean>(state => state.application.isLoading);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [secureTextEntry, setSecureTextEntry] = useState(true);
@@ -35,23 +35,9 @@ const Login = observer<LoginScreenProps>(props => {
     </TouchableWithoutFeedback>
   );
 
-	const login = useCallback(async (): Promise<void> => {
-		setIsLoading(true);
-		try {
-			await userStore.signIn(email, password);
-		} catch (error) {
-			// console.log(error);
-			if (error.message === "Invalid credentials")
-				Alert.alert("Email ou senha incorretos");
-			else if (error.message === "Connection error")
-				Alert.alert("Falha ao conectar");
-			else if (error.message === "Account not validated")
-				Alert.alert("Sua conta ainda não foi validada.");
-			else throw error;
-		} finally {
-			setIsLoading(false);
-		}
-	}, [email, password, userStore]);
+	const login = (): void => {
+		dispatch(signIn(email,password));
+	};
 
 	return (
 		<Layout level="1" style={styles.container}>
@@ -104,13 +90,12 @@ const Login = observer<LoginScreenProps>(props => {
 			</ScrollView>
 		</Layout>
 	);
-});
+};
 
 export default Login;
 
 const styles = StyleSheet.create({
 	container: {flex: 1},
-	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 	finddoLogoStyle: {marginTop: 25, marginBottom: 120},
 	loginForm: {
 		flex: 1,

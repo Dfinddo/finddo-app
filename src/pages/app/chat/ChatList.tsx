@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable react-native/no-color-literals */
 import React, {useState, useEffect, useCallback} from "react";
 import {
 	Alert,
@@ -15,20 +13,27 @@ import {
 	Tab,
 	TabView,
 } from "@ui-kitten/components";
-import { useChatList } from "hooks";
-import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import { BACKEND_URL_STORAGE } from "@env";
+import { ChatListTypes, ChatList as IChatList } from "stores/modules/chats/types";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import finddoApi, { ConversationApiResponse } from "finddo-api";
+import { fetchChatList, updateChatList } from "stores/modules/chats/actions";
 
 type ChatListScreenProps = StackScreenProps<
 	AppDrawerParams,
 	"ChatList"
 >;
 
-const ChatList = observer<ChatListScreenProps>(props => {
-	const chatListStore = useChatList();
+const ChatList = ((props: ChatListScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const chatListStore = useSelector<State, ChatListTypes>(state => 
+		state.chats.chatLists
+	);
+
 	const [index, setIndex] = useState(0);
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +42,30 @@ const ChatList = observer<ChatListScreenProps>(props => {
 		setIsLoading(true);
 
 		try {
-			await chatListStore.fetchChats();
+			const response = await finddoApi.get(`/chats/list`, {
+        params: {
+          page: 1,
+        },
+			});
+
+			const responseAdm = await finddoApi.get(`/chats/list/admin`, {
+        params: {
+          page: 1,
+        },
+			});
+			
+			dispatch(fetchChatList({
+				default:{
+					list: response.data.list ?? [],
+					page: response.data.page ?? 1,
+					totalPages: response.data.total ?? 1,
+				},
+				admin:{
+					list: responseAdm.data.list ?? [],
+					page: responseAdm.data.page ?? 1,
+					totalPages: responseAdm.data.total ?? 1,
+				}
+			}));
 
 		} catch (error) {
 			if (error.response) {
@@ -51,18 +79,44 @@ const ChatList = observer<ChatListScreenProps>(props => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [chatListStore]);
+	}, [dispatch]);
 
 	useEffect(() => void getChats(), [getChats]);
 
 	const handleExpandList = useCallback(async()=>{
+		const isValid = index === 1 ? chatListStore.admin.page + 1 > chatListStore.admin.totalPages :
+		chatListStore.default.page + 1 > chatListStore.default.totalPages;
+		
+		if(isValid) {
+      return;
+		}
+		
 		try {
-			await chatListStore.updateChats();
+			const response = !index ? await finddoApi.get(`/chats/list`, {
+        params: {
+          page: chatListStore.default.page + 1,
+        },
+			}) : await finddoApi.get(`/chats/list/admin`, {
+        params: {
+          page: chatListStore.admin.page + 1,
+        },
+			});
+
+			const chats: ConversationApiResponse[] = response.data.list;
+
+			const selected = index === 1 ? chatListStore.admin.list :
+			 chatListStore.default.list;
+			
+			dispatch(updateChatList({
+				list: [...selected, ...chats],
+				page: response.data.page,
+				totalPages: response.data.total,
+			}, index === 1));
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
 		}
-	}, [chatListStore]);
+	}, [dispatch, chatListStore, index]);
 
 	function handleSubmit (data: {
 		id: number, 
@@ -75,19 +129,19 @@ const ChatList = observer<ChatListScreenProps>(props => {
 			receiver_id: data.another_user_id,
 			title: data.title, 
 			photo: data.photo, 
-			isAdminChat: chatListStore.isAdminChat,
+			isAdminChat: index === 1,
 		});
 	};
 
-	const getChatListView = (chatList: typeof chatListStore.list): JSX.Element => (
+	const getChatListView = (chatList: IChatList): JSX.Element => (
 		<List
 			scrollEnabled
 			ItemSeparatorComponent={Divider}
 			onEndReached={handleExpandList}
 			onEndReachedThreshold={0.2}
 			style={styles.listContainer}
-      data={chatList}
-			renderItem={({ item, index }: {item: typeof chatListStore.list[0], index: number}) => (<>
+      data={chatList.list}
+			renderItem={({ item, index }: {item: ConversationApiResponse, index: number}) => (<>
 				{ item &&
 						<ListItem
 							key={index}
@@ -128,10 +182,10 @@ const ChatList = observer<ChatListScreenProps>(props => {
 					selectedIndex={index}
 					onSelect={index => setIndex(index)}>
 					<Tab title='Serviços'>
-						{getChatListView(chatListStore.list)}
+						{chatListStore.default && getChatListView(chatListStore.default)}
 					</Tab>
 					<Tab title='Suporte'>
-						{getChatListView(chatListStore.listAdmConversation)}
+						{chatListStore.admin && getChatListView(chatListStore.admin)}
 					</Tab>
 				</TabView>
 			</Layout>
@@ -141,7 +195,6 @@ const ChatList = observer<ChatListScreenProps>(props => {
 export default ChatList;
 
 const styles = StyleSheet.create({
-	// backgroundImageContent: {width: "100%", height: "100%"},
 	listContainer: {
 		alignSelf: "center",
 		width:"90%",
@@ -160,11 +213,6 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: "700",
 	},
-	// description: {
-	// 	fontSize: 14,
-	// 	fontWeight: "300",
-	// 	color: "#d1c4c4",
-	// },
 	avatar: {
 		width: 56,
 		height: 56,

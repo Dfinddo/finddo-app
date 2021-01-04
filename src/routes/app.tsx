@@ -27,8 +27,11 @@ import {Profile} from "pages/app/profile";
 import {MyAddresses, ManageAddress} from "pages/app/addresses";
 import Chat from "pages/app/chat/Chat";
 import {Cards, AddCard} from "pages/app/payment-methods";
-import {useThemedHeaderConfig, useUser} from "hooks";
+import {useThemedHeaderConfig} from "hooks";
 import ChatList from "pages/app/chat/ChatList";
+import { useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
 
 const PaymentMethodsStack = createStackNavigator<PaymentMethodsStackParams>();
 const AddressStack = createStackNavigator<AddressStackParams>();
@@ -176,13 +179,13 @@ const ServicesRoute: FC = () => {
 };
 
 const AppRoute: FC = () => {
-	const userStore = useUser();
+	const userStore = useSelector<State, UserState>(state => state.user);
 
 	return (
 		<AppDrawer.Navigator
 			initialRouteName="Services"
 			drawerContent={
-				userStore.userType === "user"
+				userStore.user_type === "user"
 					? DrawerContentUser
 					: DrawerContentProfessional
 			}
@@ -251,7 +254,6 @@ const DrawerContentProfessional: FC<DrawerContentComponentProps> = ({
 	</Drawer>
 );
 
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 
 export type PaymentMethodsStackParams = {
@@ -283,6 +285,13 @@ export type ServicesStackParams = {
 	ServiceBudget: {id: number};
 	NewService: undefined | {screen: string};
 	ServiceClosure: {id: number};
+	Chat: {
+		order_id: number, 
+		receiver_id: number,
+		title: string, 
+		photo?: string | null,
+		isAdminChat: boolean,
+	};
 };
 
 export type AppDrawerParams = {
@@ -301,5 +310,3 @@ export type AppDrawerParams = {
 	ChatList: undefined;
 };
 
-/* eslint-enable @typescript-eslint/consistent-type-definitions */
-/* eslint-enable @typescript-eslint/naming-convention */

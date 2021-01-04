@@ -64,7 +64,6 @@ const AuthRoute = (): JSX.Element => {
 
 export default AuthRoute;
 
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 
 export type RegisterStackParams = {

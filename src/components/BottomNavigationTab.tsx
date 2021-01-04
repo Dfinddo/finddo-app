@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, {useCallback, FC} from "react";
 import {
 	BottomNavigation as BottomNavigationKitten,

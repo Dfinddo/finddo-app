@@ -1,15 +1,12 @@
-/* eslint-disable react-native/no-color-literals */
 import React, {useMemo, FC, useState, useEffect} from "react";
 import {View, RefreshControl, Alert, StyleSheet} from "react-native";
 import {Text, useTheme, Layout} from "@ui-kitten/components";
 import {SvgXml} from "react-native-svg";
 import TimeLine from "react-native-timeline-flatlist";
 
-import ServiceStore from "stores/service-store";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
-import UserStore from "stores/user-store";
-import {ServiceStatusEnum} from "finddo-api";
+import finddoApi, {ServiceStatusEnum} from "finddo-api";
 
 import PreviousBudgetView from "./PreviousBudgetView";
 import ReschedulingView from "./ReschedulingView";
@@ -17,6 +14,10 @@ import ReschedulingView from "./ReschedulingView";
 import {bolaCheia} from "../../assets/svg/bola-cheia";
 import {bolaApagada} from "../../assets/svg/bola-apagada";
 import ServiceAnalysisView from "./ServiceAnalysisView";
+import { UserState } from "stores/modules/user/types";
+import { Service } from "stores/modules/services/types";
+import { useDispatch } from "react-redux";
+import { updateService } from "stores/modules/services/actions";
 
 interface ITimeLineDataRender {
 	title: string;
@@ -26,8 +27,8 @@ interface ITimeLineDataRender {
 }
 
 interface TimeLineStatusProps {
-	userStore: UserStore;
-	serviceStore: ServiceStore;
+	userStore: UserState;
+	serviceStore: Service;
 	navigation: StackNavigationProp<ServicesStackParams, "ServiceStatus">;
 }
 
@@ -46,10 +47,11 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [status, setStatus] = useState<ServiceStatusEnum>(0);
+	const dispatch = useDispatch();
 	const theme = useTheme();
 
 	useEffect(() => {
-		setStatus(ServiceStatusEnum[serviceStore?.status || "analise"]);
+		setStatus(ServiceStatusEnum[serviceStore?.order_status || "analise"]);
 	}, [serviceStore]);
 
 	const data = useMemo(
@@ -102,7 +104,7 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 				icon: statusIcon(2, status),
 			},
 			{
-				title: "Profissional a caminho",
+				title: "Aguardando confirmação de chegada",
 				bodyVisible: status >= 4,
 				icon: statusIcon(4, status),
 			},
@@ -113,7 +115,9 @@ const TimeLineStatus: FC<TimeLineStatusProps> = ({
 	const loadingService = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			await serviceStore?.refreshServiceData();
+			const response = await finddoApi.get(`/orders/${serviceStore.id}`);
+
+			dispatch(updateService(response.data));
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");

@@ -1,11 +1,12 @@
-import React, {useState, useEffect} from "react";
+/* eslint-disable require-await */
+import React, {useState, useEffect, useCallback} from "react";
 import {
 	ScrollView,
 	KeyboardAvoidingView,
 	Platform,
 	StyleSheet,
 	View,
-	Dimensions,
+	Alert,
 } from "react-native";
 import {
 	Button,
@@ -15,54 +16,104 @@ import {
 	AutocompleteItem,
 	Icon,
 } from "@ui-kitten/components";
-import {useService, useAddressList, useSwitch, useUser} from "hooks";
-import {observer} from "mobx-react-lite";
-import AddressForm from "components/AddressForm";
+import {useSwitch} from "hooks";
+import AddressForm, { AddressFormData } from "components/AddressForm";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
-import AddressStore from "stores/address-store";
 import {TouchableWithoutFeedback} from "@ui-kitten/components/devsupport";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import { Service } from "stores/modules/services/types";
+import { Address, AdressesState } from "stores/modules/adresses/types";
+import finddoApi, { AddressApiResponse } from "finddo-api";
+import { setAdressesList } from "stores/modules/adresses/actions";
+import { updateNewService } from "stores/modules/services/actions";
 
 type ServiceAddressScreenProps = StackScreenProps<
 	NewServiceStackParams,
 	"ServiceAddress"
 >;
 
-const filter = (item: AddressStore, query: string): boolean =>
-	item.addressAlias.toLowerCase().includes(query.toLowerCase());
+const filter = (item: Address, query: string): boolean =>
+	item.name.toLowerCase().includes(query.toLowerCase());
 
-const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
-	const userStore = useUser();
-	const serviceStore = useService();
-	const addressStore = serviceStore.address;
-	const addressListStore = useAddressList();
+const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const userStore = useSelector<State, UserState>(state => state.user);
+	const newService = useSelector<State, Service>(state =>
+		state.services.newService
+	);
+	const addressListStore = useSelector<State, AdressesState>(state => state.adresses);
+
+	const [addressStore, setAddressStore] = useState<Address>({
+		id: "",
+		cep: "",
+		name: "",
+		state: "",
+		city: "",
+		district: "",
+		street: "",
+		number: "",
+		complement: "",
+	});
 
 	const [isLoading, setIsLoading] = useState(false);
-	const [data, setData] = React.useState<AddressStore[]>([]);
+	const [data, setData] = React.useState<Address[]>([]);
 	const [value, setValue] = useState<string | undefined>();
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 
-	useEffect(() => {
+	const getAdresses = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
+
 		try {
-			addressListStore.fetchAddresses(userStore).then(() => {
-				setData(addressListStore.list);
-			});
+			const response = await finddoApi.get(`/addresses/user/${userStore.id}`);
+			const adresses: AddressApiResponse[] = response.data;
+			
+			dispatch(setAdressesList(adresses));
+		} catch (error) {
+			if (error.response) {
+				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+			} else if (error.request) {
+				Alert.alert(
+					"Falha ao se conectar",
+					"Verifique sua conexão e tente novamente",
+				);
+			} else throw error;
+		} finally {
+			setIsLoading(false);
+		}
+	}, [dispatch, userStore]);
+
+	useEffect(() => void getAdresses(), [getAdresses]);
+
+	useEffect(()=>{
+		setData(addressListStore.list);
+	}, [addressListStore]);
+
+
+	const onSaveAttempt = useCallback(async (data: AddressFormData): Promise<void> => {
+		try {
+			setIsLoading(true);
+			if (data.hasErrors) return setFillAttemptAsFailed();
+
+			dispatch(updateNewService({
+				...newService,
+				address: data.address,
+			}));
+			props.navigation.navigate("ConfirmService");
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
+			Alert.alert("Erro ao tentar atualizar endereço, tente novamente");
+		} finally {
+			setIsLoading(false);
 		}
-		setIsLoading(false);
-	}, [addressListStore, userStore]);
-
-	const onSaveAttempt = (): void => {
-		if (addressStore.hasErrors) return setFillAttemptAsFailed();
-		props.navigation.navigate("ConfirmService");
-	};
+	}, [props.navigation, setFillAttemptAsFailed, dispatch, newService]);
 
 	const onSelect = (index: number): void => {
-		setValue(addressListStore.list[index].addressAlias);
+		setValue(addressListStore.list[index].name);
 	};
 
 	const onChangeText = (query: string): void => {
@@ -70,8 +121,8 @@ const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
 		setData(data.filter(item => filter(item, query)));
 	};
 
-	const renderOption = (item: AddressStore, index: number): JSX.Element => (
-		<AutocompleteItem key={index} title={item.addressAlias} />
+	const renderOption = (item: Address, index: number): JSX.Element => (
+		<AutocompleteItem key={index} title={item.name} />
 	);
 
 	const clearInput = (): void => {
@@ -85,13 +136,11 @@ const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
 		</TouchableWithoutFeedback>
 	);
 
-	const handleAutoCompleteForm = (): void => {
-		Object.assign(
-			addressStore,
-			data.find(item => item.addressAlias === value) || {},
-			{city: "Rio de Janeiro", state: "RJ"},
+	const handleAutoCompleteForm = useCallback((): void => {
+		setAddressStore(
+			addressListStore.list.find(item => item.name === value) || {} as Address
 		);
-	};
+	}, [addressListStore,value]);
 
 	return (
 		<Layout level="3">
@@ -112,7 +161,7 @@ const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
 							accessoryRight={renderCloseIcon}
 							style={styles.searchAddress}
 						>
-							{data.map(renderOption)}
+							{addressListStore.list.map(renderOption)}
 						</Autocomplete>
 						<Button
 							onPress={handleAutoCompleteForm}
@@ -125,8 +174,8 @@ const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
 					<AddressForm
 						addressStore={addressStore}
 						forceErrorDisplay={hasFailedToFillForm}
+						onSubmitForm={onSaveAttempt}
 					/>
-					<Button onPress={onSaveAttempt}>CONTINUAR</Button>
 				</KeyboardAvoidingView>
 			</ScrollView>
 		</Layout>
@@ -136,7 +185,6 @@ const ServiceAddress = observer<ServiceAddressScreenProps>(props => {
 export default ServiceAddress;
 
 const styles = StyleSheet.create({
-	// backgroundImageContent: {width: "100%", height: "100%"},
 	formWrapper: {
 		flex: 1,
 		alignItems: "center",
@@ -145,23 +193,23 @@ const styles = StyleSheet.create({
 	},
 	pickUpAddress: {
 		alignItems: "center",
+		alignSelf: "center",
 		justifyContent: "flex-start",
 		flexDirection: "row",
-		maxWidth: Math.round(Dimensions.get('window').width)*0.90,
+		width: "90%",
 		margin: 16,
 	},
 	searchAddress: {
+		flex: 1,
 		height: 26,
+		width: "100%",
 		borderBottomRightRadius: 0,
 		borderTopRightRadius: 0,
 	},
 	searchAddressButton: {
 		height: 24,
-		width: "25%",
-		alignSelf: "center",
-		marginTop: 12,
+		alignItems: "center",
 		borderBottomLeftRadius: 0,
 		borderTopLeftRadius: 0,
 	},
-	// modalStyle: {flex: 1, alignItems: "center", justifyContent: "center"},
 });

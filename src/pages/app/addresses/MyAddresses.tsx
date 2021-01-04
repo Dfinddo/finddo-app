@@ -1,36 +1,49 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {View, StyleSheet, Alert} from "react-native";
 import {Button, List, ListItem, Icon, Layout} from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
-import {useAddressList, useUser} from "hooks";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {AddressStackParams} from "src/routes/app";
 import {StackScreenProps} from "@react-navigation/stack";
-import AddressStore from "stores/address-store";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { AdressesState } from "stores/modules/adresses/types";
+import finddoApi, { AddressApiResponse } from "finddo-api";
+import { removeAddress, setAdressesList } from "stores/modules/adresses/actions";
 
 type MyAddressesScreenProps = StackScreenProps<
 	AddressStackParams,
 	"MyAddresses"
 >;
 
-const MyAddresses = observer<MyAddressesScreenProps>(({navigation}) => {
-	const [addressStore, setAddressStore] = useState<AddressStore | undefined>(
-		new AddressStore(),
-	);
+const MyAddresses = (({navigation}: MyAddressesScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const userStoreID = useSelector<State, string>(state => state.user.id);
+	const addressListStore = useSelector<State, AdressesState>(state => state.adresses);
 	const [isLoading, setIsLoading] = useState(false);
-	const addressListStore = useAddressList();
-	const userStore = useUser();
 
-	useEffect(() => {
+	const getAdresses = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
+
 		try {
-			addressListStore.fetchAddresses(userStore);
+			const response = await finddoApi.get(`/addresses/user/${userStoreID}`);
+			const adresses: AddressApiResponse[] = response.data;
+			
+			dispatch(setAdressesList(adresses));
 		} catch (error) {
-			// eslint-disable-next-line no-console
-			console.log({error});
+			if (error.response) {
+				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
+			} else if (error.request) {
+				Alert.alert(
+					"Falha ao se conectar",
+					"Verifique sua conexão e tente novamente",
+				);
+			} else throw error;
+		} finally {
+			setIsLoading(false);
 		}
-		setIsLoading(false);
-	}, [addressListStore, userStore]);
+	}, [dispatch, userStoreID]);
+
+	useEffect(() => void getAdresses(), [getAdresses]);
 
 	const handleDeleteAddress = useCallback(
 		(id: string): void => {
@@ -39,7 +52,16 @@ const MyAddresses = observer<MyAddressesScreenProps>(({navigation}) => {
 					{text: "Não"},
 					{
 						text: "Sim",
-						onPress: () => addressStore?.deleteAddressById(id),
+						onPress: async () => {
+							try {
+								await finddoApi.delete(`/addresses/${id}`);
+								dispatch(removeAddress(id));
+							} catch (error) {
+								if (error.response) throw new Error("Invalid address data");
+								else if (error.request) throw new Error("Connection error");
+								else throw error;
+							}
+						},
 					},
 				]);
 			} catch (error) {
@@ -50,7 +72,7 @@ const MyAddresses = observer<MyAddressesScreenProps>(({navigation}) => {
 				);
 			}
 		},
-		[addressStore],
+		[dispatch],
 	);
 
 	return (

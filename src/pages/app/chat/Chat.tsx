@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import React, { useCallback, useEffect } from "react";
-import {Alert, View} from "react-native";
+import React, { useEffect } from "react";
+import {View} from "react-native";
 import {
 	Button,
 	Input,
@@ -14,54 +13,64 @@ import {
 	TopNavigationAction,
 	Avatar,
 } from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
-import { useChat, useUser } from "hooks";
-import { Message } from "stores/chat-store";
 import { BACKEND_URL_STORAGE } from "@env";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import { Chat as IChat, Message } from "stores/modules/chats/types";
+import finddoApi from "finddo-api";
+import { fetchActiveChat, updateActiveChat } from "stores/modules/chats/actions";
+import { myFirebase } from "src/services/firebase";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Chat">;
 
-const Chat = observer<ProfileScreenProps>(props => {
-	const { order_id, receiver_id, title, photo=null } = props.route.params;
+const Chat = ((props: ProfileScreenProps): JSX.Element => {
+	const { order_id, isAdminChat, receiver_id, title, photo=null } = props.route.params;
 	const styles = useStyleSheet(themedStyles);
-	const chatStore = useChat();
-	const userStore = useUser();
+	const dispatch = useDispatch();
+	const chatStore = useSelector<State, IChat>(state => state.chats.activeChat);
+	const userStore = useSelector<State, UserState>(state => state.user);
 	const [loading, setIsLoading] = React.useState(false);
 	const [message, setMessage] = React.useState("");
 
-	const getChat = useCallback(async (): Promise<void> => {
-		setIsLoading(true);
-
-		try {
-			await chatStore.fetchChat(String(order_id), props.route.params.isAdminChat);
-		} catch (error) {
-			// eslint-disable-next-line no-console
-			console.log(error);
-			if (error.response) {
-				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
-			} else if (error.request) {
-				Alert.alert(
-					"Falha ao se conectar",
-					"Verifique sua conexão e tente novamente",
-				);
-			} else throw error;
-		} finally {
-			setIsLoading(false);
-		}
-	}, [chatStore, order_id, props.route.params.isAdminChat]);
-
-	useEffect(() => void getChat(), [getChat]);
+	useEffect(() => {
+		dispatch(fetchActiveChat({order_id: String(order_id), isAdminChat}));
+		myFirebase.database().ref(`/chats/${order_id}/${isAdminChat ? "admin" : "common"}`)
+		.limitToFirst(500)
+		.orderByKey()
+		.on('value', snapshot => {
+			if(snapshot.val()) dispatch(updateActiveChat({
+				messages: Object.keys(snapshot.val()).map(key => 
+					({...snapshot.val()[key]})).reverse() as Message[],
+				order_id: String(order_id),
+				isAdminChat,
+				isGlobalChat: order_id === 170,
+				page:1,
+				total:1,
+			}));
+		})
+	},[dispatch, order_id, isAdminChat]);
 
 	const onSendButtonPress = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			await chatStore.saveNewMessage({
-				order_id, 
-				receiver_id,
+			const response = !(order_id === 170) ? await finddoApi.post("/chats", {chat: {
+				order_id,
 				message,
-			}, userStore);
+				receiver_id: chatStore.isAdminChat ? 1 : receiver_id,
+				for_admin: chatStore.isAdminChat ? userStore.user_type : "normal",
+			}}) : 
+			await finddoApi.post("/chats/admin", {chat: {
+				message,
+				receiver_id: 1,
+			}});
+
+			await myFirebase.database().ref(
+				`/chats/${order_id}/${chatStore.isAdminChat ? "admin" : "common"}`
+				).push(response.data);
+				
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log(error);
@@ -71,19 +80,6 @@ const Chat = observer<ProfileScreenProps>(props => {
 			setMessage("");
 		}
 	};
-
-	const handleUpdateChat = useCallback(async ()=>{
-		setIsLoading(true);
-		try {
-			await chatStore.updateChat();
-		} catch (error) {
-			// eslint-disable-next-line no-console
-			console.log(error);
-		}
-		finally {
-			setIsLoading(false);
-		}
-	}, [chatStore]);
 
 	return (
 		<Layout style={styles.container}>
@@ -109,12 +105,11 @@ const Chat = observer<ProfileScreenProps>(props => {
 				)}
 			/>
 			<List
-				data={chatStore.chat}
-				onEndReached={handleUpdateChat}
+				data={chatStore.messages}
 				inverted
 				refreshing={loading}
 				onEndReachedThreshold={0.2}
-				renderItem={({item}) => <ChatMessage message={item} />}
+				renderItem={({item}) =>  <ChatMessage message={item} />}
 			/>
 			<Layout style={styles.messageInputContainer}>
 				<Input
@@ -145,20 +140,20 @@ interface ChatMessageProps {
 
 const ChatMessage = (props: ChatMessageProps): React.ReactElement => {
 	const styles = useStyleSheet(themedStyles);
-	const userStore = useUser();
+	const userStoreID = useSelector<State, string>(state => state.user.id);
 	const {message} = props;
 
 	return (
 		<View
 			style={[
-				Number(message.receiver_id) === Number(userStore.id) ? 
+				Number(message.receiver_id) === Number(userStoreID) ? 
 				styles.messageRowOut : styles.messageRowIn,
 				styles.messageRow,
 			]}
 		>
 			<View
 				style={[
-					Number(message.receiver_id) === Number(userStore.id)
+					Number(message.receiver_id) === Number(userStoreID)
 						? styles.messageContentOut
 						: styles.messageContentIn,
 					styles.messageContent,
@@ -194,7 +189,7 @@ const themedStyles = StyleService.create({
 	},
 	messageContentIn: {
 		alignSelf: "center",
-		backgroundColor: "color-info-500",
+		backgroundColor: "#666",
 	},
 	messageContentOut: {
 		backgroundColor: "color-primary-default",

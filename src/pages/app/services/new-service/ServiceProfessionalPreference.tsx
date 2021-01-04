@@ -1,7 +1,5 @@
-/* eslint-disable react-native/no-color-literals */
 import React, {useState, useEffect, useCallback} from "react";
 import {
-	ScrollView,
 	KeyboardAvoidingView,
 	Platform,
 	StyleSheet,
@@ -20,48 +18,83 @@ import {
 	Avatar,
 	Divider,
 } from "@ui-kitten/components";
-import { useProfessionalList, useService, useUser} from "hooks";
-import {observer} from "mobx-react-lite";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
 import {TouchableWithoutFeedback} from "@ui-kitten/components/devsupport";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { ProfessionalsState } from "stores/modules/professionals/types";
+import finddoApi, { UserApiResponse } from "finddo-api";
+import { setProfessionalList } from "stores/modules/professionals/actions";
+import { UserState } from "stores/modules/user/types";
+import { BACKEND_URL_STORAGE } from "@env";
+import { updateNewService } from "stores/modules/services/actions";
+import { Service } from "stores/modules/services/types";
 
 type ServiceProfessionalPreferenceScreenProps = StackScreenProps<
 	NewServiceStackParams,
 	"ServiceProfessionalPreference"
 >;
 
-const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScreenProps>(props => {
-	const userStore = useUser();
-	const serviceStore = useService();
-	const professionalListStore = useProfessionalList();
+const ServiceProfessionalPreference = ((props: ServiceProfessionalPreferenceScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const newService = useSelector<State, Service>(state => 
+		state.services.newService
+	);
+	const professionalListStore = useSelector<State, ProfessionalsState>(state => 
+		state.professionals
+	);
 
 	const [isLoading, setIsLoading] = useState(false);
-	const [selected, setSelected] = useState("");
+	const [selected, setSelected] = useState<string>("");
 	const [value, setValue] = useState("");
 
-	useEffect(() => {
+	const fetchProfessionals = useCallback(async (name: string, page = 1): Promise<void> => {
 		setIsLoading(true);
+
 		try {
-			professionalListStore.fetchProfessionals(value, 1);
+			const response = await finddoApi.post(`/users/find_by_name`, {
+				user: {name},
+				page,
+			});
+
+			const list: UserState[] = response.data.items.map(
+				(item:{data:{attributes: UserApiResponse}})=>Object.assign(item.data.attributes, 
+					{ profilePicture: item.data.attributes.photo ? {
+					uri: `${BACKEND_URL_STORAGE}${item.data.attributes.photo}`,
+				}: require("../../../../assets/sem-foto.png")})
+			);
+
+			dispatch(setProfessionalList({
+				list: page === 1 ? list : professionalListStore.list.concat(list),
+				current_page: page,
+				total_pages: response.data.total_pages,
+			}));
 		} catch (error) {
 			// eslint-disable-next-line no-console
-			console.log({error});
+			console.log(error)
+			if (error.response) throw new Error("Invalid name data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}finally{
+			setIsLoading(false);
 		}
-		setIsLoading(false);
-	}, [professionalListStore, userStore, value]);
+	}, [dispatch, professionalListStore]);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	useEffect(() => void fetchProfessionals(value, 1), [value]);
 
 	const handleExpandList = useCallback(()=>{
 		try {
 			if(professionalListStore.current_page){
-				professionalListStore.fetchProfessionals(value, professionalListStore.current_page + 1);
+				fetchProfessionals(value, professionalListStore.current_page + 1);
 			}
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
 		}
-	}, [professionalListStore, value]);
+	}, [professionalListStore, fetchProfessionals, value]);
 
 	const onChangeText = (query: string): void => {
 		setValue(query);
@@ -84,13 +117,16 @@ const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScre
 			return;
 		}
 
-		serviceStore.filtered_professional = selected;
+		dispatch(updateNewService({
+			...newService, 
+			filtered_professional: selected
+		}))
 		props.navigation.navigate("ServiceCategories");
 	}
 
 	return (
 		<Layout level="3">
-			<ScrollView>
+			<View style={styles.container}>
 				<TaskAwaitIndicator isAwaiting={isLoading} />
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : void 0}
@@ -131,7 +167,7 @@ const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScre
     		/>
 		
 				<Button style={styles.button} onPress={handleSubmit}>CONTINUAR</Button>
-			</ScrollView>
+			</View>
 		</Layout>
 	);
 });
@@ -139,7 +175,7 @@ const ServiceProfessionalPreference = observer<ServiceProfessionalPreferenceScre
 export default ServiceProfessionalPreference;
 
 const styles = StyleSheet.create({
-	// backgroundImageContent: {width: "100%", height: "100%"},
+	container: {width: "100%", height: "100%"},
 	formWrapper: {
 		flex: 1,
 		height: "100%",
@@ -194,5 +230,6 @@ const styles = StyleSheet.create({
 		width: "90%", 
 		borderRadius: 8,
 		alignSelf: "center",
+		margin: 16,
 	},
 });

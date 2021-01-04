@@ -1,6 +1,5 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useCallback} from "react";
 import {Pressable, View, Alert, StyleSheet, Modal} from "react-native";
-import {useUser} from "hooks";
 import {
 	Button,
 	Layout,
@@ -10,44 +9,80 @@ import {
 	Icon,
 	Text,
 } from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
 import DataPieceDisplay from "components/DataPieceDisplay";
 import {StackScreenProps} from "@react-navigation/stack";
 import {AppDrawerParams} from "src/routes/app";
 import ImagePicker from "react-native-image-crop-picker";
 import ValidatedInput from "components/ValidatedInput";
-import UserStore from "stores/user-store";
 import {phoneFormatter, cpfFormatter, numericFormattingFilter} from "utils";
 import ValidatedMaskedInput from "components/ValidatedMaskedInput";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import OneSignal from "react-native-onesignal";
+import finddoApi from "finddo-api";
+import { signOut, updateProfilePhoto } from "stores/modules/user/actions";
+import { BACKEND_URL_STORAGE } from "@env";
 
 type ProfileScreenProps = StackScreenProps<AppDrawerParams, "Profile">;
 
-const Profile = observer<ProfileScreenProps>(props => {
-	const userStore = useUser();
+const Profile = ((props: ProfileScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const userStore = useSelector<State, UserState>(state => state.user);
 	const [isEditing, setIsEditing] = useState(false);
-	const [fieldToEdit, setFieldToEdit] = useState<keyof UserStore>("email");
+	const [fieldToEdit, setFieldToEdit] = useState<keyof UserState>("email");
 
-	useEffect(() => {
-		userStore.getProfilePicture();
-	}, [userStore]);
-
-	const editProfile = (field: keyof UserStore) => () => {
+	const editProfile = (field: keyof UserState) => () => {
 		setFieldToEdit(field);
 		setIsEditing(true);
 	};
 
-	const logout = useCallback((): void => {
+	const updateProfileImage = useCallback(async (image: {data: string}) => {
+		try {
+			const response = await finddoApi.put(
+				`/users/profile_photo/${userStore.id}`,
+				{
+					profile_photo: {
+						base64: image.data,
+						file_name: `profile-${userStore.id}`,
+					},
+				},
+			);
+
+			dispatch(updateProfilePhoto({
+				uri: `${BACKEND_URL_STORAGE}${response.data.photo}`,
+			}));
+		} catch (error) {
+			if (error.response) throw new Error("Invalid user data");
+			else if (error.request) throw new Error("Connection error");
+			else throw error;
+		}
+	}, [dispatch, userStore.id]);
+
+	const handleLogout = useCallback((): void => {
 		Alert.alert("Finddo", "Deseja sair?", [
 			{text: "Não"},
 			{
 				text: "Sim",
-				onPress: () => {
+				onPress: async () => {
 					props.navigation.navigate("Services");
-					userStore.signOut();
+					await AsyncStorage.multiRemove(["user", "access-token"]);
+
+					OneSignal.getPermissionSubscriptionState(
+						(status: {userId: string}) => 
+							finddoApi.delete(
+							`users/remove_player_id_notifications/${userStore.id}/${status.userId}`
+							).then(() => delete finddoApi.defaults.headers.Authorization)
+					);
+
+					OneSignal.removeExternalUserId();
+
+					dispatch(signOut());
 				},
 			},
 		]);
-	}, [userStore, props]);
+	}, [userStore, props, dispatch]);
 
 	const changeProfilePicture = useCallback((): void => {
 		Alert.alert(
@@ -59,19 +94,19 @@ const Profile = observer<ProfileScreenProps>(props => {
 					text: "Tirar uma nova foto",
 					onPress: () =>
 						ImagePicker.openCamera({includeBase64: true}).then(image => {
-							userStore.setProfilePicture(image as {data: string});
+							updateProfileImage(image as {data: string});
 						}),
 				},
 				{
 					text: "Adicionar foto da galeria",
 					onPress: () =>
 						ImagePicker.openPicker({includeBase64: true}).then(image => {
-							userStore.setProfilePicture(image as {data: string});
+							updateProfileImage(image as {data: string});
 						}),
 				},
 			],
 		);
-	}, [userStore]);
+	}, [updateProfileImage]);
 
 	return (
 		<Layout level="1" style={styles.container}>
@@ -97,7 +132,7 @@ const Profile = observer<ProfileScreenProps>(props => {
 				/>
 				<DataPieceDisplay hint="CPF" value={cpfFormatter(userStore.cpf)} />
 			</View>
-			<Button onPress={logout}>SAIR</Button>
+			<Button onPress={handleLogout}>SAIR</Button>
 		</Layout>
 	);
 });
@@ -106,11 +141,11 @@ export default Profile;
 
 interface ProfileEditModalProps {
 	visible: boolean;
-	field: keyof UserStore;
+	field: keyof UserState;
 	onClose: () => void;
 }
 
-const ProfileEditModal = observer<ProfileEditModalProps>(props => {
+const ProfileEditModal = ((props: ProfileEditModalProps): JSX.Element => {
 	const [input, setInput] = useState("");
 
 	const closeModal = (): void => {

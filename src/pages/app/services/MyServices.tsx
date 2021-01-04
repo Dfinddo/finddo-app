@@ -1,6 +1,5 @@
-/* eslint-disable react-native/no-color-literals */
 /* eslint-disable no-nested-ternary */
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useCallback, useMemo} from "react";
 import {View, RefreshControl, Alert, StyleSheet} from "react-native";
 import {
 	Button,
@@ -17,19 +16,21 @@ import {
 	Modal,
 	Card,
 } from "@ui-kitten/components";
-import {useUser, useServiceList} from "hooks";
-import {observer} from "mobx-react-lite";
-import {
+import finddoApi, {
 	serviceStatusDescription,
 	ServiceStatus,
 	serviceCategories,
 	UserApiResponse,
 } from "finddo-api";
-import ServiceStore from "stores/service-store";
 import {StackScreenProps} from "@react-navigation/stack";
 import {ServicesStackParams} from "src/routes/app";
 import Tutorial from "components/Tutorial";
 import ValidatedSelect from "components/ValidatedSelect";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import { Service, ServiceList } from "stores/modules/services/types";
+import { setServices } from "stores/modules/services/actions";
 
 const serviceStatus = [
 	"",
@@ -46,22 +47,34 @@ type MyServicesScreenProps = StackScreenProps<
 	"MyServices"
 >;
 
-const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
+const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 	const [visible, setVisible] = React.useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
-	const serviceListStore = useServiceList();
-	const userStore = useUser();
+	const [status, setStatus] = useState<"" | ServiceStatus>("");
+	const dispatch = useDispatch();
+	const serviceListStore = useSelector<State, ServiceList>(state => state.services.list);
+	const userStore = useSelector<State, UserState>(state => state.user);
 	const theme = useTheme();
+
+	const url = useMemo<string>(()=>{
+		if (userStore.user_type === "user") return `/orders/user/active`;
+		
+		return selectedIndex === 0 ? "/orders/available" : `orders/active_orders_professional`;
+	}, [userStore, selectedIndex]);
 
 	const getServices = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
-
 		try {
-			await serviceListStore.fetchServices(
-				userStore,
-				userStore.userType === "professional" && selectedIndex === 1,
-			);
+			const response = await finddoApi.get(`${url}/?page=1`);
+			
+			const {items, total_pages: total} = response.data;
+
+			dispatch(setServices({
+				items,
+				page: 1,
+				total,
+			}));
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -74,15 +87,30 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [userStore, serviceListStore, selectedIndex]);
+	}, [url, dispatch]);
 
 	useEffect(() => void getServices(), [getServices]);
 
 	const handleExpandList = useCallback(async (): Promise<void> => {
+		if(serviceListStore.page + 1 > serviceListStore.total) return;
+
 		setIsLoading(true);
 
 		try {
-			await serviceListStore.expandServiceList();
+			const params =
+				status !== ""
+					? {page: serviceListStore.page, order_status: status}
+					: {page: serviceListStore.page};
+
+			const response = await finddoApi.get(url, {params});
+
+			const {items, total_pages} = response.data;
+
+			dispatch(setServices({
+				items: [...serviceListStore.items, ...items],
+				page: serviceListStore.page + 1,
+				total: total_pages,
+			}))
 		} catch (error) {
 			if (error.response) {
 				Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -95,14 +123,26 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [serviceListStore]);
+	}, [serviceListStore, dispatch, status, url]);
 
 	const handleChangeFilter = useCallback(
 		async (status: "" | ServiceStatus) => {
 			setIsLoading(true);
 
 			try {
-				await serviceListStore.setStatusFilter(status);
+				setStatus(status);
+
+				const params =
+				status !== "" ? {page: 1, order_status: status} : {page: 1};
+
+				const response = await finddoApi.get(url, {params});
+				const {items, total_pages} = response.data;
+
+				dispatch(setServices({
+					items,
+					page: 1,
+					total: total_pages,
+				}));
 			} catch (error) {
 				if (error.response) {
 					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -116,12 +156,12 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 				setIsLoading(false);
 			}
 		},
-		[serviceListStore],
+		[dispatch, url],
 	);
 
 	function handleServiceDetails(id: number, professional: UserApiResponse | null ): void {
 		if (
-			userStore.userType === "professional" &&
+			userStore.user_type === "professional" &&
 			!professional
 		) {
 			navigation.navigate("ViewService", {
@@ -137,7 +177,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 	return (
 		<Layout level="2" style={styles.container}>
 			<Tutorial />
-			{userStore.userType === "professional" && (
+			{userStore.user_type === "professional" && (
 				<TabBar
 					style={styles.tab}
 					selectedIndex={selectedIndex}
@@ -147,12 +187,12 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 					<Tab title="Meus serviços" />
 				</TabBar>
 			)}
-			{!(userStore.userType === "professional" && selectedIndex !== 1) ? (
+			{!(userStore.user_type === "professional" && selectedIndex !== 1) ? (
 				<View style={styles.optionsContainer}>
 					<ValidatedSelect
 						style={styles.select}
 						label="Filtrar por status"
-						value={serviceStatusDescription[serviceListStore.status]}
+						value={serviceStatusDescription[status]}
 						onSelect={index => handleChangeFilter(serviceStatus[index])}
 					>
 						{serviceStatus.map((status, i) => (
@@ -168,7 +208,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 			<View style={styles.listWrapper}>
 				{
 					<List
-						data={serviceListStore.list}
+						data={serviceListStore.items}
 						ItemSeparatorComponent={Divider}
 						onEndReached={handleExpandList}
 						onEndReachedThreshold={0.2}
@@ -194,23 +234,23 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 							</View>}
 							</>
 						}
-						renderItem={({item}: {item: ServiceStore}) => (
+						renderItem={({item}: {item: Service}) => (
 							<ListItem
 								onPress={()=>handleServiceDetails(item.id!, item.professional_order)}
 								title={_evaProps => (
 									<Text
 										status={
-											item.status === "analise"
+											item.order_status === "analise"
 												? "basic"
-												: item.status === "cancelado"
+												: item.order_status === "cancelado"
 												? "danger"
 												: "primary"
 										}
 									>
-										{serviceCategories[item.categoryID!].name}
+										{serviceCategories[item.category.id!].name}
 									</Text>
 								)}
-								description={serviceStatusDescription[item.status]}
+								description={serviceStatusDescription[item.order_status]}
 								accessoryRight={props => (
 									<Icon
 										{...props}
@@ -235,7 +275,7 @@ const MyServices = observer<MyServicesScreenProps>(({navigation}) => {
 					/>
 				}
 
-				{userStore.userType === "user" && (
+				{userStore.user_type === "user" && (
 					<Button
 						style={styles.button}
 						onPress={() => setVisible(true)}

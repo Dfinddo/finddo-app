@@ -1,43 +1,45 @@
 /* eslint-disable no-nested-ternary */
-/* eslint-disable react-native/no-color-literals */
-import React, {useEffect, useState, useCallback} from "react";
-import {Alert, StyleSheet, ImageBackground} from "react-native";
+import React, {useState, useCallback, useEffect} from "react";
+import {Alert, StyleSheet, ImageBackground, View} from "react-native";
 import {Button, Text} from "@ui-kitten/components";
-import {observer} from "mobx-react-lite";
 import {StackScreenProps} from "@react-navigation/stack";
-
-import {useServiceList, useUser} from "hooks";
 import {ServicesStackParams} from "src/routes/app";
-import ServiceStore from "stores/service-store";
-// import {ServiceStatusEnum} from "finddo-api";
-
 import {ScrollView} from "react-native-gesture-handler";
 import TimeLineStatus from "components/TimeLineStatus";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
-import {ServiceStatusEnum} from "finddo-api";
-import ChatStore from "stores/chat-store";
+import finddoApi, {ConversationApiResponse, ServiceStatusEnum} from "finddo-api";
+import { sendAutomaticMessage, sendAutomaticMessageAdm } from "src/utils/automaticMessage";
+import { useDispatch, useSelector } from "react-redux";
+import { State } from "stores/index";
+import { UserState } from "stores/modules/user/types";
+import { Service, ServiceList } from "stores/modules/services/types";
+import { updateService } from "stores/modules/services/actions";
 
 type ServiceStatusScreenProps = StackScreenProps<
 	ServicesStackParams,
 	"ServiceStatus"
 >;
 
-const ServiceStatus = observer<ServiceStatusScreenProps>(
-	({route, navigation}) => {
-		const [serviceStore, setServiceStore] = useState<
-			ServiceStore | undefined
-		>();
+const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Element => {
+		const [serviceStore, setServiceStore] = useState<Service | undefined>();
 		const [isLoading, setIsLoading] = useState(false);
+		const {id} = route.params;
 
-		const serviceListStore = useServiceList();
-		const userStore = useUser();
+		const dispatch = useDispatch();
+		const servicesListStore = useSelector<State, ServiceList>(state => state.services.list);
+		const userStore = useSelector<State, UserState>(state => state.user);
 
 		useEffect(() => {
-			if (route.params?.id)
-				setServiceStore(
-					serviceListStore.list.find(({id}) => route.params.id === id),
-				);
-		}, [route.params?.id, serviceListStore.list]);
+			if(id) {
+				const selected = servicesListStore.items.find(item => item.id === id);
+
+				if(selected?.order_status === "em_servico") navigation.navigate("ServiceClosure",{
+					id,
+				})
+
+				setServiceStore(servicesListStore.items.find(item => item.id === id))
+			}
+		}, [id, servicesListStore, navigation]);
 
 		// const handleDisassociateProfessional = useCallback(async () => {
 		// 	setIsLoading(true);
@@ -75,7 +77,36 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 		// 	}
 		// }, [serviceStore, userStore, navigation]);
 
+		const handleProfessionalDontAttend = useCallback(async () => {
+			if(!serviceStore) return;
+			
+			setIsLoading(true);
+
+			try {
+				if(!serviceStore || !serviceStore.id) throw new Error("É preciso existir um serviço");
+
+				await sendAutomaticMessage({
+					user: userStore,
+					order: serviceStore,
+					reason: "not_attend",
+				}, true);
+
+				navigation.navigate("Chat", {
+					order_id: serviceStore.id,
+					receiver_id: 1,
+					isAdminChat: true,
+					title: `${serviceStore.category.name  } - Suporte`,
+				});
+			} catch (error) {
+				throw new Error("Houve um erro ao tentar cancelar o pedido");
+			} finally {
+				setIsLoading(false);
+			}	
+		}, [navigation, serviceStore, userStore]);
+
 		const handleCancelOrder = useCallback(async () => {
+			if(!serviceStore) return;
+			
 			setIsLoading(true);
 
 			try {
@@ -86,17 +117,22 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 							setIsLoading(true);
 							
 							try {			
-								if(!serviceStore) throw new Error("É preciso existir um serviço");
+								if(!serviceStore || !serviceStore.id) throw new Error("É preciso existir um serviço");
 
-								await ChatStore.sendAutomaticMessageAdm({
+								await sendAutomaticMessage({
 									user: userStore,
 									order: serviceStore,
 									reason: "cancel",
-								});
+								}, true);
 								// serviceStore?.cancelOrder().then(() => {
 								// 	navigation.goBack();
 								// })
-								Alert.alert("Foi enviado uma mensagem automática para o suporte. Clique no chat para acompanhar o processo.")
+								navigation.navigate("Chat", {
+									order_id: serviceStore.id,
+									receiver_id: 1,
+									isAdminChat: true,
+									title: `${serviceStore.category.name  } - Suporte`,
+								});
 							} catch (error) {
 								throw new Error("Houve um erro ao tentar cancelar o pedido");
 							} finally {
@@ -107,7 +143,9 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 					{text: "Não"},
 				]);
 
-				await serviceStore?.refreshServiceData();
+				const response = await finddoApi.get(`/orders/${serviceStore.id}`);
+
+				dispatch(updateService(response.data));
 			} catch (error) {
 				if (error.response) {
 					Alert.alert("Erro", "Verifique sua conexão e tente novamente");
@@ -120,7 +158,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 			} finally {
 				setIsLoading(false);
 			}
-		}, [serviceStore, userStore]);
+		}, [serviceStore, userStore, dispatch, navigation]);
 
 		const handleServiceClosure = useCallback(() => {
 			if (serviceStore)
@@ -129,7 +167,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				});
 		}, [serviceStore, navigation]);
 
-		if (serviceStore === void 0) return null;
+		if (serviceStore === void 0) return <View></View>;
 
 		return (
 			<ImageBackground
@@ -143,27 +181,28 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 						serviceStore={serviceStore}
 						navigation={navigation}
 					/>
-					{userStore.userType === "user" &&
-						(serviceStore.status === "a_caminho" ||
-							serviceStore.status === "em_servico") && (
+					{userStore.user_type === "user" &&
+						// (serviceStore.order_status === "a_caminho" ||
+						// 	serviceStore.order_status === "em_servico") && 
+						(
 							<>
 								<Button
 									style={styles.timeLineButton}
 									onPress={handleServiceClosure}
 								>
-									O profissional já realizou o serviço
+									Profissional chegou a residência
 								</Button>
 								<Text
 									status="danger"
 									style={styles.textOptionsService}
-									onPress={handleCancelOrder}
+									onPress={handleProfessionalDontAttend}
 								>
-									O profissional não compareceu ainda na residência
+									O profissional ainda não compareceu na residência
 								</Text>
 							</>
 						)}
-					{userStore.userType === "user" &&
-						ServiceStatusEnum[serviceStore?.status] < 5 && (
+					{userStore.user_type === "user" &&
+						ServiceStatusEnum[serviceStore?.order_status] < 5 && (
 							<Text
 								status="danger"
 								style={styles.textOptionsService}
@@ -172,14 +211,14 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 								CANCELAR PEDIDO
 							</Text>
 						)}
-					{userStore.userType === "professional" &&
-					ServiceStatusEnum[serviceStore?.status] === 4 ? (
+					{userStore.user_type === "professional" &&
+					ServiceStatusEnum[serviceStore?.order_status] === 4 ? (
 						<Text style={styles.textOptionsService}>
-							Aguardando confirmação do cliente ao local
+							Aguardando cliente confirmar realização do serviço
 						</Text>
-					) : ServiceStatusEnum[serviceStore?.status] === 5 ? (
+					) : ServiceStatusEnum[serviceStore?.order_status] === 5 ? (
 						<Text style={styles.textOptionsService}>
-							Aguardando confirmação do cliente ao local
+							Aguardando cliente confirmar realização do serviço
 						</Text>
 					) : null}
 
@@ -197,8 +236,7 @@ const ServiceStatus = observer<ServiceStatusScreenProps>(
 				</ScrollView>
 			</ImageBackground>
 		);
-	},
-);
+	};
 
 export default ServiceStatus;
 
@@ -210,20 +248,6 @@ const styles = StyleSheet.create({
 	scrollViewContent: {
 		width: "100%",
 		height: "100%",
-	},
-	timeLineContainer: {
-		flex: 1,
-		width: "100%",
-		padding: "5%",
-	},
-	timeLineView: {width: "80%", marginTop: "-4%"},
-	timeLineTitle: {fontSize: 18, color: "grey"},
-	timeLineLayout: {
-		minHeight: 48,
-		borderRadius: 8,
-		padding: "2%",
-		borderColor: "grey",
-		borderWidth: 1,
 	},
 	timeLineButton: {
 		width: "90%",
@@ -237,7 +261,7 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		alignSelf: "center",
 		textDecorationLine: "underline",
-		fontSize: 14,
+		fontSize: 12,
 		marginBottom: 24,
 	},
 });

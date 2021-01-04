@@ -1,11 +1,15 @@
+/* eslint-disable require-await */
 import React from "react";
 import {StyleSheet} from "react-native";
-import {Button, Layout} from "@ui-kitten/components";
-import {useService, useSwitch} from "hooks";
-import {observer} from "mobx-react-lite";
+import {Layout} from "@ui-kitten/components";
+import {useSwitch} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import {NewServiceStackParams} from "src/routes/app";
-import DataForm from "components/DataForm";
+import DataForm, { DataFormOnSubmitProps } from "components/DataForm";
+import { useDispatch, useSelector } from "react-redux";
+import { Service } from "stores/modules/services/types";
+import { State } from "stores/index";
+import { updateNewService } from "stores/modules/services/actions";
 
 type ServiceDateScreenProps = StackScreenProps<
 	NewServiceStackParams,
@@ -14,11 +18,19 @@ type ServiceDateScreenProps = StackScreenProps<
 
 // const screenWidth = Math.round(Dimensions.get("window").width);
 
-const ServiceDate = observer<ServiceDateScreenProps>(props => {
-	const serviceStore = useService();
+const ServiceDate = ((props: ServiceDateScreenProps): JSX.Element => {
+	const dispatch = useDispatch();
+	const serviceStore = useSelector<State, Service>(state =>
+		state.services.newService
+	);
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
-	const onAdvanceAttempt = (): void => {
-		if (!(serviceStore.startTime && serviceStore.endTime))
+
+	const onAdvanceAttempt = async (data: DataFormOnSubmitProps): Promise<void> => {
+		dispatch(updateNewService({
+			...serviceStore,
+			...data,
+		}));
+		if (!(serviceStore.hora_inicio && serviceStore.hora_fim))
 			setFillAttemptAsFailed();
 		else props.navigation.navigate("ServicePhotos");
 	};
@@ -28,9 +40,8 @@ const ServiceDate = observer<ServiceDateScreenProps>(props => {
 			<DataForm
 				serviceStore={serviceStore}
 				forceErrorDisplay={hasFailedToFillForm}
+				onSubmit={onAdvanceAttempt}
 			/>
-
-			<Button onPress={onAdvanceAttempt}>CONTINUAR</Button>
 		</Layout>
 	);
 });
@@ -41,18 +52,6 @@ const styles = StyleSheet.create({
 	container: {
 		width: "100%",
 		height: "100%",
-		paddingVertical: 24,
-		alignItems: "center",
-	},
-	modalDialogContainer: {
-		flex: 1,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	modalDialogContent: {
-		width: 340,
-		borderRadius: 18,
-		opacity: 1,
 		alignItems: "center",
 	},
 });
