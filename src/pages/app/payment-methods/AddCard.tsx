@@ -48,7 +48,7 @@ const taxDocumentTests = [
 const phoneTests = [validations.required(), validations.definedLength(11)];
 
 
-const AddCard = ((props: CardsScreenProps): JSX.Element => {
+const AddCard = (({navigation}: CardsScreenProps): JSX.Element => {
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -125,7 +125,7 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 				taxDocumentError) return setFillAttemptAsFailed();
 
 			await saveCard();
-			props.navigation.navigate("Cards");
+			navigation.navigate("Cards");
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
@@ -134,7 +134,7 @@ const AddCard = ((props: CardsScreenProps): JSX.Element => {
 			setIsLoading(false);
 		}
 	}, [
-		props, 
+		navigation, 
 		setFillAttemptAsFailed, 
 		saveCard,
 		cvcError,

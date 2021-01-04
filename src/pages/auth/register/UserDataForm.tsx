@@ -74,7 +74,13 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 		setIsLoading(true);
 
 		try {
-			await isRegistered({email, cellphone, cpf});
+			const isInvalid = await isRegistered({email, cellphone, cpf});
+
+			if(isInvalid) {
+				Alert.alert("Finddo", "Erro nos dados, verificar se são válidos.");
+				
+				return;
+			}
 
 			dispatch(updateUser({
 				...userStore,

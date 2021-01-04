@@ -54,7 +54,6 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 	const [serviceStore, setServiceStore] = useState<
 		Service | undefined
 	>();
-	const [isLoading, setIsLoading] = useState(false);
 	const [rate, setRate] = useState(0);
 
 	const [isBudgetDetails, setIsBudgetDetails] = useState(false);
@@ -93,7 +92,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 				source={require("assets/Ellipse.png")}
 			>
 				<ScrollView style={styles.scrollViewContent}>
-					<TaskAwaitIndicator isAwaiting={isLoading} />
+					{/* <TaskAwaitIndicator isAwaiting={isLoading} /> */}
 					<Card style={styles.card}>
 						<Text style={styles.title}>
 							{serviceCategories[serviceStore.category.id].name}
@@ -162,6 +161,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 							</Text>
 						</Card>
 					</View>
+					<Button style={styles.button}>Realizar pagamento</Button>
 					<Button style={styles.button}>Encerrar serviço</Button>
 				</ScrollView>
 				{serviceStore.budget && (
@@ -212,7 +212,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 										)}
 									</Text>
 								</Text>
-									</View>
+							</View>
 							<Button onPress={() => setIsBudgetDetails(false)}>
 								OK
 							</Button>
