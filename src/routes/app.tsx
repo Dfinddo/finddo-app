@@ -26,7 +26,7 @@ import {Help} from "pages/app";
 import {Profile} from "pages/app/profile";
 import {MyAddresses, ManageAddress} from "pages/app/addresses";
 import Chat from "pages/app/chat/Chat";
-import {Cards, AddCard} from "pages/app/payment-methods";
+import {Cards, NewCardPayment} from "pages/app/payment-methods";
 import {useThemedHeaderConfig} from "hooks";
 import ChatList from "pages/app/chat/ChatList";
 import { useSelector } from "react-redux";
@@ -53,8 +53,8 @@ const PaymentMethodsRoute: FC = () => {
 				options={{title: "Métodos de Pagamento"}}
 			/>
 			<PaymentMethodsStack.Screen
-				name="AddCard"
-				component={AddCard}
+				name="NewCardPayment"
+				component={NewCardPayment}
 				options={{title: "Adicionar Cartão"}}
 			/>
 		</PaymentMethodsStack.Navigator>
@@ -258,7 +258,7 @@ const DrawerContentProfessional: FC<DrawerContentComponentProps> = ({
 
 export type PaymentMethodsStackParams = {
 	Cards: undefined;
-	AddCard: undefined;
+	NewCardPayment: {order_id: string};
 };
 
 export type AddressStackParams = {

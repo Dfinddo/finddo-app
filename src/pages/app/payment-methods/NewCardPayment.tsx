@@ -27,7 +27,7 @@ import {localeDateService} from "src/utils/calendarLocale";
 import { doingPaymentMoip } from "src/services/moip";
 import { format } from "date-fns";
 
-type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "AddCard">;
+type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "NewCardPayment">;
 
 const numberTests = [
 	validations.required(),
@@ -48,7 +48,9 @@ const taxDocumentTests = [
 const phoneTests = [validations.required(), validations.definedLength(11)];
 
 
-const AddCard = (({navigation}: CardsScreenProps): JSX.Element => {
+const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => {
+	const {order_id} = route.params;
+
 	const [hasFailedToFillForm, setFillAttemptAsFailed] = useSwitch(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -84,34 +86,20 @@ const AddCard = (({navigation}: CardsScreenProps): JSX.Element => {
 
 	// eslint-disable-next-line require-await
 	const saveCard = useCallback(async (): Promise<void> => {
+
 		try {
 			doingPaymentMoip({
+				order_id,
 				cvc,
 				expirationDate,
 				number,
-				holder: {
-					fullname: holderName,
-					birthdate: format(
-						holderBirthdate,
-						"yyyy-MM-dd",
-					),
-					taxDocument: {
-						type: "CPF",
-						number: taxDocument,
-					},
-					phone: {
-						countryCode: "55",
-						areaCode: phone.substr(0, 2),
-						number: phone.substr(2, 9),
-					},
-				}
 			})
 		} catch (error) {
 			if (error.response) throw new Error("Invalid credit card data");
 			else if (error.request) throw new Error("Connection error");
 			else throw error;
 		}
-	}, [cvc, expirationDate, phone, number, holderBirthdate, holderName, taxDocument]);
+	}, [cvc, expirationDate, number, order_id]);
 
 	const onSaveAttempt = useCallback(async (): Promise<void> => {
 		try {
@@ -254,7 +242,7 @@ const AddCard = (({navigation}: CardsScreenProps): JSX.Element => {
 						</Layout>
 					</KeyboardAvoidingView>
 					<Button style={styles.button} onPress={onSaveAttempt}>
-						SALVAR
+						REALIZAR PAGAMENTO
 					</Button>
 				</View>
 			</ScrollView>
@@ -262,7 +250,7 @@ const AddCard = (({navigation}: CardsScreenProps): JSX.Element => {
 	);
 });
 
-export default AddCard;
+export default NewCardPayment;
 
 const styles = StyleSheet.create({
 	container: {

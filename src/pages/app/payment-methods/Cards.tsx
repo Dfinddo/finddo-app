@@ -144,7 +144,7 @@ const CreditCardList: FC<CardsScreenProps> = ({navigation}) => {
 			/>
 			{/* <Button
 				style={styles.button}
-				onPress={() => navigation.navigate("AddCard")}
+				onPress={() => navigation.navigate("NewCardPayment")}
 			>
 				ADICIONAR CARTÃO
 			</Button> */}

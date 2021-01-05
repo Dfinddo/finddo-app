@@ -7,8 +7,8 @@ import {ServicesStackParams} from "src/routes/app";
 import {ScrollView} from "react-native-gesture-handler";
 import TimeLineStatus from "components/TimeLineStatus";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
-import finddoApi, {ConversationApiResponse, ServiceStatusEnum} from "finddo-api";
-import { sendAutomaticMessage, sendAutomaticMessageAdm } from "src/utils/automaticMessage";
+import finddoApi, {ServiceStatusEnum} from "finddo-api";
+import { sendAutomaticMessage } from "src/utils/automaticMessage";
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
@@ -76,6 +76,10 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 		// 		setIsLoading(false);
 		// 	}
 		// }, [serviceStore, userStore, navigation]);
+
+		if(serviceStore?.order_status === "em_servico"){
+			navigation.navigate("ServiceClosure", {id: Number(serviceStore.id)});
+		}
 
 		const handleProfessionalDontAttend = useCallback(async () => {
 			if(!serviceStore) return;
@@ -160,12 +164,16 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 			}
 		}, [serviceStore, userStore, dispatch, navigation]);
 
-		const handleServiceClosure = useCallback(() => {
-			if (serviceStore)
+		const handleServiceClosure = useCallback(async () => {
+			if (serviceStore){
+				const response = await finddoApi.get(`orders/em_servico/${serviceStore.id}`);
+				
+				dispatch(updateService(response.data));
 				navigation.navigate("ServiceClosure", {
 					id: serviceStore.id as number,
 				});
-		}, [serviceStore, navigation]);
+			}
+		}, [serviceStore, navigation, dispatch]);
 
 		if (serviceStore === void 0) return <View></View>;
 
@@ -182,8 +190,8 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 						navigation={navigation}
 					/>
 					{userStore.user_type === "user" &&
-						// (serviceStore.order_status === "a_caminho" ||
-						// 	serviceStore.order_status === "em_servico") && 
+						(serviceStore.order_status === "a_caminho" ||
+							serviceStore.order_status === "em_servico") && 
 						(
 							<>
 								<Button

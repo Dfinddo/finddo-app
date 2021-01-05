@@ -4,29 +4,19 @@ import {MOIP_CREDS_DATA_PUBLIC_KEY} from "@env";
 import finddoApi from "finddo-api";
 
 interface ICreditCardProps {
+	order_id: string,
   number: string,
   cvc: string,
 	expirationDate: string,
-	holder: {
-		fullname: string,
-		birthdate: string,
-		taxDocument: {
-			type: string,
-			number: string,
-		},
-		phone: {
-			countryCode: string,
-			areaCode: string,
-			number: string,
-		},
-	}
+	saveCard?: boolean,
 }
 
 export function doingPaymentMoip ({
+	order_id,
 	number, 
 	cvc, 
 	expirationDate, 
-	holder
+	saveCard= false,
 }: ICreditCardProps): void {
   MoipCreditCard.setEncrypter(RSA, "react-native")
 		.setPubKey(MOIP_CREDS_DATA_PUBLIC_KEY)
@@ -38,15 +28,18 @@ export function doingPaymentMoip ({
 		})
 		.hash()
 		.then(async hash => {
-			// TODO: ajustar rota
-			await finddoApi.post("/users/add_credit_card", {
-				credit_card: {
-					method: "CREDIT_CARD",
-					creditCard: {
-						hash,
-						holder,
+			await finddoApi.post(`/orders/create_payment/${order_id}`, {
+					payment_data: {
+							installmentCount: 1,
+							statementDescriptor: "Finddo",
+							fundingInstrument: {
+									method: "CREDIT_CARD",
+									creditCard: {
+										hash,
+										store: saveCard,
+									}
+							}
 					}
-				},
 			});
 		}).catch(error => {throw new Error("Invalid credit card data")});
 }
