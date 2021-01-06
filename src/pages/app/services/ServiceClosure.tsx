@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {ImageBackground, View, StyleProp, ImageStyle} from "react-native";
+import {ImageBackground, View, StyleProp, ImageStyle, Alert} from "react-native";
 import {
 	Avatar, 
 	Button, 
@@ -16,7 +16,7 @@ import {ScrollView} from "react-native-gesture-handler";
 import {SvgXml} from "react-native-svg";
 
 import {ServicesStackParams} from "src/routes/app";
-import {serviceCategories, serviceStatusDescription} from "finddo-api";
+import finddoApi, {serviceCategories, serviceStatusDescription} from "finddo-api";
 
 // import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {priceFormatter} from "utils";
@@ -70,6 +70,18 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 	}, [route.params?.id, serviceListStore, serviceStore]);
 
 	if (serviceStore === void 0 || !serviceStore.category.id) return <View></View>;
+
+	const handleRate = async (): Promise<void> => {
+		const variable = userStore.user_type === "professional" ?
+		 `professional_rate=${rate}` :
+		 `user_rate=${rate}`;
+
+		try {
+			await finddoApi.put(`/orders/rate/:order_id?${variable}`);
+		} catch (error) {
+			Alert.alert("Finddo", "Erro ao tentar avaliar");
+		}
+	}
 
 	const info: InfoData =
 		userStore.user_type === "user"
@@ -147,6 +159,12 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 								accessoryLeft={() => starIcon(5, rate)}
 							/>
 						</View>
+						<Button 
+						style={styles.button} 
+						onPress={handleRate}
+					>
+						AVALIAR
+					</Button>
 					</Card>
 					<View style={styles.details}>
 						<Card style={styles.smallCard}>
@@ -169,7 +187,10 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 					>
 						Realizar pagamento
 					</Button>
-					<Button style={styles.button}>Encerrar serviço</Button>
+					{
+						userStore.user_type === "professional" &&
+						<Button style={styles.button}>Encerrar serviço</Button>
+					}
 				</ScrollView>
 				{serviceStore.budget && (
 					<Modal
