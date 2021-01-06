@@ -23,9 +23,9 @@ import {
 import {useSwitch} from "hooks";
 import {StackScreenProps} from "@react-navigation/stack";
 import {PaymentMethodsStackParams} from "src/routes/app";
-import {localeDateService} from "src/utils/calendarLocale";
-import { doingPaymentMoip } from "src/services/moip";
-import { format } from "date-fns";
+// import {localeDateService} from "src/utils/calendarLocale";
+import { paymentByNewCardMoip } from "src/services/moip";
+// import { format } from "date-fns";
 
 type CardsScreenProps = StackScreenProps<PaymentMethodsStackParams, "NewCardPayment">;
 
@@ -40,12 +40,12 @@ const expirationDateTests = [
 	validations.validCreditCardDate(),
 ];
 const cvcTests = [validations.required(), validations.definedLength(3)];
-const holderNameTests = [validations.required()];
-const taxDocumentTests = [
-	validations.required(),
-	validations.definedLength(11),
-];
-const phoneTests = [validations.required(), validations.definedLength(11)];
+// const holderNameTests = [validations.required()];
+// const taxDocumentTests = [
+// 	validations.required(),
+// 	validations.definedLength(11),
+// ];
+// const phoneTests = [validations.required(), validations.definedLength(11)];
 
 
 const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => {
@@ -63,16 +63,16 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 	const [cvc, setCvc] = useState("");
 	const [cvcError, setCvcError] = useState<string|undefined>("");
 
-	const [holderName, setHolderName] = useState("");
-	const [holderNameError, setHolderNameError] = useState<string|undefined>("");
+	// const [holderName, setHolderName] = useState("");
+	// const [holderNameError, setHolderNameError] = useState<string|undefined>("");
 
-	const [taxDocument, setTaxDocument] = useState("");
-	const [taxDocumentError, setTaxDocumentError] = useState<string|undefined>("");
+	// const [taxDocument, setTaxDocument] = useState("");
+	// const [taxDocumentError, setTaxDocumentError] = useState<string|undefined>("");
 
-	const [phone, setPhone] = useState("");
-	const [phoneError, setPhoneError] = useState<string|undefined>("");
+	// const [phone, setPhone] = useState("");
+	// const [phoneError, setPhoneError] = useState<string|undefined>("");
 
-	const [holderBirthdate, setHolderBirthdate] = useState<Date>(new Date());
+	// const [holderBirthdate, setHolderBirthdate] = useState<Date>(new Date());
 
 	useEffect(
 		() =>
@@ -88,7 +88,7 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 	const saveCard = useCallback(async (): Promise<void> => {
 
 		try {
-			doingPaymentMoip({
+			paymentByNewCardMoip({
 				order_id,
 				cvc,
 				expirationDate,
@@ -107,13 +107,16 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 			if (
 				cvcError || 
 				expirationDateError || 
-				phoneError || 
-				numberError || 
-				holderNameError || 
-				taxDocumentError) return setFillAttemptAsFailed();
+				// phoneError || 
+				numberError
+				// holderNameError || 
+				// taxDocumentError
+				) return setFillAttemptAsFailed();
 
 			await saveCard();
-			navigation.navigate("Cards");
+			Alert.alert("Finddo","Pagamento realizado com sucesso.");
+
+			navigation.navigate("ServiceClosure", {id: Number(order_id)});
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.log({error});
@@ -123,14 +126,16 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 		}
 	}, [
 		navigation, 
+		order_id,
 		setFillAttemptAsFailed, 
 		saveCard,
 		cvcError,
 		expirationDateError,
-		phoneError,
+		// phoneError,
 		numberError,
-		holderNameError,
-		taxDocumentError]);
+		// holderNameError,
+		// taxDocumentError
+	]);
 
 	return (
 		<Layout level="2" style={styles.container}>
@@ -188,7 +193,7 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 										setCvc(text);
 									}}
 								/>
-								<Datepicker
+								{/* <Datepicker
 									dateService={localeDateService}
 									style={styles.rowLastItem}
 									label="Data de Nascimento"
@@ -196,9 +201,9 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 									min={new Date("01/01/1920")}
 									date={holderBirthdate}
 									onSelect={date => setHolderBirthdate(date)}
-								/>
+								/> */}
 							</View>
-							<ValidatedInput
+							{/* <ValidatedInput
 								label="Titular"
 								placeholder="Nome como aparece no cartão"
 								value={holderName}
@@ -208,8 +213,8 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 									setHolderNameError(validateInput(text, holderNameTests));
 									setHolderName(text);
 								}}
-							/>
-							<ValidatedMaskedInput
+							/> */}
+							{/* <ValidatedMaskedInput
 								formatter={cpfFormatter}
 								formattingFilter={numericFormattingFilter}
 								label="CPF"
@@ -223,8 +228,8 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 									setTaxDocumentError(validateInput(text, taxDocumentTests));
 									setTaxDocument(text);
 								}}
-							/>
-							<ValidatedMaskedInput
+							/> */}
+							{/* <ValidatedMaskedInput
 								formatter={phoneFormatter}
 								formattingFilter={numericFormattingFilter}
 								label="Telefone"
@@ -238,7 +243,7 @@ const NewCardPayment = (({navigation, route}: CardsScreenProps): JSX.Element => 
 									setPhoneError(validateInput(text, phoneTests));
 									setPhone(text);
 								}}
-							/>
+							/> */}
 						</Layout>
 					</KeyboardAvoidingView>
 					<Button style={styles.button} onPress={onSaveAttempt}>
@@ -273,9 +278,9 @@ const styles = StyleSheet.create({
 		flex: 3,
 		marginRight: 15,
 	},
-	rowLastItem: {
-		flex: 5,
-	},
+	// rowLastItem: {
+	// 	flex: 5,
+	// },
 	button: {
 		margin: 16,
 	},

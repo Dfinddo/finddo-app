@@ -26,7 +26,7 @@ import {Help} from "pages/app";
 import {Profile} from "pages/app/profile";
 import {MyAddresses, ManageAddress} from "pages/app/addresses";
 import Chat from "pages/app/chat/Chat";
-import {Cards, NewCardPayment} from "pages/app/payment-methods";
+import {Cards, NewCardPayment, PaymentWithCard} from "pages/app/payment-methods";
 import {useThemedHeaderConfig} from "hooks";
 import ChatList from "pages/app/chat/ChatList";
 import { useSelector } from "react-redux";
@@ -53,9 +53,14 @@ const PaymentMethodsRoute: FC = () => {
 				options={{title: "Métodos de Pagamento"}}
 			/>
 			<PaymentMethodsStack.Screen
+				name="PaymentWithCard"
+				component={PaymentWithCard}
+				options={{title: "Selecione o cartão que deseja realizar o pagamento"}}
+			/>
+			<PaymentMethodsStack.Screen
 				name="NewCardPayment"
 				component={NewCardPayment}
-				options={{title: "Adicionar Cartão"}}
+				options={{title: "Pagamento Com um novo cartão"}}
 			/>
 		</PaymentMethodsStack.Navigator>
 	);
@@ -258,7 +263,9 @@ const DrawerContentProfessional: FC<DrawerContentComponentProps> = ({
 
 export type PaymentMethodsStackParams = {
 	Cards: undefined;
+	PaymentWithCard: {order_id: string};
 	NewCardPayment: {order_id: string};
+	ServiceClosure: {id: number};
 };
 
 export type AddressStackParams = {
@@ -285,6 +292,7 @@ export type ServicesStackParams = {
 	ServiceBudget: {id: number};
 	NewService: undefined | {screen: string};
 	ServiceClosure: {id: number};
+	PaymentWithCard: {order_id: string};
 	Chat: {
 		order_id: number, 
 		receiver_id: number,

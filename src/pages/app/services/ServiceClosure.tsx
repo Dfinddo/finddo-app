@@ -18,7 +18,7 @@ import {SvgXml} from "react-native-svg";
 import {ServicesStackParams} from "src/routes/app";
 import {serviceCategories, serviceStatusDescription} from "finddo-api";
 
-import TaskAwaitIndicator from "components/TaskAwaitIndicator";
+// import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {priceFormatter} from "utils";
 import {BACKEND_URL_STORAGE} from "@env";
 
@@ -161,7 +161,14 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 							</Text>
 						</Card>
 					</View>
-					<Button style={styles.button}>Realizar pagamento</Button>
+					<Button 
+						style={styles.button} 
+						onPress={()=>{navigation.navigate("PaymentWithCard", {
+							order_id: String(serviceStore.id)
+						})}}
+					>
+						Realizar pagamento
+					</Button>
 					<Button style={styles.button}>Encerrar serviço</Button>
 				</ScrollView>
 				{serviceStore.budget && (

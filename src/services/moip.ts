@@ -2,7 +2,6 @@ import {RSA} from "react-native-rsa-native";
 import {MoipCreditCard} from "moip-sdk-js";
 import {MOIP_CREDS_DATA_PUBLIC_KEY} from "@env";
 import finddoApi from "finddo-api";
-
 interface ICreditCardProps {
 	order_id: string,
   number: string,
@@ -11,7 +10,7 @@ interface ICreditCardProps {
 	saveCard?: boolean,
 }
 
-export function doingPaymentMoip ({
+export function paymentByNewCardMoip ({
 	order_id,
 	number, 
 	cvc, 
