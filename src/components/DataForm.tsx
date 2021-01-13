@@ -128,7 +128,7 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 
 export default DataForm;
 
-const avaliableTimes = range(9, 22)
+const avaliableTimes = range(0, 24)
 	.map(hour => String(hour).padStart(2, "0"))
 	.flatMap(hour => [`${hour}:00`, `${hour}:30`]);
 

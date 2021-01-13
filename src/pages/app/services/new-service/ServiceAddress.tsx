@@ -9,7 +9,6 @@ import {
 	Alert,
 } from "react-native";
 import {
-	Button,
 	Text,
 	Layout,
 	Autocomplete,
@@ -92,6 +91,14 @@ const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 		setData(addressListStore.list);
 	}, [addressListStore]);
 
+	useEffect(()=>{
+		if(addressListStore.list.find(item => item.name === value)){
+			setAddressStore(
+				addressListStore.list.find(item => item.name === value) as Address
+			);
+		}
+	}, [addressListStore, value]);
+
 
 	const onSaveAttempt = useCallback(async (data: AddressFormData): Promise<void> => {
 		try {
@@ -136,12 +143,6 @@ const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 		</TouchableWithoutFeedback>
 	);
 
-	const handleAutoCompleteForm = useCallback((): void => {
-		setAddressStore(
-			addressListStore.list.find(item => item.name === value) || {} as Address
-		);
-	}, [addressListStore,value]);
-
 	return (
 		<Layout level="3">
 			<ScrollView>
@@ -152,7 +153,6 @@ const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 					style={styles.formWrapper}
 				>
 					<Text category="h1">Definir Endereço</Text>
-					<View style={styles.pickUpAddress}>
 						<Autocomplete
 							placeholder="Utilizar um endereço existente"
 							value={value}
@@ -163,13 +163,6 @@ const ServiceAddress = ((props: ServiceAddressScreenProps): JSX.Element => {
 						>
 							{addressListStore.list.map(renderOption)}
 						</Autocomplete>
-						<Button
-							onPress={handleAutoCompleteForm}
-							style={styles.searchAddressButton}
-						>
-							OK
-						</Button>
-					</View>
 
 					<AddressForm
 						addressStore={addressStore}
@@ -191,25 +184,10 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		padding: 10,
 	},
-	pickUpAddress: {
-		alignItems: "center",
-		alignSelf: "center",
-		justifyContent: "flex-start",
-		flexDirection: "row",
-		width: "90%",
-		margin: 16,
-	},
 	searchAddress: {
-		flex: 1,
 		height: 26,
-		width: "100%",
-		borderBottomRightRadius: 0,
-		borderTopRightRadius: 0,
-	},
-	searchAddressButton: {
-		height: 24,
-		alignItems: "center",
-		borderBottomLeftRadius: 0,
-		borderTopLeftRadius: 0,
+		width: "90%",
+		alignSelf: "center",
+		marginVertical: 36,
 	},
 });

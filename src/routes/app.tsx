@@ -32,6 +32,7 @@ import ChatList from "pages/app/chat/ChatList";
 import { useSelector } from "react-redux";
 import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
+import { event } from "react-native-reanimated";
 
 const PaymentMethodsStack = createStackNavigator<PaymentMethodsStackParams>();
 const AddressStack = createStackNavigator<AddressStackParams>();
@@ -95,7 +96,7 @@ const NewServiceRoute: FC = () => {
 		<NewServiceStack.Navigator
 			screenOptions={screenOptions}
 			initialRouteName="ServiceCategories"
-			headerMode="none"
+			headerMode="float"
 		>
 			<NewServiceStack.Screen
 				name="ServiceCategories"
@@ -172,7 +173,10 @@ const ServicesRoute: FC = () => {
 			<ServicesStack.Screen
 				name="NewService"
 				component={NewServiceRoute}
-				options={{title: "Novo Serviço"}}
+				options={{
+					title: "Novo Serviço",
+					headerShown: false,
+				}}
 			/>
 			<ServicesStack.Screen
 				name="ServiceClosure"

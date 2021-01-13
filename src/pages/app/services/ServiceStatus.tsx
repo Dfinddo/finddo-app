@@ -131,6 +131,8 @@ const ServiceStatus = ({route, navigation}: ServiceStatusScreenProps): JSX.Eleme
 								// serviceStore?.cancelOrder().then(() => {
 								// 	navigation.goBack();
 								// })
+								await finddoApi.get(`request_cancelation_of_order/${serviceStore.id}`);
+								Alert.alert("Finddo", "Enviamos uma mensagem para a administração para analisar o caso.");
 								navigation.navigate("Chat", {
 									order_id: serviceStore.id,
 									receiver_id: 1,

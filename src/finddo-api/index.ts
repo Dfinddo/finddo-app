@@ -12,6 +12,7 @@ export type ServiceStatus =
 	| "orcamento_previo"
 	| "agendando_visita"
 	| "aguardando_profissional"
+	| "checando_cancelado"
 	| "a_caminho"
 	| "em_servico"
 	| "finalizado"
@@ -26,6 +27,7 @@ export enum ServiceStatusEnum {
 	"em_servico",
 	"finalizado",
 	"cancelado",
+	"checando_cancelado",
 }
 
 export const serviceStatusDescription = {
@@ -36,6 +38,7 @@ export const serviceStatusDescription = {
 	"aguardando_profissional": "Aguardando Profissional",
 	"a_caminho": "Profissional à Caminho",
 	"em_servico": "Serviço em Execução",
+	"checando_cancelado": "Avaliação do suporte",
 	"finalizado": "Concluído",
 	"cancelado": "Cancelado",
 } as const;

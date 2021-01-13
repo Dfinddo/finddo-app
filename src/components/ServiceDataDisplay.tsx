@@ -67,8 +67,12 @@ const ServiceDataDisplay = ((props: {serviceStore: Service}): JSX.Element => {
 					)
 				}
 
-				<Layout style={styles.descriptionWrapper} level="1">
-					<Text style={styles.description} appearance="hint">
+				<Layout level="1">
+					<Text style={styles.descriptionWrapper} appearance="hint">Descrição</Text>
+					<Text 
+						style={styles.description} 
+						// appearance="hint"
+					>
 						{serviceStore.description}
 					</Text>
 				</Layout>
@@ -85,12 +89,12 @@ const ServiceDataDisplay = ((props: {serviceStore: Service}): JSX.Element => {
 						)}
 					/>
 				)}
-				{Boolean(serviceStore.order_status) && (
+				{/* {Boolean(serviceStore.order_status) && (
 					<DataPieceDisplay
 						hint="Status"
 						value={serviceStatusDescription[serviceStore.order_status]}
 					/>
-				)}
+				)} */}
 				<DataPieceDisplay
 					hint="Data"
 					value={`${format(
@@ -134,7 +138,13 @@ const styles = StyleSheet.create({
 	description: {
 		padding: 24,
 	},
-	descriptionWrapper: {marginTop: 24},
+	descriptionWrapper: {
+		marginTop: 24, 
+		marginLeft:24, 
+		marginBottom: 12,
+		alignItems:"center",
+		textAlign:"center",
+	},
 	blockStart: {marginTop: 24},
 	serviceImage: {height: 200, width: "100%"},
 });

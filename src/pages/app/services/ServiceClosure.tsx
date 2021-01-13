@@ -72,7 +72,7 @@ const ServiceClosure = ({route, navigation}: ServiceClosureScreenProps): JSX.Ele
 	if (serviceStore === void 0 || !serviceStore.category.id) return <View></View>;
 
 	const handleRate = async (): Promise<void> => {
-		const variable = userStore.user_type === "professional" ?
+		const variable = userStore.user_type === "user" ?
 		 `professional_rate=${rate}` :
 		 `user_rate=${rate}`;
 

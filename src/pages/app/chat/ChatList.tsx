@@ -2,6 +2,7 @@ import React, {useState, useEffect, useCallback} from "react";
 import {
 	Alert,
 	StyleSheet,
+	View,
 } from "react-native";
 import {
 	Text,
@@ -12,6 +13,7 @@ import {
 	Divider,
 	Tab,
 	TabView,
+	Icon,
 } from "@ui-kitten/components";
 import TaskAwaitIndicator from "components/TaskAwaitIndicator";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -140,7 +142,22 @@ const ChatList = ((props: ChatListScreenProps): JSX.Element => {
 			onEndReached={handleExpandList}
 			onEndReachedThreshold={0.2}
 			style={styles.listContainer}
-      data={chatList.list}
+			data={chatList.list}
+			ListEmptyComponent={
+				<>
+				{!isLoading &&
+				<View style={styles.emptyList}>
+					<Icon
+						style={styles.iconAlert}
+						fill="#8F9BB3"
+						name="alert-circle-outline"
+					/>
+					<Text style={styles.emptyListText}>
+						Ainda não possui nenhum serviço ativo
+					</Text>
+				</View>}
+				</>
+			}
 			renderItem={({ item, index }: {item: ConversationApiResponse, index: number}) => (<>
 				{ item &&
 						<ListItem
@@ -220,5 +237,21 @@ const styles = StyleSheet.create({
 	},
 	tabBar: {
 		height: 48,
+	},
+	iconAlert: {width: 64, height: 64, marginTop: 32},
+	emptyList: {
+		flex: 1,
+		height: "65%",
+		width: "100%",
+		alignItems: "center",
+		justifyContent: "space-around",
+	},
+	emptyListText: {
+		width: "75%",
+		fontSize: 24,
+		color: "#8F9BB3",
+		textAlign: "center",
+		marginBottom: "30%",
+		marginTop:32,
 	},
 });
