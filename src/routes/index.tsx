@@ -29,7 +29,7 @@ const Routes = (): JSX.Element => {
 	return userStore.id ? (
 		<>
 			<AppRoute />
-			<BottomNavigation />
+			{userStore.user_type !== "admin" && <BottomNavigation />}
 		</>
 	) : (
 		<AuthRoute />

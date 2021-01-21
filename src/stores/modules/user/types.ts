@@ -35,7 +35,7 @@ export type UserActions = SignInAction | UpdateUserAction | SignOutAction
   | UpdateProfilePhotoAction;
 
 export interface UserState {
-  user_type: "user" | "professional";
+  user_type: "user" | "professional" | "admin";
   id: string;
   profilePicture: {uri: string};
   name: string;

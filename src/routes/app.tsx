@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {FC} from "react";
 import {createStackNavigator} from "@react-navigation/stack";
 import {
@@ -29,10 +30,10 @@ import Chat from "pages/app/chat/Chat";
 import {Cards, NewCardPayment, PaymentWithCard} from "pages/app/payment-methods";
 import {useThemedHeaderConfig} from "hooks";
 import ChatList from "pages/app/chat/ChatList";
+import ChatListAdmin from "pages/app/chat/ChatListAdmin";
 import { useSelector } from "react-redux";
 import { State } from "stores/index";
 import { UserState } from "stores/modules/user/types";
-import { event } from "react-native-reanimated";
 
 const PaymentMethodsStack = createStackNavigator<PaymentMethodsStackParams>();
 const AddressStack = createStackNavigator<AddressStackParams>();
@@ -196,7 +197,8 @@ const AppRoute: FC = () => {
 			drawerContent={
 				userStore.user_type === "user"
 					? DrawerContentUser
-					: DrawerContentProfessional
+					: userStore.user_type === "professional" ?  DrawerContentProfessional
+					: DrawerContentAdmin
 			}
 		>
 			<AppDrawer.Screen name="Services" component={ServicesRoute} />
@@ -208,12 +210,27 @@ const AppRoute: FC = () => {
 			/>
 			<AppDrawer.Screen name="Help" component={Help} />
 			<AppDrawer.Screen name="ChatList" component={ChatList} />
+			<AppDrawer.Screen name="ChatListAdmin" component={ChatListAdmin} />
 			<AppDrawer.Screen name="Chat" component={Chat} />
 		</AppDrawer.Navigator>
 	);
 };
 
 export default AppRoute;
+
+const DrawerContentAdmin: FC<DrawerContentComponentProps> = ({
+	navigation,
+	state,
+}) => (
+	<Drawer selectedIndex={new IndexPath(state.index)}>
+		<DrawerItem
+			title="Perfil"
+			onPress={() => navigation.navigate("Profile")}
+		/>
+		<DrawerItem title="Chat" onPress={() => navigation.navigate("ChatListAdmin")} />
+		<DrawerItem title="Sobre" onPress={() => navigation.navigate("Help")} />
+	</Drawer>
+);
 
 const DrawerContentUser: FC<DrawerContentComponentProps> = ({
 	navigation,
@@ -320,5 +337,6 @@ export type AppDrawerParams = {
 		isAdminChat: boolean,
 	};
 	ChatList: undefined;
+	ChatListAdmin: undefined;
 };
 

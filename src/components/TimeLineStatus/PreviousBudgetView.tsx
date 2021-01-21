@@ -48,10 +48,6 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 
 			try {			
 				if (!approve) {
-					await finddoApi.post("/orders/budget_approve", {
-						id: serviceStore.id,
-						accepted: approve,
-					});
 					Alert.alert(
 						"Finddo",
 						"Deseja renegociar com o profissional ou buscar por um novo?",
@@ -59,6 +55,10 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 							{
 								text: "Renegociar",
 								onPress: async () => {
+									await finddoApi.post("/orders/budget_approve", {
+										id: serviceStore.id,
+										accepted: approve,
+									});
 									if(serviceStore.professional_order && chatInfo){
 										await sendAutomaticMessage({
 											order: serviceStore,
@@ -78,6 +78,10 @@ const PreviousBudgetView: FC<PreviousBudgetViewProps> = ({
 							{
 								text: "Cancelar negociação",
 								onPress: async () => {
+									await finddoApi.post("/orders/budget_approve", {
+										id: serviceStore.id,
+										accepted: approve,
+									});
 									await finddoApi.put(`/orders/disassociate/${serviceStore.id}`)
 								}
 							},
@@ -315,6 +319,7 @@ const themedStyles = StyleService.create({
 		borderRadius: 30,
 	},
 	buttonGroup: {
+		maxWidth: "98%",
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-around",

@@ -289,7 +289,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
         visible={visible}
         backdropStyle={styles.backdrop}
         onBackdropPress={() => setVisible(false)}>
-        <Card disabled={true}>
+        <Card style={styles.modalCardStyle} disabled={true}>
 					<Button 
 						style={styles.modalButton} 
 						status="basic" 
@@ -297,7 +297,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 							setVisible(false);
 							navigation.navigate("NewService")
 					}}>
-            Qualquer profissional
+            Avançar para criação de um novo serviço
           </Button>
 					<Button 
 						style={styles.modalButton} 
@@ -306,10 +306,7 @@ const MyServices = (({navigation}: MyServicesScreenProps): JSX.Element => {
 							setVisible(false);
 							navigation.navigate("NewService",{screen: "ServiceProfessionalPreference"})
 					}}>
-            Associar um profissional ao meu pedido
-          </Button>
-					<Button style={styles.modalButton} status="danger" onPress={() => setVisible(false)}>
-            Cancelar
+            Selecionar um profissional de sua confiança
           </Button>
         </Card>
       </Modal>
@@ -357,6 +354,11 @@ const styles = StyleSheet.create({
 		marginVertical: "10%",
 		marginHorizontal: "5%",
 	},
+	modalCardStyle: {
+		width:"95%",
+		borderRadius: 4,
+		alignSelf: "center",
+	}, 
 	modalButton: {	margin: 8, borderColor: "black" },
 	backdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

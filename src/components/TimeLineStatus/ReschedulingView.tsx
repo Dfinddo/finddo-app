@@ -68,6 +68,13 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 		}
 	};
 
+	const handleAcceptSchedule = async (accept: boolean): Promise<void> => {
+		await finddoApi.put(`/orders/${serviceStore.id}/reschedulings/${accept}`);
+		const response = await finddoApi.get(`/orders/${serviceStore.id}`);
+
+		dispatch(updateService(response.data));
+	};
+
 	return (
 		<>
 			{serviceStore &&
@@ -86,24 +93,14 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 								<Button
 									style={styles.button}
 									status="primary"
-									onPress={async () => {
-										await finddoApi.put(`/orders/${serviceStore.id}/reschedulings/${true}`);
-										const response = await finddoApi.get(`/orders/${serviceStore.id}`);
-
-										dispatch(updateService(response.data));
-									}}
+									onPress={() => handleAcceptSchedule(true)}
 								>
 									ALTERAR
 								</Button>
 								<Button
 									style={styles.button}
 									status="danger"
-									onPress={async () => {
-										await finddoApi.put(`/orders/${serviceStore.id}/reschedulings/${false}`);
-										const response = await finddoApi.get(`/orders/${serviceStore.id}`);
-
-										dispatch(updateService(response.data));
-									}}
+									onPress={() => handleAcceptSchedule(false)}
 								>
 									NÃO ALTERAR
 								</Button>
@@ -122,17 +119,16 @@ const ReschedulingView: FC<ReschedulingViewProps> = ({
 						)} entre ${serviceStore.hora_inicio} e ${
 							serviceStore.hora_fim
 						}`}</Text>
-						{userStore.user_type === "professional" ? (
-							<Text
-								style={styles.text}
-								status="primary"
-								onPress={() => setIsReschedule(true)}
-							>
-								REAGENDAR
-							</Text>
-						) : (
+						{userStore.user_type !== "professional" && (
 							<Text>Aguardando resposta do profissional</Text>
 						)}
+						<Text
+							style={styles.text}
+							status="primary"
+							onPress={() => setIsReschedule(true)}
+						>
+							REAGENDAR
+						</Text>
 					</View>
 				))}
 			<Modal
@@ -177,6 +173,7 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 	},
 	buttonGroup: {
+		maxWidth: "98%",
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-around",

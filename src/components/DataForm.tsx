@@ -63,7 +63,7 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 
 	return (
 		<Layout level="1" style={styles.contentWrapper}>
-			<Text category="h5">
+			<Text style={styles.title} category="h5">
 				Escolha a melhor data e faixa de horário para seu atendimento:
 			</Text>
 			<ScrollView
@@ -75,7 +75,7 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 					dateService={localeDateService}
 					date={serviceDate}
 					onSelect={date => (setServiceDate(date))}
-					min={initialDate}
+					min={new Date(Date.now())}
 					max={finalDate}
 				/>
 				<View style={styles.rowContainer}>
@@ -111,17 +111,17 @@ const DataForm = ((props: DataFormProps): JSX.Element => {
 							))}
 						</ValidatedSelect>
 					</View>
+					<Button style={styles.buttom} onPress={async() => {
+						await onSubmit({
+							hora_inicio: startTime,
+							hora_fim: endTime,
+							serviceDate,
+						})}
+					}>
+						CONFIRMAR
+					</Button>
 				</View>
 			</ScrollView>
-			<Button style={styles.buttom} onPress={async() => {
-				await onSubmit({
-					hora_inicio: startTime,
-					hora_fim: endTime,
-					serviceDate,
-				})}
-			}>
-				CONFIRMAR
-			</Button>
 		</Layout>
 	);
 });
@@ -133,6 +133,10 @@ const avaliableTimes = range(0, 24)
 	.flatMap(hour => [`${hour}:00`, `${hour}:30`]);
 
 const styles = StyleSheet.create({
+	title: {
+		width: "99%",
+		textAlign: "left",
+	},
 	calendarContainer: {width: "100%", padding: 12},
 	calendar: {alignSelf: "center"},
 	timeSelect: {width: "40%"},
