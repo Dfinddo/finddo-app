@@ -53,7 +53,7 @@ const ChatListAdmin = ((props: ChatListScreenProps): JSX.Element => {
 			const responseAdm = await finddoApi.get(`/chats/list/admin`, {
         params: {
 					page: 1,
-					for_admin:3,
+					for_admin:2,
         },
 			});
 			
@@ -102,7 +102,7 @@ const ChatListAdmin = ((props: ChatListScreenProps): JSX.Element => {
 			}) : await finddoApi.get(`/chats/list/admin`, {
         params: {
 					page: chatListStore.admin.page + 1,
-					for_admin:3,
+					for_admin:2,
         },
 			});
 
