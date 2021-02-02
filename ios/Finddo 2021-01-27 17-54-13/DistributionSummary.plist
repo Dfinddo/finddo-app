@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Finddo.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>armv7</string>
+				<string>arm64</string>
+			</array>
+			<key>bitcode</key>
+			<true/>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>8CC69B5B0DA798F059E89574298581DA79889F41</string>
+				<key>dateExpires</key>
+				<string>15/06/21</string>
+				<key>type</key>
+				<string>Apple Distribution</string>
+			</dict>
+			<key>embeddedBinaries</key>
+			<array>
+				<dict>
+					<key>architectures</key>
+					<array>
+						<string>arm64</string>
+					</array>
+					<key>bitcode</key>
+					<true/>
+					<key>certificate</key>
+					<dict>
+						<key>SHA1</key>
+						<string>8CC69B5B0DA798F059E89574298581DA79889F41</string>
+						<key>dateExpires</key>
+						<string>15/06/21</string>
+						<key>type</key>
+						<string>Apple Distribution</string>
+					</dict>
+					<key>entitlements</key>
+					<dict>
+						<key>application-identifier</key>
+						<string>FR3P7X5TX5.br.com.Finddotec.OneSignalNotificationServiceExtension</string>
+						<key>beta-reports-active</key>
+						<true/>
+						<key>com.apple.developer.team-identifier</key>
+						<string>FR3P7X5TX5</string>
+						<key>get-task-allow</key>
+						<false/>
+						<key>keychain-access-groups</key>
+						<array>
+							<string>FR3P7X5TX5.br.com.Finddotec.OneSignalNotificationServiceExtension</string>
+						</array>
+					</dict>
+					<key>name</key>
+					<string>OneSignalNotificationServiceExtension.appex</string>
+					<key>profile</key>
+					<dict>
+						<key>UUID</key>
+						<string>f9d1c7a4-78ff-4cd5-838c-10b3fe9bb800</string>
+						<key>name</key>
+						<string>iOS Team Store Provisioning Profile: *</string>
+					</dict>
+					<key>symbols</key>
+					<true/>
+					<key>team</key>
+					<dict>
+						<key>id</key>
+						<string>FR3P7X5TX5</string>
+						<key>name</key>
+						<string>finddo servicos de manutencao e tecnologia ltda</string>
+					</dict>
+				</dict>
+			</array>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>FR3P7X5TX5.br.com.Finddotec</string>
+				<key>aps-environment</key>
+				<string>production</string>
+				<key>beta-reports-active</key>
+				<true/>
+				<key>com.apple.developer.team-identifier</key>
+				<string>FR3P7X5TX5</string>
+				<key>get-task-allow</key>
+				<false/>
+			</dict>
+			<key>name</key>
+			<string>Finddo.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>02e7a747-d159-4316-90fa-08698d6cb806</string>
+				<key>name</key>
+				<string>iOS Team Store Provisioning Profile: br.com.Finddotec</string>
+			</dict>
+			<key>symbols</key>
+			<true/>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>FR3P7X5TX5</string>
+				<key>name</key>
+				<string>finddo servicos de manutencao e tecnologia ltda</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

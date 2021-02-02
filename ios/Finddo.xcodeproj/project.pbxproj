@@ -16,8 +16,14 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* FinddoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* FinddoTests.m */; };
 		414863EBA3EEE9B70E37CA67 /* libPods-Finddo-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0337F866BBF58F82CD535A55 /* libPods-Finddo-tvOS.a */; };
+		4878BB87E531894798A8DF07 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A716789B83F30600A31DC89 /* libPods-OneSignalNotificationServiceExtension.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		855F92B290D1BAEF9A08E291 /* libPods-Finddo-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FCEF1E5B805FC5A281786439 /* libPods-Finddo-tvOSTests.a */; };
+		92BD47CA25C1F30300608015 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92BD47B325C1E93800608015 /* UserNotifications.framework */; };
+		92BD47CB25C1F30300608015 /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92BD47B525C1E93800608015 /* UserNotificationsUI.framework */; };
+		92BD47CE25C1F30300608015 /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BD47CD25C1F30300608015 /* NotificationViewController.swift */; };
+		92BD47D125C1F30300608015 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92BD47CF25C1F30300608015 /* MainInterface.storyboard */; };
+		92BD47D525C1F30300608015 /* OneSignalNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 92BD47C925C1F30300608015 /* OneSignalNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C4FF6908C625E3FF0B0D5ABF /* libPods-Finddo-FinddoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F540A4D172F1F53B4CEAC37 /* libPods-Finddo-FinddoTests.a */; };
 		FEA69ADB84A303ACA129C954 /* libPods-Finddo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 808D9A00AB0D707A05E9C4FC /* libPods-Finddo.a */; };
 /* End PBXBuildFile section */
@@ -37,7 +43,28 @@
 			remoteGlobalIDString = 2D02E47A1E0B4A5D006451C7;
 			remoteInfo = "Finddo-tvOS";
 		};
+		92BD47D325C1F30300608015 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 92BD47C825C1F30300608015;
+			remoteInfo = OneSignalNotificationServiceExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		92BD47C125C1E93800608015 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				92BD47D525C1F30300608015 /* OneSignalNotificationServiceExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
@@ -45,6 +72,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* FinddoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinddoTests.m; sourceTree = "<group>"; };
 		0337F866BBF58F82CD535A55 /* libPods-Finddo-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Finddo-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		05124E20F4B945296B661B8E /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Finddo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Finddo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Finddo/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Finddo/AppDelegate.m; sourceTree = "<group>"; };
@@ -55,17 +83,28 @@
 		2AA0104DAAC5A4D5FDEE017C /* Pods-Finddo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finddo.release.xcconfig"; path = "Target Support Files/Pods-Finddo/Pods-Finddo.release.xcconfig"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* Finddo-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Finddo-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* Finddo-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Finddo-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A716789B83F30600A31DC89 /* libPods-OneSignalNotificationServiceExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalNotificationServiceExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		63C52600466C5C59690F4977 /* Pods-Finddo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finddo.debug.xcconfig"; path = "Target Support Files/Pods-Finddo/Pods-Finddo.debug.xcconfig"; sourceTree = "<group>"; };
 		803E696069C4431D7428B474 /* Pods-Finddo-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finddo-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Finddo-tvOS/Pods-Finddo-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		808D9A00AB0D707A05E9C4FC /* libPods-Finddo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Finddo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Finddo/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8F540A4D172F1F53B4CEAC37 /* libPods-Finddo-FinddoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Finddo-FinddoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		92BD47B325C1E93800608015 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		92BD47B525C1E93800608015 /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
+		92BD47B825C1E93800608015 /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
+		92BD47BB25C1E93800608015 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		92BD47BD25C1E93800608015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		92BD47C925C1F30300608015 /* OneSignalNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OneSignalNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		92BD47CD25C1F30300608015 /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
+		92BD47D025C1F30300608015 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		92BD47D225C1F30300608015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9471CB48B91478B1035D80D7 /* Pods-Finddo-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finddo-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Finddo-tvOSTests/Pods-Finddo-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A32A329B1E6531BAB205894C /* Pods-Finddo-FinddoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finddo-FinddoTests.debug.xcconfig"; path = "Target Support Files/Pods-Finddo-FinddoTests/Pods-Finddo-FinddoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7942F91B151ACBE7A401D57 /* Pods-Finddo-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finddo-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Finddo-tvOS/Pods-Finddo-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		EF52E05E4D06F498444E6621 /* Pods-Finddo-FinddoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finddo-FinddoTests.release.xcconfig"; path = "Target Support Files/Pods-Finddo-FinddoTests/Pods-Finddo-FinddoTests.release.xcconfig"; sourceTree = "<group>"; };
+		F931E5233094AD4FF9474F58 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.release.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
 		FCEF1E5B805FC5A281786439 /* libPods-Finddo-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Finddo-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -99,6 +138,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				855F92B290D1BAEF9A08E291 /* libPods-Finddo-tvOSTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92BD47C625C1F30300608015 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92BD47CB25C1F30300608015 /* UserNotificationsUI.framework in Frameworks */,
+				92BD47CA25C1F30300608015 /* UserNotifications.framework in Frameworks */,
+				4878BB87E531894798A8DF07 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +194,9 @@
 				8F540A4D172F1F53B4CEAC37 /* libPods-Finddo-FinddoTests.a */,
 				0337F866BBF58F82CD535A55 /* libPods-Finddo-tvOS.a */,
 				FCEF1E5B805FC5A281786439 /* libPods-Finddo-tvOSTests.a */,
+				92BD47B325C1E93800608015 /* UserNotifications.framework */,
+				92BD47B525C1E93800608015 /* UserNotificationsUI.framework */,
+				3A716789B83F30600A31DC89 /* libPods-OneSignalNotificationServiceExtension.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -162,6 +214,8 @@
 				13B07FAE1A68108700A75B9A /* Finddo */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* FinddoTests */,
+				92BD47B725C1E93800608015 /* OneSignalNotificationServiceExtension */,
+				92BD47CC25C1F30300608015 /* OneSignalNotificationServiceExtension */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				ED69412BC9F32521A81E82E7 /* Pods */,
@@ -178,8 +232,29 @@
 				00E356EE1AD99517003FC87E /* FinddoTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* Finddo-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* Finddo-tvOSTests.xctest */,
+				92BD47C925C1F30300608015 /* OneSignalNotificationServiceExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		92BD47B725C1E93800608015 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				92BD47B825C1E93800608015 /* NotificationViewController.swift */,
+				92BD47BA25C1E93800608015 /* MainInterface.storyboard */,
+				92BD47BD25C1E93800608015 /* Info.plist */,
+			);
+			path = OneSignalNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
+		92BD47CC25C1F30300608015 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				92BD47CD25C1F30300608015 /* NotificationViewController.swift */,
+				92BD47CF25C1F30300608015 /* MainInterface.storyboard */,
+				92BD47D225C1F30300608015 /* Info.plist */,
+			);
+			path = OneSignalNotificationServiceExtension;
 			sourceTree = "<group>";
 		};
 		ED69412BC9F32521A81E82E7 /* Pods */ = {
@@ -193,6 +268,8 @@
 				803E696069C4431D7428B474 /* Pods-Finddo-tvOS.release.xcconfig */,
 				9471CB48B91478B1035D80D7 /* Pods-Finddo-tvOSTests.debug.xcconfig */,
 				202951ED150B77E8B36FBCB1 /* Pods-Finddo-tvOSTests.release.xcconfig */,
+				05124E20F4B945296B661B8E /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */,
+				F931E5233094AD4FF9474F58 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -231,10 +308,12 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				52876C6F3A2C170150D87040 /* [CP] Copy Pods Resources */,
+				92BD47C125C1E93800608015 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				92BD47D425C1F30300608015 /* PBXTargetDependency */,
 			);
 			name = Finddo;
 			productName = Finddo;
@@ -280,12 +359,31 @@
 			productReference = 2D02E4901E0B4A5D006451C7 /* Finddo-tvOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		92BD47C825C1F30300608015 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 92BD47D625C1F30300608015 /* Build configuration list for PBXNativeTarget "OneSignalNotificationServiceExtension" */;
+			buildPhases = (
+				DF14F1A79F64B053784F2759 /* [CP] Check Pods Manifest.lock */,
+				92BD47C525C1F30300608015 /* Sources */,
+				92BD47C625C1F30300608015 /* Frameworks */,
+				92BD47C725C1F30300608015 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OneSignalNotificationServiceExtension;
+			productName = OneSignalNotificationServiceExtension;
+			productReference = 92BD47C925C1F30300608015 /* OneSignalNotificationServiceExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1160;
 				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = Finddotec;
 				TargetAttributes = {
@@ -306,6 +404,9 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = 2D02E47A1E0B4A5D006451C7;
 					};
+					92BD47C825C1F30300608015 = {
+						CreatedOnToolsVersion = 11.6;
+					};
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Finddo" */;
@@ -325,6 +426,7 @@
 				00E356ED1AD99517003FC87E /* FinddoTests */,
 				2D02E47A1E0B4A5D006451C7 /* Finddo-tvOS */,
 				2D02E48F1E0B4A5D006451C7 /* Finddo-tvOSTests */,
+				92BD47C825C1F30300608015 /* OneSignalNotificationServiceExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -358,6 +460,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92BD47C725C1F30300608015 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92BD47D125C1F30300608015 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,6 +624,28 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Finddo-FinddoTests/Pods-Finddo-FinddoTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		DF14F1A79F64B053784F2759 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-OneSignalNotificationServiceExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -589,6 +721,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		92BD47C525C1F30300608015 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92BD47CE25C1F30300608015 /* NotificationViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -602,7 +742,31 @@
 			target = 2D02E47A1E0B4A5D006451C7 /* Finddo-tvOS */;
 			targetProxy = 2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */;
 		};
+		92BD47D425C1F30300608015 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 92BD47C825C1F30300608015 /* OneSignalNotificationServiceExtension */;
+			targetProxy = 92BD47D325C1F30300608015 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		92BD47BA25C1E93800608015 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				92BD47BB25C1E93800608015 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+		92BD47CF25C1F30300608015 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				92BD47D025C1F30300608015 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
@@ -660,12 +824,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 63C52600466C5C59690F4977 /* Pods-Finddo.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Finddo/Finddo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FR3P7X5TX5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Finddo/Info.plist;
@@ -673,7 +838,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.7;
+				MARKETING_VERSION = 1.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -691,19 +856,20 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2AA0104DAAC5A4D5FDEE017C /* Pods-Finddo.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Finddo/Finddo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FR3P7X5TX5;
 				INFOPLIST_FILE = Finddo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.7;
+				MARKETING_VERSION = 1.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -959,6 +1125,74 @@
 			};
 			name = Release;
 		};
+		92BD47D725C1F30300608015 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 05124E20F4B945296B661B8E /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = FR3P7X5TX5;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = br.com.Finddotec.OneSignalNotificationServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		92BD47D825C1F30300608015 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F931E5233094AD4FF9474F58 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = FR3P7X5TX5;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = br.com.Finddotec.OneSignalNotificationServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1003,6 +1237,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		92BD47D625C1F30300608015 /* Build configuration list for PBXNativeTarget "OneSignalNotificationServiceExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92BD47D725C1F30300608015 /* Debug */,
+				92BD47D825C1F30300608015 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
