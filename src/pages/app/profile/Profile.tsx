@@ -177,7 +177,7 @@ const ProfileEditModal = ((props: ProfileEditModalProps): JSX.Element => {
 							),
 							cellphone: (
 								<ValidatedMaskedInput
-									keyboardType="numeric"
+									keyboardType="default"
 									maxLength={15}
 									value={input}
 									formatter={phoneFormatter}

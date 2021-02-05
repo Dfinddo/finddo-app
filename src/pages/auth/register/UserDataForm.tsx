@@ -174,7 +174,7 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 						setCellphoneError(validateInput(input, cellphoneTests));
 					}}
 					label="Telefone"
-					keyboardType="numeric"
+					keyboardType="default"
 					maxLength={15}
 					value={cellphone}
 					error={cellphoneError}
@@ -188,7 +188,7 @@ const UserDataForm = ((props: UserDataFormScreenProps): JSX.Element => {
 						setCpfError(validateInput(input, cpfTests));
 					}}
 					label="CPF"
-					keyboardType="numeric"
+					keyboardType="default"
 					maxLength={14}
 					value={cpf}
 					error={cpfError}
