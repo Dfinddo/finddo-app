@@ -69,11 +69,11 @@ const BottomNavigation: FC = ({children}) => {
 					handleSelect(index);
 				}}
 			>
-				<BottomNavigationTab icon={ChatIcon} />
-				<BottomNavigationTab icon={PersonIcon} />
+				<BottomNavigationTab icon={ChatIcon} title="Chat"/>
+				<BottomNavigationTab icon={PersonIcon} title="Perfil"/>
 				<BottomNavigationTab icon={Finddo} />
-				<BottomNavigationTab icon={InfoIcon} />
-				<BottomNavigationTab icon={SettingsIcon} />
+				<BottomNavigationTab icon={InfoIcon} title="Suporte"/>
+				<BottomNavigationTab icon={SettingsIcon} title="Menu"/>
 			</BottomNavigationKitten>
 		</>
 	);
